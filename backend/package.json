@@ -1,21 +1,25 @@
 {
-  "name": "backend",
+  "name": "express-sequelize-app",
   "version": "1.0.0",
-  "main": "index.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "type": "module",
+  "description": "A simple Express application using Sequelize as an ORM.",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch index.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "migrate": "sequelize db:migrate",
+    "seed": "sequelize db:seed:all"
   },
   "dependencies": {
-    "body-parser": "^1.20.2",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "mysql2": "^3.10.2",
+    "body-parser": "^1.20.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.21.0",
+    "mysql2": "^2.3.3",
     "sequelize": "^6.37.3"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "sequelize-cli": "^6.6.2"
+  },
+  "author": "",
+  "license": "ISC"
 }

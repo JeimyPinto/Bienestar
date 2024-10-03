@@ -1,1 +1,6 @@
-/56-+Desarrollando+un+aplicativo+para+identificar+y+prevenir+suicidios+en+aprendices+SENA+(1)+-+S.pdf
+/backend/node_modules/*
+/backend/.env
+/backend/.env.local
+
+/frontend/node_modules/*
+/frontend/.env
