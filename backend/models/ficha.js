@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Ficha.init({
-    numero: DataTypes.STRING
+    numero: DataTypes.STRING,
+    jornada: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Ficha',

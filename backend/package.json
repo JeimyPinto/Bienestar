@@ -3,22 +3,27 @@
   "version": "1.0.0",
   "description": "A simple Express application using Sequelize as an ORM.",
   "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
+    "dev": "node --watch app.js",
     "migrate": "sequelize db:migrate",
     "seed": "sequelize db:seed:all"
   },
   "dependencies": {
-    "body-parser": "^1.20.3",
-    "dotenv": "^10.0.0",
-    "express": "^4.21.0",
-    "mysql2": "^2.3.3",
-    "sequelize": "^6.37.3"
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.3",
+    "sequelize": "^6.37.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7",
+    "nodemon": "^3.1.7",
     "sequelize-cli": "^6.6.2"
+  },
+  "eslintConfig": {
+    "extends": "standard"
   },
   "author": "",
   "license": "ISC"
