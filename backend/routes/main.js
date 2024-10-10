@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { TipoUsuarioRouter } from "./TipoUsuario.js";
+import { homeController } from "../controllers/home.js";
+import { loginController } from "../controllers/login.js";
 
 const router = Router();
 
-router.use("/tipo-usuario", TipoUsuarioRouter);
+router.get("/", homeController);
 
-export {router};
+router.get('/login', loginController);
+
+export { router };

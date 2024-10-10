@@ -1,44 +1,30 @@
-export const UsuarioModel = (sequelize, Sequelize) => {
-  sequelize.define(
-    "Usuario",
-    {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      nombre: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      documento: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      correo: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      contrasena: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      telefono: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      tipo_usuario_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        reference: {
-          model: "TipoUsuario",
-          key: "id",
-        },
-      },
-    },
-    {
-      tableName: "usuario",
-      timestamps: true,
+'use strict';
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+  class Usuario extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      Usuario.hasOne(models.Lider_Bienestar, { foreignKey: 'usuarioId' });
+      Usuario.hasOne(models.Aprendiz, { foreignKey: 'usuarioId' });
+      Usuario.hasOne(models.Instructor, { foreignKey: 'usuarioId' });
+      Usuario.hasOne(models.Integrante, { foreignKey: 'usuarioId' });
     }
-  );
+  }
+  Usuario.init({
+    nombre: DataTypes.STRING,
+    apellido: DataTypes.STRING,
+    telefono: DataTypes.STRING,
+    email: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'Usuario',
+    tableName: 'Usuario',
+  });
+  return Usuario;
 };
