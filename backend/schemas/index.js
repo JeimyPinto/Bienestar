@@ -1,32 +1,25 @@
-const { z } = require('zod');
-const { Usuario, Aprendiz } = require('../models');
+import { z } from 'zod';
 
 // Schema for Usuario
-const usuarioSchema = z.object({
+export const usuarioSchema = z.object({
     id: z.number().int().positive(),
     nombre: z.string(),
     apellido: z.string(),
     documento: z.string(),
     telefono: z.string(),
     email: z.string().email(),
-    contrasena: z.string().min(6),
+    contrasena: z.string().min(6).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/),
 });
 
 // Schema for Aprendiz
-const aprendizSchema = z.object({
+export const aprendizSchema = z.object({
     id: z.string(),
     usuarioId: z.number().int().positive(),
     fichaId: z.number().int().positive(),
 });
 
-//Schema for Ficha
-const fichaSchema = z.object({
+// Schema for Ficha
+export const fichaSchema = z.object({
     id: z.string(),
     numero: z.number().int().positive(),
-    jornada: z.string(),
 });
-
-module.exports = {
-    usuarioSchema,
-    aprendizSchema,
-};

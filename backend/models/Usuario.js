@@ -10,13 +10,18 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Usuario.hasOne(models.Lider_Bienestar, { foreignKey: 'usuarioId' });
-      Usuario.hasOne(models.Aprendiz, { foreignKey: 'usuarioId' });
-      Usuario.hasOne(models.Instructor, { foreignKey: 'usuarioId' });
-      Usuario.hasOne(models.Integrante, { foreignKey: 'usuarioId' });
+      Usuario.hasMany(models.Lider_Bienestar, { foreignKey: 'usuarioId' });
+      Usuario.hasMany(models.Aprendiz, { foreignKey: 'usuarioId' });
+      Usuario.hasMany(models.Instructor, { foreignKey: 'usuarioId' });
+      Usuario.hasMany(models.Integrante, { foreignKey: 'usuarioId' });
     }
   }
   Usuario.init({
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     nombre: DataTypes.STRING,
     apellido: DataTypes.STRING,
     telefono: DataTypes.STRING,

@@ -1,78 +1,89 @@
-# Express Sequelize App
+# 🌟 Express Sequelize App
 
-This project is a simple Express application that uses Sequelize as an ORM for database management. It includes setup for migrations, seeders, and schemas.
+Este proyecto es una aplicación simple de Express que utiliza Sequelize como ORM para la gestión de bases de datos. Incluye la configuración para migraciones, seeders y esquemas.
 
-## Project Structure
+## 📁 Estructura del Proyecto
 
 ```
-express-sequelize-app
-├── src
-│   ├── config
-│   │   └── database.js
-│   ├── controllers
-│   │   └── index.js
-│   ├── migrations
-│   │   └── [timestamp]-create-users.js
-│   ├── models
-│   │   └── index.js
-│   ├── seeders
-│   │   └── [timestamp]-seed-users.js
-│   ├── routes
-│   │   └── index.js
-│   ├── app.js
-│   └── types
-│       └── index.d.ts
+backend/
+├── .env
 ├── .sequelizerc
+├── app.js
+├── config/
+│   └── config.json
+├── controllers/
+│   ├── index.js
+│   ├── login.js
+│   ├── registro.js
+│   └── usuario.js
+├── middlewares/
+│   └── validationMiddleware.js
+├── migrations/
+│   ├── 20241009175449-create-usuario.js
+│   ├── 20241009175502-create-lider-bienestar.js
+│   ├── 20241009175503-create-ficha.js
+│   ├── 20241009175508-create-aprendiz.js
+│   └── 20241009175514-create-instructor.js
+├── models/
+│   ├── aprendiz.js
+│   ├── ficha.js
+│   └── ...
 ├── package.json
 ├── README.md
-└── config.json
+├── requests.rest
+├── routes/
+├── schemas/
+└── seeders/
 ```
 
-## Installation
+## ⚙️ Configuración
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd express-sequelize-app
-   ```
+### Archivo `.env`
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
+Asegúrate de tener un archivo `.env` en la raíz del directorio `backend/` con las variables de entorno necesarias para la configuración de la base de datos y otros parámetros.
 
-## Configuration
+### Archivo `config.json`
 
-Update the database configuration in `src/config/database.js` and `config.json` with your database details.
+El archivo `config/config.json` contiene la configuración de la base de datos para diferentes entornos (desarrollo, prueba, producción).
 
-## Running Migrations
+## 📜 Migraciones
 
-To create the database tables, run:
-```
-npx sequelize-cli db:migrate
+Las migraciones se encuentran en el directorio `migrations/`. Puedes crear nuevas migraciones usando el comando:
+
+```sh
+npx sequelize-cli migration:generate --name <nombre-de-la-migracion>
 ```
 
-## Seeding the Database
+## 📂 Esquemas
 
-To populate the database with initial data, run:
-```
-npx sequelize-cli db:seed:all
+Los esquemas se encuentran en el directorio `schemas/`. Estos se utilizan para la validación de datos de entrada.
+
+## 📬 Requests
+
+El archivo `requests.rest` contiene ejemplos de solicitudes HTTP que puedes usar para probar tu API.
+
+## 📦 Instalación
+
+Para instalar las dependencias del proyecto, ejecuta:
+
+```sh
+npm install
 ```
 
-## Running the Application
+## 🚀 Ejecución
 
-Start the application with:
-```
+Para iniciar el servidor, ejecuta:
+
+```sh
 npm start
 ```
 
-The application will be running on `http://localhost:3000`.
+Esto iniciará el servidor en el puerto definido en tu archivo `.env`.
 
-## API Endpoints
+## 🤝 Contribución
 
-- **GET /users**: Retrieve all users.
-- **POST /users**: Create a new user.
+Si deseas contribuir a este proyecto, por favor abre un issue o envía un pull request.
 
-## License
+---
 
-This project is licensed under the MIT License.
+Este [README.md](http://_vscodecontentref_/#%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22fsPath%22%3A%22c%3A%5C%5CUsers%5C%5Cjeimy%5C%5CDesktop%5C%5CProjects%5C%5CSemillero%5C%5CBienestar%5C%5Cbackend%5C%5CREADME.md%22%2C%22_sep%22%3A1%2C%22external%22%3A%22file%3A%2F%2F%2Fc%253A%2FUsers%2Fjeimy%2FDesktop%2FProjects%2FSemillero%2FBienestar%2Fbackend%2FREADME.md%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fjeimy%2FDesktop%2FProjects%2FSemillero%2FBienestar%2Fbackend%2FREADME.md%22%2C%22scheme%22%3A%22file%22%7D%7D) proporciona una visión general clara de la estructura del proyecto y cómo trabajar con él.

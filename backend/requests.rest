@@ -1,6 +1,11 @@
-POST http://localhost:3000/api/tipo-usuario/create
+POST http://localhost:3000/api/register
 Content-Type: application/json
 
 {
-    "nombre": "Administrador"
+    "nombre": "Jeimy",
+    "apellido": "Pinto",
+    "documento": "1053872476",
+    "telefono" : "3058122481",
+    "email" : "jeimytatianapinto@gmail.com",
+    "contrasena" : "Jeimy1399#"
 }

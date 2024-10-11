@@ -1,7 +1,6 @@
-'use strict';
-const { Model } = require('sequelize');
+import { Model } from 'sequelize';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   class Instructor extends Model {
     /**
      * Helper method for defining associations.
@@ -16,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Instructor.init({
     usuarioId: DataTypes.INTEGER,
-    es_instructor: DataTypes.BOOLEAN,
+    es_gestor: DataTypes.BOOLEAN,
     fichaId: DataTypes.INTEGER
   }, {
     sequelize,
