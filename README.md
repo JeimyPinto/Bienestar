@@ -1,10 +1,10 @@
-# 🌟 Express Sequelize App
+# 🌟 Bienestar App
 
 Este proyecto es una aplicación simple de Express que utiliza Sequelize como ORM para la gestión de bases de datos. Incluye la configuración para migraciones, seeders y esquemas.
 
 ## 📁 Estructura del Proyecto
 
-```
+```plaintext
 backend/
 ├── .env
 ├── .sequelizerc

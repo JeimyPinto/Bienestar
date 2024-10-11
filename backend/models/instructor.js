@@ -1,26 +1,20 @@
 import { Model } from 'sequelize';
 
-export default (sequelize, DataTypes) => {
-  class Instructor extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-      Instructor.belongsTo(models.Usuario, { foreignKey: 'usuarioId' });
-      Instructor.belongsTo(models.Ficha, { foreignKey: 'fichaId' });
-    }
+export default class Instructor extends Model {
+  static associate(models) {
+    Instructor.belongsTo(models.Usuario, { foreignKey: 'usuarioId' });
+    Instructor.belongsTo(models.Ficha, { foreignKey: 'fichaId' });
   }
-  Instructor.init({
-    usuarioId: DataTypes.INTEGER,
-    es_gestor: DataTypes.BOOLEAN,
-    fichaId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Instructor',
-    tableName: 'Instructor'
-  });
-  return Instructor;
-};
+
+  static init(sequelize, DataTypes) {
+    return super.init({
+      usuarioId: DataTypes.INTEGER,
+      es_gestor: DataTypes.BOOLEAN,
+      fichaId: DataTypes.INTEGER
+    }, {
+      sequelize,
+      modelName: 'Instructor',
+      tableName: 'Instructor'
+    });
+  }
+}
