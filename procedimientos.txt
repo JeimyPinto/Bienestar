@@ -1,0 +1,104 @@
+-- Procedimiento Almacenado para Aprendiz
+DELIMITER //
+
+CREATE PROCEDURE CreateAprendiz(
+    IN p_usuarioId INT,
+    IN p_fichaId INT
+)
+BEGIN
+    INSERT INTO Aprendices (usuarioId, fichaId, createdAt, updatedAt)
+    VALUES (p_usuarioId, p_fichaId, NOW(), NOW());
+END //
+
+DELIMITER ;
+
+-- Ejemplo de llamada al procedimiento CreateAprendiz
+CALL CreateAprendiz(1, 1);
+
+-- Procedimiento Almacenado para Lider_Bienestar
+DELIMITER //
+
+CREATE PROCEDURE CreateLiderBienestar(
+    IN p_usuarioId INT
+)
+BEGIN
+    INSERT INTO Lider_Bienestar (usuarioId, createdAt, updatedAt)
+    VALUES (p_usuarioId, NOW(), NOW());
+END //
+
+DELIMITER ;
+
+-- Ejemplo de llamada al procedimiento CreateLiderBienestar
+CALL CreateLiderBienestar(1);
+
+-- Procedimiento Almacenado para Integrante
+DELIMITER //
+
+CREATE PROCEDURE CreateIntegrante(
+    IN p_area VARCHAR(255),
+    IN p_usuarioId INT,
+    IN p_liderId INT
+)
+BEGIN
+    INSERT INTO Integrantes (area, usuarioId, liderId, createdAt, updatedAt)
+    VALUES (p_area, p_usuarioId, p_liderId, NOW(), NOW());
+END //
+
+DELIMITER ;
+
+-- Ejemplo de llamada al procedimiento CreateIntegrante
+CALL CreateIntegrante('Desarrollo', 1, 1);
+
+-- Procedimiento Almacenado para Remision
+DELIMITER //
+
+CREATE PROCEDURE CreateRemision(
+    IN p_estado VARCHAR(255),
+    IN p_aprendizId INT,
+    IN p_integranteId INT
+)
+BEGIN
+    INSERT INTO Remisiones (estado, aprendizId, integranteId, createdAt, updatedAt)
+    VALUES (p_estado, p_aprendizId, p_integranteId, NOW(), NOW());
+END //
+
+DELIMITER ;
+
+-- Ejemplo de llamada al procedimiento CreateRemision
+CALL CreateRemision('Pendiente', 1, 1);
+
+-- Procedimiento Almacenado para SolicitudRemision
+DELIMITER //
+
+CREATE PROCEDURE CreateSolicitudRemision(
+    IN p_area VARCHAR(255),
+    IN p_aprendizId INT,
+    IN p_integranteId INT
+    IN description INT
+)
+BEGIN
+    INSERT INTO SolicitudRemisiones (area, aprendizId, integranteId, createdAt, updatedAt)
+    VALUES (p_area, p_aprendizId, p_integranteId, NOW(), NOW());
+END //
+
+DELIMITER ;
+
+-- Ejemplo de llamada al procedimiento CreateSolicitudRemision
+CALL CreateSolicitudRemision('Salud', 1, 1);
+
+-- Procedimiento Almacenado para Servicio
+DELIMITER //
+
+CREATE PROCEDURE CreateServicio(
+    IN p_nombre VARCHAR(255),
+    IN p_encargadoId INT
+)
+BEGIN
+    INSERT INTO Servicios (nombre, encargadoId, createdAt, updatedAt)
+    VALUES (p_nombre, p_encargadoId, NOW(), NOW());
+END //
+
+DELIMITER ;
+
+-- Ejemplo de llamada al procedimiento CreateServicio
+CALL CreateServicio('Olimpiada Saber CPIC', 1);
