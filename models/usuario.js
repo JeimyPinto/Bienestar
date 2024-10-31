@@ -12,8 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Define associations here
     }
-    validatePassword(contrasena) {
-      return bcrypt.compare(contrasena, this.contrasena);
+
+    // Método para verificar la contraseña
+    validPassword(password) {
+      return bcrypt.compareSync(password, this.contrasena);
     }
   }
 
@@ -32,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       documento: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         comment: "Documento de identificación del usuario",
       },
       telefono: {
@@ -42,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           isEmail: true,
         },
@@ -51,6 +55,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         comment: "Contraseña del usuario",
+      },
+      estado: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'activa',
+        validate: {
+          isIn: [['inactiva', 'activa', 'cerrada']]
+        },
+        comment: "Estado del usuario"
       },
     },
     {
