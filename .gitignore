@@ -1,4 +1,7 @@
-node_modules/*
-.env
-.env.local
-procedemientos.txt
+backend/node_modules/*
+backend/.env
+procedimientos.txt
+
+frontend/node_modules/*
+frontend/.env
+

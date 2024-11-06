@@ -1,8 +1,7 @@
-const db = require("../models");
+const db = require("../models/index.js");
 const Usuario = db.Usuario;
 const usuarioSchema = require("../schemas/usuario.js");
 const { z } = require("zod");
-const {bcrypt} = require('bcrypt');
 
 class UsuarioController {
   /**
@@ -66,20 +65,16 @@ class UsuarioController {
    */
   async create(req, res) {
     try {
-      const { nombre, apellido, documento, telefono, email, contrasena } =
-        req.body;
-      const usuario = usuarioSchema.parse(req.body);
-      const contrasenaEncriptada = bcrypt.hashSync(contrasena, 10);
-      const usuarioCreado = await Usuario.create({
-        usuario,
+      const {nombre, apellido, documento, telefono, email, contrasena} = usuarioSchema.parse(req.body);
+      const usuario = await Usuario.create({
+        nombre,
         apellido,
         documento,
         telefono,
         email,
-        contrasena: contrasenaEncriptada,
+        contrasena,
       });
-      const { contrasena: contrasenaUsuario, ...usuarioDatos } =
-        usuarioCreado.toJSON();
+      const { contrasena: contrasenaUsuario, ...usuarioDatos } = usuario.toJSON();
       res.status(201).json(usuarioDatos);
     } catch (error) {
       if (error instanceof z.ZodError) {

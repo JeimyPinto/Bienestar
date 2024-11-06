@@ -14,17 +14,17 @@
 # GET http://localhost:3000/api/usuarios/documento/1053872476
 
 # Ruta para crear un usuario
-POST http://localhost:3000/api/usuarios HTTP/1.1
+POST http://localhost:3000/api/usuarios
 Content-Type: application/json
 
 {
-     "nombre": "Prueba",
-     "apellido": "Admin",
-     "documento": "123456789",
-     "telefono": "123456789",
-     "email": "prueba@gmail.com",
-     "contrasena": "Prueba123#",
-     "estado": "activa"
+    "nombre": "Jeimy",
+    "apellido": "Pinto",
+    "documento": "1053872476",
+    "telefono": "3058122481",
+    "email": "jeimy@gmail.com",
+    "contrasena": "Prueba123#",
+    "estado": "activa"
 }
 
 # Ruta para actualizar un usuario

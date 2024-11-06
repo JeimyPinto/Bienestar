@@ -78,12 +78,12 @@ module.exports = (sequelize, DataTypes) => {
           usuario.contrasena = await bcrypt.hash(usuario.contrasena, salt);
         },
         beforeUpdate: async (usuario) => {
-          if (usuario.changed("contrasena")) {
+          if (usuario.changed('contrasena')) {
             const salt = await bcrypt.genSalt(10);
             usuario.contrasena = await bcrypt.hash(usuario.contrasena, salt);
           }
-        },
-      },
+        }
+      }
     }
   );
 
