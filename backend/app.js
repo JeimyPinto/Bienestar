@@ -5,9 +5,10 @@ const bodyParser = require("body-parser");
 const indexRouter = require("./routes/index.js");
 const usuarioRouter = require("./routes/usuarios.js");
 const morgan = require("morgan");
+const cors = require("cors");
+const PORT = process.env.PORT || 4000;
 
 const app = express();
-app.set("port", process.env.PORT || 4000);
 
 //Validamos que no estemos en ambiente de production
 if (process.env.NODE_ENV != "development") {
