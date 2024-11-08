@@ -43,4 +43,4 @@ Content-Type: application/json
 # }
 
 # Ruta para eliminar un usuario
-DELETE http://localhost:3000/api/usuarios/3
+#DELETE http://localhost:3000/api/usuarios/3

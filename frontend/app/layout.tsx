@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "../src/styles/globals.css";
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",
