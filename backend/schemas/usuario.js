@@ -1,23 +1,23 @@
-const { z } = require('zod');
+const { z } = require("zod");
+const db = require("../models");
+const Usuario = db.Usuario;
+
+const isDocumentoUnique = async (documento) => {
+  const usuario = await Usuario.findOne({ where: { documento } });
+  return !usuario;
+};
 
 const usuarioSchema = z.object({
-  nombre: z.string().nonempty("El nombre es obligatorio"),
-  apellido: z.string().nonempty("El apellido es obligatorio"),
-  documento: z.string().nonempty("El documento es obligatorio").refine(async (documento) => {
-    // Assuming you have a function `isDocumentoUnique` that checks the uniqueness of the document
+  nombre: z.string().nonempty("El nombre es requerido"),
+  apellido: z.string().nonempty("El apellido es requerido"),
+  documento: z.string().nonempty("El documento es requerido").refine(async (documento) => {
     return await isDocumentoUnique(documento);
   }, {
-    message: "El documento ya está en uso"
+    message: "El documento ya está en uso",
   }),
-  telefono: z.string().nonempty("El teléfono es obligatorio"),
-  email: z.string().email("Correo electrónico inválido"),
-  contrasena: z.string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .regex(/[A-Z]/, "La contraseña debe tener al menos una letra mayúscula")
-    .regex(/[0-9]/, "La contraseña debe tener al menos un número")
-    .regex(/[^A-Za-z0-9]/, "La contraseña debe tener al menos un carácter especial")
-    .nonempty("La contraseña es obligatoria"),
-  estado: z.enum(['inactiva', 'activa', 'congelada', 'cerrada']).default('activa')
+  telefono: z.string().nonempty("El teléfono es requerido"),
+  email: z.string().email("El email no es válido"),
+  contrasena: z.string().nonempty("La contraseña es requerida"),
 });
 
 module.exports = usuarioSchema;

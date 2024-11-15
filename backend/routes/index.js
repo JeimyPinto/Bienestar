@@ -1,12 +1,17 @@
-const usuarioRouter = require("./usuarios.js");
-const authController = require("../controllers/auth.js");
-
 const express = require("express");
 const router = express.Router();
+const usuarioRouter = require("./usuarios.js");
+const authRouter = require("./auth.js");
+const authenticateToken = require("../middlewares/auth");
 
-router.use("/usuarios", usuarioRouter);
-router.get("/login", (req, res) => res.send("Login"));
-router.post("/login", authController.login);
-router.post("/register", authController.register);
+/**
+ * Ruta de bienvenida de la API
+ */
+router.get("/", (req, res) => {
+  res.status(200).send({ message: "Bienvenido a la API de Bienestar" });
+});
+
+router.use("/usuarios", authenticateToken, usuarioRouter);
+router.use("/auth", authRouter);
 
 module.exports = router;

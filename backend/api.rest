@@ -1,46 +1,45 @@
 # Ruta de la API
-# GET http://localhost:3000/api
+#GET http://localhost:3000/api
 
 # Ruta para rutas que no existen
 # GET http://localhost:3000/api/* 
 
-# Ruta para obtener todos los usuarios
+# Ruta para obtener todos los usuarios (protegida)
 # GET http://localhost:3000/api/usuarios
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
 
-# Ruta para obtener un usuario por su id
+# # Ruta para obtener un usuario por su id (protegida)
 # GET http://localhost:3000/api/usuarios/1
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
 
-# Ruta para obtener un usuario por su documento
+# # Ruta para obtener un usuario por su documento (protegida)
 # GET http://localhost:3000/api/usuarios/documento/1053872476
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
 
-# Ruta para crear un usuario
-POST http://localhost:3000/api/usuarios
-Content-Type: application/json
+# # Ruta para crear un usuario (registro)
+ POST http://localhost:3000/api/auth/register
+ Content-Type: application/json
 
-{
+ {
     "nombre": "Jeimy",
     "apellido": "Pinto",
-    "documento": "1053872476",
+    "documento": "000000000",
     "telefono": "3058122481",
-    "email": "jeimy@gmail.com",
-    "contrasena": "Prueba123#",
-    "estado": "activa"
-}
+     "email": "jeimy@example.com",
+     "contrasena": "password123",
+     "CreateAt": "2021-08-10",
+     "UpdateAt": "2021-08-10",
+ }
 
-# Ruta para actualizar un usuario
-# PUT http://localhost:3000/api/usuarios/1 HTTP/1.1
+# Ruta para iniciar sesión
+# POST http://localhost:3000/api/auth/login
 # Content-Type: application/json
 
 # {
-#     "id": 1,
-#     "nombre": "Jeimy",
-#     "apellido": "Pinto",
-#     "documento": "1053872476",
-#     "telefono": "3058122481",
-#     "email": "jeimytatianapinto@gmail.com",
-#     "contrasena": "Bienestarjeimy1399.",
-#     "estado": "activa"
+#     "email": "willy@gmail.com",
+#     "contrasena": "1234"
 # }
 
-# Ruta para eliminar un usuario
-#DELETE http://localhost:3000/api/usuarios/3
+# # Ruta para cerrar sesión (protegida)
+# POST http://localhost:3000/api/auth/logout
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug

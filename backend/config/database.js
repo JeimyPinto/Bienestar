@@ -12,16 +12,12 @@ const sequelize = new Sequelize(
   }
 );
 
-const connectDB = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Conexión a la base de datos establecida correctamente.');
-    await sequelize.sync({ force: false });
-    console.log('Modelos sincronizados con la base de datos.');
-  } catch (error) {
-    console.error('No se pudo conectar a la base de datos:', error);
-    process.exit(1); // Salir del proceso si no se puede conectar a la base de datos
-  }
-};
+function connectDB() {
+  sequelize
+    .authenticate()    
+    .catch((error) => {
+      console.error('No se pudo conectar con la base de datos:', error);
+    });
+}
 
-module.exports = { sequelize, connectDB };
+module.exports = { connectDB, sequelize };

@@ -1,7 +1,6 @@
 import "../src/styles/globals.css";
 
 import Footer from "../src/components/footer";
-import Header from "../src/components/header";
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",
@@ -21,7 +20,6 @@ export default function RootLayout({
         <meta name="description" content={metadata.description} />
       </head>
       <body>
-        <Header />
         {children}
         <Footer />
       </body>

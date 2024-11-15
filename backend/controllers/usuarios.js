@@ -11,10 +11,26 @@ class UsuarioController {
    */
   async getAll(req, res) {
     try {
+      console.log("Obteniendo usuarios");
       const usuarios = await Usuario.findAll();
       res.status(200).json(usuarios);
     } catch (error) {
-      res.status(500).json({ message: "Error al obtener los usuarios", error });
+      if (error instanceof ValidationError) {
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
+      } else if (error instanceof DatabaseError) {
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
+      } else {
+        res
+          .status(500)
+          .json({
+            message: "Error al obtener los usuarios",
+            error: error.message,
+          });
+      }
     }
   }
 
@@ -33,7 +49,22 @@ class UsuarioController {
       const { contrasena, ...usuarioDatos } = usuario.toJSON();
       res.status(200).json(usuarioDatos);
     } catch (error) {
-      res.status(500).json({ message: "Error al obtener el usuario", error });
+      if (error instanceof ValidationError) {
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
+      } else if (error instanceof DatabaseError) {
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
+      } else {
+        res
+          .status(500)
+          .json({
+            message: "Error al obtener el usuario",
+            error: error.message,
+          });
+      }
     }
   }
 
@@ -65,7 +96,8 @@ class UsuarioController {
    */
   async create(req, res) {
     try {
-      const {nombre, apellido, documento, telefono, email, contrasena} = usuarioSchema.parse(req.body);
+      const { nombre, apellido, documento, telefono, email, contrasena } =
+        usuarioSchema.parse(req.body);
       const usuario = await Usuario.create({
         nombre,
         apellido,
@@ -74,7 +106,8 @@ class UsuarioController {
         email,
         contrasena,
       });
-      const { contrasena: contrasenaUsuario, ...usuarioDatos } = usuario.toJSON();
+      const { contrasena: contrasenaUsuario, ...usuarioDatos } =
+        usuario.toJSON();
       res.status(201).json(usuarioDatos);
     } catch (error) {
       if (error instanceof z.ZodError) {
