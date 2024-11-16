@@ -10,7 +10,6 @@ const { authenticateToken } = require("../middlewares/auth");
 router.get("/", (req, res) => {
   res.status(200).send({ message: "Bienvenido a la API de Bienestar" });
 });
-
 router.use("/usuarios", authenticateToken, usuarioRouter);
 router.use("/auth", authRouter);
 

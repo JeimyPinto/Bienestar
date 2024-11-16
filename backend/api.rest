@@ -17,19 +17,16 @@
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
 
 # # Ruta para crear un usuario (registro)
- POST http://localhost:3000/api/auth/register
- Content-Type: application/json
-
- {
-    "nombre": "Jeimy",
-    "apellido": "Pinto",
-    "documento": "000000000",
-    "telefono": "3058122481",
-     "email": "jeimy@example.com",
-     "contrasena": "password123",
-     "CreateAt": "2021-08-10",
-     "UpdateAt": "2021-08-10",
- }
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+{
+    "nombre": "Weimar",
+    "apellido": "Tamayo",
+    "documento": "0000000000",
+    "email": "weimart24@gmail.com",
+    "telefono": "123456789",
+    "contrasena": "1234"
+}
 
 # Ruta para iniciar sesión
 # POST http://localhost:3000/api/auth/login
