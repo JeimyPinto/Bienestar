@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const usuarioRouter = require("./usuarios.js");
 const authRouter = require("./auth.js");
-const authenticateToken = require("../middlewares/auth");
+const { authenticateToken } = require("../middlewares/auth");
 
 /**
  * Ruta de bienvenida de la API

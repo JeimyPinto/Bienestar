@@ -1,16 +1,13 @@
 const db = require("../models");
 const Usuario = db.Usuario;
 const usuarioSchema = require("../schemas/usuario");
-const bcrypt = require("bcrypt");
+const { authenticateUser } = require("../middlewares/auth");
 const jwt = require("jsonwebtoken");
 
 class AuthController {
   /**
    * Inicia sesión en la aplicación.
-   * Busca un usuario con el correo proporcionado,
-   * si lo encuentra, compara la contraseña proporcionada,
-   * si la contraseña es correcta, crea un token de autenticación
-   * y lo envía en una cookie.
+   * Recibe los datos del usuario, valida los datos según el esquema,
    * @param {*} req el correo y la contraseña del usuario
    * @param {*} res si el usuario y la contraseña son correctos, retorna un token
    * @returns El token de autenticación o un mensaje de error
@@ -19,40 +16,20 @@ class AuthController {
    */
   async login(req, res) {
     const { email, password } = req.body;
-    console.log(email, password);
-    try {
-      const usuario = await Usuario.findOne({ where: { email } });
-      if (!usuario || !bcrypt.compareSync(password, usuario.contrasena)) {
-        return res
-          .status(401)
-          .json({ message: "Usuario o contraseña incorrectos" });
-      }
+    const parsedData = await usuarioSchema.parseAsync({ email, password });
+    const secret = process.env.JWT_SECRET;
 
-      // Crear un token de autenticación
-      const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-      // Enviar el token en una cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      });
-      res.json({ message: "Login exitoso" });
+    try {
+      const token = await authenticateUser(
+        parsedData.email,
+        parsedData.password
+      );
+      const payload = jwt.verify(token, secret);
+      res.status(200).send({ status: 200, data: token, user: payload });
     } catch (error) {
-      if (error.name === "SequelizeValidationError") {
-        res
-          .status(400)
-          .json({ message: "Error de validación", errors: error.errors });
-      } else if (error.name === "SequelizeDatabaseError") {
-        res
-          .status(500)
-          .json({ message: "Error de base de datos", error: error.message });
-      } else {
-        res.status(500).json({
-          message: "Error al obtener el usuario",
-          error: error.message,
-        });
-      }
+      res
+        .status(error.status || 500)
+        .send({ status: "FAILED", data: error.message });
     }
   }
 
@@ -74,12 +51,10 @@ class AuthController {
       parsedData = await usuarioSchema.parseAsync(req.body);
     } catch (validationError) {
       console.error("Error de validación:", validationError);
-      return res
-        .status(400)
-        .json({
-          message: "Error de validación",
-          errors: validationError.errors,
-        });
+      return res.status(400).json({
+        message: "Error de validación",
+        errors: validationError.errors,
+      });
     }
 
     const { nombre, apellido, documento, telefono, email, contrasena } =
@@ -116,11 +91,18 @@ class AuthController {
     } catch (error) {
       console.error("Error durante el registro:", error);
       if (error.name === "SequelizeValidationError") {
-        res.status(400).json({ message: "Error de validación", errors: error.errors });
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
       } else if (error.name === "SequelizeDatabaseError") {
-        res.status(500).json({ message: "Error de base de datos", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res.status(500).json({ message: "Error al registrar el usuario", error: error.message });
+        res.status(500).json({
+          message: "Error al registrar el usuario",
+          error: error.message,
+        });
       }
     }
   }
