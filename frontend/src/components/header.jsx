@@ -16,14 +16,14 @@ export default function Header() {
       <nav className="flex justify-center items-center">
         <ul className="flex gap-5 p-2">
           <li className="text-foreground">Integrantes</li>
-          <li className="text-foreground">Servicios</li>
+          <li className="text-foreground px-2">Servicios</li>
         </ul>
-        <Link href={path}>
+        <Link href="/login">
           <button
             className="bg-white text-azul px-4 py-2 rounded-md hover:bg-cian 
             hover:border-2 hover:border-white hover:shadow-md hover:shadow-white"
           >
-            Registrarse
+            Ingresar
           </button>
         </Link>
       </nav>

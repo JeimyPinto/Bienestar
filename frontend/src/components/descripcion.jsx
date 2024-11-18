@@ -2,7 +2,7 @@ import React from 'react';
 
 const Descripcion = () => {
     return (
-        <div className="flex flex-col items-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center min-h-screen bg-gray-100 pt-8">
             <h1 className="text-5xl font-bold py-4">PORTAFOLIO DE SERVICIOS</h1>
             <p className="w-10/12 py-5">
                 Este es un espacio especialmente creado para la comunidad del Centro de

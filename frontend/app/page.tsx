@@ -4,7 +4,7 @@ import Header from "../src/components/header";
 export default function Page() {
   return (
     <>
-      <Header />
+      <Header/>
       <Descripcion></Descripcion>
     </>
   );
