@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       },
     },
+    imagen: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
     sequelize,
     modelName: 'Servicio',

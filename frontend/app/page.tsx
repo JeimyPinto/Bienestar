@@ -1,11 +1,16 @@
-import Descripcion from "../src/components/descripcion";
-import Header from "../src/components/header";
+"use client";
+
+import Descripcion from "./dashboard/descripcion";
+import ServiciosPage from "./servicios/page";
+import Header from "./ui/header";
 
 export default function Page() {
   return (
     <>
-      <Header/>
-      <Descripcion></Descripcion>
+      <Header />
+      <Descripcion>
+        <ServiciosPage/>
+      </Descripcion>
     </>
   );
 }

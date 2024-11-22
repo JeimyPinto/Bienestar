@@ -3,12 +3,13 @@ import Image from "next/image";
 
 export default function Contacto() {
   return (
-    <div className="flex justify-around items-center bg-gray-500 text-blanco  w-6/12 rounded-lg p-10">
+    <div className="flex justify-around items-center bg-gray-500 text-blanco w-6/12 rounded-lg p-10 shadow-lg shadow-black">
       <Image
         src="/images/qr-contacto.png"
         alt="QR contacto"
         width={500}
         height={500}
+        className="shadow-lg shadow-black"
       />
       <div className="flex items-center text-2xl px-2">
         <Image

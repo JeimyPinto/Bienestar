@@ -1,6 +1,6 @@
-import "../src/styles/globals.css";
+import "./styles/globals.css";
 
-import Footer from "../src/components/footer";
+import Footer from "./ui/footer";
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",
@@ -19,7 +19,7 @@ export default function RootLayout({
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
       </head>
-      <body>
+      <body className="{`${monserrate.className} antialiase`} bg-blanco">
         {children}
         <Footer />
       </body>

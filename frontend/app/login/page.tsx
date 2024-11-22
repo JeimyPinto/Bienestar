@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/header";
+import Header from "../ui/header";
 import Image from "next/image";
 
 function LoginPage() {
@@ -55,7 +55,7 @@ function LoginPage() {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      const dashboardResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/dashboard`, {
+      const dashboardResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${data.token}`,
