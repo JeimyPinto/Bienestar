@@ -11,7 +11,6 @@ class UsuarioController {
    */
   async getAll(req, res) {
     try {
-      console.log("Obteniendo usuarios");
       const usuarios = await Usuario.findAll();
       res.status(200).json(usuarios);
     } catch (error) {

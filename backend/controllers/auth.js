@@ -14,7 +14,6 @@ class AuthController {
    * @autor Jeimy Pinto
    */
   async register(req, res) {
-    console.log("Datos recibidos en req.body:", req.body);
     let parsedData;
     try {
       parsedData = await usuarioSchema.parseAsync(req.body);
@@ -24,12 +23,11 @@ class AuthController {
     }
 
     const { nombre, apellido, documento, telefono, email, contrasena } = parsedData;
-    console.log("Datos después de la validación:", nombre, apellido, documento, telefono, email, contrasena);
 
     try {
       const usuario = await Usuario.findOne({ where: { documento } });
       if (usuario) {
-        return res.status(400).json({ message: "El usuario ya existe" });
+        return res.status(400).json({ message: "Ya existe un usuario con ese documento" });
       }
 
       // No se hashea la contraseña porque el modelo ya lo hace
@@ -41,8 +39,6 @@ class AuthController {
         email,
         contrasena,
       });
-
-      console.log("Usuario creado:", nuevoUsuario);
 
       res.json({ message: "Usuario registrado correctamente" });
     } catch (error) {
@@ -72,7 +68,12 @@ class AuthController {
 
     try {
       const usuario = await Usuario.findOne({ where: { email } });
-      if (!usuario || !bcrypt.compareSync(contrasena, usuario.contrasena)) {
+      if (!usuario) {
+        return res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
+      }
+
+      const isPasswordValid = bcrypt.compareSync(contrasena, usuario.contrasena);
+      if (!isPasswordValid) {
         return res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
       }
 

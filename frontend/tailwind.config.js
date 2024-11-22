@@ -14,6 +14,7 @@ module.exports = {
         azul: "var(--color-azul-oscuro)",
         magenta: "var(--color-magenta)",
         amarillo: "var(--color-amarillo)",
+        colorWpp: "var(--color-wpp)"
       },
     },
   },

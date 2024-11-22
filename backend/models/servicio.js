@@ -3,7 +3,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Servicio extends Model {
     static associate(models) {
-      Servicio.belongsTo(models.Usuario, { foreignKey: 'encargadoId' });
+      Servicio.belongsTo(models.Integrante, { foreignKey: 'encargadoId' });
     }
   }
   Servicio.init({
@@ -13,8 +13,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     encargadoId: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    }
+      allowNull: false,
+      references: {
+        model: 'Integrante',
+        key: 'id'
+      },
+    },
   }, {
     sequelize,
     modelName: 'Servicio',

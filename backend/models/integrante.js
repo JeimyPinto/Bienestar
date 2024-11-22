@@ -4,7 +4,6 @@ module.exports = (sequelize, DataTypes) => {
   class Integrante extends Model {
     static associate(models) {
       Integrante.belongsTo(models.Usuario, { foreignKey: 'usuarioId' });
-      Integrante.belongsTo(models.Lider_Bienestar, { foreignKey: 'liderId' });
     }
   }
   Integrante.init({

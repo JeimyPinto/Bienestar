@@ -9,6 +9,7 @@
   --color-azul-oscuro: #2f2254;
   --color-magenta: #54224c;
   --color-amarillo: #f6dc25;
+  --color-wpp:#25D366;
 }
 
 @media (prefers-color-scheme: dark) {

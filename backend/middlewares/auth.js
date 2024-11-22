@@ -30,8 +30,6 @@ const authenticateUser = async (email, password) => {
     throw new Error("Usuario o contraseña incorrectos");
   }
 
-  const username = user.nombre + " " + user.apellido;
-
   //Genera un nuevo token
   const token = jwt.sign(
     {

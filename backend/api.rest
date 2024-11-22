@@ -17,16 +17,17 @@
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
 
 # # Ruta para crear un usuario (registro)
-POST http://localhost:3000/api/auth/register
-Content-Type: application/json
-{
-    "nombre": "Weimar",
-    "apellido": "Tamayo",
-    "documento": "0000000000",
-    "email": "weimart24@gmail.com",
-    "telefono": "123456789",
-    "contrasena": "1234"
-}
+# POST http://localhost:3000/api/auth/register
+# Content-Type: application/json
+
+# {
+#     "nombre": "Paula Ximena",
+#     "apellido": "Ravagli",
+#     "documento": "1",
+#     "telefono": "3182705836",
+#     "email": "pxravagli@sena.edu.co",
+#     "contrasena": "administrador1234"
+# }
 
 # Ruta para iniciar sesión
 # POST http://localhost:3000/api/auth/login
@@ -40,3 +41,24 @@ Content-Type: application/json
 # # Ruta para cerrar sesión (protegida)
 # POST http://localhost:3000/api/auth/logout
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
+
+#Ruta para obtener los servicios
+# GET http://localhost:3000/api/servicios
+
+# Registrar un servicio a través de la API
+POST http://localhost:3000/api/servicios
+Content-Type: application/json
+
+{
+    "nombre": "Servicio de Prueba",
+    "encargadoId": 1
+}
+
+#Ruta para asignar permisos de integrante del área a un usuario
+# POST http://localhost:3000/api/integrantes
+# Content-Type: application/json
+
+# {
+#     "usuarioId": 11,
+#     "area": "Arte y Cultura"
+# }
