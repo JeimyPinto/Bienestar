@@ -2,7 +2,7 @@ const db = require('../models');
 const Usuario = db.Usuario;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const usuarioSchema = require('../schemas/usuario');
+const usuarioCreateSchema = require('../schemas/usuario');
 
 class AuthController {
   /**
@@ -16,7 +16,7 @@ class AuthController {
   async register(req, res) {
     let parsedData;
     try {
-      parsedData = await usuarioSchema.parseAsync(req.body);
+      parsedData = await usuarioCreateSchema.parseAsync(req.body);
     } catch (validationError) {
       console.error("Error de validación:", validationError);
       return res.status(400).json({ message: "Error de validación", errors: validationError.errors });
@@ -40,7 +40,7 @@ class AuthController {
         contrasena,
       });
 
-      res.json({ message: "Usuario registrado correctamente" });
+      res.json({ message: "Usuario registrado correctamente", usuario: nuevoUsuario });
     } catch (error) {
       console.error("Error durante el registro:", error);
       if (error.name === "SequelizeValidationError") {
@@ -74,7 +74,7 @@ class AuthController {
 
       const isPasswordValid = bcrypt.compareSync(contrasena, usuario.contrasena);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
+        return res.status(401).json({ message: 'Usuario o contraseña incorrectos (p)' });
       }
 
       const token = jwt.sign({ id: usuario.id }, secret, { expiresIn: '1h' });

@@ -6,17 +6,48 @@
 
 # Ruta para obtener todos los usuarios (protegida)
 # GET http://localhost:3000/api/usuarios
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTczMjI4OTUzMywiZXhwIjoxNzMyMjkzMTMzfQ.cXzxFD_uswSoi4zZ4xrZcF6H_Rj8FU1rWsQNSHcm5Jk
 
-# # Ruta para obtener un usuario por su id (protegida)
+# Ruta para obtener un usuario por su id (protegida)
 # GET http://localhost:3000/api/usuarios/1
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTczMjI4OTUzMywiZXhwIjoxNzMyMjkzMTMzfQ.cXzxFD_uswSoi4zZ4xrZcF6H_Rj8FU1rWsQNSHcm5Jk
+
+# Ruta para crear un usuario
+# POST http://localhost:3000/api/usuarios
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTczMjI4OTUzMywiZXhwIjoxNzMyMjkzMTMzfQ.cXzxFD_uswSoi4zZ4xrZcF6H_Rj8FU1rWsQNSHcm5Jk
+
+# {
+#     "nombre": "Nataly",
+#     "apellido": "Pinilla Henao",
+#     "documento": "2",
+#     "telefono": "3148594105",
+#     "email": "npinillah@sena.edu.co",
+#     "contrasena": "usuario1234"
+# }
+
+# Actualizar un usuario
+# PUT http://localhost:3000/api/usuarios/2
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTczMjI4OTUzMywiZXhwIjoxNzMyMjkzMTMzfQ.cXzxFD_uswSoi4zZ4xrZcF6H_Rj8FU1rWsQNSHcm5Jk
+
+# {
+#     "nombre": "William",
+#     "apellido": "Grisales",
+#     "telefono": "3058122481",
+#     "email": "wgrisales@sena.edu.co",
+#     "contrasena": "administrador1234"
+# }
+
+# Ruta para eliminar un usuario
+# DELETE http://localhost:3000/api/usuarios/3
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTczMjI4OTUzMywiZXhwIjoxNzMyMjkzMTMzfQ.cXzxFD_uswSoi4zZ4xrZcF6H_Rj8FU1rWsQNSHcm5Jk
 
 # # Ruta para obtener un usuario por su documento (protegida)
 # GET http://localhost:3000/api/usuarios/documento/1053872476
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqZWlteXRhdGlhYW5hcGludG9AZ21haWwuY29tIn0.UTLeP0gYWqsvwrHva3QXdCr0xtxzKesw_NSmFcPhXug
 
-# # Ruta para crear un usuario (registro)
+# # Ruta para registrar un usuario (registro)
 # POST http://localhost:3000/api/auth/register
 # Content-Type: application/json
 
@@ -34,8 +65,8 @@
 # Content-Type: application/json
 
 # {
-#     "email": "willy@gmail.com",
-#     "contrasena": "1234"
+#     "email": "administrador@gmail.com",
+#     "contrasena": "administrador1234"
 # }
 
 # # Ruta para cerrar sesión (protegida)
@@ -46,13 +77,13 @@
 # GET http://localhost:3000/api/servicios
 
 # Registrar un servicio a través de la API
-POST http://localhost:3000/api/servicios
-Content-Type: application/json
+# POST http://localhost:3000/api/servicios
+# Content-Type: application/json
 
-{
-    "nombre": "Servicio de Prueba",
-    "encargadoId": 1
-}
+# {
+#     "nombre": "Servicio de Prueba2",
+#     "encargadoId": 1
+# }
 
 #Ruta para asignar permisos de integrante del área a un usuario
 # POST http://localhost:3000/api/integrantes
