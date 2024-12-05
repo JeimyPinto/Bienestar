@@ -11,10 +11,10 @@ router.get("/", (req, res) => {
 });
 router.use("/usuarios", authenticateToken, usuarioRouter);
 router.use("/auth", authRouter);
-router.use('/integrantes', integranteRouter);
-router.use('/servicios', servicioRouter)
+router.use("/integrantes", integranteRouter);
+router.use("/servicios", servicioRouter);
 router.get('/dashboard', authenticateToken, (req, res) => {
-  res.status(200).send({ message: "Bienvenido al dashboard" });
+  res.status(200).send({ user: req.user });
 });
 
 module.exports = router;

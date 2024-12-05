@@ -1,20 +1,30 @@
 const jwt = require("jsonwebtoken");
 
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) return res.sendStatus(401);
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = {
+      id: decoded.id,
+      nombre: decoded.nombre,
+      apellido: decoded.apellido,
+      documento: decoded.documento,
+      telefono: decoded.telefono,
+      email: decoded.email,
+      estado: decoded.estado,
+    };
     next();
-  });
+  } catch (err) {
+    return res.sendStatus(403);
+  }
 };
 
 const authenticateUser = async (email, password) => {
   const secret = process.env.JWT_SECRET;
-  const user = await db.User.findOne({ where: { email, password } });
+  const user = await Usuario.findOne({ where: { email, password } });
 
   if (!user) {
     throw new Error("Usuario o contraseña incorrectos");
@@ -24,25 +34,8 @@ const authenticateUser = async (email, password) => {
     throw new Error("No se ha definido un secreto para el token");
   }
 
-  const passwordMatch = await bcrypt.compare(password, user.password);
-
-  if (!passwordMatch) {
-    throw new Error("Usuario o contraseña incorrectos");
-  }
-
-  //Genera un nuevo token
-  const token = jwt.sign(
-    {
-      id: user.id,
-      nombre: user.nombre,
-      apellido: user.apellido,
-      email: user.email,
-      iat: Math.floor(Date.now() / 1000),
-    },
-    secret,
-    { expiresIn: "1h" }
-  );
-  return token;
+  const token = jwt.sign({ id: user.id }, secret, { expiresIn: '1h' });
+  return { token, user };
 };
 
-module.exports = {authenticateToken, authenticateUser};
+module.exports = { authenticateToken, authenticateUser };

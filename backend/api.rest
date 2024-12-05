@@ -78,12 +78,12 @@
 
 # Registrar un servicio a través de la API
 # POST http://localhost:3000/api/servicios
-# Content-Type: application/json
+#  Content-Type: application/json
 
-# {
-#     "nombre": "Servicio de Prueba2",
-#     "encargadoId": 1
-# }
+#  {
+#      "nombre": "Apoyos de Sostenimiento",
+#      "encargadoId": 1
+#  }
 
 #Ruta para asignar permisos de integrante del área a un usuario
 # POST http://localhost:3000/api/integrantes
@@ -92,4 +92,13 @@
 # {
 #     "usuarioId": 11,
 #     "area": "Arte y Cultura"
+# }
+# ##Ruta para actualizar un servicio
+# PUT http://localhost:3000/api/servicios/1
+# Content-Type: application/json
+
+# {
+#     "nombre": "Servicio de Prueba Actualizado",
+#     "encargadoId": 1,
+#     "imagen": "imagen.jpg"
 # }

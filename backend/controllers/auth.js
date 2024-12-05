@@ -1,8 +1,8 @@
-const db = require('../models');
+const db = require("../models");
 const Usuario = db.Usuario;
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const usuarioCreateSchema = require('../schemas/usuario');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const usuarioCreateSchema = require("../schemas/usuario");
 
 class AuthController {
   /**
@@ -19,15 +19,23 @@ class AuthController {
       parsedData = await usuarioCreateSchema.parseAsync(req.body);
     } catch (validationError) {
       console.error("Error de validación:", validationError);
-      return res.status(400).json({ message: "Error de validación", errors: validationError.errors });
+      return res
+        .status(400)
+        .json({
+          message: "Error de validación",
+          errors: validationError.errors,
+        });
     }
 
-    const { nombre, apellido, documento, telefono, email, contrasena } = parsedData;
+    const { nombre, apellido, documento, telefono, email, contrasena } =
+      parsedData;
 
     try {
       const usuario = await Usuario.findOne({ where: { documento } });
       if (usuario) {
-        return res.status(400).json({ message: "Ya existe un usuario con ese documento" });
+        return res
+          .status(400)
+          .json({ message: "Ya existe un usuario con ese documento" });
       }
 
       // No se hashea la contraseña porque el modelo ya lo hace
@@ -40,15 +48,27 @@ class AuthController {
         contrasena,
       });
 
-      res.json({ message: "Usuario registrado correctamente", usuario: nuevoUsuario });
+      res.json({
+        message: "Usuario registrado correctamente",
+        usuario: nuevoUsuario,
+      });
     } catch (error) {
       console.error("Error durante el registro:", error);
       if (error.name === "SequelizeValidationError") {
-        res.status(400).json({ message: "Error de validación", errors: error.errors });
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
       } else if (error.name === "SequelizeDatabaseError") {
-        res.status(500).json({ message: "Error de base de datos", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res.status(500).json({ message: "Error al registrar el usuario", error: error.message });
+        res
+          .status(500)
+          .json({
+            message: "Error al registrar el usuario",
+            error: error.message,
+          });
       }
     }
   }
@@ -69,20 +89,43 @@ class AuthController {
     try {
       const usuario = await Usuario.findOne({ where: { email } });
       if (!usuario) {
-        return res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
+        return res
+          .status(401)
+          .json({ message: "Usuario o contraseña incorrectos" });
       }
 
-      const isPasswordValid = bcrypt.compareSync(contrasena, usuario.contrasena);
+      const isPasswordValid = bcrypt.compareSync(
+        contrasena,
+        usuario.contrasena
+      );
       if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Usuario o contraseña incorrectos (p)' });
+        return res
+          .status(401)
+          .json({ message: "Usuario o contraseña incorrectos (p)" });
       }
 
-      const token = jwt.sign({ id: usuario.id }, secret, { expiresIn: '1h' });
-      res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-      res.json({ message: 'Login exitoso', token });
+      const token = jwt.sign(
+        {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          apellido: usuario.apellido,
+          documento: usuario.documento,
+          telefono: usuario.telefono,
+          email: usuario.email,
+          estado: usuario.estado,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      });
+      res.json({ message: "Login exitoso", token });
     } catch (error) {
       console.error("Error durante el login:", error);
-      res.status(500).json({ message: 'Error durante el login', error });
+      res.status(500).json({ message: "Error durante el login", error });
     }
   }
 
@@ -97,10 +140,12 @@ class AuthController {
   logout(req, res) {
     const authHeader = req.headers["authorization"];
     if (authHeader) {
-      res.clearCookie('token');
-      res.json({ message: 'Logout exitoso' });
+      res.clearCookie("token");
+      res.json({ message: "Logout exitoso" });
     } else {
-      res.status(401).send({ status: 401, message: "No autorizado, se requiere el header" });
+      res
+        .status(401)
+        .send({ status: 401, message: "No autorizado, se requiere el header" });
     }
   }
 
@@ -116,11 +161,16 @@ class AuthController {
       const payload = jwt.verify(token, secret);
       const user = await Usuario.findByPk(payload.id);
       if (user) {
-        await Usuario.update({ emailVerified: true }, { where: { id: user.id } });
+        await Usuario.update(
+          { emailVerified: true },
+          { where: { id: user.id } }
+        );
         res.status(200).send({ status: 200, data: user });
       }
     } catch (error) {
-      res.status(error.status || 500).send({ status: "Ocurrió un fallo", data: error.message });
+      res
+        .status(error.status || 500)
+        .send({ status: "Ocurrió un fallo", data: error.message });
     }
   }
 }

@@ -41,7 +41,7 @@ export default function Header() {
   };
 
   return (
-    <header className="flex justify-between items-center px-6 bg-azul w-full h-30 text-xl text-white">
+    <header className="flex flex-col md:flex-row justify-between items-center px-6 bg-azul w-full h-30 text-xl text-white">
       <Link href="/">
         <Image
           src="/images/Icono.png"
