@@ -1,45 +1,63 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    token ? setIsAuthenticated(true) : setIsAuthenticated(false);
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    if (token) {
+      try {
+        const decoded = jwt_decode(token);
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp < currentTime) {
+          localStorage.removeItem("token");
+          setIsLoggedIn(false);
+        } else {
+          setIsLoggedIn(true);
         }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Fallo al cerrar sesión");
+      } catch (error) {
+        console.error("Error al decodificar el token:", error);
+        localStorage.removeItem("token");
+        setIsLoggedIn(false);
       }
-
-      localStorage.removeItem("token");
-      setIsAuthenticated(false);
-      router.push("/login");
-    } catch (error) {
-      console.error("Error durante el logout:", error);
+    } else {
+      setIsLoggedIn(false);
     }
-  };
+  }, [token]);
 
+  function handleLogout() {
+    try {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error al cerrar sesión");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Logout exitoso:", data);
+          // Destruir el token y realizar otras limpiezas
+          localStorage.removeItem("token");
+          window.location.href = "/";
+        })
+        .catch((error) => {
+          console.error("Error al intentar desloguearse:", error);
+        });
+    } catch (error) {
+      console.error("Error en la función handleLogout:", error);
+    }
+  }
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 bg-azul w-full h-30 text-xl text-white">
       <Link href="/">
@@ -51,27 +69,34 @@ export default function Header() {
           className="p-3"
         />
       </Link>
-      <nav className="flex justify-center items-center">
+      <nav className="flex justify-center justify-center items-center">
         <ul className="flex gap-5 p-2">
           <li className="text-foreground">Integrantes</li>
           <li className="text-foreground px-2">
             <Link href="/servicios">Servicios</Link>
           </li>
         </ul>
-        {isAuthenticated ? (
-          <button
-            onClick={handleLogout}
-            className="bg-white text-azul px-4 py-2 rounded-md hover:bg-cian 
-            hover:border-2 hover:border-white hover:shadow-md hover:shadow-white"
-          >
-            Cerrar sesión
-          </button>
+        {isLoggedIn ? (
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Link href="/dashboard" className="flex items-center ">
+              <Image
+                src="/images/ico-profile.svg"
+                alt="Icon Profile"
+                width={42}
+                height={42}
+              />
+              <span> Dashboard</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="bg-white text-azul px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         ) : (
           <Link href="/login">
-            <button
-              className="bg-white text-azul px-4 py-2 rounded-md hover:bg-cian 
-              hover:border-2 hover:border-white hover:shadow-md hover:shadow-white"
-            >
+            <button className="bg-white text-azul px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white">
               Ingresar
             </button>
           </Link>

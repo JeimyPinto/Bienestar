@@ -2,7 +2,6 @@ const db = require("../models/index.js");
 const Usuario = db.Usuario;
 const { ValidationError, DatabaseError } = require("sequelize");
 const {usuarioCreateSchema, usuarioUpdateSchema} = require("../schemas/usuario.js");
-const { z } = require("zod");
 const bcrypt = require("bcrypt");
 
 class UsuarioController {

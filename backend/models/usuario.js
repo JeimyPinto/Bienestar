@@ -5,12 +5,11 @@ const bcrypt = require("bcrypt");
 module.exports = (sequelize, DataTypes) => {
   class Usuario extends Model {
     /**
-     * Helper method for defining associations.
      *
      * @param {object} models - An object containing all the models defined in the application.
      */
     static associate(models) {
-      // Define associations here
+      Usuario.hasMany(models.Remision, { foreignKey: "aprendizId" });
     }
 
     // Método para verificar la contraseña
@@ -59,11 +58,22 @@ module.exports = (sequelize, DataTypes) => {
       estado: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'activa',
+        defaultValue: "activa",
         validate: {
-          isIn: [['inactiva', 'activa', 'cerrada']]
+          isIn: [["inactiva", "activa", "cerrada"]],
         },
-        comment: "Estado del usuario"
+        comment: "Estado del usuario",
+      },
+      rol: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "usuario",
+        comment: "Rol del usuario",
+      },
+      imagen: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "Foto del usuario",
       },
     },
     {
@@ -78,12 +88,12 @@ module.exports = (sequelize, DataTypes) => {
           usuario.contrasena = await bcrypt.hash(usuario.contrasena, salt);
         },
         beforeUpdate: async (usuario) => {
-          if (usuario.changed('contrasena')) {
+          if (usuario.changed("contrasena")) {
             const salt = await bcrypt.genSalt(10);
             usuario.contrasena = await bcrypt.hash(usuario.contrasena, salt);
           }
-        }
-      }
+        },
+      },
     }
   );
 

@@ -22,20 +22,4 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-const authenticateUser = async (email, password) => {
-  const secret = process.env.JWT_SECRET;
-  const user = await Usuario.findOne({ where: { email, password } });
-
-  if (!user) {
-    throw new Error("Usuario o contraseña incorrectos");
-  }
-
-  if (!secret) {
-    throw new Error("No se ha definido un secreto para el token");
-  }
-
-  const token = jwt.sign({ id: user.id }, secret, { expiresIn: '1h' });
-  return { token, user };
-};
-
-module.exports = { authenticateToken, authenticateUser };
+module.exports = { authenticateToken };

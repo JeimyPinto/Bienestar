@@ -19,16 +19,21 @@ class AuthController {
       parsedData = await usuarioCreateSchema.parseAsync(req.body);
     } catch (validationError) {
       console.error("Error de validación:", validationError);
-      return res
-        .status(400)
-        .json({
-          message: "Error de validación",
-          errors: validationError.errors,
-        });
+      return res.status(400).json({
+        message: "Error de validación",
+        errors: validationError.errors,
+      });
     }
 
-    const { nombre, apellido, documento, telefono, email, contrasena } =
-      parsedData;
+    const {
+      nombre,
+      apellido,
+      documento,
+      telefono,
+      email,
+      contrasena,
+      imagen,
+    } = parsedData;
 
     try {
       const usuario = await Usuario.findOne({ where: { documento } });
@@ -46,6 +51,7 @@ class AuthController {
         telefono,
         email,
         contrasena,
+        imagen,
       });
 
       res.json({
@@ -63,12 +69,10 @@ class AuthController {
           .status(500)
           .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res
-          .status(500)
-          .json({
-            message: "Error al registrar el usuario",
-            error: error.message,
-          });
+        res.status(500).json({
+          message: "Error al registrar el usuario",
+          error: error.message,
+        });
       }
     }
   }
@@ -91,7 +95,7 @@ class AuthController {
       if (!usuario) {
         return res
           .status(401)
-          .json({ message: "Usuario o contraseña incorrectos" });
+          .json({ message: "Usuario o contraseña incorrectos (u)" });
       }
 
       const isPasswordValid = bcrypt.compareSync(
