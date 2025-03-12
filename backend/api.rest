@@ -1,7 +1,7 @@
 # Ruta de la API
-#GET http://localhost:3000/api
+GET http://localhost:3000/api
 
-# Ruta para rutas que no existen
+#Ruta para rutas que no existen
 # GET http://localhost:3000/api/* 
 
 # Ruta para obtener todos los usuarios (protegida)
@@ -93,7 +93,7 @@
 #     "usuarioId": 11,
 #     "area": "Arte y Cultura"
 # }
-# ##Ruta para actualizar un servicio
+#Ruta para actualizar un servicio
 # PUT http://localhost:3000/api/servicios/1
 # Content-Type: application/json
 

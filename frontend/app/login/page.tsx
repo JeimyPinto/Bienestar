@@ -37,7 +37,25 @@ const LoginPage = () => {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      router.push("/dashboard");
+      // Hacer una solicitud al endpoint /dashboard para obtener los datos del usuario
+      const dashboardResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/dashboard`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+          },
+        }
+      );
+
+      if (!dashboardResponse.ok) {
+        throw new Error(
+          "Algo ha fallado mientras se redireccionaba al dashboard"
+        );
+      }
+
+      const dashboardData = await dashboardResponse.json();
+      router.push(`/dashboard`);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -65,8 +83,10 @@ const LoginPage = () => {
         <div className="py-5">
           <p>
             Ten en cuenta que no podrás ingresar si no has sido{" "}
-            <u className="decoration-wavy decoration-cian">previamente registrado</u>
-            {" "} por el Área de bienestar al aprendiz.
+            <u className="decoration-wavy decoration-cian">
+              previamente registrado
+            </u>{" "}
+            por el Área de bienestar al aprendiz.
           </p>
         </div>
         <form

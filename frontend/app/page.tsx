@@ -34,7 +34,7 @@ export default function Page() {
             width={500}
             height={500}
             className="shadow-lg shadow-black"
-            priority={true}
+            priority={false}
           />
           <div className="flex items-center text-2xl px-2">
             <Image
@@ -42,7 +42,7 @@ export default function Page() {
               alt="Icon cellphone"
               width={100}
               height={100}
-              priority= {false}
+              priority={false}
             />
             <strong>
               Contacta de manera directa a los profesionales de bienestar al
@@ -59,9 +59,9 @@ export default function Page() {
             </strong>
           </div>
         </div>
-        <ServiciosGallery/>
+        <ServiciosGallery />
       </main>
-      <Footer/>
+      <Footer />
     </>
   );
 }

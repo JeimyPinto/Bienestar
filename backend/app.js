@@ -10,9 +10,9 @@ const PORT = process.env.PORT || 4000;
 
 const app = express();
 
-//Validamos que no estemos en ambiente de production
+// Validamos que no estemos en ambiente de production
 if (process.env.NODE_ENV != "development") {
-  //Se carga la configuración archivo .env al process.env
+  // Se carga la configuración archivo .env al process.env
   require("dotenv").config();
 }
 app.use((req, res, next) => {
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
  */
 const allowedOrigins = [
   "http://localhost:3001",
-  "https://frontendshinydesk.vercel.app",
+  "https://frontendshinydesk.vercel.app", /*cambiar*/
 ];
 app.use(
   cors({
@@ -68,11 +68,16 @@ app.use((req, res) => {
   res.status(404).send({ message: "Ruta no encontrada" });
 });
 
-//Conectamos a la base de datos
-if (connectDB) {
-  app.listen(PORT, () => {
-    console.log(`Servidor corriendo en: http://localhost:${PORT}`);
+// Intentamos conectar a la base de datos
+connectDB()
+  .catch((error) => {
+    console.error("Error al conectar a la base de datos:", error.message);
+  })
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en: http://localhost:${PORT}`);
+    });
   });
-}
+
 
 module.exports = app;

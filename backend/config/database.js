@@ -13,10 +13,14 @@ const sequelize = new Sequelize(
 );
 
 function connectDB() {
-  sequelize
-    .authenticate()    
+  return sequelize.authenticate()
+    .then(() => {
+      console.log('Conexión a la base de datos exitosa');
+      return sequelize; // Devolver la instancia de Sequelize
+    })
     .catch((error) => {
       console.error('No se pudo conectar con la base de datos:', error);
+      throw error; // Lanzar el error para que pueda ser capturado en app.js
     });
 }
 

@@ -1,7 +1,10 @@
 const db = require("../models/index.js");
 const Usuario = db.Usuario;
 const { ValidationError, DatabaseError } = require("sequelize");
-const {usuarioCreateSchema, usuarioUpdateSchema} = require("../schemas/usuario.js");
+const {
+  usuarioCreateSchema,
+  usuarioUpdateSchema,
+} = require("../schemas/usuario.js");
 const bcrypt = require("bcrypt");
 
 class UsuarioController {
@@ -27,12 +30,10 @@ class UsuarioController {
           .status(500)
           .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res
-          .status(500)
-          .json({
-            message: "Error al obtener los usuarios",
-            error: error.message,
-          });
+        res.status(500).json({
+          message: "Error al obtener los usuarios",
+          error: error.message,
+        });
       }
     }
   }
@@ -61,12 +62,10 @@ class UsuarioController {
           .status(500)
           .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res
-          .status(500)
-          .json({
-            message: "Error al obtener el usuario",
-            error: error.message,
-          });
+        res.status(500).json({
+          message: "Error al obtener el usuario",
+          error: error.message,
+        });
       }
     }
   }
@@ -103,7 +102,12 @@ class UsuarioController {
       parsedData = await usuarioCreateSchema.parseAsync(req.body);
     } catch (validationError) {
       console.error("Error de validación:", validationError);
-      return res.status(400).json({ message: "Error de validación", errors: validationError.errors });
+      return res
+        .status(400)
+        .json({
+          message: "Error de validación",
+          errors: validationError.errors,
+        });
     }
     try {
       const existingUser = await Usuario.findOne({
@@ -111,7 +115,12 @@ class UsuarioController {
       });
       if (existingUser) {
         if (existingUser.estado === "inactiva") {
-          return res.status(400).json({ message: "El usuario ya existe. La cuenta del usuario está inactiva" });
+          return res
+            .status(400)
+            .json({
+              message:
+                "El usuario ya existe. La cuenta del usuario está inactiva",
+            });
         } else {
           return res.status(400).json({ message: "El usuario ya existe" });
         }
@@ -124,15 +133,27 @@ class UsuarioController {
         contrasena: contrasenaEncriptada,
       });
 
-      const { contrasena: contrasenaUsuario, ...usuarioDatos } = usuario.toJSON();
-      res.status(201).json({ message: "Usuario creado correctamente", usuario: usuarioDatos });
+      const { contrasena: contrasenaUsuario, ...usuarioDatos } =
+        usuario.toJSON();
+      res
+        .status(201)
+        .json({
+          message: "Usuario creado correctamente",
+          usuario: usuarioDatos,
+        });
     } catch (error) {
       if (error instanceof ValidationError) {
-        res.status(400).json({ message: "Error de validación", errors: error.errors });
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
       } else if (error instanceof DatabaseError) {
-        res.status(500).json({ message: "Error de base de datos", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res.status(500).json({ message: "Error al crear el usuario", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Error al crear el usuario", error: error.message });
       }
     }
   }
@@ -157,12 +178,20 @@ class UsuarioController {
         parsedData = await usuarioUpdateSchema.parseAsync(req.body);
       } catch (validationError) {
         console.error("Error de validación:", validationError);
-        return res.status(400).json({ message: "Error de validación", errors: validationError.errors });
+        return res
+          .status(400)
+          .json({
+            message: "Error de validación",
+            errors: validationError.errors,
+          });
       }
 
       const { nombre, apellido, telefono, email, contrasena } = parsedData;
-      const contrasenaEncriptada = await bcrypt.hash(contrasena, 10);
-      //No es posible actualizar el documento
+      let contrasenaEncriptada = userFound.contrasena;
+      if (contrasena) {
+        contrasenaEncriptada = await bcrypt.hash(contrasena, 10);
+      }
+       //No es posible actualizar el documento
       const usuario = await userFound.update({
         nombre,
         apellido,
@@ -171,16 +200,30 @@ class UsuarioController {
         contrasena: contrasenaEncriptada,
       });
       //No se retorna la contraseña
-      const { contrasena: contrasenaUsuario, ...usuarioDatos } = usuario.toJSON();
-      res.status(200).json({ message: "Usuario actualizado correctamente", usuario: usuarioDatos });
-
+      const { contrasena: contrasenaUsuario, ...usuarioDatos } =
+        usuario.toJSON();
+      res
+        .status(200)
+        .json({
+          message: "Usuario actualizado correctamente",
+          usuario: usuarioDatos,
+        });
     } catch (error) {
       if (error instanceof ValidationError) {
-        res.status(400).json({ message: "Error de validación", errors: error.errors });
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
       } else if (error instanceof DatabaseError) {
-        res.status(500).json({ message: "Error de base de datos", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res.status(500).json({ message: "Error al actualizar el usuario", error: error.message });
+        res
+          .status(500)
+          .json({
+            message: "Error al actualizar el usuario",
+            error: error.message,
+          });
       }
     }
   }
@@ -202,9 +245,16 @@ class UsuarioController {
       res.status(204).json();
     } catch (error) {
       if (error instanceof DatabaseError) {
-        res.status(500).json({ message: "Error de base de datos", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res.status(500).json({ message: "Error al eliminar el usuario", error: error.message });
+        res
+          .status(500)
+          .json({
+            message: "Error al eliminar el usuario",
+            error: error.message,
+          });
       }
     }
   }

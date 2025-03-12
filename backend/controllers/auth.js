@@ -1,76 +1,102 @@
 const db = require("../models");
-const Usuario = db.Usuario;
+const User = db.User;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const usuarioCreateSchema = require("../schemas/usuario");
+const {
+  adminCreateUserSchema,
+  userUpdateSelfSchema,
+  adminUpdateUserSchema,
+  loginSchema,
+} = require("../schemas/user");
 
 class AuthController {
   /**
-   * Registra un usuario en la aplicación.
-   * @param {*} req el correo y la contraseña del usuario
-   * @param {*} res si el usuario se registró correctamente, retorna un mensaje de éxito
+   * Registra un nuevo usuario en el sistema.
+   *
+   * @async
+   * @function register
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} req.body - Cuerpo de la solicitud que contiene los datos del usuario.
+   * @param {Object} res - Objeto de respuesta de Express.
    * @returns Un mensaje de éxito o un mensaje de error
-   * @version 15/11/2024
+   * @version 11/03/2025
    * @autor Jeimy Pinto
+   * @returns {Promise<void>} - Responde con un mensaje de éxito o error.
+   * @throws {ValidationError} - Si los datos de entrada no cumplen con el esquema de validación.
+   * @throws {SequelizeValidationError} - Si hay un error de validación de Sequelize.
+   * @throws {SequelizeDatabaseError} - Si hay un error de base de datos de Sequelize.
+   * @throws {Error} - Si ocurre cualquier otro error durante el registro.
    */
   async register(req, res) {
     let parsedData;
     try {
-      parsedData = await usuarioCreateSchema.parseAsync(req.body);
+      parsedData = await adminCreateUserSchema.parseAsync(req.body);
     } catch (validationError) {
-      console.error("Error de validación:", validationError);
+      console.error("Validation error:", validationError);
       return res.status(400).json({
-        message: "Error de validación",
+        message: "Validation error",
         errors: validationError.errors,
       });
     }
 
     const {
-      nombre,
-      apellido,
-      documento,
-      telefono,
+      firstName,
+      lastName,
+      documentType,
+      documentNumber,
+      phone,
       email,
-      contrasena,
-      imagen,
+      password,
+      image,
+      role,
     } = parsedData;
 
     try {
-      const usuario = await Usuario.findOne({ where: { documento } });
-      if (usuario) {
-        return res
-          .status(400)
-          .json({ message: "Ya existe un usuario con ese documento" });
+      const user = await User.findOne({ where: { documentNumber } });
+      if (user) {
+        return res.status(400).json({
+          message:
+            "A user with that document already exists / Un usuario con ese documento ya existe",
+        });
       }
-
-      // No se hashea la contraseña porque el modelo ya lo hace
-      const nuevoUsuario = await Usuario.create({
-        nombre,
-        apellido,
-        documento,
-        telefono,
+      // Encriptar la contraseña
+      const hashedPassword = await bcrypt.hash(password, 10);
+      // La contraseña no se cifra porque el modelo ya lo hace
+      const newUser = await User.create({
+        firstName,
+        lastName,
+        documentType,
+        documentNumber,
+        phone,
         email,
-        contrasena,
-        imagen,
+        password: hashedPassword,
+        image,
+        role,
       });
 
       res.json({
-        message: "Usuario registrado correctamente",
-        usuario: nuevoUsuario,
+        message:
+          "User registered successfully / Usuario registrado exitosamente",
+        user: newUser,
       });
     } catch (error) {
-      console.error("Error durante el registro:", error);
+      console.error(
+        "Error during registration / Error durante el registro:",
+        error
+      );
       if (error.name === "SequelizeValidationError") {
-        res
-          .status(400)
-          .json({ message: "Error de validación", errors: error.errors });
+        res.status(400).json({
+          message: "Validation error / Error de validación",
+          errors: error.errors,
+        });
       } else if (error.name === "SequelizeDatabaseError") {
-        res
-          .status(500)
-          .json({ message: "Error de base de datos", error: error.message });
+        res.status(500).json({
+          message: "Database error / Error de base de datos",
+          error: error.message,
+        });
       } else {
         res.status(500).json({
-          message: "Error al registrar el usuario",
+          message: "Error registering the user / Error registrando el usuario",
           error: error.message,
         });
       }
@@ -78,103 +104,134 @@ class AuthController {
   }
 
   /**
-   * Inicia sesión en la aplicación.
-   * Recibe los datos del usuario, valida los datos según el esquema,
-   * @param {*} req el correo y la contraseña del usuario
-   * @param {*} res si el usuario y la contraseña son correctos, retorna un token
+   * Maneja el inicio de sesión del usuario validando el cuerpo de la solicitud, verificando las credenciales del usuario,
+   * y generando un token JWT si las credenciales son válidas.
+   * @async
+   * @function login
+   * @param {*} req el correo electrónico y la contraseña del usuario
+   * @param {*} res si el correo electrónico y la contraseña son correctos, devuelve un token
    * @returns El token de autenticación o un mensaje de error
-   * @version 15/11/2024
+   * @version 11/03/2025
    * @autor Jeimy Pinto
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} req.body - El cuerpo de la solicitud que contiene los datos de inicio de sesión del usuario.
+   * @param {string} req.body.email - El correo electrónico del usuario que intenta iniciar sesión.
+   * @param {string} req.body.password - La contraseña del usuario que intenta iniciar sesión.
+   * @param {Object} res - Objeto de respuesta de Express.
+   * @returns {Promise<void>} Envía una respuesta JSON con un token JWT si el inicio de sesión es exitoso,
+   * o un mensaje de error si el inicio de sesión falla.
+   *
+   * @throws {ValidationError} Si la validación del cuerpo de la solicitud falla.
+   * @throws {Error} Si hay un error durante el proceso de inicio de sesión.
    */
   async login(req, res) {
-    const { email, contrasena } = req.body;
+    let parsedData;
+    try {
+      parsedData = await loginSchema.parseAsync(req.body);
+    } catch (validationError) {
+      console.error("Validation error / Error de validación:", validationError);
+      return res.status(400).json({
+        message: "Validation error / Error de validación",
+        errors: validationError.errors,
+      });
+    }
+
+    const { email, password } = parsedData;
     const secret = process.env.JWT_SECRET;
 
     try {
-      const usuario = await Usuario.findOne({ where: { email } });
-      if (!usuario) {
-        return res
-          .status(401)
-          .json({ message: "Usuario o contraseña incorrectos (u)" });
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(401).json({
+          message:
+            "Incorrect email or password / Correo electrónico o contraseña incorrectos (e)",
+        });
       }
 
-      const isPasswordValid = bcrypt.compareSync(
-        contrasena,
-        usuario.contrasena
-      );
+      const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        return res
-          .status(401)
-          .json({ message: "Usuario o contraseña incorrectos (p)" });
+        return res.status(401).json({
+          message:
+            "Incorrect email or password / Correo electrónico o contraseña incorrectos (p)",
+        });
       }
 
       const token = jwt.sign(
         {
-          id: usuario.id,
-          nombre: usuario.nombre,
-          apellido: usuario.apellido,
-          documento: usuario.documento,
-          telefono: usuario.telefono,
-          email: usuario.email,
-          estado: usuario.estado,
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          documentType: user.documentType,
+          documentNumber: user.documentNumber,
+          phone: user.phone,
+          email: user.email,
+          status: user.status,
+          role: user.role,
+          image: user.image,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         },
-        process.env.JWT_SECRET,
+        secret,
         { expiresIn: "1h" }
       );
 
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+      res.json({
+        message: "Login successful / Inicio de sesión exitoso",
+        token,
       });
-      res.json({ message: "Login exitoso", token });
     } catch (error) {
-      console.error("Error durante el login:", error);
-      res.status(500).json({ message: "Error durante el login", error });
+      console.error(
+        "Error during login / Error durante el inicio de sesión:",
+        error
+      );
+      res.status(500).json({
+        message: "Error during login / Error durante el inicio de sesión",
+        error,
+      });
     }
   }
 
   /**
-   * Se encarga de cerrar la sesión de un usuario.
-   * Recibe la cabecera de autorización, si el token es válido, lo agrega a la lista
-   * de tokens no válidos.
+   * Cierra la sesión de un usuario.
+   * Recibe el encabezado de autorización, si el token es válido, lo agrega a la lista
+   * de tokens inválidos.
+   * @async
+   * @function logout
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} req.headers - Encabezados de la solicitud.
+   * @param {string} req.headers.authorization - Encabezado de autorización que contiene el token JWT.
+   * @param {Object} res - Objeto de respuesta de Express.
+   * @returns {Promise<void>} Envía una respuesta JSON con un mensaje de éxito si el cierre de sesión es exitoso,
+   * o un mensaje de error si el cierre de sesión falla.
    * @version 15/11/2024
-   * @param {*} req La cabecera de autorización
-   * @param {*} res Si el token es válido, retorna un mensaje de éxito
+   * @autor Jeimy Pinto
    */
-  logout(req, res) {
+  async logout(req, res) {
     const authHeader = req.headers["authorization"];
-    if (authHeader) {
-      res.clearCookie("token");
-      res.json({ message: "Logout exitoso" });
-    } else {
-      res
-        .status(401)
-        .send({ status: 401, message: "No autorizado, se requiere el header" });
+    if (!authHeader) {
+      return res.status(401).json({
+        message:
+          "Unauthorized, header required / No autorizado, encabezado requerido",
+      });
     }
-  }
 
-  /**
-   * Verifica el correo electrónico del usuario.
-   * @param {*} req El token de verificación
-   * @param {*} res Si el token es válido, retorna un mensaje de éxito
-   */
-  async verifyEmail(req, res) {
-    const { token } = req.body;
+    const token = authHeader.split(" ")[1];
     const secret = process.env.JWT_SECRET;
+
     try {
-      const payload = jwt.verify(token, secret);
-      const user = await Usuario.findByPk(payload.id);
-      if (user) {
-        await Usuario.update(
-          { emailVerified: true },
-          { where: { id: user.id } }
-        );
-        res.status(200).send({ status: 200, data: user });
-      }
+      const decoded = jwt.verify(token, secret);
+      // Aquí puedes agregar el token a una lista de tokens inválidos si estás manejando una lista de revocación
+      res.clearCookie("token");
+      res.json({ message: "Logout successful / Cierre de sesión exitoso" });
     } catch (error) {
-      res
-        .status(error.status || 500)
-        .send({ status: "Ocurrió un fallo", data: error.message });
+      console.error(
+        "Error during logout / Error durante el cierre de sesión:",
+        error
+      );
+      res.status(500).json({
+        message: "Error during logout / Error durante el cierre de sesión",
+        error: error.message,
+      });
     }
   }
 }

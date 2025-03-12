@@ -3,21 +3,31 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<JwtPayload | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("token");
+      setToken(token);
+    }
+  }, []);
 
   useEffect(() => {
     if (token) {
       try {
-        const decoded = jwt_decode(token);
+        const decoded: JwtPayload = jwtDecode(token);
         const currentTime = Date.now() / 1000;
-        if (decoded.exp < currentTime) {
+        if (decoded.exp && decoded.exp < currentTime) {
           localStorage.removeItem("token");
           setIsLoggedIn(false);
         } else {
           setIsLoggedIn(true);
+          setUser(decoded);
         }
       } catch (error) {
         console.error("Error al decodificar el token:", error);
@@ -58,6 +68,7 @@ export default function Header() {
       console.error("Error en la función handleLogout:", error);
     }
   }
+
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 bg-azul w-full h-30 text-xl text-white">
       <Link href="/">
@@ -67,6 +78,7 @@ export default function Header() {
           width={300}
           height={20}
           className="p-3"
+          priority={false}
         />
       </Link>
       <nav className="flex justify-center justify-center items-center">
@@ -78,14 +90,15 @@ export default function Header() {
         </ul>
         {isLoggedIn ? (
           <div className="flex flex-col items-center justify-center gap-2">
-            <Link href="/dashboard" className="flex items-center ">
+            <Link href="/profile" className="flex items-center ">
               <Image
                 src="/images/ico-profile.svg"
                 alt="Icon Profile"
                 width={42}
                 height={42}
+                priority
               />
-              <span> Dashboard</span>
+              <span> Mi Perfil </span>
             </Link>
             <button
               onClick={handleLogout}

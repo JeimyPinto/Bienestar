@@ -9,12 +9,15 @@ const authenticateToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = {
       id: decoded.id,
-      nombre: decoded.nombre,
-      apellido: decoded.apellido,
-      documento: decoded.documento,
-      telefono: decoded.telefono,
+      firstName: decoded.firstName,
+      lastName: decoded.lastName,
+      documentType: decoded.documentType,
+      documentNumber: decoded.documentNumber,
+      phone: decoded.phone,
       email: decoded.email,
-      estado: decoded.estado,
+      status: decoded.status,
+      role: decoded.role,
+      image: decoded.image,
     };
     next();
   } catch (err) {
