@@ -45,4 +45,9 @@ const loginSchema = z.object({
   password: z.string().nonempty("Password is required / La contraseña es obligatoria"),
 });
 
-module.exports = { adminCreateUserSchema, userUpdateSelfSchema, adminUpdateUserSchema, loginSchema };
+//Esquema para la validación del documento
+const documentSchema = z.object({
+  documentNumber: z.string().nonempty("Document number is required / El número de documento es obligatorio"),
+});
+
+module.exports = { adminCreateUserSchema, userUpdateSelfSchema, adminUpdateUserSchema, loginSchema, documentSchema };

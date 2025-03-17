@@ -1,5 +1,5 @@
 # Ruta de la API
-GET http://localhost:3000/api
+#GET http://localhost:3000/api
 
 #Ruta para rutas que no existen
 # GET http://localhost:3000/api/* 

@@ -1,34 +1,36 @@
 const db = require("../models/index.js");
-const Usuario = db.Usuario;
+const User = db.User;
 const { ValidationError, DatabaseError } = require("sequelize");
-const {
-  usuarioCreateSchema,
-  usuarioUpdateSchema,
-} = require("../schemas/usuario.js");
-const bcrypt = require("bcrypt");
+const { documentSchema } = require("../schemas/user.js");
 
 class UsuarioController {
   /**
    * Obtener todos los usuarios de la base de datos que estén activos
-   * @param {*} res Status 200: Retorna un json con todos los usuarios
+   * @param {*} req Objeto de solicitud HTTP
+   * @param {*} res Objeto de respuesta HTTP
+   * @returns {Promise<void>} Retorna una promesa que resuelve en una respuesta HTTP
    * @version 31/10/2024
    */
   async getAll(req, res) {
     try {
-      const usuarios = await Usuario.findAll({
-        where: { estado: "activa" },
-        attributes: { exclude: ["contrasena"] },
+      const users = await User.findAll({
+        where: { status: "activo" },
+        // Excluye el campo "password" de los resultados
+        attributes: { exclude: ["password"] },
       });
-      res.status(200).json(usuarios);
+      res.status(200).json(users);
     } catch (error) {
+      // Manejo de errores de validación
       if (error instanceof ValidationError) {
         res
           .status(400)
           .json({ message: "Error de validación", errors: error.errors });
+        // Manejo de errores de base de datos
       } else if (error instanceof DatabaseError) {
         res
           .status(500)
           .json({ message: "Error de base de datos", error: error.message });
+        // Manejo de otros errores
       } else {
         res.status(500).json({
           message: "Error al obtener los usuarios",
@@ -42,28 +44,37 @@ class UsuarioController {
    * Obtener un usuario por ID
    * @param {*} req.params.id ID del usuario a buscar
    * @param {*} res Status 200: Retorna un json con el usuario encontrado sin la contraseña
+   * @returns {Promise<void>} Retorna una promesa que resuelve en una respuesta HTTP
    * @version 31/10/2024
    */
   async getById(req, res) {
     try {
-      const usuario = await Usuario.findByPk(req.params.id);
-      if (!usuario) {
-        return res.status(404).json({ message: "Usuario no encontrado" });
+      const user = await User.findByPk(req.params.id);
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: "Usuario no encontrado / User not found" });
       }
-      const { contrasena, ...usuarioDatos } = usuario.toJSON();
-      res.status(200).json(usuarioDatos);
+      const { password, ...userInfo } = user.toJSON();
+      res.status(200).json(userInfo);
     } catch (error) {
       if (error instanceof ValidationError) {
         res
           .status(400)
-          .json({ message: "Error de validación", errors: error.errors });
+          .json({
+            message: "Error de validación / Validation error",
+            errors: error.errors,
+          });
       } else if (error instanceof DatabaseError) {
         res
           .status(500)
-          .json({ message: "Error de base de datos", error: error.message });
+          .json({
+            message: "Error de base de datos / Database error",
+            error: error.message,
+          });
       } else {
         res.status(500).json({
-          message: "Error al obtener el usuario",
+          message: "Error al obtener el usuario / Error retrieving user",
           error: error.message,
         });
       }
@@ -72,25 +83,42 @@ class UsuarioController {
 
   /**
    * Obtener un usuario por documento
-   * @param {*} req.params.documento Documento del usuario a buscar
+   * @param {*} req.params.documentNumber Número de documento del usuario a buscar
    * @param {*} res Status 200: Retorna un json con el usuario encontrado sin la contraseña
+   * @returns {Promise<void>} Retorna una promesa que resuelve en una respuesta HTTP
    * @version 31/10/2024
    */
-  async getByDocumento(req, res) {
+  async getByDocument(req, res) {
     try {
-      const usuario = await Usuario.findOne({
-        where: { documento: req.params.documento },
+      const { documentNumber } = await documentSchema.parseAsync(req.params);
+      const user = await User.findOne({
+        where: { documentNumber },
       });
-      if (!usuario) {
-        return res.status(404).json({ message: "Usuario no encontrado" });
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado / User not found" });
       }
-      const { contrasena, ...usuarioDatos } = usuario.toJSON();
-      res.status(200).json(usuarioDatos);
+      const { password, ...userInfo } = user.toJSON();
+      res.status(200).json(userInfo);
     } catch (error) {
-      res.status(500).json({ message: "Error al obtener el usuario", error });
+      if (error instanceof ValidationError) {
+        res.status(400).json({
+          message: "Error de validación / Validation error",
+          errors: error.errors,
+        });
+      } else if (error instanceof DatabaseError) {
+        res.status(500).json({
+          message: "Error de base de datos / Database error",
+          error: error.message,
+        });
+      } else {
+        res.status(500).json({
+          message: "Error al obtener el usuario / Error retrieving user",
+          error: error.message,
+        });
+      }
     }
   }
-  /**
+/**
    * Crear un usuario, valida los datos del usuario a crear y lo guarda en la base de datos
    * @param {*} req.body Datos del usuario a crear
    * @param {*} res Status 201: Retorna un json con el usuario creado sin la contraseña o
@@ -102,12 +130,10 @@ class UsuarioController {
       parsedData = await usuarioCreateSchema.parseAsync(req.body);
     } catch (validationError) {
       console.error("Error de validación:", validationError);
-      return res
-        .status(400)
-        .json({
-          message: "Error de validación",
-          errors: validationError.errors,
-        });
+      return res.status(400).json({
+        message: "Error de validación",
+        errors: validationError.errors,
+      });
     }
     try {
       const existingUser = await Usuario.findOne({
@@ -115,12 +141,10 @@ class UsuarioController {
       });
       if (existingUser) {
         if (existingUser.estado === "inactiva") {
-          return res
-            .status(400)
-            .json({
-              message:
-                "El usuario ya existe. La cuenta del usuario está inactiva",
-            });
+          return res.status(400).json({
+            message:
+              "El usuario ya existe. La cuenta del usuario está inactiva",
+          });
         } else {
           return res.status(400).json({ message: "El usuario ya existe" });
         }
@@ -135,12 +159,10 @@ class UsuarioController {
 
       const { contrasena: contrasenaUsuario, ...usuarioDatos } =
         usuario.toJSON();
-      res
-        .status(201)
-        .json({
-          message: "Usuario creado correctamente",
-          usuario: usuarioDatos,
-        });
+      res.status(201).json({
+        message: "Usuario creado correctamente",
+        usuario: usuarioDatos,
+      });
     } catch (error) {
       if (error instanceof ValidationError) {
         res
@@ -178,12 +200,10 @@ class UsuarioController {
         parsedData = await usuarioUpdateSchema.parseAsync(req.body);
       } catch (validationError) {
         console.error("Error de validación:", validationError);
-        return res
-          .status(400)
-          .json({
-            message: "Error de validación",
-            errors: validationError.errors,
-          });
+        return res.status(400).json({
+          message: "Error de validación",
+          errors: validationError.errors,
+        });
       }
 
       const { nombre, apellido, telefono, email, contrasena } = parsedData;
@@ -191,7 +211,7 @@ class UsuarioController {
       if (contrasena) {
         contrasenaEncriptada = await bcrypt.hash(contrasena, 10);
       }
-       //No es posible actualizar el documento
+      //No es posible actualizar el documento
       const usuario = await userFound.update({
         nombre,
         apellido,
@@ -202,12 +222,10 @@ class UsuarioController {
       //No se retorna la contraseña
       const { contrasena: contrasenaUsuario, ...usuarioDatos } =
         usuario.toJSON();
-      res
-        .status(200)
-        .json({
-          message: "Usuario actualizado correctamente",
-          usuario: usuarioDatos,
-        });
+      res.status(200).json({
+        message: "Usuario actualizado correctamente",
+        usuario: usuarioDatos,
+      });
     } catch (error) {
       if (error instanceof ValidationError) {
         res
@@ -218,12 +236,10 @@ class UsuarioController {
           .status(500)
           .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res
-          .status(500)
-          .json({
-            message: "Error al actualizar el usuario",
-            error: error.message,
-          });
+        res.status(500).json({
+          message: "Error al actualizar el usuario",
+          error: error.message,
+        });
       }
     }
   }
@@ -249,12 +265,10 @@ class UsuarioController {
           .status(500)
           .json({ message: "Error de base de datos", error: error.message });
       } else {
-        res
-          .status(500)
-          .json({
-            message: "Error al eliminar el usuario",
-            error: error.message,
-          });
+        res.status(500).json({
+          message: "Error al eliminar el usuario",
+          error: error.message,
+        });
       }
     }
   }
