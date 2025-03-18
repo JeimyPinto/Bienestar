@@ -5,5 +5,9 @@ router.get("/", (req, res) => {
   res.status(200).send({ message: "Bienvenido a la API de Bienestar" });
 });
 router.use("/auth", require("./auth.js"));
-router.use("/users", require("./user.js"));
+router.use(
+  "/users",
+  require("./user.js"),
+  require("../middlewares/auth.js").authenticateToken
+);
 module.exports = router;
