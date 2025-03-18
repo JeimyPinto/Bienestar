@@ -21,6 +21,7 @@ const userUpdateSelfSchema = z.object({
   email: z.string().email("Invalid email address / Dirección de correo electrónico no válida"),
   password: z.string().optional(),
   image: z.string().optional(),
+  status: z.enum(["activo", "inactivo"], "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'").optional(),
 }).refine(data => data.role === undefined, {
   message: "Role cannot be updated by the user / El usuario no puede actualizar el rol",
   path: ["role"],
@@ -37,6 +38,7 @@ const adminUpdateUserSchema = z.object({
   password: z.string().optional(),
   role: z.string().optional(),
   image: z.string().optional(),
+  status: z.enum(["activo", "inactivo"], "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'").optional(),
 });
 
 // Esquema para el login
