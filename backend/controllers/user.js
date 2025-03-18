@@ -1,7 +1,11 @@
 const db = require("../models/index.js");
 const User = db.User;
 const { ValidationError, DatabaseError } = require("sequelize");
-const { documentSchema,userUpdateSelfSchema } = require("../schemas/user.js");
+const {
+  documentSchema,
+  userUpdateSelfSchema,
+  adminUpdateUserSchema,
+} = require("../schemas/user.js");
 
 class UsuarioController {
   /**
@@ -59,19 +63,15 @@ class UsuarioController {
       res.status(200).json(userInfo);
     } catch (error) {
       if (error instanceof ValidationError) {
-        res
-          .status(400)
-          .json({
-            message: "Error de validación / Validation error",
-            errors: error.errors,
-          });
+        res.status(400).json({
+          message: "Error de validación / Validation error",
+          errors: error.errors,
+        });
       } else if (error instanceof DatabaseError) {
-        res
-          .status(500)
-          .json({
-            message: "Error de base de datos / Database error",
-            error: error.message,
-          });
+        res.status(500).json({
+          message: "Error de base de datos / Database error",
+          error: error.message,
+        });
       } else {
         res.status(500).json({
           message: "Error al obtener el usuario / Error retrieving user",
@@ -95,7 +95,9 @@ class UsuarioController {
         where: { documentNumber },
       });
       if (!user) {
-        return res.status(404).json({ message: "Usuario no encontrado / User not found" });
+        return res
+          .status(404)
+          .json({ message: "Usuario no encontrado / User not found" });
       }
       const { password, ...userInfo } = user.toJSON();
       res.status(200).json(userInfo);
@@ -120,7 +122,7 @@ class UsuarioController {
   }
 
   /**
-   * Actualizar un usuario por ID, valida los datos del usuario
+   * Actualizar un usuario por ID (para administradores)
    * @param {*} req.params.id ID del usuario a actualizar
    * @param {*} req.body Datos del usuario a actualizar
    * @param {*} res Status 200: Retorna un json con el usuario actualizado sin la contraseña o
@@ -131,7 +133,91 @@ class UsuarioController {
     try {
       const userFound = await User.findByPk(req.params.id);
       if (!userFound) {
-        return res.status(404).json({ message: "Usuario no encontrado / User not found" });
+        return res
+          .status(404)
+          .json({ message: "Usuario no encontrado / User not found" });
+      }
+
+      let parsedData;
+      try {
+        parsedData = await adminUpdateUserSchema.parseAsync(req.body);
+      } catch (validationError) {
+        console.error("Validation error:", validationError);
+        return res.status(400).json({
+          message: "Error de validación / Validation error",
+          errors: validationError.errors,
+        });
+      }
+
+      const {
+        firstName,
+        lastName,
+        documentType,
+        documentNumber,
+        phone,
+        email,
+        password,
+        status,
+        role,
+        image,
+      } = parsedData;
+      let passwordHashed = userFound.password;
+      if (password) {
+        passwordHashed = await bcrypt.hash(password, 10);
+      }
+
+      // Actualizar usuario
+      const updatedUser = await userFound.update({
+        firstName,
+        lastName,
+        documentType,
+        documentNumber,
+        phone,
+        email,
+        password: passwordHashed,
+        status,
+        role,
+        image,
+        updatedAt: new Date(),
+      });
+
+      res.status(200).json({
+        message: "Succesfull User Updated  / Usuario actualizado correctamente",
+        usuario: updatedUser,
+      });
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
+      } else if (error instanceof DatabaseError) {
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
+      } else {
+        res.status(500).json({
+          message: "Error al actualizar el usuario / Error updating user",
+          error: error.message,
+        });
+      }
+    }
+  }
+
+  /**
+   * Actualizar un usuario por ID (para usuarios)
+   * @param {*} req.params.id ID del usuario a actualizar
+   * @param {*} req.body Datos del usuario a actualizar
+   * @param {*} res Status 200: Retorna un json con el usuario actualizado sin la contraseña o
+   * Status 400: Retorna un json con el mensaje de error
+   * @version 18/03/2025
+   */
+  async updateSelf(req, res) {
+    try {
+      const userFound = await User.findByPk(req.params.id);
+      if (!userFound) {
+        return res
+          .status(404)
+          .json({ message: "Usuario no encontrado / User not found" });
       }
 
       let parsedData;
@@ -145,22 +231,17 @@ class UsuarioController {
         });
       }
 
-      const { firstName, lastName, documentType, phone, email, password, status, role, image } = parsedData;
+      const { phone, email, password, image } = parsedData;
       let passwordHashed = userFound.password;
       if (password) {
         passwordHashed = await bcrypt.hash(password, 10);
       }
 
-      // Actualizar usuario excepto documentNumber y createdAt
+      // Actualizar usuario excepto documentNumber, documentType, role, firstName, lastName
       const updatedUser = await userFound.update({
-        firstName,
-        lastName,
-        documentType,
         phone,
         email,
         password: passwordHashed,
-        status,
-        role,
         image,
         updatedAt: new Date(),
       });
@@ -173,9 +254,13 @@ class UsuarioController {
       });
     } catch (error) {
       if (error instanceof ValidationError) {
-        res.status(400).json({ message: "Error de validación", errors: error.errors });
+        res
+          .status(400)
+          .json({ message: "Error de validación", errors: error.errors });
       } else if (error instanceof DatabaseError) {
-        res.status(500).json({ message: "Error de base de datos", error: error.message });
+        res
+          .status(500)
+          .json({ message: "Error de base de datos", error: error.message });
       } else {
         res.status(500).json({
           message: "Error al actualizar el usuario / Error updating user",
@@ -196,7 +281,9 @@ class UsuarioController {
     try {
       const userFound = await User.findByPk(req.params.id);
       if (!userFound) {
-        return res.status(404).json({ message: "Usuario no encontrado / User not found" });
+        return res
+          .status(404)
+          .json({ message: "Usuario no encontrado / User not found" });
       }
       await userFound.update({ status: "inactivo", updatedAt: new Date() });
       res.status(204).json();
