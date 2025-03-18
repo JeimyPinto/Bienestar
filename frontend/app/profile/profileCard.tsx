@@ -62,13 +62,13 @@ export default function ProfileCard() {
               <strong>Nombre Completo:</strong> {user.firstName} {user.lastName}
             </p>
             <p>
-              <strong>Tipo de Documento:</strong>
+              <strong>Tipo de Documento:</strong> 
               {user.documentType === "CC"
-                ? "Cédula de ciudadanía"
+                ? " Cédula de ciudadanía"
                 : user.documentType === "TI"
-                ? "Tarjeta de identidad"
+                ? " Tarjeta de identidad"
                 : user.documentType === "CE"
-                ? "Cédula de extranjería"
+                ? " Cédula de extranjería"
                 : user.documentType}
             </p>
             <p>
