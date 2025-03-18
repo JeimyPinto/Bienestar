@@ -11,7 +11,7 @@ router.get(
   userController.getAll
 );
 router.get(
-  "/:id",
+  "/id/:id",
   authMiddleware.authenticateToken,
   authMiddleware.authorizeRole(),
   userController.getById

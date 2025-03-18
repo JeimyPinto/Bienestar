@@ -306,6 +306,49 @@ class UsuarioController {
       }
     }
   }
+
+  /**
+   * Obtene una lista de usuarios que hayan creado servicios
+   * @param {*} req Objeto de solicitud HTTP
+   * @param {*} res Objeto de respuesta HTTP
+   * @returns {Promise<void>} Retorna una promesa que resuelve en una respuesta HTTP
+   * @version 31/10/2024
+   * @autor Jeimy Pinto
+   */
+  async getUsersWithServices(req, res) {
+    try {
+      const users = await User.findAll({
+      include: {
+        association: "services",
+        required: true,
+      },
+      });
+
+      if (users.length === 0) {
+      return res.status(404).json({
+        message: "No users have created services / Ningún usuario ha creado servicios",
+      });
+      }
+      res.status(200).json(users);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        res.status(400).json({
+          message: "Error de validación / Validation error",
+          errors: error.errors,
+        });
+      } else if (error instanceof DatabaseError) {
+        res.status(500).json({
+          message: "Error de base de datos / Database error",
+          error: error.message,
+        });
+      } else {
+        res.status(500).json({
+          message: "Error al obtener los usuarios / Error retrieving users",
+          error: error.message,
+        });
+      }
+    }
+  }
 }
 
 module.exports = new UsuarioController();
