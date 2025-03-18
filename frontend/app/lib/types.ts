@@ -1,12 +1,14 @@
 export interface User {
   id: string;
-  nombre: string;
-  apellido: string;
-  tipoDocumento: string;
-  documento: string;
-  telefono: string;
+  firstName: string;
+  lastName: string;
+  documentType: string;
+  documentNumber: string;
+  phone: string;
   email: string;
-  estado: string;
-  rol: string;
-  imagen: string;
+  role: string;
+  status: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
 }

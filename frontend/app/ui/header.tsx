@@ -70,27 +70,29 @@ export default function Header() {
   }
 
   return (
-    <header className="flex flex-col md:flex-row justify-between items-center px-6 bg-azul w-full h-30 text-xl text-white">
+    <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">
       <Link href="/">
         <Image
           src="/images/Icono.png"
           alt="Logo"
-          width={300}
-          height={20}
+          width={150}
+          height={60}
           className="p-3"
           priority={false}
         />
       </Link>
-      <nav className="flex justify-center justify-center items-center">
+      <nav className="flex items-center space-x-4 mt-4 md:mt-0">
         <ul className="flex gap-5 p-2">
-          <li className="text-foreground">Integrantes</li>
-          <li className="text-foreground px-2">
+          <li className="text-white hover:text-cian transition-colors duration-300">
+            <Link href="/integrantes">Integrantes</Link>
+          </li>
+          <li className="text-white hover:text-cian transition-colors duration-300">
             <Link href="/servicios">Servicios</Link>
           </li>
         </ul>
         {isLoggedIn ? (
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Link href="/profile" className="flex items-center ">
+          <div className="flex items-center space-x-4">
+            <Link href="/profile" className="flex items-center text-white hover:text-cian transition-colors duration-300">
               <Image
                 src="/images/ico-profile.svg"
                 alt="Icon Profile"
@@ -98,18 +100,18 @@ export default function Header() {
                 height={42}
                 priority
               />
-              <span> Mi Perfil </span>
+              <span className="ml-2">Mi Perfil</span>
             </Link>
             <button
               onClick={handleLogout}
-              className="bg-white text-azul px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white"
+              className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300"
             >
               Cerrar sesión
             </button>
           </div>
         ) : (
           <Link href="/login">
-            <button className="bg-white text-azul px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white">
+            <button className="bg-cian text-white px-4 py-2 rounded-md hover:bg-azul hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300">
               Ingresar
             </button>
           </Link>

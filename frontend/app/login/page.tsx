@@ -6,14 +6,28 @@ import Link from "next/link";
 import Image from "next/image";
 import Footer from "../ui/footer";
 
-const LoginPage = () => {
+/**
+ * Componente que representa la página de inicio de sesión.
+ * @returns {JSX.Element} Página de inicio de sesión.
+ * @constructor 
+ * @version 18/03/2025
+ * @author Jeimy Pinto
+ */
+const LoginPage = (): JSX.Element => {
   const [email, setEmail] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  /**
+   * Función que maneja el inicio de sesión.
+   * @param e evento de formulario.
+   * @returns {Promise<void>} Retorna una promesa.
+   * @version 18/03/2025
+   * @autor Jeimy Pinto
+   */
+  const handleLogin = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -26,36 +40,27 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, contrasena }),
+          body: JSON.stringify({ email, password }),
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Fallo al iniciar sesión");
+        throw new Error(errorData.message || "Failed to log in / Error al iniciar sesión");
       }
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      // Hacer una solicitud al endpoint /dashboard para obtener los datos del usuario
-      const dashboardResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/dashboard`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${data.token}`,
-          },
-        }
-      );
 
-      if (!dashboardResponse.ok) {
-        throw new Error(
-          "Algo ha fallado mientras se redireccionaba al dashboard"
-        );
+      // Sacar el rol del token decodificado
+      const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
+      const userRole = tokenPayload.role;
+
+      if (userRole === "admin") {
+        router.push(`/dashboard/admin`);
+      } else {
+        router.push(`/dashboard/user`);
       }
-
-      const dashboardData = await dashboardResponse.json();
-      router.push(`/dashboard`);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -77,29 +82,31 @@ const LoginPage = () => {
         </Link>
       </header>
       <div className="flex flex-col items-center justify-center py-20 bg-gray-100">
-        <h1 className="text-5xl font-bold mb-6">
-          Ingresa al portal de servicios de bienestar al aprendiz
+        <h1 className="text-5xl font-bold mb-6 text-center">
+          Log in to the apprentice welfare portal
         </h1>
-        <div className="py-5">
+        <div className="py-5 text-center">
           <p>
-            Ten en cuenta que no podrás ingresar si no has sido{" "}
+            Please note that you will not be able to log in if you have not been{" "}
             <u className="decoration-wavy decoration-cian">
-              previamente registrado
+              previously registered
             </u>{" "}
-            por el Área de bienestar al aprendiz.
+            by the Apprentice Welfare Area.
           </p>
         </div>
         <form
           onSubmit={handleLogin}
-          className="w-full max-w-md bg-gray-500 p-8 rounded-lg shadow-md"
+          className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg"
         >
-          <Image
-            src="/images/Icono.png"
-            alt="Logo"
-            width={600}
-            height={100}
-            priority={false}
-          />{" "}
+          <div className="flex justify-center mb-6 bg-azul p-4 rounded-lg">
+            <Image
+              src="/images/Icono.png"
+              alt="Logo"
+              width={150}
+              height={50}
+              priority={false}
+            />
+          </div>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -113,7 +120,7 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta"
             />
           </div>
           <div className="mb-6">
@@ -121,36 +128,36 @@ const LoginPage = () => {
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="password"
             >
-              Contraseña
+              Password
             </label>
             <input
               type="password"
               id="password"
-              value={contrasena}
-              onChange={(e) => setContrasena(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta"
             />
           </div>
-          <div className="flex justify-center">
-            {error && (
-              <p className="text-amarillo text-sm mb-4 uppercase">{error}</p>
-            )}
-          </div>
+          {error && (
+            <div className="mb-4 text-center">
+              <p className="text-red-500 text-sm">{error}</p>
+            </div>
+          )}
           <button
             type="submit"
             disabled={loading}
-            className="w-full p-3 bg-magenta text-white rounded-lg hover:bg-cian hover:text-azul hover:border-1 hover:border-magenta focus:outline-none focus:ring-2 focus:ring-magenta-500"
+            className="w-full p-3 bg-magenta text-white rounded-lg hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
-        <div className="py-5">
+        <div className="py-5 text-center">
           <p>
-            Si tienes dificultades, puedes contactarnos a{" "}
+            If you have any difficulties, you can contact us at{" "}
             <a
               href="mailto:portafoliobienestar24@gmail.com"
-              className="text-magenta-500 underline"
+              className="text-magenta underline"
             >
               portafoliobienestar24@gmail.com
             </a>
