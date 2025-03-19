@@ -47,13 +47,18 @@ class UsuarioController {
   /**
    * Obtener un usuario por ID
    * @param {*} req.params.id ID del usuario a buscar
-   * @param {*} res Status 200: Retorna un json con el usuario encontrado sin la contraseña
+   * @param {*} res Status 200: Retorna un json con el usuario encontrado sin la contraseña o
    * @returns {Promise<void>} Retorna una promesa que resuelve en una respuesta HTTP
    * @version 31/10/2024
    */
   async getById(req, res) {
     try {
-      const user = await User.findByPk(req.params.id);
+      const user = await User.findByPk(req.params.id, {
+        include: {
+          association: "services",
+          required: false,
+        },
+      });
       if (!user) {
         return res
           .status(404)

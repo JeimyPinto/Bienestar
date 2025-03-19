@@ -1,6 +1,6 @@
 "use client";
 
-import ServiciosGallery from "./servicios/gallery";
+import ServiciosGallery from "./services/gallery";
 import Footer from "./ui/footer";
 import Header from "./ui/header";
 import Image from "next/image";
@@ -71,7 +71,6 @@ export default function Page() {
           </div>
         </section>
         <section className="w-full">
-          <h2 className="text-3xl font-bold mb-4 text-center">Nuestros Servicios</h2>
           <ServiciosGallery />
         </section>
       </main>

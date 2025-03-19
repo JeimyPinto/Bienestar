@@ -12,3 +12,14 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Service {
+  id: number;
+  name: string;
+  description: string;
+  creator: string;
+  area: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
+}

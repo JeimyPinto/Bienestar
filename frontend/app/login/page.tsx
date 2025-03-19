@@ -83,16 +83,16 @@ const LoginPage = (): JSX.Element => {
       </header>
       <div className="flex flex-col items-center justify-center py-20 bg-gray-100">
         <h1 className="text-5xl font-bold mb-6 text-center">
-          Log in to the apprentice welfare portal
+          Inicia sesión en el portal de bienestar del aprendiz
         </h1>
         <div className="py-5 text-center">
-          <p>
-            Please note that you will not be able to log in if you have not been{" "}
+            <p>
+            ¡Hola! Para poder iniciar sesión, asegúrate de haber sido{" "}
             <u className="decoration-wavy decoration-cian">
-              previously registered
+              registrado previamente
             </u>{" "}
-            by the Apprentice Welfare Area.
-          </p>
+            por el Área de Bienestar del Aprendiz. ¡Gracias!
+            </p>
         </div>
         <form
           onSubmit={handleLogin}
@@ -153,15 +153,15 @@ const LoginPage = (): JSX.Element => {
           </button>
         </form>
         <div className="py-5 text-center">
-          <p>
-            If you have any difficulties, you can contact us at{" "}
+            <p>
+            Si tiene alguna dificultad, puede contactarnos en{" "}
             <a
               href="mailto:portafoliobienestar24@gmail.com"
               className="text-magenta underline"
             >
               portafoliobienestar24@gmail.com
             </a>
-          </p>
+            </p>
         </div>
       </div>
       <Footer />

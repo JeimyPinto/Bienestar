@@ -5,36 +5,41 @@ import Image from "next/image";
 import Link from "next/link";
 import { User } from "../lib/types";
 
+// Array de roles permitidos para editar cualquier información del usuario
+const editableRoles = ["admin", "integrante"];
+
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const userId = JSON.parse(atob(token.split(".")[1])).id;
-        try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${userId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          if (response.ok) {
-            const userData = await response.json();
-            setUser(userData);
-          } else {
-            console.error("Error al obtener los datos del usuario");
+  const fetchUserData = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const userId = JSON.parse(atob(token.split(".")[1])).id;
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/users/id/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        } catch (error) {
-          console.error("Error al obtener los datos del usuario:", error);
+        );
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          console.error("Error al obtener los datos del usuario");
+          setError("Error al obtener los datos del usuario");
         }
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
+        setError("Error al obtener los datos del usuario");
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchUserData();
   }, []);
 
@@ -49,8 +54,9 @@ export default function ProfilePage() {
     if (user) {
       try {
         const token = localStorage.getItem("token");
+
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${user.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/users/id/${user.id}`,
           {
             method: "PUT",
             headers: {
@@ -61,10 +67,10 @@ export default function ProfilePage() {
           }
         );
         if (response.ok) {
-          setError(null); // Clear any previous errors
-          // Fetch the updated user data
+          setError(null); // Limpiar cualquier error previo
+          // Obtener los datos actualizados del usuario
           const updatedResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/usuarios/${user.id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/users/id/${user.id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -75,9 +81,8 @@ export default function ProfilePage() {
             const updatedUserData = await updatedResponse.json();
             setUser(updatedUserData);
           } else {
-            console.error(
-              "Error al obtener los datos actualizados del usuario"
-            );
+            console.error("Error al obtener los datos actualizados del usuario");
+            setError("Error al obtener los datos actualizados del usuario");
           }
         } else {
           const errorData = await response.json();
@@ -109,22 +114,16 @@ export default function ProfilePage() {
         </Link>
       </div>
       {user ? (
-        <form className="flex flex-col text-lg gap-4" onSubmit={handleSubmit}>
-          <div className="col-span-6 text-center">
-            <h2 className="text-5xl font-bold mb-4 text-azul">
-              Información del Usuario
-            </h2>
+        <form className="flex flex-col text-lg gap-4 w-full max-w-4xl" onSubmit={handleSubmit}>
+          <div className="text-center">
+            <h2 className="text-5xl font-bold mb-4 text-azul">Información del Usuario</h2>
           </div>
-          <div className="grid grid-cols-7 grid-rows-8 gap-4">
-            <div className="col-span-2 row-span-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col items-center">
               <label htmlFor="fileInput">
                 <Image
-                  src={
-                    user.imagen
-                      ? `/images/profile/${user.id}/${user.imagen}`
-                      : "/images/logo-sena.png"
-                  }
-                  alt={user.nombre}
+                  src={user.image ? `/images/profile/${user.id}/${user.image}` : "/images/logo-sena.png"}
+                  alt={user.firstName}
                   className="object-cover rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
                   width={300}
                   height={300}
@@ -132,126 +131,132 @@ export default function ProfilePage() {
                 />
               </label>
             </div>
-            <div className="col-start-3">
-              <label className="font-semibold text-magenta">
-                Nombre Completo:
-              </label>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="font-semibold text-magenta">Nombre Completo:</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={user.firstName}
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                  readOnly={!editableRoles.includes(user.role)}
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-magenta">Apellido:</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={user.lastName}
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                  readOnly={!editableRoles.includes(user.role)}
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-magenta">Tipo de Documento:</label>
+                <select
+                  name="documentType"
+                  value={user.documentType}
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                  disabled={!editableRoles.includes(user.role)}
+                >
+                  <option value="CC">Cédula de Ciudadanía</option>
+                  <option value="TI">Tarjeta de Identidad</option>
+                  <option value="CE">Cédula de Extranjería</option>
+                  <option value="PA">Pasaporte</option>
+                  <option value="RC">Registro Civil</option>
+                  <option value="PEP">Permiso Especial de Permanencia</option>
+                </select>
+              </div>
+              <div>
+                <label className="font-semibold text-magenta">Documento:</label>
+                <input
+                  type="text"
+                  name="documentNumber"
+                  value={user.documentNumber}
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                  readOnly={!editableRoles.includes(user.role)}
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-magenta">Teléfono:</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={user.phone}
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-magenta">Email:</label>
+                <input
+                  type="text"
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                />
+              </div>
+              {editableRoles.includes(user.role) && (
+                <>
+                  <div>
+                    <label className="font-semibold text-magenta">Rol:</label>
+                    <input
+                      type="text"
+                      name="role"
+                      value={user.role}
+                      onChange={handleChange}
+                      className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-semibold text-magenta">Estado de Cuenta:</label>
+                    <input
+                      type="text"
+                      name="status"
+                      value={user.status}
+                      onChange={handleChange}
+                      className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
+                    />
+                  </div>
+                </>
+              )}
+              {!editableRoles.includes(user.role) && (
+                <div>
+                  <label className="font-semibold text-magenta">Estado de Cuenta:</label>
+                  <input
+                    type="text"
+                    name="status"
+                    value={user.status}
+                    onChange={handleChange}
+                    readOnly
+                    className="border p-2 rounded w-full bg-gray-100"
+                  />
+                </div>
+              )}
             </div>
-            <div className="col-span-2 col-start-4">
-              <input
-                type="text"
-                name="nombre"
-                value={user.nombre}
-                onChange={handleChange}
-                className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cian"
-              />
-            </div>
-            <div className="col-span-2 col-start-6">
-              <input
-                type="text"
-                name="apellido"
-                value={user.apellido}
-                onChange={handleChange}
-                className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cian mt-2"
-              />
-            </div>
-            <div className="col-start-3 row-start-2">
-              <label className="font-semibold text-magenta">
-                Tipo de Documento:
-              </label>
-            </div>
-            <div className="col-span-2 col-start-4 row-start-2">
-              <select
-                name="tipoDocumento"
-                value={user.tipoDocumento}
-                onChange={handleChange}
-                className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cian"
-              >
-                <option value="CC">Cédula de Ciudadanía</option>
-                <option value="TI">Tarjeta de Identidad</option>
-                <option value="CE">Cédula de Extranjería</option>
-                <option value="PA">Pasaporte</option>
-                <option value="RC">Registro Civil</option>
-                <option value="PEP">Permiso Especial de Permanencia</option>
-              </select>
-            </div>
-            <div className="col-start-3 row-start-3">
-              <label className="font-semibold text-magenta">Documento:</label>
-            </div>
-            <div className="col-span-2 col-start-4 row-start-3">
-              <input
-                type="text"
-                name="documento"
-                value={user.documento}
-                onChange={handleChange}
-                className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cian"
-              />
-            </div>
-            <div className="col-start-3 row-start-4">
-              <label className="font-semibold text-magenta">Teléfono:</label>
-            </div>
-            <div className="col-span-2 col-start-5 row-start-4">
-              <input
-                type="text"
-                name="telefono"
-                value={user.telefono}
-                onChange={handleChange}
-                className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cian"
-              />
-            </div>
-            <div className="col-start-3 row-start-5">
-              <label className="font-semibold text-magenta">Email:</label>
-            </div>
-            <div className="col-span-5 col-start-4 row-start-5">
-              <input
-                type="text"
-                name="email"
-                value={user.email}
-                onChange={handleChange}
-                className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cian"
-              />
-            </div>
-            <div className="col-start-3 row-start-6">
-              <label className="font-semibold text-magenta">Rol:</label>
-            </div>
-            <div className="col-span-2 col-start-4 row-start-6">
-              {" "}
-              <input
-                type="text"
-                name="rol"
-                value={user.rol}
-                onChange={handleChange}
-                className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cian"
-              />
-            </div>
-            <div className="col-start-3 row-start-7">
-              <label className="font-semibold text-magenta">
-                Estado de Cuenta:
-              </label>
-            </div>
-            <div className="col-span-2 col-start-4 row-start-7">
-              {" "}
-              <input
-                type="text"
-                name="estado"
-                value={user.estado}
-                onChange={handleChange}
-                readOnly
-                className="border p-2 rounded bg-gray-100"
-              />
-            </div>
-            <div className="col-span-5 col-start-2 row-start-8">
-              <button
-                type="submit"
-                className="bg-azul w-full text-white px-20 py-2 rounded-lg text-center hover:bg-cian hover:text-lg shadow-md transition-all duration-300"
-              >
-                Guardar Cambios
-              </button>
-            </div>
+          </div>
+          <div className="mt-6">
+            <button
+              type="submit"
+              className="bg-azul w-full text-white px-20 py-2 rounded-lg text-center hover:bg-cian hover:text-lg shadow-md transition-all duration-300"
+            >
+              Guardar Cambios
+            </button>
           </div>
         </form>
       ) : (
         <p>Cargando...</p>
+      )}
+      {error && (
+        <div className="bg-red-100 text-red-700 p-4 rounded-md shadow-md mt-4">
+          <p>{error}</p>
+        </div>
       )}
     </div>
   );

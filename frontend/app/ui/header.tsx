@@ -87,7 +87,7 @@ export default function Header() {
             <Link href="/integrantes">Integrantes</Link>
           </li>
           <li className="text-white hover:text-cian transition-colors duration-300">
-            <Link href="/servicios">Servicios</Link>
+            <Link href="/services">Servicios</Link>
           </li>
         </ul>
         {isLoggedIn ? (

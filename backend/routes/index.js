@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 });
 router.use("/auth", authRouter);
 router.use("/users", authMiddleware.authenticateToken, userRoutes);
-router.use("/services", authMiddleware.authenticateToken, serviceRoutes);
+router.use("/services", serviceRoutes);
 router.get(
   "/usersWithServices",
   authMiddleware.authenticateToken,
