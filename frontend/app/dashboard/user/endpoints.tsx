@@ -54,7 +54,42 @@ export const updateUser = async (user: User, formData: any, token: string) => {
   }
 };
 
-export const fetchUserServices = async (setServices: (services: any) => void, setLoading: (loading: boolean) => void, setError: (error: string) => void) => {
+export const uploadProfileImage = async (formData: FormData, token: string) => {
+  try {
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]); // Verificar el contenido de FormData
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/uploadProfileImage`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      const errorData = await response.json();
+      console.error("Error uploading image:", errorData);
+      throw new Error(errorData.message || "Unknown error / Error desconocido");
+    }
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+};
+
+export const fetchUserServices = async (
+  setServices: (services: any) => void,
+  setLoading: (loading: boolean) => void,
+  setError: (error: string) => void
+) => {
   try {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -63,11 +98,14 @@ export const fetchUserServices = async (setServices: (services: any) => void, se
     const user = JSON.parse(atob(token.split(".")[1]));
     const userId = user.id;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/id/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/id/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     if (!response.ok) {
       throw new Error("Error loading services / Error al cargar los servicios");
     }

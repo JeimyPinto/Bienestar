@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "../lib/types";
-import { fetchUserById, updateUser, editableRoles } from "../dashboard/user/endpoints";
+import { fetchUserById, updateUser, editableRoles, uploadProfileImage } from "../dashboard/user/endpoints";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -43,17 +43,11 @@ export default function ProfilePage() {
       const file = e.target.files[0];
       setSelectedFile(file);
       setPreviewImage(URL.createObjectURL(file));
+      console.log("Selected file:", file); // Mensaje de depuración
     }
   };
 
-  /**
-   * Función que se encarga de enviar los datos del usuario al servidor para actualizarlos.
-   * @param e evento de formulario
-   * @returns {Promise<void>} Promesa vacía
-   * @version 19/03/2025
-   * @autor Jeimy Pinto
-   */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (user) {
       const token = localStorage.getItem("token");
@@ -63,18 +57,17 @@ export default function ProfilePage() {
           if (selectedFile) {
             const formData = new FormData();
             formData.append("image", selectedFile);
+            console.log("Sending userId:", user.id); // Mensaje de depuración
+            formData.append("userId", user.id.toString());
 
-            const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/uploadProfileImage`, {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              body: formData,
-            });
+            for (let pair of formData.entries()) {
+              console.log(pair[0] + ': ' + pair[1]); // Verificar el contenido de FormData
+            }
 
-            if (uploadResponse.ok) {
-              const { fileName } = await uploadResponse.json();
-              user.image = fileName; // Actualiza el campo de imagen del usuario con el nombre del archivo
+            const uploadResponse = await uploadProfileImage(formData, token);
+
+            if (uploadResponse) {
+              user.image = uploadResponse.fileName; // Actualiza el campo de imagen del usuario con el nombre del archivo
             } else {
               setError("Error al subir la imagen");
               return;
@@ -82,18 +75,10 @@ export default function ProfilePage() {
           }
 
           // Envía los datos del usuario al servidor
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/update/${user.id}`, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(user),
-          });
+          const response = await updateUser(user, user, token);
 
-          if (response.ok) {
-            const updatedUserData = await response.json();
-            setUser(updatedUserData);
+          if (response) {
+            setUser(response);
             setError(null);
           } else {
             setError("Error al actualizar los datos del usuario");
@@ -125,7 +110,7 @@ export default function ProfilePage() {
         </Link>
       </div>
       {user ? (
-        <form className="flex flex-col text-lg gap-4 w-full max-w-4xl" onSubmit={handleSubmit}>
+        <form className="flex flex-col text-lg gap-4 w-full max-w-4xl" onSubmit={handleSave}>
           <div className="text-center">
             <h2 className="text-5xl font-bold mb-4 text-azul">Información del Usuario</h2>
           </div>
