@@ -5,43 +5,15 @@ import Image from "next/image";
 import formatDate from "../lib/formatDate";
 import { areaColors } from "../lib/areaColors";
 import { Service } from "../lib/types";
+import { fetchServices } from "./endpoints";
 
 export default function ServiciosGallery() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchServices = async () => {
-    try {
-      const cachedServices = localStorage.getItem("services");
-      if (cachedServices) {
-        setServices(JSON.parse(cachedServices));
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/`);
-      if (!response.ok) {
-        throw new Error("Error loading services / Error al cargar los servicios");
-      }
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setServices(data);
-        localStorage.setItem("services", JSON.stringify(data));
-      } else {
-        console.error("The API response is not an array / La respuesta de la API no es un array:", data);
-        setError("The API response is not an array / La respuesta de la API no es un array");
-      }
-    } catch (error) {
-      console.error("Error loading services / Error al cargar los servicios:", error);
-      setError("Server issues, services not available / Problemas con el servidor, servicios no disponibles");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchServices();
+    fetchServices(setServices, setLoading, setError);
   }, []);
 
   return (
@@ -56,7 +28,7 @@ export default function ServiciosGallery() {
       ) : error ? (
         <div className="bg-red-100 text-red-700 p-4 rounded-md shadow-md">
           <p>{error}</p>
-          <button onClick={fetchServices} className="mt-4 bg-red-500 text-white py-2 px-4 rounded">
+          <button onClick={() => fetchServices(setServices, setLoading, setError)} className="mt-4 bg-red-500 text-white py-2 px-4 rounded">
             Retry
           </button>
         </div>

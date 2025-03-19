@@ -7,33 +7,28 @@ Este proyecto es una aplicación simple de Express que utiliza Sequelize como OR
 ```plaintext
 backend/
 ├── .env
-├── .sequelizerc
+├── api.rest
 ├── app.js
 ├── config/
-│   └── config.json
+│   ├── config.json
+│   ├── database.js
+│   └── multerConfig.js
 ├── controllers/
-│   ├── index.js
-│   ├── login.js
-│   ├── registro.js
-│   └── usuario.js
+│   ├── auth.js
+│   ├── service.js
+│   └── user.js
 ├── middlewares/
-│   └── validationMiddleware.js
+│   └── auth.js
 ├── migrations/
-│   ├── 20241009175449-create-usuario.js
-│   ├── 20241009175502-create-lider-bienestar.js
-│   ├── 20241009175503-create-ficha.js
-│   ├── 20241009175508-create-aprendiz.js
-│   └── 20241009175514-create-instructor.js
-├── models/
-│   ├── aprendiz.js
-│   ├── ficha.js
+│   ├── 20250306224443-create-user.js
 │   └── ...
-├── package.json
-├── README.md
-├── requests.rest
+├── models/
+│   └── ...
 ├── routes/
 ├── schemas/
-└── seeders/
+├── seeders/
+├── package.json
+├── README.md
 ```
 
 ## ⚙️ Configuración
@@ -60,7 +55,7 @@ Los esquemas se encuentran en el directorio `schemas/`. Estos se utilizan para l
 
 ## 📬 Requests
 
-El archivo `requests.rest` contiene ejemplos de solicitudes HTTP que puedes usar para probar tu API.
+El archivo `api.rest` contiene ejemplos de solicitudes HTTP que puedes usar para probar tu API.
 
 ## 📦 Instalación
 
@@ -75,7 +70,7 @@ npm install
 Para iniciar el servidor, ejecuta:
 
 ```sh
-npm start
+npm run dev
 ```
 
 Esto iniciará el servidor en el puerto definido en tu archivo `.env`.

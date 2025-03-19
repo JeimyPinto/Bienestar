@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const routes = require("./routes/index.js");
 const morgan = require("morgan");
 const cors = require("cors");
+const {upload} = require('./config/multerConfig.js');
 const PORT = process.env.PORT || 4000;
 
 const app = express();
@@ -56,6 +57,9 @@ app.use(morgan("dev"));
  * Middleware para parsear cookies
  */
 app.use(cookieParser());
+
+console.log('Multer configuration:', upload);
+
 /**
  * Ruta principal de la API
  */
@@ -79,5 +83,4 @@ connectDB()
     });
   });
 
-
-module.exports = app;
+module.exports = { app, upload };

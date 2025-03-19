@@ -1,41 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "../lib/types";
-
-// Array de roles permitidos para editar cualquier información del usuario
-const editableRoles = ["admin", "integrante"];
+import { fetchUserById, updateUser, editableRoles } from "../dashboard/user/endpoints";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const fetchUserData = async () => {
     const token = localStorage.getItem("token");
     if (token) {
       const userId = JSON.parse(atob(token.split(".")[1])).id;
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/id/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          console.error("Error al obtener los datos del usuario");
-          setError("Error al obtener los datos del usuario");
-        }
+        const userData = await fetchUserById(userId, token);
+        setUser(userData);
       } catch (error) {
-        console.error("Error al obtener los datos del usuario:", error);
         setError("Error al obtener los datos del usuario");
       }
+    } else {
+      setError("No se encontró el token de autenticación");
     }
   };
 
@@ -49,53 +38,75 @@ export default function ProfilePage() {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  /**
+   * Función que se encarga de enviar los datos del usuario al servidor para actualizarlos.
+   * @param e evento de formulario
+   * @returns {Promise<void>} Promesa vacía
+   * @version 19/03/2025
+   * @autor Jeimy Pinto
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (user) {
-      try {
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          // Si hay un archivo seleccionado, sube el archivo al servidor
+          if (selectedFile) {
+            const formData = new FormData();
+            formData.append("image", selectedFile);
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/id/${user.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(user),
-          }
-        );
-        if (response.ok) {
-          setError(null); // Limpiar cualquier error previo
-          // Obtener los datos actualizados del usuario
-          const updatedResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/users/id/${user.id}`,
-            {
+            const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/uploadProfileImage`, {
+              method: "POST",
               headers: {
                 Authorization: `Bearer ${token}`,
               },
+              body: formData,
+            });
+
+            if (uploadResponse.ok) {
+              const { fileName } = await uploadResponse.json();
+              user.image = fileName; // Actualiza el campo de imagen del usuario con el nombre del archivo
+            } else {
+              setError("Error al subir la imagen");
+              return;
             }
-          );
-          if (updatedResponse.ok) {
-            const updatedUserData = await updatedResponse.json();
-            setUser(updatedUserData);
-          } else {
-            console.error("Error al obtener los datos actualizados del usuario");
-            setError("Error al obtener los datos actualizados del usuario");
           }
-        } else {
-          const errorData = await response.json();
-          console.error("Error al actualizar los datos:", errorData);
-          setError(errorData.message || "Error desconocido");
+
+          // Envía los datos del usuario al servidor
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/update/${user.id}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+          });
+
+          if (response.ok) {
+            const updatedUserData = await response.json();
+            setUser(updatedUserData);
+            setError(null);
+          } else {
+            setError("Error al actualizar los datos del usuario");
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            setError(error.message || "Unknown error / Error desconocido");
+          } else {
+            setError("Unknown error / Error desconocido");
+          }
         }
-      } catch (error) {
-        console.error("Error al actualizar los datos:", error);
-        if (error instanceof Error) {
-          setError(error.message || "Error desconocido");
-        } else {
-          setError("Error desconocido");
-        }
+      } else {
+        setError("No se encontró el token de autenticación");
       }
     }
   };
@@ -106,7 +117,7 @@ export default function ProfilePage() {
         <Link href="/dashboard" className="flex items-center justify-center">
           <Image
             src="/images/ico-back.svg"
-            alt="Icon Back"
+            alt="Icono de regreso"
             width={42}
             height={42}
             className="hover:filter hover:brightness-0 hover:invert"
@@ -122,14 +133,26 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center">
               <label htmlFor="fileInput">
                 <Image
-                  src={user.image ? `/images/profile/${user.id}/${user.image}` : "/images/logo-sena.png"}
-                  alt={user.firstName}
-                  className="object-cover rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  src={previewImage || (user.image ? `/images/profile/${user.id}/${user.image}` : "/images/logo-sena.png")}
+                  alt={`Foto de perfil de ${user.firstName} ${user.lastName}`}
+                  className="object-cover rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
                   width={300}
                   height={300}
                   priority={false}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }}
                 />
               </label>
+              <input
+                type="file"
+                id="fileInput"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
             </div>
             <div className="grid grid-cols-1 gap-4">
               <div>
@@ -137,7 +160,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="firstName"
-                  value={user.firstName}
+                  value={user.firstName || ""}
                   onChange={handleChange}
                   className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                   readOnly={!editableRoles.includes(user.role)}
@@ -148,7 +171,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="lastName"
-                  value={user.lastName}
+                  value={user.lastName || ""}
                   onChange={handleChange}
                   className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                   readOnly={!editableRoles.includes(user.role)}
@@ -158,7 +181,7 @@ export default function ProfilePage() {
                 <label className="font-semibold text-magenta">Tipo de Documento:</label>
                 <select
                   name="documentType"
-                  value={user.documentType}
+                  value={user.documentType || ""}
                   onChange={handleChange}
                   className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                   disabled={!editableRoles.includes(user.role)}
@@ -176,7 +199,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="documentNumber"
-                  value={user.documentNumber}
+                  value={user.documentNumber || ""}
                   onChange={handleChange}
                   className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                   readOnly={!editableRoles.includes(user.role)}
@@ -187,7 +210,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="phone"
-                  value={user.phone}
+                  value={user.phone || ""}
                   onChange={handleChange}
                   className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                 />
@@ -197,7 +220,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="email"
-                  value={user.email}
+                  value={user.email || ""}
                   onChange={handleChange}
                   className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                 />
@@ -209,34 +232,38 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       name="role"
-                      value={user.role}
+                      value={user.role || ""}
                       onChange={handleChange}
                       className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                     />
                   </div>
                   <div>
                     <label className="font-semibold text-magenta">Estado de Cuenta:</label>
-                    <input
-                      type="text"
+                    <select
                       name="status"
-                      value={user.status}
+                      value={user.status || ""}
                       onChange={handleChange}
                       className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
-                    />
+                    >
+                      <option value="activo">Activo</option>
+                      <option value="inactivo">Inactivo</option>
+                    </select>
                   </div>
                 </>
               )}
               {!editableRoles.includes(user.role) && (
                 <div>
                   <label className="font-semibold text-magenta">Estado de Cuenta:</label>
-                  <input
-                    type="text"
+                  <select
                     name="status"
-                    value={user.status}
+                    value={user.status || ""}
                     onChange={handleChange}
-                    readOnly
+                    disabled
                     className="border p-2 rounded w-full bg-gray-100"
-                  />
+                  >
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                  </select>
                 </div>
               )}
             </div>

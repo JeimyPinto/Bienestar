@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "../lib/types";
+import { fetchUserById } from "../dashboard/user/endpoints";
 
 /**
  * Componente que representa la tarjeta de perfil del usuario.
@@ -14,13 +15,25 @@ import { User } from "../lib/types";
  */
 export default function ProfileCard() {
   const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = JSON.parse(atob(token.split(".")[1]));
-      setUser(user);
-    }
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const userId = JSON.parse(atob(token.split(".")[1])).id;
+        try {
+          const userData = await fetchUserById(userId, token);
+          setUser(userData);
+        } catch (error) {
+          setError("Error al obtener los datos del usuario");
+        }
+      } else {
+        setError("No se encontró el token de autenticación");
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   return (
@@ -29,31 +42,17 @@ export default function ProfileCard() {
         <>
           <div className="flex flex-col p-6 mb-6 gap-2 items-center">
             <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
-            <label htmlFor="fileInput">
-              <Image
+            <Image
               src={
                 user.image
-                ? `/images/profile/${user.id}/${user.image}`
-                : "/images/profile/default.png"
+                  ? `/images/profile/${user.id}/${user.image}`
+                  : "/images/profile/default.png"
               }
               alt={`Foto de perfil de ${user.firstName} ${user.lastName}`}
-              className="object-cover cursor-pointer rounded-full"
+              className="object-cover rounded-full"
               width={200}
               height={200}
               priority={true}
-              />
-            </label>
-            <input
-              type="file"
-              id="fileInput"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  // Handle file upload logic here
-                  console.log(file);
-                }
-              }}
             />
           </div>
 
@@ -95,7 +94,7 @@ export default function ProfileCard() {
           </div>
         </>
       ) : (
-        <p>Cargando...</p>
+        <p>{error ? error : "Cargando..."}</p>
       )}
     </div>
   );
