@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "../ui/header";
 import Footer from "../ui/footer";
 import ServiciosGallery from "./gallery";
-import { fetchUserById } from "../dashboard/user/endpoints";
+import { fetchUserById } from "../user/endpoints";
 import { User } from "../lib/types";
 
 /**

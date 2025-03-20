@@ -74,6 +74,7 @@ const LoginPage = (): JSX.Element => {
         <Link href="/">
           <Image
             src="/images/Icono.png"
+            priority={true}
             alt="Logo"
             width={300}
             height={20}

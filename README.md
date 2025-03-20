@@ -21,14 +21,48 @@ backend/
 │   └── auth.js
 ├── migrations/
 │   ├── 20250306224443-create-user.js
-│   └── ...
+│   └── 20250318210133-create-service.js
 ├── models/
-│   └── ...
+│   ├── index.js
+│   └── user.js
 ├── routes/
+│   ├── auth.js
+│   ├── service.js
+│   └── user.js
 ├── schemas/
+│   ├── user.js
 ├── seeders/
+│   └── 20250306224443-user-seeder.js
 ├── package.json
 ├── README.md
+
+frontend/
+├── .env
+├── .eslintrc.json
+├── .gitignore
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── postcss.config.js
+├── README.md
+├── tailwind.config.js
+├── tsconfig.json
+├── .next/
+│   ├── static/
+│   └── ...
+├── app/
+│   ├── layout.tsx
+│   └── ...
+├── public/
+│   ├── index.html
+│   ├── images/
+│   │   ├── favicon.png
+│   │   └── ...
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── lib/
+│   └── pages/
 ```
 
 ## ⚙️ Configuración

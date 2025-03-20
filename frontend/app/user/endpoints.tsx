@@ -1,4 +1,4 @@
-import { User } from "../../lib/types";
+import { User, UploadResponse } from "../lib/types";
 
 export const editableRoles = ["admin", "integrante"];
 
@@ -54,12 +54,19 @@ export const updateUser = async (user: User, formData: any, token: string) => {
   }
 };
 
-export const uploadProfileImage = async (formData: FormData, token: string) => {
+/**
+ * Sube una imagen de perfil.
+ * 
+ * @param {FormData} formData - Los datos del formulario que contienen el archivo de imagen.
+ * @param {string} token - El token de autorización.
+ * @returns {Promise<Object>} - La respuesta del servidor que contiene el nombre del archivo.
+ * @throws {Error} - Lanza un error si la subida falla.
+ * @version 20/03/2025
+ * @since 20/03/2025
+ * @author JeimyPinto
+ */
+export const uploadProfileImage = async (formData: FormData, token: string): Promise<UploadResponse> => {
   try {
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]); // Verificar el contenido de FormData
-    }
-
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/users/uploadProfileImage`,
       {
@@ -72,8 +79,7 @@ export const uploadProfileImage = async (formData: FormData, token: string) => {
     );
 
     if (response.ok) {
-      const data = await response.json();
-      return data;
+      return await response.json();
     } else {
       const errorData = await response.json();
       console.error("Error uploading image:", errorData);

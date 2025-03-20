@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const routes = require("./routes/index.js");
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
 const PORT = process.env.PORT || 4000;
 
 const app = express();
@@ -48,6 +49,11 @@ app.disable("x-powered-by");
  * en formato JSON
  */
 app.use(bodyParser.json());
+/**
+ * Middleware para parsear el body de las peticiones
+ * en formato URL-encoded y servir archivos estáticos
+ */
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 /**
  * Middleware para registrar las solicitudes HTTP
  */

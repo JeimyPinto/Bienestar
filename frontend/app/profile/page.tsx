@@ -4,7 +4,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "../lib/types";
-import { fetchUserById, updateUser, editableRoles, uploadProfileImage } from "../dashboard/user/endpoints";
+import {
+  fetchUserById,
+  updateUser,
+  editableRoles,
+  uploadProfileImage,
+} from "../user/endpoints";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -32,7 +37,9 @@ export default function ProfilePage() {
     fetchUserData();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     if (user) {
       setUser({ ...user, [e.target.name]: e.target.value });
     }
@@ -43,47 +50,49 @@ export default function ProfilePage() {
       const file = e.target.files[0];
       setSelectedFile(file);
       setPreviewImage(URL.createObjectURL(file));
-      console.log("Selected file:", file); // Mensaje de depuración
     }
   };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // Evita el comportamiento por defecto del formulario
+
     if (user) {
-      const token = localStorage.getItem("token");
+      console.log(
+        `Image URL: ${process.env.NEXT_PUBLIC_API_URL}/bakend/uploads/images/profile/${user.id}/${user.image}`
+      );
+      const token = localStorage.getItem("token"); // Obtiene el token de autenticación
+
       if (token) {
         try {
-          // Si hay un archivo seleccionado, sube el archivo al servidor
-          if (selectedFile) {
-            const formData = new FormData();
-            formData.append("image", selectedFile);
-            console.log("Sending userId:", user.id); // Mensaje de depuración
-            formData.append("userId", user.id.toString());
-
-            for (let pair of formData.entries()) {
-              console.log(pair[0] + ': ' + pair[1]); // Verificar el contenido de FormData
-            }
-
-            const uploadResponse = await uploadProfileImage(formData, token);
-
-            if (uploadResponse) {
-              user.image = uploadResponse.fileName; // Actualiza el campo de imagen del usuario con el nombre del archivo
-            } else {
-              setError("Error al subir la imagen");
-              return;
-            }
-          }
-
-          // Envía los datos del usuario al servidor
+          // Primero, envía los datos del usuario al servidor
           const response = await updateUser(user, user, token);
 
           if (response) {
-            setUser(response);
-            setError(null);
+            setUser(response); // Actualiza el estado del usuario
+            setError(null); // Limpia cualquier error previo
+
+            // Luego, si hay un archivo seleccionado, sube el archivo al servidor
+            if (selectedFile) {
+              const formData = new FormData();
+              formData.append("userId", user.id.toString()); // Agrega el userId al FormData
+              formData.append("file", selectedFile); // Agrega el archivo seleccionado al FormData
+
+              // Sube la imagen de perfil
+              const uploadResponse = await uploadProfileImage(formData, token);
+
+              if (uploadResponse) {
+                user.image = uploadResponse.fileName;
+                setUser({ ...user, image: uploadResponse.fileName }); // Actualiza el estado del usuario
+              } else {
+                setError("Error al subir la imagen");
+                return;
+              }
+            }
           } else {
             setError("Error al actualizar los datos del usuario");
           }
         } catch (error) {
+          // Manejo de errores
           if (error instanceof Error) {
             setError(error.message || "Unknown error / Error desconocido");
           } else {
@@ -95,13 +104,13 @@ export default function ProfilePage() {
       }
     }
   };
-
   return (
     <div className="flex container mx-auto mt-20 p-4 bg-white shadow-lg rounded-lg justify-center">
       <div className="fixed top-6 left-5 bg-azul p-2 rounded-lg hover:bg-cian hover:scale-125 transition-transform duration-300">
         <Link href="/dashboard" className="flex items-center justify-center">
           <Image
             src="/images/ico-back.svg"
+            priority={false}
             alt="Icono de regreso"
             width={42}
             height={42}
@@ -110,20 +119,34 @@ export default function ProfilePage() {
         </Link>
       </div>
       {user ? (
-        <form className="flex flex-col text-lg gap-4 w-full max-w-4xl" onSubmit={handleSave}>
+        <form
+          className="flex flex-col text-lg gap-4 w-full max-w-4xl"
+          onSubmit={handleSave}
+        >
           <div className="text-center">
-            <h2 className="text-5xl font-bold mb-4 text-azul">Información del Usuario</h2>
+            <h2 className="text-5xl font-bold mb-4 text-azul">
+              Información del Usuario
+            </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col items-center">
               <label htmlFor="fileInput">
                 <Image
-                  src={previewImage || (user.image ? `/images/profile/${user.id}/${user.image}` : "/images/logo-sena.png")}
+                  src={
+                    previewImage ||
+                    (user.image
+                      ? `${
+                          process.env.NEXT_PUBLIC_API_URL
+                        }/uploads/images/profile/${
+                          user.id
+                        }/${encodeURIComponent(user.image)}`
+                      : "/images/logo-sena.png")
+                  }
+                  priority={true}
                   alt={`Foto de perfil de ${user.firstName} ${user.lastName}`}
                   className="object-cover rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
                   width={300}
                   height={300}
-                  priority={false}
                   onClick={(e) => {
                     e.preventDefault();
                     fileInputRef.current?.click();
@@ -141,7 +164,9 @@ export default function ProfilePage() {
             </div>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label className="font-semibold text-magenta">Nombre Completo:</label>
+                <label className="font-semibold text-magenta">
+                  Nombre Completo:
+                </label>
                 <input
                   type="text"
                   name="firstName"
@@ -163,7 +188,9 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <label className="font-semibold text-magenta">Tipo de Documento:</label>
+                <label className="font-semibold text-magenta">
+                  Tipo de Documento:
+                </label>
                 <select
                   name="documentType"
                   value={user.documentType || ""}
@@ -223,7 +250,9 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="font-semibold text-magenta">Estado de Cuenta:</label>
+                    <label className="font-semibold text-magenta">
+                      Estado de Cuenta:
+                    </label>
                     <select
                       name="status"
                       value={user.status || ""}
@@ -238,7 +267,9 @@ export default function ProfilePage() {
               )}
               {!editableRoles.includes(user.role) && (
                 <div>
-                  <label className="font-semibold text-magenta">Estado de Cuenta:</label>
+                  <label className="font-semibold text-magenta">
+                    Estado de Cuenta:
+                  </label>
                   <select
                     name="status"
                     value={user.status || ""}

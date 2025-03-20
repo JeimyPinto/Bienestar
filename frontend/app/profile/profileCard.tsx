@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "../lib/types";
-import { fetchUserById } from "../dashboard/user/endpoints";
+import { fetchUserById } from "../user/endpoints";
 
 /**
  * Componente que representa la tarjeta de perfil del usuario.
@@ -44,15 +44,24 @@ export default function ProfileCard() {
             <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
             <Image
               src={
-                user.image
-                  ? `/images/profile/${user.id}/${user.image}`
-                  : "/images/profile/default.png"
+                previewImage ||
+                (user.image
+                  ? `${
+                      process.env.NEXT_PUBLIC_API_URL
+                    }/uploads/images/profile/${user.id}/${encodeURIComponent(
+                      user.image
+                    )}`
+                  : "/images/logo-sena.png")
               }
-              alt={`Foto de perfil de ${user.firstName} ${user.lastName}`}
-              className="object-cover rounded-full"
-              width={200}
-              height={200}
               priority={true}
+              alt={`Foto de perfil de ${user.firstName} ${user.lastName}`}
+              className="object-cover rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+              width={300}
+              height={300}
+              onClick={(e) => {
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }}
             />
           </div>
 
@@ -61,7 +70,7 @@ export default function ProfileCard() {
               <strong>Nombre Completo:</strong> {user.firstName} {user.lastName}
             </p>
             <p>
-              <strong>Tipo de Documento:</strong> 
+              <strong>Tipo de Documento:</strong>
               {user.documentType === "CC"
                 ? " Cédula de ciudadanía"
                 : user.documentType === "TI"

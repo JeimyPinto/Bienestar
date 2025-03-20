@@ -23,3 +23,7 @@ export interface Service {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface UploadResponse {
+  fileName: string;
+}
