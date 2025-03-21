@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
+const uploadPath = path.join(__dirname, 'uploads');
+
 // Importar los controladores y middlewares
 const userController = require("../controllers/user.js");
 const userRoutes = require("./user.js");
@@ -19,4 +22,6 @@ router.get(
   authMiddleware.authorizeRole(),
   userController.getUsersWithServices
 );
+router.use("/uploads", express.static(uploadPath));
+
 module.exports = router;

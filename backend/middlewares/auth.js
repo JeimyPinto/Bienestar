@@ -30,7 +30,9 @@ const authMiddleware = {
       };
       next();
     } catch (err) {
-      return res.status(403).json({ message: "Token no válido / Invalid token" });
+      return res
+        .status(403)
+        .json({ message: "Token no válido / Invalid token" });
     }
   },
 
@@ -41,19 +43,17 @@ const authMiddleware = {
    * @version 18/03/2025
    * @autor Jeimy Pinto
    */
-  authorizeRole: (roles = ['admin']) => {
+  authorizeRole: (roles = ["admin"]) => {
     return (req, res, next) => {
       if (!roles.includes(req.user.role)) {
-        return res
-          .status(403)
-          .json({
-            message:
-              "No tiene los permisos para acceder a esta ruta / You do not have permission to access this route",
-          });
+        return res.status(403).json({
+          message:
+            "No tiene los permisos para acceder a esta ruta / You do not have permission to access this route",
+        });
       }
       next();
     };
-  }
+  },
 };
 
 module.exports = authMiddleware;

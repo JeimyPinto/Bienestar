@@ -9,6 +9,7 @@ export interface User {
   role: string;
   status: string;
   image?: string;
+  password?: string;
   createdAt: string;
   updatedAt: string;
 }

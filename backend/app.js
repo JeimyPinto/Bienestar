@@ -25,7 +25,7 @@ app.use((req, res, next) => {
  */
 const allowedOrigins = [
   "http://localhost:3001",
-  "https://frontendshinydesk.vercel.app", /*cambiar*/
+  "https://frontendshinydesk.vercel.app" /*cambiar*/,
 ];
 app.use(
   cors({
@@ -49,11 +49,6 @@ app.disable("x-powered-by");
  * en formato JSON
  */
 app.use(bodyParser.json());
-/**
- * Middleware para parsear el body de las peticiones
- * en formato URL-encoded y servir archivos estáticos
- */
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 /**
  * Middleware para registrar las solicitudes HTTP
  */

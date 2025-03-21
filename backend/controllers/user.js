@@ -65,7 +65,7 @@ class UsuarioController {
           .json({ message: "Usuario no encontrado / User not found" });
       }
       const { password, ...userInfo } = user.toJSON();
-      res.status(200).json(userInfo);
+      res.status(200).json(user);
     } catch (error) {
       if (error instanceof ValidationError) {
         res.status(400).json({

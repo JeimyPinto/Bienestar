@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { upload } = require("../config/multerConfig.js"); // Importar el middleware de multer
+const path = require("path");
+const { upload } = require("../config/multerConfig.js");
 const userController = require("../controllers/user.js");
 const authMiddleware = require("../middlewares/auth.js");
 
@@ -58,17 +59,33 @@ router.delete(
  * @version 20/03/2025
  * @author JeimyPinto
  */
-router.post('/uploadProfileImage', authMiddleware.authenticateToken, upload.single('file'), (req, res) => {
-  try {
-    const userId = req.body.userId;
-    if (!userId) {
-      return res.status(400).json({ error: 'userId is required' });
-    }
-    const fileName = req.file.filename;
-    res.json({ fileName });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al subir la imagen' });
+router.post(
+  "/upload/images/profile",
+  authMiddleware.authenticateToken,
+  upload.single("image"),
+  (req, res) => {
+    console.log(req.file);
+    res.send("termina");
   }
-});
+);
 
+/**
+ * Ruta para mostrar la imagen de perfil
+ * @route GET /images/profile/:userId/:fileName
+ * @desc Mostrar la imagen de perfil del usuario autenticado
+ * @access Private
+ * @returns {Object} - Archivo de imagen
+ * @version 21/03/2025
+ * @since 20/03/2025
+ */
+router.get("/images/profile/:userId/:fileName", authMiddleware.authenticateToken, (req, res) => {
+  const { userId, fileName } = req.params;
+  const filePath = path.join(__dirname, '..', 'uploads', 'images', 'profile', userId, fileName);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error("Error al enviar el archivo:", err);
+      res.status(404).send("Imagen no encontrada");
+    }
+  });
+});
 module.exports = router;
