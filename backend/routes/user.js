@@ -29,63 +29,28 @@ router.get(
   userController.getByDocument
 );
 
-// Ruta para actualizar la información del usuario autenticado
+// Ruta para actualizar la información de un usuario por ID (solo para administradores)
 router.put(
-  "/update-self",
+  "/id/:id",
   authMiddleware.authenticateToken,
-  userController.updateSelf
-);
-
-// Ruta para actualizar la información de un usuario por ID
-router.put(
-  "/update/:id",
-  authMiddleware.authenticateToken,
-  userController.update
+  upload.single("image"),
+  async (req, res, next) => {
+    try {
+      if (req.file) {
+        console.log(`Imagen subida: ${req.file.filename}`);
+      }
+      // Llama al controlador para manejar la lógica de actualización
+      await userController.update(req, res);
+    } catch (error) {
+      next(error); // Maneja errores si ocurren
+    }
+  }
 );
 
 // Ruta para eliminar un usuario por ID
 router.delete(
-  "/delete/:id",
+  "/id/:id",
   authMiddleware.authenticateToken,
   userController.delete
 );
-
-/**
- * Ruta para subir la imagen de perfil
- * @route POST /uploadProfileImage
- * @desc Subir una imagen de perfil para el usuario autenticado
- * @access Private
- * @returns {Object} - Archivo subido
- * @version 20/03/2025
- * @author JeimyPinto
- */
-router.post(
-  "/upload/images/profile",
-  authMiddleware.authenticateToken,
-  upload.single("image"),
-  (req, res) => {
-    console.log(req.file);
-    res.send("termina");
-  }
-);
-
-/**
- * Ruta para mostrar la imagen de perfil
- * @route GET /images/profile/:userId/:fileName
- * @desc Mostrar la imagen de perfil del usuario autenticado
- * @access Private
- * @returns {Object} - Archivo de imagen
- * @version 21/03/2025
- * @since 20/03/2025
- */
-router.get("/images/profile/:userId/:fileName", authMiddleware.authenticateToken, (req, res) => {
-  const { userId, fileName } = req.params;
-  const filePath = path.join(__dirname, '..', 'uploads', 'images', 'profile', userId, fileName);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error("Error al enviar el archivo:", err);
-      res.status(404).send("Imagen no encontrada");
-    }
-  });
-});
 module.exports = router;

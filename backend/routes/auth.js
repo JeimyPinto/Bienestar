@@ -4,7 +4,15 @@ const router = express.Router();
 const authController = require("../controllers/auth.js");
 const authMiddleware = require("../middlewares/auth.js");
 
-router.post("/register", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), authController.register);
+const { upload } = require("../config/multerConfig.js");
+
+router.post(
+  "/register",
+  authMiddleware.authenticateToken,
+  authMiddleware.authorizeRole(),
+  upload.single("file"),
+  authController.register
+);
 router.post("/login", authController.login);
 router.post("/logout", authMiddleware.authenticateToken, authController.logout);
 

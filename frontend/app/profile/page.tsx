@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import IcoBack from "../ui/ico-back";
 import Image from "next/image";
 import {
   fetchUserById,
-  uploadProfileImage,
+  updateUser,
   editableRoles,
 } from "../user/endpoints";
 import { User } from "../lib/types";
@@ -77,25 +77,17 @@ export default function ProfilePage() {
     }
   };
 
-  //Manejar el envío del formulario
+  // Manejar el envío del formulario
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(formData);
 
     if (formData && token) {
       try {
-        //Subir la imagen de perfsi se sóccionó una nueva
-        if (formData.image && typeof formData.image !== "string") {
-          const formDataImage = new FormData();
-          formDataImage.append("image", formData.image);
-          formDataImage.append("userId", user?.id.toString() || "");
-
-          const response = await uploadProfileImage(formDataImage, token);
-          console.log("Image uploaded successfully:", response);
-        }
-
-        // Aquí puedes agregar la lógica para actualizar los datos del usuario en el servidor
-        // ...
+        // Subir los datos del usuario y la imagen de perfil si se seleccionó una nueva
+        const updatedUser = await updateUser(user!, formData, token);
+        setUser(updatedUser);
+        setFormData(updatedUser);
+        setPreviewImage(updatedUser.image || null);
 
         setError(null);
       } catch (error) {
@@ -107,21 +99,7 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="fixed top-6 left-5 bg-azul p-2 rounded-lg hover:bg-cian hover:scale-125 transition-transform duration-300">
-        <Link
-          href={user?.role === "user" ? "/dashboard/user" : "/dashboard/admin"}
-          className="flex items-center justify-center"
-        >
-          <Image
-            src="/images/ico-back.svg"
-            priority={true}
-            alt="Icono de regreso"
-            width={42}
-            height={42}
-            className="hover:filter hover:brightness-0 hover:invert"
-          />
-        </Link>
-      </div>
+      <IcoBack role={user?.role || "user"} />
       {user ? (
         <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl mt-20">
           <h2 className="text-3xl font-bold mb-6 text-azul text-center">

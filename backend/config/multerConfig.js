@@ -1,37 +1,30 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let uploadPath = path.join(__dirname, '..', 'uploads', 'images');
-
-    if (req.path.includes('upload/images/profile')) {
-      const userId = req.body.userId;
-      if (!userId) {
-        return cb(new Error('userId is required'));
-      }
-      uploadPath = path.join(uploadPath, 'profile', userId);
-    } else if (req.path.includes('upload/images/services')) {
-      const serviceId = req.body.serviceId;
-      if (!serviceId) {
-        return cb(new Error('serviceId is required'));
-      }
-      uploadPath = path.join(uploadPath, 'services', serviceId);
-    } else {
-      return cb(new Error('Invalid upload path'));
-    }
-
-    // Crear el directorio si no existe
-    fs.mkdirSync(uploadPath, { recursive: true });
-
-    cb(null, uploadPath);
+    cb(null, path.join(__dirname, "..", "uploads", "temp")); // Carpeta temporal
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
+    const fileName = file.originalname.replace(/\s+/g, "_").toLowerCase();
+    cb(null, fileName);
+  },
 });
 
-const upload = multer({ storage: storage });
+// Filtro para validar el tipo de archivo
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type / Tipo de archivo no válido"), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Límite de 5 MB
+});
 
 module.exports = { upload };

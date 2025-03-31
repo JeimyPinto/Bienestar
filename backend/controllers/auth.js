@@ -8,7 +8,8 @@ const {
   adminUpdateUserSchema,
   loginSchema,
 } = require("../schemas/user");
-
+const path = require("path");
+const fs = require("fs");
 class AuthController {
   /**
    * Registra un nuevo usuario en el sistema.
@@ -19,7 +20,8 @@ class AuthController {
    * @param {Object} req.body - Cuerpo de la solicitud que contiene los datos del usuario.
    * @param {Object} res - Objeto de respuesta de Express.
    * @returns Un mensaje de éxito o un mensaje de error
-   * @version 11/03/2025
+   * @since 11/03/2025
+   * @version 31/05/2025
    * @autor Jeimy Pinto
    * @returns {Promise<void>} - Responde con un mensaje de éxito o error.
    * @throws {ValidationError} - Si los datos de entrada no cumplen con el esquema de validación.
@@ -47,8 +49,8 @@ class AuthController {
       phone,
       email,
       password,
-      image,
       role,
+      status = "activo",
     } = parsedData;
 
     try {
@@ -59,9 +61,6 @@ class AuthController {
             "A user with that document already exists / Un usuario con ese documento ya existe",
         });
       }
-      // Encriptar la contraseña
-      const hashedPassword = await bcrypt.hash(password, 10);
-      // La contraseña no se cifra porque el modelo ya lo hace
       const newUser = await User.create({
         firstName,
         lastName,
@@ -69,15 +68,51 @@ class AuthController {
         documentNumber,
         phone,
         email,
-        password: hashedPassword,
-        image,
+        password: bcrypt.hashSync(password, 10),
+        image: req.file ? req.file.filename : null,
+        status,
         role,
       });
+      // Mover el archivo a la carpeta final usando el ID del usuario
+      if (req.file) {
+        const tempPath = path.join(
+          __dirname,
+          "..",
+          "uploads",
+          "temp",
+          req.file.filename
+        );
+        const finalPath = path.join(
+          __dirname,
+          "..",
+          "uploads",
+          "images",
+          "profile",
+          newUser.id.toString(),
+          req.file.filename
+        );
 
+        try {
+          // Crear la carpeta si no existe
+          fs.mkdirSync(path.dirname(finalPath), { recursive: true });
+
+          // Mover el archivo
+          fs.renameSync(tempPath, finalPath);
+          console.log("Archivo movido exitosamente a:", finalPath);
+        } catch (error) {
+          console.error("Error al mover el archivo:", error);
+        }
+      }
       res.json({
-        message:
-          "User registered successfully / Usuario registrado exitosamente",
-        user: newUser,
+        message: "User registered successfully",
+        user: {
+          ...newUser.toJSON(),
+          image: newUser.image
+            ? `${req.protocol}://${req.get("host")}/backend/uploads/images/profile/${
+                newUser.id
+              }/${newUser.image}`
+            : null,
+        },
       });
     } catch (error) {
       console.error(

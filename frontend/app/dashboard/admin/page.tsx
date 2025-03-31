@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Header from "../../ui/header";
 import ProfileCard from "../../profile/profileCard";
 import Image from "next/image";
@@ -11,7 +12,7 @@ import { Service } from "../../lib/types";
 /**
  * Componente que representa la página de inicio de sesión.
  * @returns {JSX.Element} Página de inicio de sesión.
- * @constructor 
+ * @constructor
  * @version 18/03/2025
  * @autor Jeimy Pinto
  */
@@ -19,6 +20,7 @@ const DashboardPage = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchUserServices = async () => {
     try {
@@ -29,19 +31,29 @@ const DashboardPage = () => {
       const user = JSON.parse(atob(token.split(".")[1]));
       const userId = user.id;
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/id/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/id/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!response.ok) {
-        throw new Error("Error loading services / Error al cargar los servicios");
+        throw new Error(
+          "Error loading services / Error al cargar los servicios"
+        );
       }
       const data = await response.json();
       setServices(data.services);
     } catch (error) {
-      console.error("Error loading services / Error al cargar los servicios:", error);
-      setError("Server issues, services not available / Problemas con el servidor, servicios no disponibles");
+      console.error(
+        "Error loading services / Error al cargar los servicios:",
+        error
+      );
+      setError(
+        "Server issues, services not available / Problemas con el servidor, servicios no disponibles"
+      );
     } finally {
       setLoading(false);
     }
@@ -57,9 +69,22 @@ const DashboardPage = () => {
       <main className="container mx-auto p-6">
         <ProfileCard />
         <section className="bg-white shadow-md rounded-lg p-6 mt-6">
-          <h2 className="text-2xl font-bold mb-4">Solicitudes de Remisión Pendientes</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            Solicitudes de Remisión Pendientes
+          </h2>
           <div>
             <p>No hay solicitudes pendientes.</p>
+          </div>
+        </section>
+        <section className="bg-white shadow-md rounded-lg p-6 mt-6">
+          <h2 className="text-2xl font-bold mb-4">Opciones de Administrador</h2>
+          <div className="flex flex-col gap-4">
+            <button
+              className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
+              onClick={() => router.push("/user")}
+            >
+              Mostrar todos los usuarios
+            </button>
           </div>
         </section>
         <section className="bg-white shadow-md rounded-lg p-6 mt-6">
@@ -105,13 +130,25 @@ const DashboardPage = () => {
                     priority={true}
                   />
                   <div className="p-4">
-                    <h2 className="text-xl font-semibold mb-2">{service.name}</h2>
-                    <p className="text-gray-600 line-clamp-2">{service.description}</p>
-                    <div className={`inline-block px-3 py-1 text-white rounded-full ${areaColors[service.area]}`}>
+                    <h2 className="text-xl font-semibold mb-2">
+                      {service.name}
+                    </h2>
+                    <p className="text-gray-600 line-clamp-2">
+                      {service.description}
+                    </p>
+                    <div
+                      className={`inline-block px-3 py-1 text-white rounded-full ${
+                        areaColors[service.area]
+                      }`}
+                    >
                       {service.area}
                     </div>
-                    <p className="text-gray-600">Publicado: {formatDate(service.createdAt)}</p>
-                    <p className="text-gray-600">Actualizado: {formatDate(service.updatedAt)}</p>
+                    <p className="text-gray-600">
+                      Publicado: {formatDate(service.createdAt)}
+                    </p>
+                    <p className="text-gray-600">
+                      Actualizado: {formatDate(service.updatedAt)}
+                    </p>
                   </div>
                 </div>
               ))}
