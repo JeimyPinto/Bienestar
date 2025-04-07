@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.User;
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const {
   adminCreateUserSchema,
@@ -34,9 +35,9 @@ class AuthController {
     try {
       parsedData = await adminCreateUserSchema.parseAsync(req.body);
     } catch (validationError) {
-      console.error("Validation error:", validationError);
+      console.error("Validation error:/Error de validación:", validationError);
       return res.status(400).json({
-        message: "Validation error",
+        message: "Validation error/Error de validación",
         errors: validationError.errors,
       });
     }
@@ -58,22 +59,11 @@ class AuthController {
       if (user) {
         return res.status(400).json({
           message:
-            "A user with that document already exists / Un usuario con ese documento ya existe",
+            "A user with that document already exists / Ya existe un usuario con ese documento",
         });
       }
-      const newUser = await User.create({
-        firstName,
-        lastName,
-        documentType,
-        documentNumber,
-        phone,
-        email,
-        password: bcrypt.hashSync(password, 10),
-        image: req.file ? req.file.filename : null,
-        status,
-        role,
-      });
-      // Mover el archivo a la carpeta final usando el ID del usuario
+      let fileName = null;
+      // Si hay un archivo, cambiar su nombre a un UUID y moverlo a uploads/temp
       if (req.file) {
         const tempPath = path.join(
           __dirname,
@@ -82,35 +72,49 @@ class AuthController {
           "temp",
           req.file.filename
         );
+        // Generar un nuevo nombre único para el archivo
+        fileName = `${crypto.randomUUID()}${path.extname(
+          req.file.originalname
+        )}`;
         const finalPath = path.join(
           __dirname,
           "..",
           "uploads",
-          "images",
-          "profile",
-          newUser.id.toString(),
-          req.file.filename
+          "temp",
+          fileName
         );
 
         try {
-          // Crear la carpeta si no existe
-          fs.mkdirSync(path.dirname(finalPath), { recursive: true });
-
-          // Mover el archivo
+          // Renombrar el archivo
           fs.renameSync(tempPath, finalPath);
-          console.log("Archivo movido exitosamente a:", finalPath);
+          console.log("Archivo renombrado y movido a:", finalPath);
         } catch (error) {
           console.error("Error al mover el archivo:", error);
+          return res.status(500).json({
+            message: "Error processing the file / Error procesando el archivo",
+            error: error.message,
+          });
         }
       }
+      // Crear el usuario en la base de datos
+      const newUser = await User.create({
+        firstName,
+        lastName,
+        documentType,
+        documentNumber,
+        phone,
+        email,
+        password: bcrypt.hashSync(password, 10),
+        image: fileName,
+        status,
+        role,
+      });
       res.json({
-        message: "User registered successfully",
+        message: "User registered successfully / Usuario registrado con éxito",
         user: {
           ...newUser.toJSON(),
           image: newUser.image
-            ? `${req.protocol}://${req.get("host")}/backend/uploads/images/profile/${
-                newUser.id
-              }/${newUser.image}`
+            ? `${req.protocol}://${req.get("host")}/uploads/temp/${newUser.image}`
             : null,
         },
       });

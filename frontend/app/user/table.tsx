@@ -21,7 +21,8 @@ const Table: React.FC<TableProps> = ({ users }) => {
           <div className="flex items-center gap-4 mb-4">
             <Image
               src={
-                user?.image?.startsWith("http")
+                user?.image?.startsWith("http") ||
+                user?.image?.startsWith("data:image")
                   ? user.image
                   : "/images/profile/default.png"
               }
@@ -43,7 +44,20 @@ const Table: React.FC<TableProps> = ({ users }) => {
               <strong>ID:</strong> {user?.id}
             </div>
             <div>
-              <strong>Tipo de Documento:</strong> {user?.documentType}
+              <strong>Tipo de Documento:</strong>{" "}
+              {user?.documentType === "CC"
+                ? "Cédula de ciudadanía"
+                : user?.documentType === "TI"
+                ? "Tarjeta de identidad"
+                : user?.documentType === "CE"
+                ? "Cédula de extranjería"
+                : user?.documentType === "PA"
+                ? "Pasaporte"
+                : user?.documentType === "RC"
+                ? "Registro civil"
+                : user?.documentType === "PEP"
+                ? "Permiso especial de permanencia"
+                : "Desconocido"}
             </div>
             <div>
               <strong>Número de Documento:</strong> {user?.documentNumber}
@@ -52,8 +66,16 @@ const Table: React.FC<TableProps> = ({ users }) => {
               <strong>Teléfono:</strong> {user?.phone}
             </div>
             <div>
-              <strong>Contraseña:</strong>{" "}
-              {"*".repeat((user?.password ?? "").length)}
+              <strong>Rol :</strong>{" "}
+              <span
+                className={`${
+                  user?.role === "admin"
+                    ? "text-colorWpp font-bold"
+                    : "text-gray-500"
+                }`}
+              >
+                {user?.role}
+              </span>
             </div>
             <div>
               <strong>Estado:</strong> {user?.status}

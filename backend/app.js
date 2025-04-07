@@ -62,6 +62,8 @@ app.use(cookieParser());
  * Ruta principal de la API
  */
 app.use("/api", routes);
+// Servir archivos estáticos desde el directorio "uploads"
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 /**
  * Rutas de los recursos de la API que no existen
  * se envía un mensaje de error

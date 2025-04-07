@@ -15,31 +15,55 @@ class UsuarioController {
    * @param {*} req Objeto de solicitud HTTP
    * @param {*} res Objeto de respuesta HTTP
    * @returns {Promise<void>} Retorna una promesa que resuelve en una respuesta HTTP
-   * @version 31/10/2024
+   * @version 07/04/2025
+   * @since 31/04/2025
    */
   async getAll(req, res) {
     try {
       const users = await User.findAll({
         where: { status: "activo" },
-        // Excluye el campo "password" de los resultados
-        attributes: { exclude: ["password"] },
+        attributes: { exclude: ["password"] }, // Excluye el campo "password"
       });
-      res.status(200).json(users);
+
+      // Procesar cada usuario para incluir la URL completa de la imagen
+      const processedUsers = users.map((user) => {
+        const userData = user.toJSON();
+        const filePath = path.join(
+          __dirname,
+          "..",
+          "uploads",
+          "temp",
+          userData.image
+        );
+
+        if (userData.image && fs.existsSync(filePath)) {
+          // Si el archivo existe, devolver la URL completa
+          userData.image = `${req.protocol}://${req.get("host")}/uploads/temp/${
+            userData.image
+          }`;
+        } else {
+          // Si no existe, devolver null o una imagen predeterminada
+          userData.image = null;
+        }
+
+        return userData;
+      });
+
+      res.status(200).json(processedUsers);
     } catch (error) {
-      // Manejo de errores de validación
       if (error instanceof ValidationError) {
-        res
-          .status(400)
-          .json({ message: "Error de validación", errors: error.errors });
-        // Manejo de errores de base de datos
+        res.status(400).json({
+          message: "Error de validación / Validation error",
+          errors: error.errors,
+        });
       } else if (error instanceof DatabaseError) {
-        res
-          .status(500)
-          .json({ message: "Error de base de datos", error: error.message });
-        // Manejo de otros errores
+        res.status(500).json({
+          message: "Error de base de datos / Database error",
+          error: error.message,
+        });
       } else {
         res.status(500).json({
-          message: "Error al obtener los usuarios",
+          message: "Error al obtener los usuarios / Error retrieving users",
           error: error.message,
         });
       }
@@ -59,40 +83,37 @@ class UsuarioController {
   async getById(req, res) {
     try {
       const user = await User.findByPk(req.params.id, {
-        include: {
-          association: "services",
-          required: false,
-        },
+        include: ["services"],
       });
       if (!user) {
         return res
           .status(404)
-          .json({ message: "Usuario no encontrado / User not found" });
+          .json({ message: "User not found / No se encontró el usuario" });
       }
 
       const filePath = path.join(
         __dirname,
         "..",
         "uploads",
-        "images",
-        "profile",
-        req.params.id,
+        "temp",
         user.image
       );
-      console.log("Ruta de la imagen construida:", filePath);
+
       let imageBase = null;
 
       try {
         if (user.image && fs.existsSync(filePath)) {
           console.log("Archivo encontrado, leyendo...");
           const imageBuffer = fs.readFileSync(filePath);
-          imageBase64 = imageBuffer.toString("base64");
-          console.log("Imagen codificada en base64:", imageBase64.substring(0, 50));
+          imageBase = imageBuffer.toString("base64");
         } else {
           console.log("Archivo no encontrado o no especificado.");
         }
       } catch (err) {
-        console.error("Error al leer la imagen:", err.message);
+        console.error(
+          "Error reading file: / Error al leer el archivo:",
+          err.message
+        );
       }
 
       const { password, ...userInfo } = user.toJSON();
@@ -101,7 +122,6 @@ class UsuarioController {
         image: imageBase ? `data:image/jpeg;base64,${imageBase}` : null,
       });
     } catch (error) {
-      console.error("Error en el controlador getById:", error.message);
       res.status(500).json({
         message: "Error al obtener el usuario / Error retrieving user",
         error: error.message,

@@ -1,9 +1,12 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+module.exports = {
   images: {
-    domains: ['127.0.0.1', 'localhost'],
+    remotePatterns: [
+      {
+        protocol: "http", // Cambia a "https" si usas HTTPS
+        hostname: "127.0.0.1", // O "localhost" si es el caso
+        port: "3000", // Puerto donde corre tu backend
+        pathname: "/uploads/temp/**", // Ruta donde se encuentran las imágenes
+      },
+    ],
   },
 };
-
-export default nextConfig;

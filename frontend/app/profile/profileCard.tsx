@@ -37,13 +37,12 @@ export default function ProfileCard(): JSX.Element {
           <div className="flex flex-col p-6 mb-6 gap-2 items-center">
             <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
             <Image
-              src={user.image || "/images/profile/default.png"} // Mostrar la imagen del usuario o una por defecto
+              src={user.image || "/images/profile/default.png"}
               priority={true}
               alt={`Foto de perfil de ${user.firstName} ${user.lastName}`}
-              className="object-cover rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="object-cover rounded-md shadow-lg hover:shadow-xl transition-shadow duration-300"
               width={300}
               height={300}
-              style={{ width: "auto", height: "auto" }} // Mantener la proporción del aspecto
             />
           </div>
           <div className="flex flex-col justify-center gap-2">
