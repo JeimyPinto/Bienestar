@@ -49,7 +49,11 @@ export async function fetchUsers(
  */
 export const fetchUserById = async (
   token: string
-): Promise<{ user: User; message: string }> => {
+): Promise<{
+  user: User;
+  message: string;
+  image: string | null;
+}> => {
   const user = JSON.parse(atob(token.split(".")[1]));
 
   try {
@@ -62,12 +66,16 @@ export const fetchUserById = async (
     const data = await response.json();
 
     if (response.ok) {
-      return data;
+      return {
+        user: data,
+        message: data.message,
+        image: data.image,
+      };
     } else {
-      throw new Error(data.message || "Error fetching user data");
+      throw new Error(data.message || "Error fetching user data / Error al obtener datos del usuario");
     }
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error("Error fetching user data: / Error al obtener datos del usuario", error);
     throw error;
   }
 };

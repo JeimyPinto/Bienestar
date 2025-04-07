@@ -9,14 +9,12 @@ import { fetchUserById } from "../user/endpoints";
 /**
  * Componente que representa la tarjeta de perfil del usuario.
  * @returns {JSX.Element} Tarjeta de perfil del usuario.
- * @version 07/04/2025
- * @since 18/03/2025
- * @autor Jeimy Pinto
  */
 export default function ProfileCard(): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [userImage, setUserImage] = useState<string | null>(null);
 
   // Función para cargar los datos del usuario
   const loadUserData = async () => {
@@ -28,8 +26,14 @@ export default function ProfileCard(): JSX.Element {
     }
 
     try {
-      const userData = await fetchUserById(token);
-      setUser(userData);
+      const { user, message, image } = await fetchUserById(token);
+
+      if (user) {
+        setUser(user);
+        setUserImage(image || "/images/profile/default.png");
+      } else {
+        setError(message || "No se encontró el usuario.");
+      }
     } catch (err) {
       setError("Error al cargar los datos del usuario. Intenta nuevamente.");
     } finally {
@@ -47,15 +51,22 @@ export default function ProfileCard(): JSX.Element {
       {loading ? (
         <p>Cargando...</p>
       ) : error ? (
-        <div className="text-red-500">
+        <div className="text-red-500 bg-red-100 p-4 rounded-md shadow-md">
+          <p className="font-semibold">¡Ups! Algo salió mal:</p>
           <p>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
+          >
+            Cargar nuevamente
+          </button>
         </div>
       ) : user ? (
         <>
           <div className="flex flex-col p-6 mb-6 gap-2 items-center">
             <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
             <Image
-              src={user.image || "/images/profile/default.png"}
+              src={userImage || "/images/profile/default.png"}
               priority={true}
               alt={`Foto de perfil de ${user.firstName} ${user.lastName}`}
               className="object-cover rounded-md shadow-lg hover:shadow-xl transition-shadow duration-300"
