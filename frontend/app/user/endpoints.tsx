@@ -3,14 +3,13 @@ import { User } from "../lib/types";
 export const editableRoles = ["admin", "integrante"];
 
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/users`;
+
 /**
  * Fetch para obtener los datos de todos los usuarios.
  * @param page la página a obtener (por defecto 1)
  * @param limit el número de usuarios por página (por defecto 10)
  * @param token el token de autorización
- * @returns un objeto con los usuarios, la página actual, el total de páginas y el total de usuarios
- * @version 07/04/2025
- * @since 20/03/2025
+ * @returns un objeto con los usuarios, la página actual, el total de páginas, el total de usuarios, y un mensaje
  */
 export async function fetchUsers(
   token: string,
@@ -21,6 +20,7 @@ export async function fetchUsers(
   currentPage: number;
   totalPages: number;
   totalUsers: number;
+  message: string;
 }> {
   try {
     const response = await fetch(`${baseUrl}?page=${page}&limit=${limit}`, {
@@ -29,66 +29,59 @@ export async function fetchUsers(
       },
     });
 
+    const data = await response.json();
+
     if (response.ok) {
-      const data = await response.json();
       return data;
     } else {
-      throw new Error("Error fetching users / Error al obtener los usuarios");
+      throw new Error(data.message || "Error fetching users / Error al obtener usuarios");
     }
   } catch (error) {
-    console.error(
-      "Error fetching users / Error al obtener los usuarios:",
-      error
-    );
+    console.error("Error fetching users: / Error al obtener usuarios", error);
     throw error;
   }
 }
+
 /**
  * Fetch para obtener los datos de un usuario por su ID.
  * @param token el token de autorización
- * @returns los datos del usuario en formato JSON
- * @throws un error si no se pueden obtener los datos del usuario
- * @version 31/03/2025
- * @since 20/03/2025
+ * @returns los datos del usuario en formato JSON y un mensaje
  */
-export const fetchUserById = async (token: string): Promise<User> => {
-  // Obtener el user del token
+export const fetchUserById = async (
+  token: string
+): Promise<{ user: User; message: string }> => {
   const user = JSON.parse(atob(token.split(".")[1]));
 
   try {
-    // Obtener los datos del usuario
-    const userResponse = await fetch(`${baseUrl}/id/${user.id}`, {
+    const response = await fetch(`${baseUrl}/id/${user.id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!userResponse.ok) {
-      throw new Error(
-        "Error fetching user data / Error al obtener los datos del usuario"
-      );
-    }
+    const data = await response.json();
 
-    const userData = await userResponse.json();
-    return userData;
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.message || "Error fetching user data");
+    }
   } catch (error) {
-    console.error(
-      "Error fetching user data / Error al obtener los datos del usuario:",
-      error
-    );
+    console.error("Error fetching user data:", error);
     throw error;
   }
 };
+
 /**
  * Fetch para crear un nuevo usuario. (solo administradores)
- * @param user el usuario a crear
+ * @param form el formulario con los datos del usuario
  * @param token el token de autorización
- * @returns los datos del usuario creado en formato JSON
- * @throws un error si no se pueden crear los datos del usuario
- * @version 31/03/2025
- * @since 31/03/2025
+ * @returns los datos del usuario creado y un mensaje
  */
-export async function createUser(form: FormData, token: string) {
+export async function createUser(
+  form: FormData,
+  token: string
+): Promise<{ user: User; message: string }> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
@@ -100,45 +93,61 @@ export async function createUser(form: FormData, token: string) {
         body: form,
       }
     );
-    const { user, message } = await response.json();
-    return { user, message };
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.message || "Error creating user");
+    }
   } catch (error) {
-    console.error("Error creating user / Error al crear el usuario:", error);
+    console.error("Error creating user:", error);
     throw error;
   }
 }
+
 /**
- * Fetch que actualiza los datos de un usuario
+ * Fetch que actualiza los datos de un usuario.
  * @param user el usuario a actualizar
  * @param formData los datos del formulario
  * @param token el token de autorización
- * @returns los datos del usuario actualizado en formato JSON
- * @throws un error si no se pueden actualizar los datos del usuario
- * @version 20/03/2025
- * @since 20/03/2025
+ * @returns los datos del usuario actualizado y un mensaje
  */
-export const updateUser = async (user: User, formData: any, token: string) => {
+export const updateUser = async (
+  user: User,
+  formData: any,
+  token: string
+): Promise<{ updatedUser: User; message: string }> => {
   try {
-    //Actualiza los datos del usuario
     const response = await fetch(`${baseUrl}/id/${user.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(user),
+      body: JSON.stringify(formData),
     });
-    const updatedUser = await response.json();
-    return updatedUser;
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.message || "Error updating user data");
+    }
   } catch (error) {
-    console.error(
-      "Error updating data: / Error al actualizar los datos:",
-      error
-    );
+    console.error("Error updating user data:", error);
     throw error;
   }
 };
 
+/**
+ * Fetch para obtener los servicios de un usuario.
+ * @param setServices función para establecer los servicios
+ * @param setLoading función para establecer el estado de carga
+ * @param setError función para establecer el error
+ */
 export const fetchUserServices = async (
   setServices: (services: any) => void,
   setLoading: (loading: boolean) => void,
@@ -147,8 +156,9 @@ export const fetchUserServices = async (
   try {
     const token = localStorage.getItem("token");
     if (!token) {
-      throw new Error("No token found / No se encontró el token");
+      throw new Error("No token found");
     }
+
     const user = JSON.parse(atob(token.split(".")[1]));
     const userId = user.id;
 
@@ -157,16 +167,16 @@ export const fetchUserServices = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    if (!response.ok) {
-      throw new Error("Error loading services / Error al cargar los servicios");
-    }
+
     const data = await response.json();
-    setServices(data.services);
+
+    if (response.ok) {
+      setServices(data.services);
+    } else {
+      throw new Error(data.message || "Error loading services");
+    }
   } catch (error) {
-    console.error(
-      "Error loading services / Error al cargar los servicios:",
-      error
-    );
+    console.error("Error loading services:", error);
     setError(
       "Server issues, services not available / Problemas con el servidor, servicios no disponibles"
     );

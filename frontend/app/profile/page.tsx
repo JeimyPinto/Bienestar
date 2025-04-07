@@ -6,25 +6,19 @@ import Image from "next/image";
 import { fetchUserById, updateUser, editableRoles } from "../user/endpoints";
 import { User } from "../lib/types";
 
-/**
- * Componente para la página de perfil de usuario.
- * @version 21/03/2025
- * @since 20/03/2025
- */
 export default function ProfilePage() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<User | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  //Cargar el token del localStorage al montar el componente
+  // Cargar el token del localStorage al montar el componente
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
   }, []);
 
-  //Cargar los datos del usuario y la imagen de perfil al montar el componente
+  // Cargar los datos del usuario al montar el componente
   useEffect(() => {
     const fetchUserData = async () => {
       if (token) {
@@ -32,7 +26,6 @@ export default function ProfilePage() {
           const userData = await fetchUserById(token);
           setUser(userData);
           setFormData(userData);
-          setPreviewImage(userData.image || null);
         } catch (error) {
           setError(
             `Error fetching user data / Error al obtener los datos del usuario: ${error}`
@@ -44,34 +37,37 @@ export default function ProfilePage() {
     fetchUserData();
   }, [token]);
 
-  //Manejar cambios en los inputs del formulario
+  // Manejar cambios en los inputs del formulario
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    // Extrae el nombre y el valor del input o select
     const { name, value } = event.target;
 
     if (formData) {
-      setFormData((prevData) => {
-        if (!prevData) return prevData;
-        return {
-          ...prevData,
-          [name]: value,
-        };
-      });
+      setFormData((prevData) => ({
+        ...prevData!,
+        [name]: value,
+      }));
     }
+  };
 
-    // Si el input es de tipo file y tiene archivos, muestra la imagen en el componente
-    if (name === "image" && (event.target as HTMLInputElement).files) {
-      const input = event.target as HTMLInputElement;
-      const file = input.files ? input.files[0] : null;
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviewImage(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+  // Manejar la carga de la imagen
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Por favor selecciona un archivo de imagen válido.");
+        return;
       }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prevData) => ({
+          ...prevData!,
+          image: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -81,12 +77,9 @@ export default function ProfilePage() {
 
     if (formData && token) {
       try {
-        // Subir los datos del usuario y la imagen de perfil si se seleccionó una nueva
         const updatedUser = await updateUser(user!, formData, token);
         setUser(updatedUser);
         setFormData(updatedUser);
-        setPreviewImage(updatedUser.image || null);
-
         setError(null);
       } catch (error) {
         console.error("Error updating user data:", error);
@@ -202,10 +195,10 @@ export default function ProfilePage() {
             )}
             <div>
               <label className="font-semibold text-magenta">Imagen:</label>
-              {previewImage && (
+              {formData?.image && (
                 <div className="mb-2">
                   <Image
-                    src={previewImage}
+                    src={formData.image}
                     alt="Imagen de perfil"
                     width={100}
                     height={100}
@@ -215,7 +208,7 @@ export default function ProfilePage() {
               <input
                 type="file"
                 name="image"
-                onChange={handleChange}
+                onChange={handleImageChange}
                 className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-cian"
                 accept="image/*"
               />

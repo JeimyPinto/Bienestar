@@ -9,30 +9,48 @@ import { fetchUserById } from "../user/endpoints";
 /**
  * Componente que representa la tarjeta de perfil del usuario.
  * @returns {JSX.Element} Tarjeta de perfil del usuario.
- * @version 31/03/2025
+ * @version 07/04/2025
  * @since 18/03/2025
  * @autor Jeimy Pinto
  */
 export default function ProfileCard(): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Cargar los datos del usuario
-  useEffect(() => {
+  // Función para cargar los datos del usuario
+  const loadUserData = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       setError("No se ha encontrado el token de autorización");
+      setLoading(false);
       return;
     }
 
-    fetchUserById(token)
-      .then((userData) => setUser(userData))
-      .catch((error) => setError(error.message));
+    try {
+      const userData = await fetchUserById(token);
+      setUser(userData);
+    } catch (err) {
+      setError("Error al cargar los datos del usuario. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar los datos del usuario al montar el componente
+  useEffect(() => {
+    loadUserData();
   }, []);
 
   return (
     <div className="flex container mx-auto p-4 bg-white shadow-lg rounded-lg justify-center">
-      {user ? (
+      {loading ? (
+        <p>Cargando...</p>
+      ) : error ? (
+        <div className="text-red-500">
+          <p>{error}</p>
+        </div>
+      ) : user ? (
         <>
           <div className="flex flex-col p-6 mb-6 gap-2 items-center">
             <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
@@ -43,6 +61,8 @@ export default function ProfileCard(): JSX.Element {
               className="object-cover rounded-md shadow-lg hover:shadow-xl transition-shadow duration-300"
               width={300}
               height={300}
+              placeholder="blur"
+              blurDataURL="/images/profile/default.png"
             />
           </div>
           <div className="flex flex-col justify-center gap-2">
@@ -50,13 +70,13 @@ export default function ProfileCard(): JSX.Element {
               <strong>Nombre Completo:</strong> {user.firstName} {user.lastName}
             </p>
             <p>
-              <strong>Tipo de Documento:</strong>
+              <strong>Tipo de Documento:</strong>{" "}
               {user.documentType === "CC"
-                ? " Cédula de ciudadanía"
+                ? "Cédula de ciudadanía"
                 : user.documentType === "TI"
-                ? " Tarjeta de identidad"
+                ? "Tarjeta de identidad"
                 : user.documentType === "CE"
-                ? " Cédula de extranjería"
+                ? "Cédula de extranjería"
                 : user.documentType}
             </p>
             <p>
@@ -83,7 +103,7 @@ export default function ProfileCard(): JSX.Element {
           </div>
         </>
       ) : (
-        <p>{error ? error : "Cargando..."}</p>
+        <p>No se encontraron datos del usuario.</p>
       )}
     </div>
   );
