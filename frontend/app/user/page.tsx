@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User } from "../lib/types";
+import { User, TableProps } from "../lib/types";
 import { fetchUsers, createUser } from "./endpoints";
 import Table from "./table";
 import Header from "../ui/header";
@@ -9,6 +9,8 @@ import IcoBack from "../ui/ico-back";
 
 const UserPage = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [token, setToken] = useState<string | null>(null);
   const [newUser, setNewUser] = useState<User>({
     id: "",
@@ -41,13 +43,21 @@ const UserPage = () => {
   }, []);
 
   useEffect(() => {
-    if (token) {
-      fetchUsers(token)
-        .then((userData) => setUsers(userData))
-        .catch((error) => setError(error.message))
-        .finally(() => setLoading(false));
-    }
-  }, [token]);
+    const loadUsers = async () => {
+      try {
+        if (!token) {
+          throw new Error("Token no disponible");
+        }
+        const data = await fetchUsers(token, currentPage, 10);
+        setUsers(data.users);
+        setTotalPages(data.totalPages);
+      } catch (error) {
+        console.error("Error loading users:", error);
+      }
+    };
+
+    loadUsers();
+  }, [currentPage, token]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -149,7 +159,12 @@ const UserPage = () => {
           Añadir Nuevo Usuario
         </button>
       </main>
-      <Table users={users} />
+      <Table
+        users={users}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+      />
       <dialog
         ref={dialogRef}
         className="rounded-md shadow-lg p-6 bg-white w-full max-w-md"

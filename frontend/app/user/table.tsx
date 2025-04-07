@@ -2,13 +2,14 @@
 
 import React from "react";
 import Image from "next/image";
-import { User } from "../lib/types";
+import { User, TableProps } from "../lib/types";
 
-interface TableProps {
-  users: User[];
-}
-
-const Table: React.FC<TableProps> = ({ users }) => {
+const Table: React.FC<TableProps> = ({
+  users,
+  currentPage,
+  setCurrentPage,
+  totalPages,
+}) => {
   return (
     <div className="container mx-auto p-4 lg:pl-20">
       {users.map((user, index) => (
@@ -83,6 +84,25 @@ const Table: React.FC<TableProps> = ({ users }) => {
           </div>
         </div>
       ))}
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-gray-300 rounded-md"
+        >
+          Anterior
+        </button>
+        <span className="px-4 py-2">{`Página ${currentPage} de ${totalPages}`}</span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 bg-gray-300 rounded-md"
+        >
+          Siguiente
+        </button>
+      </div>
     </div>
   );
 };

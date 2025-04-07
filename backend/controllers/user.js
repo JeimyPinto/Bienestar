@@ -11,7 +11,8 @@ const fs = require("fs");
 const path = require("path");
 class UsuarioController {
   /**
-   * Obtener todos los usuarios de la base de datos que estén activos
+   * Obtener todos los usuarios activos con paginación
+   * @async 
    * @param {*} req Objeto de solicitud HTTP
    * @param {*} res Objeto de respuesta HTTP
    * @returns {Promise<void>} Retorna una promesa que resuelve en una respuesta HTTP
@@ -20,9 +21,16 @@ class UsuarioController {
    */
   async getAll(req, res) {
     try {
-      const users = await User.findAll({
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      // Consultar los usuarios con paginación
+      const { rows: users, count: totalUsers } = await User.findAndCountAll({
         where: { status: "activo" },
-        attributes: { exclude: ["password"] }, // Excluye el campo "password"
+        attributes: { exclude: ["password"] },
+        limit,
+        offset,
       });
 
       // Procesar cada usuario para incluir la URL completa de la imagen
@@ -37,19 +45,26 @@ class UsuarioController {
         );
 
         if (userData.image && fs.existsSync(filePath)) {
-          // Si el archivo existe, devolver la URL completa
           userData.image = `${req.protocol}://${req.get("host")}/uploads/temp/${
             userData.image
           }`;
         } else {
-          // Si no existe, devolver null o una imagen predeterminada
           userData.image = null;
         }
 
         return userData;
       });
 
-      res.status(200).json(processedUsers);
+      // Calcular el total de páginas
+      const totalPages = Math.ceil(totalUsers / limit);
+
+      // Responder con los usuarios, la página actual y el total de páginas
+      res.status(200).json({
+        users: processedUsers,
+        currentPage: page,
+        totalPages,
+        totalUsers,
+      });
     } catch (error) {
       if (error instanceof ValidationError) {
         res.status(400).json({

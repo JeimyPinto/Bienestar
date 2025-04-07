@@ -3,11 +3,7 @@
 import React, { useState, useEffect } from "react";
 import IcoBack from "../ui/ico-back";
 import Image from "next/image";
-import {
-  fetchUserById,
-  updateUser,
-  editableRoles,
-} from "../user/endpoints";
+import { fetchUserById, updateUser, editableRoles } from "../user/endpoints";
 import { User } from "../lib/types";
 
 /**
@@ -38,7 +34,9 @@ export default function ProfilePage() {
           setFormData(userData);
           setPreviewImage(userData.image || null);
         } catch (error) {
-          setError("Error al obtener los datos del usuario");
+          setError(
+            `Error fetching user data / Error al obtener los datos del usuario: ${error}`
+          );
         }
       }
     };
@@ -211,7 +209,6 @@ export default function ProfilePage() {
                     alt="Imagen de perfil"
                     width={100}
                     height={100}
-                    className="rounded-full"
                   />
                 </div>
               )}

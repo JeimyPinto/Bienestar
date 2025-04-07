@@ -4,23 +4,34 @@ export const editableRoles = ["admin", "integrante"];
 
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 /**
- * Fetch para obtener todos los usuarios.
+ * Fetch para obtener los datos de todos los usuarios.
+ * @param page la página a obtener (por defecto 1)
+ * @param limit el número de usuarios por página (por defecto 10)
  * @param token el token de autorización
- * @returns los datos de todos los usuarios en formato JSON
- * @throws un error si no se pueden obtener los datos de los usuarios
- * @version 20/03/2025
+ * @returns un objeto con los usuarios, la página actual, el total de páginas y el total de usuarios
+ * @version 07/04/2025
  * @since 20/03/2025
  */
-export async function fetchUsers(token: string): Promise<User[]> {
+export async function fetchUsers(
+  token: string,
+  page: number = 1,
+  limit: number = 10
+): Promise<{
+  users: User[];
+  currentPage: number;
+  totalPages: number;
+  totalUsers: number;
+}> {
   try {
-    const response = await fetch(baseUrl, {
+    const response = await fetch(`${baseUrl}?page=${page}&limit=${limit}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
     if (response.ok) {
-      const users = await response.json();
-      return users;
+      const data = await response.json();
+      return data;
     } else {
       throw new Error("Error fetching users / Error al obtener los usuarios");
     }
