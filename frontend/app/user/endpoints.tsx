@@ -32,7 +32,13 @@ export async function fetchUsers(
     const data = await response.json();
 
     if (response.ok) {
-      return data;
+      return {
+        users: data.users,
+        currentPage: data.currentPage,
+        totalPages: data.totalPages,
+        totalUsers: data.totalUsers,
+        message: data.message,
+      };
     } else {
       throw new Error(data.message || "Error fetching users / Error al obtener usuarios");
     }

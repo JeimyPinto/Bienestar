@@ -25,14 +25,3 @@ export interface Service {
   createdAt: string;
   updatedAt: string;
 }
-
-export interface UploadResponse {
-  fileName: string;
-}
-
-export interface TableProps {
-  users: User[];
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  totalPages: number;
-}

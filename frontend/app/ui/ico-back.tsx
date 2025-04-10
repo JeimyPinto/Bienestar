@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface IcoBackProps {
-  role: string; // Rol del usuario ("user" o "admin")
+  role: string;
 }
 
 const IcoBack: React.FC<IcoBackProps> = ({ role }) => {

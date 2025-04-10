@@ -5,12 +5,16 @@ import IcoBack from "../ui/ico-back";
 import Image from "next/image";
 import { fetchUserById, updateUser, editableRoles } from "../user/endpoints";
 import { User } from "../lib/types";
+import ErrorMessage from "../ui/ErrorMessage";
+import SuccessMessage from "../ui/SuccessMessage";
 
 export default function ProfilePage() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState<User | null>(null);
+  const [userImage, setUserImage] = useState<string | null>(null);
 
   // Cargar el token del localStorage al montar el componente
   useEffect(() => {
@@ -23,13 +27,14 @@ export default function ProfilePage() {
     const fetchUserData = async () => {
       if (token) {
         try {
-          const userData = await fetchUserById(token);
-          setUser(userData);
-          setFormData(userData);
+          const { user, message, image } = await fetchUserById(token);
+          setUser(user);
+          setFormData(user);
+          setUserImage(image || "/images/profile/default.png");
+          setSuccessMessage(message); // Mostrar mensaje de éxito si lo hay
+          setTimeout(() => setSuccessMessage(null), 5000); // Ocultar mensaje después de 5 segundos
         } catch (error) {
-          setError(
-            `Error fetching user data / Error al obtener los datos del usuario: ${error}`
-          );
+          setError("Error al obtener los datos del usuario. Intenta nuevamente.");
         }
       }
     };
@@ -62,6 +67,7 @@ export default function ProfilePage() {
 
       const reader = new FileReader();
       reader.onloadend = () => {
+        setUserImage(reader.result as string);
         setFormData((prevData) => ({
           ...prevData!,
           image: reader.result as string,
@@ -81,9 +87,11 @@ export default function ProfilePage() {
         setUser(updatedUser);
         setFormData(updatedUser);
         setError(null);
+        setSuccessMessage("¡Datos actualizados correctamente!");
+        setTimeout(() => setSuccessMessage(null), 5000); // Ocultar mensaje después de 5 segundos
       } catch (error) {
         console.error("Error updating user data:", error);
-        setError("Error al actualizar los datos del usuario");
+        setError("Error al actualizar los datos del usuario.");
       }
     }
   };
@@ -195,10 +203,10 @@ export default function ProfilePage() {
             )}
             <div>
               <label className="font-semibold text-magenta">Imagen:</label>
-              {formData?.image && (
+              {userImage && (
                 <div className="mb-2">
                   <Image
-                    src={formData.image}
+                    src={userImage}
                     alt="Imagen de perfil"
                     width={100}
                     height={100}
@@ -224,10 +232,12 @@ export default function ProfilePage() {
       ) : (
         <p>Cargando...</p>
       )}
-      {error && (
-        <div className="bg-red-100 text-red-700 p-4 rounded-md shadow-md mt-4">
-          <p>{error}</p>
-        </div>
+      {error && <ErrorMessage message={error} />}
+      {successMessage && (
+        <SuccessMessage
+          message={successMessage}
+          onClose={() => setSuccessMessage(null)}
+        />
       )}
     </div>
   );

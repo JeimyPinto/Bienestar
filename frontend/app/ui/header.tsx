@@ -74,11 +74,11 @@ export default function Header() {
       <Link href="/">
         <Image
           src="/images/Icono.png"
+          priority={false}
           alt="Logo"
           width={150}
           height={60}
           className="p-3"
-          priority={false}
         />
       </Link>
       <nav className="flex items-center space-x-4 mt-4 md:mt-0">
