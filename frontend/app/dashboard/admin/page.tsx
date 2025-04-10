@@ -3,19 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../../ui/header";
-import ProfileCard from "../../profile/profileCard";
+import ProfileCard from "../../user/profileCard";
 import Image from "next/image";
 import formatDate from "../../lib/formatDate";
 import { areaColors } from "../../lib/areaColors";
 import { Service } from "../../lib/types";
 
-/**
- * Componente que representa la página de inicio de sesión.
- * @returns {JSX.Element} Página de inicio de sesión.
- * @constructor
- * @version 18/03/2025
- * @autor Jeimy Pinto
- */
 const DashboardPage = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);

@@ -18,7 +18,6 @@ class UsuarioController {
       const offset = (page - 1) * limit;
 
       const { rows: users, count: totalUsers } = await User.findAndCountAll({
-        where: { status: "activo" },
         attributes: { exclude: ["password"] },
         limit,
         offset,

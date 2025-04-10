@@ -40,7 +40,12 @@ const UserPage = () => {
           throw new Error("Token no disponible");
         }
         const data = await fetchUsers(token, currentPage, 10);
-        setUsers(data.users);
+        setUsers(
+          data.users.map((user) => ({
+            ...user,
+            image: user.image || "",
+          }))
+        );
         setTotalPages(data.totalPages);
         setError(null);
       } catch (error) {

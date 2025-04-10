@@ -49,21 +49,24 @@ export async function fetchUsers(
 }
 
 /**
- * Fetch para obtener los datos de un usuario por su ID.
+ * fetch para obtener los datos de un usuario por su ID.
  * @param token el token de autorización
- * @returns los datos del usuario en formato JSON y un mensaje
+ * @param userId el ID del usuario a obtener (si no se proporciona, se obtiene el ID del token)
+ * @returns un objeto con los datos del usuario, un mensaje y la imagen del usuario
+ * @throws Error si ocurre un error al obtener los datos del usuario
  */
 export const fetchUserById = async (
-  token: string
+  token: string,
+  userId?: string
 ): Promise<{
   user: User;
   message: string;
   image: string | null;
 }> => {
-  const user = JSON.parse(atob(token.split(".")[1]));
+  const id = userId || JSON.parse(atob(token.split(".")[1])).id;
 
   try {
-    const response = await fetch(`${baseUrl}/id/${user.id}`, {
+    const response = await fetch(`${baseUrl}/id/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

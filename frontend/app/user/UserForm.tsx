@@ -1,14 +1,6 @@
 import React, { useState } from "react";
-import { User } from "../lib/types";
+import { User,UserFormProps } from "../lib/types";
 import { createUser } from "./endpoints";
-
-interface UserFormProps {
-  dialogRef: React.RefObject<HTMLDialogElement>;
-  closeDialog: () => void;
-  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-  setSuccessMessage: React.Dispatch<React.SetStateAction<string | null>>;
-  token: string | null;
-}
 
 const UserForm: React.FC<UserFormProps> = ({
   dialogRef,
@@ -231,6 +223,25 @@ const UserForm: React.FC<UserFormProps> = ({
               <option value="inactivo">Inactivo</option>
             </select>
           </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-azul">
+            Imagen de Perfil
+          </label>
+          <input
+            type="file"
+            name="profileImage"
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                setNewUser((prevUser) => ({
+                  ...prevUser,
+                  profileImage: e.target.files![0],
+                }));
+              }
+            }}
+            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
+          />
         </div>
         <div className="flex justify-center">
           <button

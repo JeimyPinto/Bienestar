@@ -114,7 +114,9 @@ class AuthController {
         user: {
           ...newUser.toJSON(),
           image: newUser.image
-            ? `${req.protocol}://${req.get("host")}/uploads/temp/${newUser.image}`
+            ? `${req.protocol}://${req.get("host")}/uploads/temp/${
+                newUser.image
+              }`
             : null,
         },
       });
@@ -141,28 +143,6 @@ class AuthController {
       }
     }
   }
-
-  /**
-   * Maneja el inicio de sesión del usuario validando el cuerpo de la solicitud, verificando las credenciales del usuario,
-   * y generando un token JWT si las credenciales son válidas.
-   * @async
-   * @function login
-   * @param {*} req el correo electrónico y la contraseña del usuario
-   * @param {*} res si el correo electrónico y la contraseña son correctos, devuelve un token
-   * @returns El token de autenticación o un mensaje de error
-   * @version 11/03/2025
-   * @autor Jeimy Pinto
-   * @param {Object} req - Objeto de solicitud de Express.
-   * @param {Object} req.body - El cuerpo de la solicitud que contiene los datos de inicio de sesión del usuario.
-   * @param {string} req.body.email - El correo electrónico del usuario que intenta iniciar sesión.
-   * @param {string} req.body.password - La contraseña del usuario que intenta iniciar sesión.
-   * @param {Object} res - Objeto de respuesta de Express.
-   * @returns {Promise<void>} Envía una respuesta JSON con un token JWT si el inicio de sesión es exitoso,
-   * o un mensaje de error si el inicio de sesión falla.
-   *
-   * @throws {ValidationError} Si la validación del cuerpo de la solicitud falla.
-   * @throws {Error} Si hay un error durante el proceso de inicio de sesión.
-   */
   async login(req, res) {
     let parsedData;
     try {
