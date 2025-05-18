@@ -51,4 +51,6 @@ export interface UserFormProps {
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setSuccessMessage: React.Dispatch<React.SetStateAction<string | null>>;
   token: string | null;
+  user?: User;
+  onClose: () => void;
 }

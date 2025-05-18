@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { useColumnSorter } from "../lib/filter";
 import { UserTableProps } from "../lib/types";
+import UserEditForm from "./UserEditForm";
 
 const UserTable: React.FC<UserTableProps> = ({
   users,
@@ -8,8 +9,21 @@ const UserTable: React.FC<UserTableProps> = ({
   setCurrentPage,
   totalPages,
 }) => {
-  const { sortedData: sortedUsers, handleSort, sortColumn, sortOrder } =
-    useColumnSorter(users);
+  const {
+    sortedData: sortedUsers,
+    handleSort,
+    sortColumn,
+    sortOrder,
+  } = useColumnSorter(users);
+
+  const [successMessage, setSuccessMessage] = useState("");
+  const userEditFormRef = useRef<any>(null);
+
+  const handleRowClick = (user: any) => {
+    if (userEditFormRef.current) {
+      userEditFormRef.current.open(user);
+    }
+  };
 
   return (
     <div className="overflow-x-auto px-4">
@@ -17,8 +31,12 @@ const UserTable: React.FC<UserTableProps> = ({
         {/* Header */}
         <div className="grid grid-cols-12 bg-cian text-azul font-semibold px-4 py-2">
           <div>Imagen</div>
-          <div onClick={() => handleSort("firstName")} className="cursor-pointer">
-            Nombre {sortColumn === "firstName" && (sortOrder === "asc" ? "↑" : "↓")}
+          <div
+            onClick={() => handleSort("firstName")}
+            className="cursor-pointer"
+          >
+            Nombre{" "}
+            {sortColumn === "firstName" && (sortOrder === "asc" ? "↑" : "↓")}
           </div>
           <div
             onClick={() => handleSort("email")}
@@ -30,31 +48,41 @@ const UserTable: React.FC<UserTableProps> = ({
             onClick={() => handleSort("documentType")}
             className="col-span-2 cursor-pointer"
           >
-            Tipo de Documento {sortColumn === "documentType" && (sortOrder === "asc" ? "↑" : "↓")}
+            Tipo de Documento{" "}
+            {sortColumn === "documentType" && (sortOrder === "asc" ? "↑" : "↓")}
           </div>
-          <div onClick={() => handleSort("documentNumber")} className="cursor-pointer">
-            Número de Documento {sortColumn === "documentNumber" && (sortOrder === "asc" ? "↑" : "↓")}
+          <div
+            onClick={() => handleSort("documentNumber")}
+            className="cursor-pointer"
+          >
+            Número de Documento{" "}
+            {sortColumn === "documentNumber" &&
+              (sortOrder === "asc" ? "↑" : "↓")}
           </div>
           <div onClick={() => handleSort("phone")} className="cursor-pointer">
-            Teléfono {sortColumn === "phone" && (sortOrder === "asc" ? "↑" : "↓")}
+            Teléfono{" "}
+            {sortColumn === "phone" && (sortOrder === "asc" ? "↑" : "↓")}
           </div>
           <div onClick={() => handleSort("role")} className="cursor-pointer">
             Rol {sortColumn === "role" && (sortOrder === "asc" ? "↑" : "↓")}
           </div>
           <div onClick={() => handleSort("status")} className="cursor-pointer">
-            Estado {sortColumn === "status" && (sortOrder === "asc" ? "↑" : "↓")}
+            Estado{" "}
+            {sortColumn === "status" && (sortOrder === "asc" ? "↑" : "↓")}
           </div>
           <div
             onClick={() => handleSort("createdAt")}
             className="cursor-pointer"
           >
-            Fecha de Creación {sortColumn === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            Fecha de Creación{" "}
+            {sortColumn === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
           </div>
           <div
             onClick={() => handleSort("updatedAt")}
             className="cursor-pointer"
           >
-            Fecha de Actualización {sortColumn === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            Fecha de Actualización{" "}
+            {sortColumn === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
           </div>
         </div>
 
@@ -63,8 +91,9 @@ const UserTable: React.FC<UserTableProps> = ({
           <div
             key={user.id}
             className="grid grid-cols-12 items-center px-4 py-2 border-b hover:bg-amarillo cursor-pointer"
+            onClick={() => handleRowClick(user)}
           >
-                        <div>
+            <div>
               {user.image ? (
                 <img
                   src={user.image}
@@ -79,18 +108,18 @@ const UserTable: React.FC<UserTableProps> = ({
             <div className="col-span-2 truncate">{user.email}</div>
             <div className="col-span-2 truncate">
               {user.documentType === "CC"
-              ? "Cédula de Ciudadanía"
-              : user.documentType === "CE"
-              ? "Cédula de Extranjería"
-              : user.documentType === "PA"
-              ? "Pasaporte"
-              : user.documentType === "RC"
-              ? "Registro Civil"
-              : user.documentType === "TI"
-              ? "Tarjeta de Identidad"
-              : user.documentType === "PEP"
-              ? "Permiso Especial de Permanencia"
-              : user.documentType}
+                ? "Cédula de Ciudadanía"
+                : user.documentType === "CE"
+                ? "Cédula de Extranjería"
+                : user.documentType === "PA"
+                ? "Pasaporte"
+                : user.documentType === "RC"
+                ? "Registro Civil"
+                : user.documentType === "TI"
+                ? "Tarjeta de Identidad"
+                : user.documentType === "PEP"
+                ? "Permiso Especial de Permanencia"
+                : user.documentType}
             </div>
             <div>{user.documentNumber}</div>
             <div>{user.phone}</div>
@@ -118,8 +147,8 @@ const UserTable: React.FC<UserTableProps> = ({
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded-md ${
               currentPage === 1
-                ? "bg-amarillo text-azul cursor-not-allowed"
-                : "bg-cian text-blanco hover:bg-azul"
+                ? "bg-cian text-azul cursor-not-allowed"
+                : "bg-amarillo hover:bg-azul"
             }`}
           >
             Anterior
@@ -134,14 +163,25 @@ const UserTable: React.FC<UserTableProps> = ({
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-md ${
               currentPage === totalPages
-                ? "bg-amarillo text-azul cursor-not-allowed"
-                : "bg-cian text-blanco hover:bg-azul"
+                ? "bg-cian text-azul cursor-not-allowed"
+                : "bg-amarillo hover:bg-azul"
             }`}
           >
             Siguiente
           </button>
         </div>
       </div>
+
+      {/* User Edit Form Modal */}
+      <UserEditForm
+        closeDialog={() => userEditFormRef.current?.close()}
+        setUser={(updatedUser) => {
+          // Update the user in the table
+          const updatedUsers = users.map((user) =>
+            user.id === updatedUser.id ? updatedUser : user
+          );
+          setCurrentPage(updatedUsers);
+        }}
     </div>
   );
 };

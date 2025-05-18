@@ -73,7 +73,7 @@ const UserPage = () => {
     <>
       <Header />
       <IcoBack role="admin" />
-      <main className="flex flex-col md:flex-row justify-between items-center mb-8 p-4 bg-gray-100 rounded-lg shadow-md">
+      <main className="flex flex-col md:flex-row justify-between items-center mb-8 p-8 bg-gray-100 rounded-lg shadow-md">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-4 md:mb-0 ml-20">
           Lista de Usuarios
         </h1>
@@ -107,6 +107,7 @@ const UserPage = () => {
         setUsers={setUsers}
         setSuccessMessage={setSuccessMessage}
         token={token}
+        onClose={closeDialog}
       />
       {loading && <LoadingOverlay />}
     </>

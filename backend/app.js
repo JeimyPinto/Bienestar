@@ -24,7 +24,7 @@ app.use((req, res, next) => {
  * Valida que solo se pueda acceder a la API desde los dominios permitidos
  */
 const allowedOrigins = [
-  "http://localhost:3001", "http://192.168.1.7:3001",
+  "http://localhost:3001", "http://192.168.1.11:3001",
   "https://frontendshinydesk.vercel.app" /*cambiar*/,
 ];
 app.use(

@@ -27,7 +27,6 @@ export default function ProfileCard(): JSX.Element {
 
     try {
       const { user, message, image } = await fetchUserById(token);
-
       if (user) {
         setUser(user);
         setUserImage(image || "/images/profile/default.png");

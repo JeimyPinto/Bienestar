@@ -142,34 +142,34 @@ export default function UserProfilePage({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl relative">
+    <div className="flex items-center justify-center z-50">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-5xl relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
         >
           ✕
         </button>
-        <h2 className="text-2xl font-bold text-center text-azul mb-6">
+        <h2 className="text-3xl font-bold text-center text-azul mb-8">
           Información del Usuario
         </h2>
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
           {/* Imagen del usuario */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex flex-col items-center">
             <img
               src={image || "/images/profile/default.png"}
               alt="Imagen del usuario"
-              className="w-32 h-32 rounded-full object-cover border-2 border-cyan-500"
+              className="w-36 h-36 rounded-full object-cover border-4 border-cyan-500"
             />
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="mt-2"
+              className="mt-4 w-full text-sm text-gray-600"
             />
           </div>
           {/* Información del usuario */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Nombre
@@ -180,7 +180,7 @@ export default function UserProfilePage({
                 value={user?.firstName || ""}
                 placeholder="Nombre"
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200 overflow-hidden text-ellipsis"
                 required
               />
             </div>
@@ -194,7 +194,7 @@ export default function UserProfilePage({
                 value={user?.lastName || ""}
                 placeholder="Apellido"
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200 overflow-hidden text-ellipsis"
                 required
               />
             </div>
@@ -206,7 +206,7 @@ export default function UserProfilePage({
                 name="documentType"
                 value={user?.documentType || ""}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
                 disabled={!isAdmin}
               >
                 <option value="CC">Cédula de Ciudadanía</option>
@@ -227,7 +227,7 @@ export default function UserProfilePage({
                 value={user?.documentNumber || ""}
                 placeholder="Número de Documento"
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200 overflow-hidden text-ellipsis"
                 disabled={!isAdmin}
               />
             </div>
@@ -241,7 +241,7 @@ export default function UserProfilePage({
                 value={user?.email || ""}
                 placeholder="Correo Electrónico"
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200 overflow-hidden text-ellipsis"
                 required
               />
             </div>
@@ -255,7 +255,7 @@ export default function UserProfilePage({
                 value={user?.phone || ""}
                 placeholder="Teléfono"
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200 overflow-hidden text-ellipsis"
                 required
               />
             </div>
@@ -269,7 +269,7 @@ export default function UserProfilePage({
                 value={user?.role || ""}
                 placeholder="Rol"
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200 overflow-hidden text-ellipsis"
                 required
               />
             </div>
@@ -283,17 +283,20 @@ export default function UserProfilePage({
                 value={user?.status || ""}
                 placeholder="Estado"
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200"
+                className="w-full border border-gray-300 rounded-lg p-3 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none transition duration-200 overflow-hidden text-ellipsis"
                 disabled={!isAdmin}
               />
             </div>
           </div>
         </div>
         {/* Botón para guardar cambios */}
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-8">
           <button
-            onClick={handleSubmit}
-            className="bg-cyan-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-cyan-600 transition-all duration-300 focus:ring-4 focus:ring-cyan-300"
+            onClick={(e) => {
+              e.preventDefault();
+              handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+            }}
+            className="bg-cyan-500 text-white py-3 px-8 rounded-lg shadow-md hover:bg-cyan-600 transition-all duration-300 focus:ring-4 focus:ring-cyan-300"
           >
             Guardar Cambios
           </button>
