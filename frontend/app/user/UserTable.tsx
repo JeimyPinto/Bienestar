@@ -1,13 +1,15 @@
 import React, { useState, useRef } from "react";
 import { useColumnSorter } from "../lib/filter";
-import { UserTableProps } from "../lib/types";
-import UserEditForm from "./UserEditForm";
+import { UserTableProps, User } from "../lib/types";
+import UserForm from "./UserForm";
 
 const UserTable: React.FC<UserTableProps> = ({
   users,
   currentPage,
   setCurrentPage,
   totalPages,
+  token,
+  setUsers,
 }) => {
   const {
     sortedData: sortedUsers,
@@ -16,13 +18,20 @@ const UserTable: React.FC<UserTableProps> = ({
     sortOrder,
   } = useColumnSorter(users);
 
-  const [successMessage, setSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const userEditFormRef = useRef<any>(null);
 
-  const handleRowClick = (user: any) => {
-    if (userEditFormRef.current) {
-      userEditFormRef.current.open(user);
-    }
+  const handleRowClick = (user: User) => {
+    setSelectedUser(user);
+    setIsFormOpen(true);
+    userEditFormRef.current?.showModal();
+  };
+
+  const closeForm = () => {
+    setSelectedUser(null);
+    setIsFormOpen(false);
   };
 
   return (
@@ -36,20 +45,22 @@ const UserTable: React.FC<UserTableProps> = ({
             className="cursor-pointer"
           >
             Nombre{" "}
-            {sortColumn === "firstName" && (sortOrder === "asc" ? "↑" : "↓")}
+            {sortColumn === "firstName" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
           <div
             onClick={() => handleSort("email")}
             className="col-span-2 cursor-pointer"
           >
-            Email {sortColumn === "email" && (sortOrder === "asc" ? "↑" : "↓")}
+            Email{" "}
+            {sortColumn === "email" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
           <div
             onClick={() => handleSort("documentType")}
             className="col-span-2 cursor-pointer"
           >
             Tipo de Documento{" "}
-            {sortColumn === "documentType" && (sortOrder === "asc" ? "↑" : "↓")}
+            {sortColumn === "documentType" &&
+              (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
           <div
             onClick={() => handleSort("documentNumber")}
@@ -61,28 +72,28 @@ const UserTable: React.FC<UserTableProps> = ({
           </div>
           <div onClick={() => handleSort("phone")} className="cursor-pointer">
             Teléfono{" "}
-            {sortColumn === "phone" && (sortOrder === "asc" ? "↑" : "↓")}
+            {sortColumn === "phone" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
           <div onClick={() => handleSort("role")} className="cursor-pointer">
-            Rol {sortColumn === "role" && (sortOrder === "asc" ? "↑" : "↓")}
+            Rol {sortColumn === "role" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
           <div onClick={() => handleSort("status")} className="cursor-pointer">
             Estado{" "}
-            {sortColumn === "status" && (sortOrder === "asc" ? "↑" : "↓")}
+            {sortColumn === "status" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
           <div
             onClick={() => handleSort("createdAt")}
             className="cursor-pointer"
           >
             Fecha de Creación{" "}
-            {sortColumn === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            {sortColumn === "createdAt" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
           <div
             onClick={() => handleSort("updatedAt")}
             className="cursor-pointer"
           >
             Fecha de Actualización{" "}
-            {sortColumn === "updatedAt" && (sortOrder === "asc" ? "↑" : "↓")}
+            {sortColumn === "updatedAt" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
           </div>
         </div>
 
@@ -171,17 +182,19 @@ const UserTable: React.FC<UserTableProps> = ({
           </button>
         </div>
       </div>
-
-      {/* User Edit Form Modal */}
-      <UserEditForm
-        closeDialog={() => userEditFormRef.current?.close()}
-        setUser={(updatedUser) => {
-          // Update the user in the table
-          const updatedUsers = users.map((user) =>
-            user.id === updatedUser.id ? updatedUser : user
-          );
-          setCurrentPage(updatedUsers);
-        }}></UserEditForm>
+      {/* UserForm */}
+      {isFormOpen && selectedUser && (
+        <UserForm
+          dialogRef={userEditFormRef}
+          closeDialog={closeForm}
+          setUsers={setUsers}
+          setSuccessMessage={setSuccessMessage}
+          token={token}
+          mode="edit"
+          userToEdit={selectedUser}
+          onClose={closeForm}
+        />
+      )}
     </div>
   );
 };

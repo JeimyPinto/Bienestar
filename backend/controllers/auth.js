@@ -176,7 +176,6 @@ class AuthController {
       );
 
       const recaptchaData = await recaptchaResponse.json();
-      console.log("Respuesta de reCAPTCHA:", recaptchaData);
 
       if (!recaptchaData.success) {
         console.error("Invalid reCAPTCHA token:", recaptchaData["error-codes"]);

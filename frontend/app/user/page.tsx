@@ -100,6 +100,8 @@ const UserPage = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
+        token={token}
+        setUsers={setUsers}
       />
       <UserForm
         dialogRef={dialogRef}
@@ -107,6 +109,7 @@ const UserPage = () => {
         setUsers={setUsers}
         setSuccessMessage={setSuccessMessage}
         token={token}
+        mode="create"
         onClose={closeDialog}
       />
       {loading && <LoadingOverlay />}

@@ -16,6 +16,7 @@ const IcoBack: React.FC<IcoBackProps> = ({ role }) => {
         <Image
           src="/images/ico-back.svg"
           priority={true}
+          loading="eager"
           alt="Icono de regreso"
           width={42}
           height={42}

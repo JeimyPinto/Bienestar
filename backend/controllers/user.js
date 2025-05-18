@@ -25,29 +25,36 @@ class UsuarioController {
 
       const processedUsers = users.map((user) => {
         const userData = user.toJSON();
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "uploads",
-          "temp",
-          userData.image
-        );
-
-        if (userData.image && fs.existsSync(filePath)) {
-          userData.image = `${req.protocol}://${req.get("host")}/uploads/temp/${
+        try {
+          const filePath = path.join(
+            __dirname,
+            "..",
+            "uploads",
+            "temp",
             userData.image
-          }`;
-        } else {
-          userData.image = null;
-        }
+          );
 
+          if (userData.image && fs.existsSync(filePath)) {
+            userData.image = `${req.protocol}://${req.get(
+              "host"
+            )}/uploads/temp/${userData.image}`;
+          } else {
+            userData.image = null;
+          }
+        } catch (err) {
+          console.error(
+            "Error al leer el archivo / Error reading file:",
+            err.message
+          );
+        }
         return userData;
       });
 
       const totalPages = Math.ceil(totalUsers / limit);
 
       res.status(200).json({
-        message: "Usuarios obtenidos correctamente / Users retrieved successfully",
+        message:
+          "Usuarios obtenidos correctamente / Users retrieved successfully",
         users: processedUsers,
         currentPage: page,
         totalPages,

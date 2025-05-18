@@ -43,6 +43,8 @@ export interface UserTableProps {
   currentPage: number;
   setCurrentPage: (page: number) => void;
   totalPages: number;
+  token: string | null;
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
 export interface UserFormProps {
@@ -53,4 +55,6 @@ export interface UserFormProps {
   token: string | null;
   user?: User;
   onClose: () => void;
+  mode: "create" | "edit";
+  userToEdit?: User;
 }
