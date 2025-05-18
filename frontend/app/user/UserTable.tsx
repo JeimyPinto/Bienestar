@@ -181,7 +181,7 @@ const UserTable: React.FC<UserTableProps> = ({
             user.id === updatedUser.id ? updatedUser : user
           );
           setCurrentPage(updatedUsers);
-        }}
+        }}></UserEditForm>
     </div>
   );
 };

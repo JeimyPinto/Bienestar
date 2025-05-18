@@ -5,17 +5,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Footer from "../ui/footer";
+import ReCAPTCHA from "react-google-recaptcha";
 
 /**
  * Componente que representa la página de inicio de sesión.
  * @returns {JSX.Element} Página de inicio de sesión.
- * @constructor 
+ * @constructor
  * @version 18/03/2025
  * @author Jeimy Pinto
  */
 const LoginPage = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -32,6 +34,12 @@ const LoginPage = (): JSX.Element => {
     setLoading(true);
     setError("");
 
+    if (!recaptchaToken) {
+      setError("Por favor, completa el reCAPTCHA./ Complete the reCAPTCHA.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
@@ -40,20 +48,22 @@ const LoginPage = (): JSX.Element => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, recaptchaToken }),
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to log in / Error al iniciar sesión");
+        throw new Error(
+          errorData.message || "Failed to log in / Error al iniciar sesión"
+        );
       }
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
 
       // Sacar el rol del token decodificado
-      const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
+      const tokenPayload = JSON.parse(atob(data.token.split(".")[1]));
       const userRole = tokenPayload.role;
 
       if (userRole === "admin") {
@@ -66,6 +76,18 @@ const LoginPage = (): JSX.Element => {
     } finally {
       setLoading(false);
     }
+  };
+
+  /**
+   * Función que maneja el cambio del reCAPTCHA.
+   * @param token token del reCAPTCHA.
+   * @since 18/05/2025
+   * @returns {void} No retorna nada.
+   * @version 18/05/2025
+   * @autor Jeimy Pinto
+   */
+  const handleRecaptchaChange = (token: string | null): void => {
+    setRecaptchaToken(token);
   };
 
   return (
@@ -87,13 +109,13 @@ const LoginPage = (): JSX.Element => {
           Inicia sesión en el portal de bienestar del aprendiz
         </h1>
         <div className="py-5 text-center">
-            <p>
+          <p>
             ¡Hola! Para poder iniciar sesión, asegúrate de haber sido{" "}
             <u className="decoration-wavy decoration-cian">
               registrado previamente
             </u>{" "}
             por el Área de Bienestar del Aprendiz. ¡Gracias!
-            </p>
+          </p>
         </div>
         <form
           onSubmit={handleLogin}
@@ -140,6 +162,13 @@ const LoginPage = (): JSX.Element => {
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta"
             />
           </div>
+          <div className="mb-6 items center justify-center flex">
+            <ReCAPTCHA
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+              onChange={handleRecaptchaChange}
+              theme="dark"
+            />
+          </div>
           {error && (
             <div className="mb-4 text-center">
               <p className="text-red-500 text-sm">{error}</p>
@@ -154,7 +183,7 @@ const LoginPage = (): JSX.Element => {
           </button>
         </form>
         <div className="py-5 text-center">
-            <p>
+          <p>
             Si tiene alguna dificultad, puede contactarnos en{" "}
             <a
               href="mailto:portafoliobienestar24@gmail.com"
@@ -162,7 +191,7 @@ const LoginPage = (): JSX.Element => {
             >
               portafoliobienestar24@gmail.com
             </a>
-            </p>
+          </p>
         </div>
       </div>
       <Footer />

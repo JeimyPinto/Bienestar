@@ -1,5 +1,6 @@
 const db = require("../models");
 const User = db.User;
+const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -146,6 +147,7 @@ class AuthController {
   async login(req, res) {
     let parsedData;
     try {
+      // Validar los datos de entrada con el esquema
       parsedData = await loginSchema.parseAsync(req.body);
     } catch (validationError) {
       console.error("Validation error / Error de validación:", validationError);
@@ -155,10 +157,33 @@ class AuthController {
       });
     }
 
-    const { email, password } = parsedData;
-    const secret = process.env.JWT_SECRET;
+    const { email, password, recaptchaToken } = parsedData;
+    if (!recaptchaToken) {
+      return res.status(400).json({ message: "reCAPTCHA token is required/ El token de reCAPTCHA es requerido" });
+    }
 
     try {
+      // Validar el token de reCAPTCHA
+      const recaptchaResponse = await fetch(
+        `https://www.google.com/recaptcha/api/siteverify`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`,
+        }
+      );
+
+      const recaptchaData = await recaptchaResponse.json();
+      console.log("Respuesta de reCAPTCHA:", recaptchaData);
+
+      if (!recaptchaData.success) {
+        console.error("Invalid reCAPTCHA token:", recaptchaData["error-codes"]);
+        return res.status(400).json({ message: "Invalid reCAPTCHA token" });
+      }
+
+      // Continuar con la lógica de inicio de sesión
       const user = await User.findOne({ where: { email } });
       if (!user) {
         return res.status(401).json({
@@ -190,7 +215,7 @@ class AuthController {
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
-        secret,
+        process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
 

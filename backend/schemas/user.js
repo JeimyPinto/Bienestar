@@ -124,6 +124,7 @@ const loginSchema = z.object({
   password: z
     .string()
     .nonempty("Password is required / La contraseña es obligatoria"),
+    recaptchaToken: z.string().nonempty({message: "Recaptcha token is required / El token de recaptcha es obligatorio"}),
 });
 
 /**
