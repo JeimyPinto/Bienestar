@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import formatDate from "../lib/formatDate";
 import { areaColors } from "../lib/areaColors";
-import { Service } from "../lib/types";
+import { Service } from "../lib/interface";
 import { fetchServices } from "./endpoints";
 
 export default function ServiciosGallery() {

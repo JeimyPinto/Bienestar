@@ -5,6 +5,7 @@ const serviceController = require("../controllers/service.js");
 const authMiddleware = require("../middlewares/auth.js");
 
 router.get("/", serviceController.getAllServices);
+router.get("/getAllActive", serviceController.getAllServices);
 router.get(
   "/:id",
   authMiddleware.authenticateToken,

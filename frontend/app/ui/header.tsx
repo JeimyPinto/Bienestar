@@ -5,34 +5,32 @@ import Image from "next/image";
 import Link from "next/link";
 import UserProfilePage from "../user/UserProfilePage";
 import { jwtDecode, JwtPayload as BaseJwtPayload } from "jwt-decode";
+import { getToken } from "../lib/getToken";
 
 interface JwtPayload extends BaseJwtPayload {
   id?: string;
-  firstName?: string; 
+  firstName?: string;
 }
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<JwtPayload | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-   useEffect(() => {
-      const storedToken = localStorage.getItem("token");
-      if (!storedToken) {
-        setError("No authorization token found / No se ha encontrado el token de autorización");
-      } else {
-        setToken(storedToken);
-      }
-    }, []);
-  
+  // Obtiene el token de autorización del localStorage
+  useEffect(() => {
+    getToken({ setToken, setError, setLoading });
+  }, []);
+
   useEffect(() => {
     if (token) {
       try {
         const tokenPayload = jwtDecode<JwtPayload>(token);
         const currentTime = Date.now() / 1000;
-  
+
         if (tokenPayload.exp && tokenPayload.exp < currentTime) {
           console.warn("El token ha expirado.");
           localStorage.removeItem("token");

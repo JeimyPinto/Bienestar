@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User } from "../lib/types";
+import { User } from "../lib/interface";
+import { getToken } from "../lib/getToken";
 import { fetchUsersPaginated, createUser } from "./endpoints";
 import Header from "../ui/header";
 import IcoBack from "../ui/ico-back";
@@ -22,15 +23,9 @@ const UserPage = () => {
   const [isTokenLoaded, setIsTokenLoaded] = useState(false);
   const dialogRef = React.useRef<HTMLDialogElement>(null);
 
+  // Obtiene el token de autorización del localStorage
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
-      setError("No se ha encontrado el token de autorización");
-      setLoading(false);
-    } else {
-      setToken(storedToken);
-    }
-    setIsTokenLoaded(true);
+    getToken({ setToken, setError, setLoading });
   }, []);
 
   useEffect(() => {

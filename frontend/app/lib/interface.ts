@@ -22,6 +22,7 @@ export interface Service {
   creator: User;
   area: string;
   image: string;
+  status: string;
   createdAt: string;
   updatedAt: string;
   creatorId: string;
@@ -35,6 +36,7 @@ export interface ServiceTableProps {
     creator: User;
     area: string;
     image: string;
+    status: string;
     createdAt: string;
     updatedAt: string;
     creatorId: string;
@@ -73,4 +75,8 @@ export interface UserFormProps {
   onClose: () => void;
   mode: "create" | "edit";
   userToEdit?: User;
+}
+
+export interface IcoBackProps {
+  role?: string;
 }

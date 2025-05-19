@@ -1,6 +1,6 @@
 import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
 import { updateUser } from './endpoints';
-import { User } from '../lib/types';
+import { User } from '../lib/interface';
 
 interface UserEditFormProps {
     dialogRef: React.Ref<any>;

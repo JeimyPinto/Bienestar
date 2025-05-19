@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { User } from "../lib/types";
+import { User } from "../lib/interface";
 import { fetchUserById } from "../user/endpoints";
 
 /**

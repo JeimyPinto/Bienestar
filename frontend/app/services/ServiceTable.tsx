@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ServiceTableProps, Service } from "../lib/types";
+import { ServiceTableProps, Service } from "../lib/interface";
 import { areaColors } from "../lib/areaColors";
 // import ServiceForm from "./ServiceForm";
 
@@ -37,13 +37,14 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
       </div>
       <div className="max-w-8xl mx-auto bg-blanco border border-azul shadow-md rounded-lg text-center">
         {/* Header */}
-        <div className="grid grid-cols-8 bg-cian text-azul font-semibold px-6 py-4 text-lg">
+        <div className="grid grid-cols-9 bg-cian text-azul font-semibold px-6 py-4 text-lg">
           <div className="min-w-[160px]">ID</div>
           <div className="min-w-[160px]">Imagen</div>
           <div className="min-w-[160px]">Nombre</div>
           <div className="min-w-[160px]">Descripción</div>
           <div className="min-w-[160px]">Creador</div>
           <div className="min-w-[160px]">Área</div>
+          <div className="min-w-[160px]">Estado</div>
           <div className="min-w-[160px]">Fecha de Creación</div>
           <div className="min-w-[160px]">Fecha de Actualización</div>
         </div>
@@ -53,7 +54,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
           <>
             <div
               key={service.id}
-              className="grid grid-cols-8 items-center px-6 py-4 border-b hover:bg-amarillo cursor-pointer text-base"
+              className="grid grid-cols-9 items-center px-6 py-4 border-b hover:bg-amarillo cursor-pointer text-base"
               onClick={() => handleRowClick(service)}
               style={{ minHeight: "64px" }}
             >
@@ -89,6 +90,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
                   {service.area}
                 </span>
               </div>{" "}
+              <div className="min-w-[160px] truncate">{service.status}</div>
               <div className="min-w-[160px]">
                 {new Date(service.createdAt).toLocaleDateString()}
               </div>

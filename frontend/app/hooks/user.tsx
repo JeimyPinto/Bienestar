@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchUserById } from "../user/endpoints";
-import { User } from "../lib/types";
+import { User } from "../lib/interface";
 
 /**
  * Hook para cargar los datos del usuario al cargar la página.

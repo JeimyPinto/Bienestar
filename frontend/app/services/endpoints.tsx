@@ -1,28 +1,61 @@
-export const fetchServices = async (setServices: (services: any) => void, setLoading: (loading: boolean) => void, setError: (error: string) => void) => {
-    try {
-        const cachedServices = localStorage.getItem("services");
-        if (cachedServices) {
-            setServices(JSON.parse(cachedServices));
-            setLoading(false);
-            return;
-        }
+import { Service } from "../lib/interface";
+const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/services`;
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/`);
-        if (!response.ok) {
-            throw new Error("Error loading services / Error al cargar los servicios");
-        }
-        const data = await response.json();
-        if (Array.isArray(data)) {
-            setServices(data);
-            localStorage.setItem("services", JSON.stringify(data));
-        } else {
-            console.error("The API response is not an array / La respuesta de la API no es un array:", data);
-            setError("The API response is not an array / La respuesta de la API no es un array");
-        }
-    } catch (error) {
-        console.error("Error loading services / Error al cargar los servicios:", error);
-        setError("Server issues, services not available / Problemas con el servidor, servicios no disponibles");
-    } finally {
-        setLoading(false);
+//Obtiene todos los servicios
+export async function fetchServices(token: string): Promise<{
+  services: Service[];
+  message: string;
+}> {
+  try {
+    const response = await fetch(baseUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        services: data.services,
+        message: data.message,
+      };
+    } else {
+      throw new Error(
+        data.message || "Error fetching users / Error al obtener usuarios"
+      );
     }
-};
+  } catch (error) {
+    console.error("Error fetching users: / Error al obtener usuarios", error);
+    throw error;
+  }
+}
+//Obtiene todos los servicios activos
+export async function fetchServicesActive(token: string): Promise<{
+  services: Service[];
+  message: string;
+}> {
+  try {
+    const response = await fetch(`${baseUrl}/getAllActive`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        services: data.services,
+        message: data.message,
+      };
+    } else {
+      throw new Error(
+        data.message || "Error fetching users / Error al obtener usuarios"
+      );
+    }
+  } catch (error) {
+    console.error("Error fetching users: / Error al obtener usuarios", error);
+    throw error;
+  }
+}

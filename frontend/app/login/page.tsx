@@ -66,11 +66,7 @@ const LoginPage = (): JSX.Element => {
       const tokenPayload = JSON.parse(atob(data.token.split(".")[1]));
       const userRole = tokenPayload.role;
 
-      if (userRole === "admin") {
-        router.push(`/dashboard/admin`);
-      } else {
-        router.push(`/dashboard/user`);
-      }
+      router.push("/dashboard");
     } catch (err) {
       setError((err as Error).message);
     } finally {

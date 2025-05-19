@@ -2,16 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Header from "../../ui/header";
+import ProfileCard from "../../user/profileCard";
 import Image from "next/image";
 import formatDate from "../../lib/formatDate";
 import { areaColors } from "../../lib/areaColors";
 import { Service } from "../../lib/interface";
+import { getToken } from "../../lib/getToken";
 import { fetchUserServices } from "./endponits";
 
-export default function DashboardAdmin({token}: { token: string }) {
+export default function DashboardPage(){
+  const [token, setToken] = useState<string | null>(null);
   const [services, setServices] = useState<Service[]>([]);
-  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Obtiene el token de autorización del localStorage
+  useEffect(() => {
+    getToken({ setToken, setError, setLoading });
+  }, []);
+
   // Función reutilizable para cargar servicios
   const loadServices = async () => {
     setLoading(true);
@@ -41,6 +52,9 @@ export default function DashboardAdmin({token}: { token: string }) {
 
   return (
     <>
+      <Header />
+      <main className="container mx-auto p-6">
+        <ProfileCard />
         <section className="bg-white shadow-md rounded-lg p-6 mt-6">
           <h2 className="text-2xl font-bold mb-4">
             Solicitudes de Remisión Pendientes
@@ -53,29 +67,6 @@ export default function DashboardAdmin({token}: { token: string }) {
           </button>
           <div>
             <p>No hay solicitudes pendientes.</p>
-          </div>
-        </section>
-        <section className="bg-white shadow-md rounded-lg p-6 mt-6">
-          <h2 className="text-2xl font-bold mb-4">Opciones de Administrador</h2>
-          <div className="flex flex-col gap-4">
-            <button
-              className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
-              onClick={() => router.push("/user")}
-            >
-              Panel de usuarios
-            </button>
-            <button
-              className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
-              onClick={() => router.push("/services")}
-            >
-              Panel de servicios
-            </button>
-            <button
-              className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
-              onClick={() => router.push("/request")}
-            >
-              Panel de solicitudes de remisión
-            </button>
           </div>
         </section>
         <section className="bg-white shadow-md rounded-lg p-6 mt-6">
@@ -146,5 +137,7 @@ export default function DashboardAdmin({token}: { token: string }) {
             </div>
           )}
         </section>
+      </main>
+    </>
   );
 };

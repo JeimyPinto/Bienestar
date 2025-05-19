@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import {IcoBackProps} from "../lib/interface";
 
-interface IcoBackProps {
-  role: string;
-}
 
-const IcoBack: React.FC<IcoBackProps> = ({ role }) => {
+const IcoBack: React.FC<IcoBackProps> = ({ role = "user" }) => {
   const href = role === "user" ? "/dashboard/user" : "/dashboard/admin";
 
   return (

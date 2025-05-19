@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 // import { createRequest } from "./endpoints";
 import { fetchUsersActive } from "../user/endpoints";
 import { fetchServices } from "../services/endpoints";
-import { User, Service } from "../lib/types";
+import { User, Service } from "../lib/interface";
 import ErrorMessage from "../ui/ErrorMessage";
 import LoadingOverlay from "../ui/LoadingOverlay";
 import SuccessMessage from "../ui/SuccessMessage";
+import { getToken } from "../lib/getToken";
 
 const RequestForm: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -21,18 +22,11 @@ const RequestForm: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isTokenLoaded, setIsTokenLoaded] = useState(false);
 
-  //Obtiene el token de autorización del localStorage
+  // Obtiene el token de autorización del localStorage
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
-      setError(
-        "Authorization token not found / No se ha encontrado el token de autorización"
-      );
-      setLoading(false);
-    } else {
-      setToken(storedToken);
-    }
+    getToken({ setToken, setError, setLoading });
   }, []);
+
   //Obtiene los usuarios
   useEffect(() => {
     const loadUsers = async () => {

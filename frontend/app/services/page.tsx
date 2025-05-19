@@ -7,7 +7,8 @@ import IcoBack from "../ui/ico-back";
 import Footer from "../ui/footer";
 import ErrorMessage from "../ui/ErrorMessage";
 import ServiceTable from "./ServiceTable";
-import { Service } from "../lib/types";
+import { Service } from "../lib/interface";
+import { getToken } from "../lib/getToken";
 import { fetchServices } from "./endpoints";
 import { jwtDecode, JwtPayload as BaseJwtPayload } from "jwt-decode";
 
@@ -17,26 +18,20 @@ interface JwtPayload extends BaseJwtPayload {
   role?: string;
 }
 export default function ServicePage(): JSX.Element {
+  const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<JwtPayload | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const dialogRef = React.useRef<HTMLDialogElement>(null);
 
   const router = useRouter();
 
-  //Obtener el token de localStorage
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
-      setError("No se ha encontrado el token de autorización");
-      setLoading(false);
-    } else {
-      setToken(storedToken);
-    }
-  }, []);
+  // Obtiene el token de autorización del localStorage
+   useEffect(() => {
+     getToken({ setToken, setError, setLoading });
+   }, []);
 
   // Obtiene el payload del token para ver su role
   useEffect(() => {
@@ -68,9 +63,28 @@ export default function ServicePage(): JSX.Element {
     }
   }, [token]);
 
+  const loadServices = async () => {
+    if (!token || loading) return;
+    setLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+    try {
+      const { services, message } = await fetchServices(token);
+      setServices(services || []);
+      console.log("services", services);
+      if (message) setSuccessMessage(message);
+    } catch (err) {
+      setError("Error al obtener los servicios");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchServices(setServices, setLoading, setError);
-  }, []);
+    loadServices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
   const openDialog = () => {
     dialogRef.current?.showModal();
   };
@@ -81,7 +95,7 @@ export default function ServicePage(): JSX.Element {
   return (
     <>
       <Header />
-      <IcoBack role="admin" />
+      <IcoBack role={user?.role ?? ""} />
       <main className="flex flex-col md:flex-row justify-between items-center mb-8 p-8 bg-gray-100 rounded-lg shadow-md">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-4 md:mb-0 ml-20">
           Lista de Sevicios
@@ -102,20 +116,8 @@ export default function ServicePage(): JSX.Element {
             {successMessage}
           </div>
         )}
-        {error && (
-          <ErrorMessage
-            message={error}
-            onRetry={() => {
-              setError(null);
-              setLoading(true);
-              setSuccessMessage(null);
-            }}
-          />
-        )}
-        <ServiceTable
-          services={services}
-          setServices={setServices}
-        />
+        {error && <ErrorMessage message={error} onRetry={loadServices} />}
+        <ServiceTable services={services} setServices={setServices} />
       </div>
       <Footer />
     </>

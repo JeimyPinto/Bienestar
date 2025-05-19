@@ -42,6 +42,36 @@ class ServiceController {
     }
   }
 
+  //Obitener todos los servicios activos
+  async getAllActiveServices(req, res) {
+    try {
+      const services = await Service.findAll({
+        where: { status: "activo" },
+        include: {
+          model: User,
+          as: "creator",
+          attributes: ["firstName", "lastName"],
+        },
+      });
+      res.status(200).send(services);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        res.status(400).send({
+          message: "Validation Error / Error de Validación",
+          errors: error.message,
+        });
+      } else if (error instanceof DatabaseError) {
+        res.status(500).send({
+          message: "Database Error / Error de Base de Datos",
+          errors: error.message,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving active services / Error al recuperar servicios activos",
+        });
+      }
+    }
+  }
 
   /**
    * Obtener un servicio por su ID

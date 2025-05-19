@@ -19,6 +19,6 @@ export function getUserPayloadFromToken(token) {
     };
     return { user };
   } catch (error) {
-    return null;
+    return { error: "Token inválido o malformado: " + error.message };
   }
 }

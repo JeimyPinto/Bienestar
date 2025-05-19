@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { fetchUserById, updateUser } from "./endpoints";
-import { User } from "../lib/types";
+import { User } from "../lib/interface";
+import { getToken } from "../lib/getToken";
 import ErrorMessage from "../ui/ErrorMessage";
 
 interface UserProfilePageProps {
@@ -21,10 +22,9 @@ export default function UserProfilePage({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Obtener el token del localStorage
+  // Obtiene el token de autorización del localStorage
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
+    getToken({ setToken, setError, setLoading });
   }, []);
 
   // Función para cargar los datos del usuario

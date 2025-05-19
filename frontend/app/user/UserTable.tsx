@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useColumnSorter } from "../lib/filter";
-import { UserTableProps, User } from "../lib/types";
+import { UserTableProps, User } from "../lib/interface";
 import UserForm from "./UserForm";
 
 const UserTable: React.FC<UserTableProps> = ({

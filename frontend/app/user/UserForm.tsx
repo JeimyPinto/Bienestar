@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User, UserFormProps } from "../lib/types";
+import { User, UserFormProps } from "../lib/interface";
 import { createUser, updateUser } from "./endpoints";
 
 const UserForm: React.FC<UserFormProps> = ({
