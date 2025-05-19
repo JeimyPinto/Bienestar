@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
   res.status(200).send({ message: "Bienvenido a la API de Bienestar" });
 });
 router.use("/auth", authRouter);
-router.use("/users", authMiddleware.authenticateToken, userRoutes);
+router.use("/users", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), userRoutes);
 router.use("/services", serviceRoutes);
 router.get(
   "/usersWithServices",
