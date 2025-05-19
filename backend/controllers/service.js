@@ -82,73 +82,55 @@ class ServiceController {
     try {
       const service = await Service.findByPk(req.params.id, {
         include: {
+          association: "creator",
           model: User,
-          as: "creator",
-          attributes: ["firstName", "lastName"],
         },
       });
-      if (service) {
-        res.status(200).send(service);
-      } else {
-        res
-          .status(404)
-          .send({ message: "Service not found / Servicio no encontrado" });
+      if (!service) {
+        return res.status(404).send({
+          message: "Service not found / Servicio no encontrado",
+        });
       }
+      res.status(200).send({
+        message: "Service retrieved successfully / Servicio recuperado con éxito",
+        service,
+      });
     } catch (error) {
-      if (error instanceof ValidationError) {
-        res.status(400).send({
-          message: "Validation Error / Error de Validación",
-          errors: error.message,
-        });
-      } else if (error instanceof DatabaseError) {
-        res.status(500).send({
-          message: "Database Error / Error de Base de Datos",
-          errors: error.message,
-        });
-      } else {
-        res.status(500).send({
-          message: "Error retrieving service / Error al recuperar servicio",
-        });
-      }
+      res.status(500).send({
+        message: "Error retrieving service / Error al recuperar servicio",
+      });
     }
   }
 
-  /**
-   * Crear un servicio
-   * @param {*} req - La solicitud HTTP
-   * @param {*} res - La respuesta HTTP
-   * @returns {Promise<void>}
-   * @version 18/03/2025
-   * @autor Jeimy Pinto
-   */
-  async createService(req, res) {
+  async create(req, res) {
     try {
-      let serviceData;
-      try {
-        serviceData = await serviceCreateSchema.parse(req.body);
-      } catch (validationError) {
-        console.error("Validation error:", validationError);
-        return res.status(400).send({
-          message: "Validation Error / Error de Validación",
-          errors: validationError.errors,
+      // Verifica si el usuario autenticad o tiene el rol adecuado
+      if (!enabledRoles.includes(req.user.role)) {
+        return res.status(403).json({
+          message: "No autorizado / Not authorized",
+          role: req.user.role,
         });
       }
-      const service = await Service.create(serviceData);
-      res.status(201).send(service);
+      const serviceData = serviceCreateSchema.parse(req.body);
+      const service = await Service.create({
+        ...serviceData,
+        creatorId: req.user.id,
+      });
+      res.status(201).send({
+        message: "Service created successfully / Servicio creado con éxito",
+        service,
+      });
     } catch (error) {
-      if (error instanceof ValidationError) {
+      if (error.errors) {
         res.status(400).send({
           message: "Validation Error / Error de Validación",
           errors: error.errors,
         });
-      } else if (error instanceof DatabaseError) {
-        res.status(500).send({
-          message: "Database Error / Error de Base de Datos",
-          errors: error.message,
-        });
-      } else {
+      }
+      else {
         res.status(500).send({
           message: "Error creating service / Error al crear servicio",
+          errors: error.message,
         });
       }
     }

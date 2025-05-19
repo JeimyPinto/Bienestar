@@ -6,12 +6,7 @@ const authMiddleware = require("../middlewares/auth.js");
 router.get("/", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), serviceController.getAll);
 router.get("/active", serviceController.getAllActive);
 router.get("/:id", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), serviceController.getById);
-// router.post(
-//   "/",
-//   authMiddleware.authenticateToken,
-//   authMiddleware.authorizeRole(),
-//   serviceController.createService
-// );
+router.post("/", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), serviceController.create);
 // router.put(
 //   "/:id",
 //   authMiddleware.authenticateToken,
