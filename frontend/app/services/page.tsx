@@ -1,70 +1,121 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../ui/header";
+import IcoBack from "../ui/ico-back";
 import Footer from "../ui/footer";
-import ServiciosGallery from "./gallery";
-import { fetchUserById } from "../user/endpoints";
-import { User } from "../lib/types";
+import ErrorMessage from "../ui/ErrorMessage";
+import ServiceTable from "./ServiceTable";
+import { Service } from "../lib/types";
+import { fetchServices } from "./endpoints";
+import { jwtDecode, JwtPayload as BaseJwtPayload } from "jwt-decode";
 
-/**
- * Componente que representa la página de servicios.
- * @returns {JSX.Element} Página de servicios.
- * @constructor
- * @version 19/03/2025
- * @autor Jeimy Pinto
- */
+interface JwtPayload extends BaseJwtPayload {
+  id?: string;
+  firstName?: string;
+  role?: string;
+}
 export default function ServicePage(): JSX.Element {
-  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<JwtPayload | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+
   const router = useRouter();
 
+  //Obtener el token de localStorage
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const userId = JSON.parse(atob(token.split(".")[1])).id;
-        try {
-          const userData = await fetchUserById(userId, token);
-          setUser(userData);
-        } catch (error) {
-          setError("Error al obtener los datos del usuario");
-        }
-      } else {
-        setError("No se encontró el token de autenticación");
-      }
-    };
-
-    fetchUserData();
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) {
+      setError("No se ha encontrado el token de autorización");
+      setLoading(false);
+    } else {
+      setToken(storedToken);
+    }
   }, []);
 
-  const handleDashboardRedirect = () => {
-    if (user) {
-      if (user.role === "user") {
-        router.push("/dashboard/user");
-      } else {
-        router.push("/dashboard/admin");
+  // Obtiene el payload del token para ver su role
+  useEffect(() => {
+    if (token) {
+      try {
+        const tokenPayload = jwtDecode<JwtPayload>(token);
+        const currentTime = Date.now() / 1000;
+
+        if (tokenPayload.exp && tokenPayload.exp < currentTime) {
+          console.warn("El token ha expirado.");
+          localStorage.removeItem("token");
+          setError("El token ha expirado");
+          setLoading(false);
+        } else {
+          setUser({
+            id: tokenPayload.id,
+            firstName: tokenPayload.firstName,
+            role: tokenPayload.role,
+            exp: tokenPayload.exp,
+          });
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error al decodificar el token:", error);
+        localStorage.removeItem("token");
+        setError("Error al decodificar el token");
+        setLoading(false);
       }
     }
+  }, [token]);
+
+  useEffect(() => {
+    fetchServices(setServices, setLoading, setError);
+  }, []);
+  const openDialog = () => {
+    dialogRef.current?.showModal();
   };
 
+  const closeDialog = () => {
+    dialogRef.current?.close();
+  };
   return (
     <>
       <Header />
-      <div className="relative">
+      <IcoBack role="admin" />
+      <main className="flex flex-col md:flex-row justify-between items-center mb-8 p-8 bg-gray-100 rounded-lg shadow-md">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-4 md:mb-0 ml-20">
+          Lista de Sevicios
+        </h1>
         <button
-          onClick={handleDashboardRedirect}
-          className="absolute top-4 right-4 bg-azul text-white py-2 px-4 rounded hover:bg-cian transition-colors"
+          onClick={openDialog}
+          className="bg-gradient-to-r from-azul to-magenta text-white py-2 px-4 rounded-md shadow-md hover:from-green-500 hover:to-blue-500 transition-all duration-300"
         >
-          Ir al Dashboard
+          Añadir Nuevo Servicio
         </button>
-        {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-md shadow-md mt-4">
-            <p>{error}</p>
+      </main>
+      <div className="relative">
+        {loading && (
+          <div className="text-center text-cian my-4">Cargando...</div>
+        )}
+        {successMessage && (
+          <div className="text-center text-green-600 my-4">
+            {successMessage}
           </div>
         )}
-        <ServiciosGallery />
+        {error && (
+          <ErrorMessage
+            message={error}
+            onRetry={() => {
+              setError(null);
+              setLoading(true);
+              setSuccessMessage(null);
+            }}
+          />
+        )}
+        <ServiceTable
+          services={services}
+          setServices={setServices}
+        />
       </div>
       <Footer />
     </>

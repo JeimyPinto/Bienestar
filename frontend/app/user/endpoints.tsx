@@ -5,13 +5,47 @@ export const editableRoles = ["admin", "integrante"];
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 
 /**
- * Fetch para obtener los datos de todos los usuarios.
+ * Fetch para obtener los usuarios activos.
+ * @param token el token de autorización
+ * @returns un objeto con los usuarios activos y un mensaje
+ */
+export async function fetchUsersActive(token: string): Promise<{
+  users: User[];
+  message: string;
+}> {
+  try {
+    const response = await fetch(`${baseUrl}/getAllActive`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        users: data.users,
+        message: data.message,
+      };
+    } else {
+      throw new Error(
+        data.message || "Error fetching users / Error al obtener usuarios"
+      );
+    }
+  } catch (error) {
+    console.error("Error fetching users: / Error al obtener usuarios", error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch para obtener los datos de todos los usuarios paginados.
+ * @param token el token de autorización
  * @param page la página a obtener (por defecto 1)
  * @param limit el número de usuarios por página (por defecto 10)
- * @param token el token de autorización
  * @returns un objeto con los usuarios, la página actual, el total de páginas, el total de usuarios, y un mensaje
  */
-export async function fetchUsers(
+export async function fetchUsersPaginated(
   token: string,
   page: number = 1,
   limit: number = 10
@@ -23,11 +57,14 @@ export async function fetchUsers(
   message: string;
 }> {
   try {
-    const response = await fetch(`${baseUrl}?page=${page}&limit=${limit}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${baseUrl}/getAllPaginated?page=${page}&limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const data = await response.json();
 
@@ -40,7 +77,9 @@ export async function fetchUsers(
         message: data.message,
       };
     } else {
-      throw new Error(data.message || "Error fetching users / Error al obtener usuarios");
+      throw new Error(
+        data.message || "Error fetching users / Error al obtener usuarios"
+      );
     }
   } catch (error) {
     console.error("Error fetching users: / Error al obtener usuarios", error);
@@ -49,11 +88,10 @@ export async function fetchUsers(
 }
 
 /**
- * fetch para obtener los datos de un usuario por su ID.
+ * Fetch para obtener los datos de un usuario por su ID.
  * @param token el token de autorización
  * @param userId el ID del usuario a obtener (si no se proporciona, se obtiene el ID del token)
  * @returns un objeto con los datos del usuario, un mensaje y la imagen del usuario
- * @throws Error si ocurre un error al obtener los datos del usuario
  */
 export const fetchUserById = async (
   token: string,
@@ -81,10 +119,16 @@ export const fetchUserById = async (
         image: data.image,
       };
     } else {
-      throw new Error(data.message || "Error fetching user data / Error al obtener datos del usuario");
+      throw new Error(
+        data.message ||
+          "Error fetching user data / Error al obtener datos del usuario"
+      );
     }
   } catch (error) {
-    console.error("Error fetching user data: / Error al obtener datos del usuario", error);
+    console.error(
+      "Error fetching user data: / Error al obtener datos del usuario",
+      error
+    );
     throw error;
   }
 };
@@ -125,7 +169,7 @@ export async function createUser(
 }
 
 /**
- * Fetch que actualiza los datos de un usuario.
+ * Fetch para actualizar los datos de un usuario.
  * @param user el usuario a actualizar
  * @param formData los datos del formulario
  * @param token el token de autorización

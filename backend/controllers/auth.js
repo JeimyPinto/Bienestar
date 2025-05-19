@@ -263,7 +263,6 @@ class AuthController {
 
     try {
       const decoded = jwt.verify(token, secret);
-      // Aquí puedes agregar el token a una lista de tokens inválidos si estás manejando una lista de revocación
       res.clearCookie("token");
       res.json({ message: "Logout successful / Cierre de sesión exitoso" });
     } catch (error) {

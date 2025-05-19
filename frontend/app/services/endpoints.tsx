@@ -1,5 +1,3 @@
-// /c:/Users/jeimy/Desktop/Projects/Semillero/Bienestar/frontend/app/services/endpoints.tsx
-
 export const fetchServices = async (setServices: (services: any) => void, setLoading: (loading: boolean) => void, setError: (error: string) => void) => {
     try {
         const cachedServices = localStorage.getItem("services");

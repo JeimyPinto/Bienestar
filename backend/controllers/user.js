@@ -11,7 +11,58 @@ const fs = require("fs");
 const path = require("path");
 
 class UsuarioController {
-  async getAll(req, res) {
+  //Obtiene todos los usuarios activos
+  async getAllActive(req, res) {
+    try {
+      const users = await User.findAll({
+        where: { status: "activo" },
+        attributes: { exclude: ["password"] },
+      });
+      if (users.length === 0) {
+        return res.status(404).json({
+          message: "No hay usuarios activos / No active users found",
+        });
+      }
+      const processedUsers = users.map((user) => {
+        const userData = user.toJSON();
+        try {
+          const filePath = path.join(
+            __dirname,
+            "..",
+            "uploads",
+            "temp",
+            userData.image
+          );
+
+          if (userData.image && fs.existsSync(filePath)) {
+            userData.image = `${req.protocol}://${req.get(
+              "host"
+            )}/uploads/temp/${userData.image}`;
+          } else {
+            userData.image = null;
+          }
+        } catch (err) {
+          console.error(
+            "Error al leer el archivo / Error reading file:",
+            err.message
+          );
+        }
+        return userData;
+      });
+      res.status(200).json({
+        message:
+          "Usuarios activos obtenidos correctamente / Active users retrieved successfully",
+        users: processedUsers,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Error al obtener los usuarios / Error retrieving users",
+        error: error.message,
+      });
+    }
+  }
+  //Obtiene todos los usuarios paginados
+  async getAllPaginated(req, res) {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;

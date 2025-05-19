@@ -89,13 +89,13 @@ const UserForm: React.FC<UserFormProps> = ({
         throw new Error("Token not available / Token no disponible");
       }
 
-      let response;
       if (mode === "create") {
         const { user, message } = await createUser(formData, token);
         setSuccessMessage(message);
       } else if (mode === "edit" && userToEdit) {
         const { message } = await updateUser(userToEdit, newUser, token);
         setSuccessMessage(message);
+        window.location.reload();
       }
       setNewUser({
         id: "",

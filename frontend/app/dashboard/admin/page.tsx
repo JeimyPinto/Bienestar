@@ -8,42 +8,39 @@ import Image from "next/image";
 import formatDate from "../../lib/formatDate";
 import { areaColors } from "../../lib/areaColors";
 import { Service } from "../../lib/types";
-
+import { fetchUserServices } from "./endponits";
 const DashboardPage = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
-  const fetchUserServices = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No token found / No se encontró el token");
-      }
-      const user = JSON.parse(atob(token.split(".")[1]));
-      const userId = user.id;
+  // Obtiene el token de autorización del localStorage
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) {
+      setError(
+        "Authorization token not found / No se ha encontrado el token de autorización"
+      );
+      setLoading(false);
+    } else {
+      setToken(storedToken);
+    }
+  }, []);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/id/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error(
-          "Error loading services / Error al cargar los servicios"
-        );
+  // Función reutilizable para cargar servicios
+  const loadServices = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (!token) {
+        throw new Error("Token no disponible");
       }
-      const data = await response.json();
-      setServices(data.services);
+      const { services, message } = await fetchUserServices(token);
+      setServices(services);
+      setError(null);
     } catch (error) {
-      console.error(
-        "Error loading services / Error al cargar los servicios:",
-        error
-      );
       setError(
         "Server issues, services not available / Problemas con el servidor, servicios no disponibles"
       );
@@ -52,9 +49,12 @@ const DashboardPage = () => {
     }
   };
 
+  // Llama a loadServices cuando haya token
   useEffect(() => {
-    fetchUserServices();
-  }, []);
+    if (token) {
+      loadServices();
+    }
+  }, [token]);
 
   return (
     <>
@@ -65,6 +65,12 @@ const DashboardPage = () => {
           <h2 className="text-2xl font-bold mb-4">
             Solicitudes de Remisión Pendientes
           </h2>
+          <button
+            className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
+            onClick={() => router.push("/request")}
+          >
+            Crear una solicitud
+          </button>
           <div>
             <p>No hay solicitudes pendientes.</p>
           </div>
@@ -76,7 +82,19 @@ const DashboardPage = () => {
               className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
               onClick={() => router.push("/user")}
             >
-              Mostrar todos los usuarios
+              Panel de usuarios
+            </button>
+            <button
+              className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
+              onClick={() => router.push("/services")}
+            >
+              Panel de servicios
+            </button>
+            <button
+              className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
+              onClick={() => router.push("/request")}
+            >
+              Panel de solicitudes de remisión
             </button>
           </div>
         </section>
@@ -95,7 +113,7 @@ const DashboardPage = () => {
             <div className="bg-red-100 text-red-700 p-4 rounded-md shadow-md">
               <p>{error}</p>
               <button
-                onClick={fetchUserServices}
+                onClick={loadServices}
                 className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
               >
                 Retry

@@ -2,7 +2,7 @@ import React from "react";
 
 interface ErrorMessageProps {
   message: string;
-  onRetry?: () => void; // Función opcional para reintentar la acción
+  onRetry?: () => void;
 }
 
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) => {

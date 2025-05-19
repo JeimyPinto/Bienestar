@@ -16,14 +16,16 @@ export default function Header() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<JwtPayload | null>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Obtener el token del localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
+   useEffect(() => {
       const storedToken = localStorage.getItem("token");
-      setToken(storedToken);
-    }
-  }, []);
+      if (!storedToken) {
+        setError("No authorization token found / No se ha encontrado el token de autorización");
+      } else {
+        setToken(storedToken);
+      }
+    }, []);
   
   useEffect(() => {
     if (token) {

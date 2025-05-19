@@ -7,10 +7,16 @@ const authMiddleware = require("../middlewares/auth.js");
 
 // Ruta para obtener todos los usuarios
 router.get(
-  "/",
+  "/getAllPaginated",
   authMiddleware.authenticateToken,
   authMiddleware.authorizeRole(),
-  userController.getAll
+  userController.getAllPaginated
+);
+router.get(
+  "/getAllActive",
+  authMiddleware.authenticateToken,
+  authMiddleware.authorizeRole(),
+  userController.getAllActive
 );
 
 // Ruta para obtener un usuario por ID

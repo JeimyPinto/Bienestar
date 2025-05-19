@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { User } from "../lib/types";
-import { fetchUsers, createUser } from "./endpoints";
+import { fetchUsersPaginated, createUser } from "./endpoints";
 import Header from "../ui/header";
 import IcoBack from "../ui/ico-back";
 import UserTable from "./UserTable";
@@ -30,7 +30,7 @@ const UserPage = () => {
     } else {
       setToken(storedToken);
     }
-    setIsTokenLoaded(true); // Indica que el token ha sido cargado
+    setIsTokenLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const UserPage = () => {
         if (!token) {
           throw new Error("Token no disponible");
         }
-        const data = await fetchUsers(token, currentPage, 10);
+        const data = await fetchUsersPaginated(token, currentPage, 10);
         setUsers(
           data.users.map((user) => ({
             ...user,
