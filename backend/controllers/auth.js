@@ -12,6 +12,7 @@ const {
 } = require("../schemas/user");
 const path = require("path");
 const fs = require("fs");
+const { verifyRecaptcha } = require("../utils/recaptcha");
 class AuthController {
   /**
    * Registra un nuevo usuario en el sistema.
@@ -160,23 +161,10 @@ class AuthController {
     const { email, password, recaptchaToken } = parsedData;
 
     try {
-      // Validar el token de reCAPTCHA
-      const recaptchaResponse = await fetch(
-        `https://www.google.com/recaptcha/api/siteverify`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`,
-        }
-      );
-
-      const recaptchaData = await recaptchaResponse.json();
-
-      if (!recaptchaData.success) {
-        console.error("Invalid reCAPTCHA token:", recaptchaData["error-codes"]);
-        return res.status(400).json({ message: "Invalid reCAPTCHA token" });
+      // Validar el token de reCAPTCHA usando el módulo externo
+      const recaptchaSuccess = await verifyRecaptcha(recaptchaToken);
+      if (!recaptchaSuccess) {
+        return res.status(400).json({ message: "Invalid reCAPTCHA token / Token de reCAPTCHA inválido" });
       }
 
       // Continuar con la lógica de inicio de sesión
