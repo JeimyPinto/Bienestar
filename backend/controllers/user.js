@@ -2,22 +2,19 @@ const db = require("../models/index.js");
 const User = db.User;
 const { ValidationError } = require("sequelize");
 const {
-  documentSchema,
   userUpdateSelfSchema,
-  adminUpdateUserSchema,
+  adminUpdateUserSchema, adminCreateUserSchema
 } = require("../schemas/user.js");
-const enabledRoles = ["admin"];
-const fs = require("fs");
-const path = require("path");
-const { processUsers } = require("../utils/processedUsers.js");
-
+const enabledRoles = ["admin", "integrante"];
 class UsuarioController {
   async getAll(req, res) {
     try {
-      const users = await User.findAll( include: {
+      const users = await User.findAll({
+        include: {
           association: "services",
           required: true,
-        },);
+        }
+      });
       if (users.length === 0) {
         return res.status(404).json({
           message: "No hay usuarios / No users found",
@@ -39,7 +36,7 @@ class UsuarioController {
   //Obtiene todos los usuarios activos
   async getAllActive(req, res) {
     try {
-      const users = await User.findAll({ 
+      const users = await User.findAll({
         include: {
           association: "services",
           required: true,
@@ -69,48 +66,19 @@ class UsuarioController {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
-
       const { rows: users, count: totalUsers } = await User.findAndCountAll({
         limit,
-        offset, include: {
+        offset,
+        include: {
           association: "services",
           required: true,
         },
       });
-
-      const processedUsers = users.map((user) => {
-        const userData = user.toJSON();
-        try {
-          const filePath = path.join(
-            __dirname,
-            "..",
-            "uploads",
-            "temp",
-            userData.image
-          );
-
-          if (userData.image && fs.existsSync(filePath)) {
-            userData.image = `${req.protocol}://${req.get(
-              "host"
-            )}/uploads/temp/${userData.image}`;
-          } else {
-            userData.image = null;
-          }
-        } catch (err) {
-          console.error(
-            "Error al leer el archivo / Error reading file:",
-            err.message
-          );
-        }
-        return userData;
-      });
-
       const totalPages = Math.ceil(totalUsers / limit);
-
       res.status(200).json({
         message:
           "Usuarios obtenidos correctamente / Users retrieved successfully",
-        users: processedUsers,
+        users: users,
         currentPage: page,
         totalPages,
         totalUsers,
@@ -149,47 +117,68 @@ class UsuarioController {
       });
     }
   }
+  async create(req, res) {
+    try {
+      const userData = await adminCreateUserSchema.parseAsync(req.body);
+      const hashedPassword = await User.hashPassword(userData.password);
+      const user = await User.create({
+        fisrtName,
+        lastName,
+        documentType,
+        documentNumber,
+        phone,
+        email,
+        password: hashedPassword,
+        status: "activo",
+        role,
+        image,
+      });
+      res.status(201).json({
+        message: "Usuario creado correctamente / User created successfully",
+        user,
+      });
+    } catch (error) {
+      if (error.errors) {
+        // Error de validación del esquema
+        res.status(400).json({
+          message: "Error de validación / Validation error",
+          errors: error.errors,
+        });
+      } else {
+        res.status(500).json({
+          message: "Error al crear el usuario / Error creating user",
+          error: error.message,
+        });
+      }
+    }
+  }
 
   async update(req, res) {
     try {
-      const userId = req.params.id || req.user.id;
-      const user = await User.findByPk(userId);
-
+      const userId = req.params.id;
+      const user = await User.findByPk(userId)
       if (!user) {
         return res.status(404).json({
           message: "Usuario no encontrado / User not found",
         });
       }
 
+      //Pasar por el esquema de validación correspondiente al rol
       let userData;
-
       if (enabledRoles.includes(req.user.role)) {
         userData = await adminUpdateUserSchema.parseAsync(req.body);
       } else {
         userData = await userUpdateSelfSchema.parseAsync(req.body);
       }
 
-      if (req.file) {
-        userData.image = req.file.filename;
-      }
       await user.update(userData, { where: { id: userId } });
-
-      if (enabledRoles.includes(req.user.role)) {
-        res.status(200).json({
-          message:
-            "Usuario actualizado correctamente / User updated successfully",
-          user: userData,
-        });
-      } else {
-        const { password, ...userInfo } = user.toJSON();
-        res.status(200).json({
-          message:
-            "Usuario actualizado correctamente / User updated successfully",
-          user: userInfo,
-        });
-      }
+      res.status(200).json({
+        message: "Usuario actualizado correctamente / User updated successfully",
+        user,
+      });
     } catch (error) {
-      if (error instanceof ValidationError) {
+      if (error.errors) {
+        // Error de validación del esquema
         res.status(400).json({
           message: "Error de validación / Validation error",
           errors: error.errors,
@@ -202,7 +191,6 @@ class UsuarioController {
       }
     }
   }
-
   async delete(req, res) {
     try {
       const userFound = await User.findByPk(req.params.id);

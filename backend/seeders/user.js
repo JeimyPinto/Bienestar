@@ -20,7 +20,7 @@ module.exports = {
         email: faker.internet.email(),
         password: hashedPassword,
         role: faker.helpers.arrayElement(['admin', 'user']),
-        status: faker.helpers.arrayElement(['activo', 'activo', 'activo', 'inactivo']), 
+        status: 'activo',
         createdAt: new Date(),
         updatedAt: new Date(),
       });

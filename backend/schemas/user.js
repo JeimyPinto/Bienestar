@@ -7,39 +7,54 @@ const { z } = require("zod");
  * @version 18/03/2025
  * @autor Jeimy Pinto
  */
-const adminCreateUserSchema = z.object({
-  firstName: z
-    .string()
-    .nonempty("First name is required / El nombre es obligatorio"),
-  lastName: z
-    .string()
-    .nonempty("Last name is required / El apellido es obligatorio"),
-  documentType: z
-    .string()
-    .nonempty(
-      "Document type is required / El tipo de documento es obligatorio"
+const adminCreateUserSchema = z
+  .object({
+    firstName: z
+      .string()
+      .nonempty({ message: "First name is required / El nombre es obligatorio" }),
+    lastName: z
+      .string()
+      .nonempty({ message: "Last name is required / El apellido es obligatorio" }),
+    documentType: z
+      .string()
+      .nonempty({
+        message:
+          "Document type is required / El tipo de documento es obligatorio",
+      }),
+    documentNumber: z
+      .string()
+      .nonempty({
+        message: "Document number is required / El número de documento es obligatorio",
+      }),
+    phone: z
+      .string()
+      .nonempty(
+        { message: "Phone number is required / El número de teléfono es obligatorio" }
+      ),
+    email: z
+      .string()
+      .email({
+        message: "Invalid email address / Dirección de correo electrónico no válida",
+      }),
+    password: z.string().optional(),
+    status: z.enum(
+      ["activo", "inactivo"],
+      {
+        errorMap: () => ({
+          message:
+            "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'",
+        }),
+      }
     ),
-  documentNumber: z
-    .string()
-    .nonempty(
-      "Document number is required / El número de documento es obligatorio"
-    ),
-  phone: z
-    .string()
-    .nonempty(
-      "Phone number is required / El número de teléfono es obligatorio"
-    ),
-  email: z
-    .string()
-    .email("Invalid email address / Dirección de correo electrónico no válida"),
-  password: z.string().optional(), // Password can be optional in creation
-  status: z.enum(
-    ["activo", "inactivo"],
-    "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo"
-  ),
-  role: z.string().nonempty("Role is required / El rol es obligatorio"),
-  image: z.string().optional(),
-});
+    role: z.string().nonempty({
+      message: "Role is required / El rol es obligatorio",
+    }),
+    image: z.string().optional(),
+  })
+  .transform((data) => ({
+    ...data,
+    password: data.password || data.documentNumber,
+  }));
 
 /**
  * Esquema para la actualización de datos por el usuario
