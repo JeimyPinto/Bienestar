@@ -43,7 +43,7 @@ const adminCreateUserSchema = z.object({
 
 /**
  * Esquema para la actualización de datos por el usuario
- * @type {z.ZodObject} 
+ * @type {z.ZodObject}
  * @const userUpdateSelfSchema
  * @version 18/03/2025
  * @autor Jeimy Pinto
@@ -83,7 +83,7 @@ const userUpdateSelfSchema = z
 
 /**
  * Esquema para la actualización de datos por el administrador
- * @type {z.ZodObject} 
+ * @type {z.ZodObject}
  * @const adminUpdateUserSchema
  * @version 18/03/2025
  * @autor Jeimy Pinto
@@ -112,19 +112,25 @@ const adminUpdateUserSchema = z.object({
 
 /**
  * Esquema para la validación del inicio de sesión
- * @type {z.ZodObject}
- * @const loginSchema
- * @version 18/03/2025
- * @autor Jeimy Pinto
  */
 const loginSchema = z.object({
   email: z
     .string()
-    .email("Invalid email address / Dirección de correo electrónico no válida"),
+    .email({
+      message:
+        "Invalid email address / Dirección de correo electrónico no válida",
+    }),
   password: z
     .string()
-    .nonempty("Password is required / La contraseña es obligatoria"),
-    recaptchaToken: z.string().nonempty({message: "Recaptcha token is required / El token de recaptcha es obligatorio"}),
+    .nonempty({
+      message: "Password is required / La contraseña es obligatoria",
+    }),
+  recaptchaToken: z
+    .string()
+    .nonempty({
+      message:
+        "Recaptcha token is required / El token de recaptcha es obligatorio",
+    }),
 });
 
 /**

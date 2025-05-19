@@ -23,7 +23,7 @@ class AuthController {
    * @param {Object} res - Objeto de respuesta de Express.
    * @returns Un mensaje de éxito o un mensaje de error
    * @since 11/03/2025
-   * @version 31/05/2025
+   * @version 19/05/2025
    * @autor Jeimy Pinto
    * @returns {Promise<void>} - Responde con un mensaje de éxito o error.
    * @throws {ValidationError} - Si los datos de entrada no cumplen con el esquema de validación.
@@ -158,9 +158,6 @@ class AuthController {
     }
 
     const { email, password, recaptchaToken } = parsedData;
-    if (!recaptchaToken) {
-      return res.status(400).json({ message: "reCAPTCHA token is required/ El token de reCAPTCHA es requerido" });
-    }
 
     try {
       // Validar el token de reCAPTCHA

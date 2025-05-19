@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import UserProfilePage from "../user/UserProfilePage";
 import { jwtDecode, JwtPayload as BaseJwtPayload } from "jwt-decode";
-import { getToken } from "../lib/getToken";
 
 interface JwtPayload extends BaseJwtPayload {
   id?: string;

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "../lib/interface";
+import { getToken } from "../lib/getToken";
 import { fetchUserById } from "../user/endpoints";
 
 /**
@@ -12,19 +13,18 @@ import { fetchUserById } from "../user/endpoints";
  */
 export default function ProfileCard(): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [userImage, setUserImage] = useState<string | null>(null);
 
-  // Función para cargar los datos del usuario
-  const loadUserData = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("No se ha encontrado el token de autorización");
-      setLoading(false);
-      return;
-    }
+  // Obtiene el token de autorización del localStorage
+  useEffect(() => {
+    getToken({ setToken, setError, setLoading });
+  }, []);
 
+  // Función para cargar los datos del usuario
+  const loadUserData = async (token: string) => {
     try {
       const { user, message, image } = await fetchUserById(token);
       if (user) {
@@ -40,10 +40,12 @@ export default function ProfileCard(): JSX.Element {
     }
   };
 
-  // Cargar los datos del usuario al montar el componente
+  // Cargar los datos del usuario cuando el token esté disponible
   useEffect(() => {
-    loadUserData();
-  }, []);
+    if (token) {
+      loadUserData(token);
+    }
+  }, [token]);
 
   return (
     <div className="flex container mx-auto p-4 bg-white shadow-lg rounded-lg justify-center">
