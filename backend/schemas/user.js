@@ -51,6 +51,13 @@ const adminCreateUserSchema = z
     }),
     image: z.string().optional(),
   })
+  .refine(
+    (data) => !!data.documentNumber,
+    {
+      message: "Document number must be unique / El número de documento debe ser único",
+      path: ["documentNumber"],
+    }
+  )
   .transform((data) => ({
     ...data,
     password: data.password || data.documentNumber,
@@ -90,6 +97,13 @@ const userUpdateSelfSchema = z
       )
       .optional(),
   })
+  .refine(
+    (data) => !!data.documentNumber,
+    {
+      message: "Document number must be unique / El número de documento debe ser único",
+      path: ["documentNumber"],
+    }
+  )
   .refine((data) => data.role === undefined, {
     message:
       "Role cannot be updated by the user / El usuario no puede actualizar el rol",

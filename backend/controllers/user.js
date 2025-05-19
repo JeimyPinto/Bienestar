@@ -1,11 +1,13 @@
 const db = require("../models/index.js");
+const bcrypt = require("bcrypt");
 const User = db.User;
-const { ValidationError } = require("sequelize");
 const {
   userUpdateSelfSchema,
   adminUpdateUserSchema, adminCreateUserSchema
 } = require("../schemas/user.js");
 const enabledRoles = ["admin", "integrante"];
+const saltRounds = 10;
+
 class UsuarioController {
   async getAll(req, res) {
     try {
@@ -117,21 +119,36 @@ class UsuarioController {
       });
     }
   }
+
   async create(req, res) {
     try {
+      // Verifica si el usuario autenticad o tiene el rol adecuado
+      if (!enabledRoles.includes(req.user.role)) {
+        return res.status(403).json({
+          message: "No autorizado / Not authorized",
+          role: req.user.role,
+        });
+      }
+
       const userData = await adminCreateUserSchema.parseAsync(req.body);
-      const hashedPassword = await User.hashPassword(userData.password);
+
+      // Si password está vacío o no viene, usar documentNumber como password
+      const plainPassword = userData.password && userData.password.trim() !== ""
+        ? userData.password
+        : userData.documentNumber;
+      const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+
       const user = await User.create({
-        fisrtName,
-        lastName,
-        documentType,
-        documentNumber,
-        phone,
-        email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        documentType: userData.documentType,
+        documentNumber: userData.documentNumber,
+        phone: userData.phone,
+        email: userData.email,
         password: hashedPassword,
         status: "activo",
-        role,
-        image,
+        role: userData.role,
+        image: userData.image,
       });
       res.status(201).json({
         message: "Usuario creado correctamente / User created successfully",
@@ -139,7 +156,6 @@ class UsuarioController {
       });
     } catch (error) {
       if (error.errors) {
-        // Error de validación del esquema
         res.status(400).json({
           message: "Error de validación / Validation error",
           errors: error.errors,
@@ -156,29 +172,58 @@ class UsuarioController {
   async update(req, res) {
     try {
       const userId = req.params.id;
-      const user = await User.findByPk(userId)
+      const user = await User.findByPk(userId);
       if (!user) {
         return res.status(404).json({
           message: "Usuario no encontrado / User not found",
+          role: req.user.role,
         });
       }
 
-      //Pasar por el esquema de validación correspondiente al rol
       let userData;
+      let passwordHash;
       if (enabledRoles.includes(req.user.role)) {
         userData = await adminUpdateUserSchema.parseAsync(req.body);
+        passwordHash = bcrypt.hashSync(userData.password, saltRounds);
+        await user.update({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          documentType: userData.documentType,
+          documentNumber: userData.documentNumber,
+          phone: userData.phone,
+          email: userData.email,
+          password: passwordHash,
+          status: userData.status,
+          role: userData.role,
+          image: userData.image,
+        });
+        res.status(200).json({
+          message: "Usuario actualizado correctamente por " + req.user.role + " / User updated successfully by " + req.user.role,
+          user,
+        });
       } else {
         userData = await userUpdateSelfSchema.parseAsync(req.body);
-      }
+        passwordHash = bcrypt.hashSync(userData.password, saltRounds);
+        // Solo permitir actualizar phone, email, image y password
+        const updateFields = {};
+        if (userData.phone !== undefined) updateFields.phone = userData.phone;
+        if (userData.email !== undefined) updateFields.email = userData.email;
+        if (userData.image !== undefined) updateFields.image = userData.image;
+        if (userData.password !== undefined) {
+          updateFields.password = passwordHash;
+        }
 
-      await user.update(userData, { where: { id: userId } });
-      res.status(200).json({
-        message: "Usuario actualizado correctamente / User updated successfully",
-        user,
-      });
+        await user.update(updateFields);
+
+        // Excluir la contraseña del usuario al devolver los datos
+        const { password, ...userWithoutPassword } = user.get({ plain: true });
+        res.status(200).json({
+          message: "Usuario actualizado correctamente por " + req.user.role + " / User updated successfully by " + req.user.role,
+          user: userWithoutPassword,
+        });
+      }
     } catch (error) {
       if (error.errors) {
-        // Error de validación del esquema
         res.status(400).json({
           message: "Error de validación / Validation error",
           errors: error.errors,
@@ -191,15 +236,19 @@ class UsuarioController {
       }
     }
   }
+
+  //No se elimina el usuario, solo se cambia el estado a inactivo
   async delete(req, res) {
     try {
-      const userFound = await User.findByPk(req.params.id);
-      if (!userFound) {
+      const userId = req.params.id;
+      const user = await User.findByPk(userId);
+      if (!user) {
         return res.status(404).json({
           message: "Usuario no encontrado / User not found",
+          role: req.user.role,
         });
       }
-      await userFound.update({ status: "inactivo", updatedAt: new Date() });
+      await user.update({ status: "inactivo" });
       res.status(200).json({
         message: "Usuario eliminado correctamente / User deleted successfully",
       });
