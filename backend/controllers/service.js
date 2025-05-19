@@ -5,26 +5,25 @@ const { ValidationError, DatabaseError } = require("sequelize");
 const { serviceCreateSchema } = require("../schemas/service.js");
 
 class ServiceController {
-  /**
-   * Obtener todos los servicios disponibles
-   * @param {*} req - La solicitud HTTP
-   * @param {*} res - La respuesta HTTP
-   * @returns {Promise<void>}
-   * @version 18/03/2025
-   * @autor Jeimy Pinto
-   */
-  async getAllServices(req, res) {
+  async getAll(req, res) {
     try {
       const services = await Service.findAll({
         include: {
+          association: "creator",
           model: User,
-          as: "creator",
-          attributes: ["firstName", "lastName"],
         },
       });
-      res.status(200).send(services);
+      if (services.length === 0) {
+        return res.status(404).send({
+          message: "No services found / No se encontraron servicios",
+        });
+      }
+      res.status(200).send({
+        message: "Services retrieved successfully / Servicios recuperados con éxito",
+        services,
+      });
     } catch (error) {
-      if (error instanceof ValidationError) {
+      if (error.errors) {
         res.status(400).send({
           message: "Validation Error / Error de Validación",
           errors: error.message,
@@ -43,17 +42,24 @@ class ServiceController {
   }
 
   //Obitener todos los servicios activos
-  async getAllActiveServices(req, res) {
+  async getAllActive(req, res) {
     try {
       const services = await Service.findAll({
         where: { status: "activo" },
         include: {
+          association: "creator",
           model: User,
-          as: "creator",
-          attributes: ["firstName", "lastName"],
         },
       });
-      res.status(200).send(services);
+      if (services.length === 0) {
+        return res.status(404).send({
+          message: "No se encontraron servicios activos / No active services found",
+        });
+      }
+      res.status(200).send({
+        message: "Active services retrieved successfully / Servicios activos recuperados con éxito",
+        services,
+      });
     } catch (error) {
       if (error instanceof ValidationError) {
         res.status(400).send({
@@ -72,16 +78,7 @@ class ServiceController {
       }
     }
   }
-
-  /**
-   * Obtener un servicio por su ID
-   * @param {*} req - La solicitud HTTP
-   * @param {*} res - La respuesta HTTP
-   * @returns {Promise<void>}
-   * @version 18/03/2025
-   * @autor Jeimy Pinto
-   */
-  async getServiceById(req, res) {
+  async getById(req, res) {
     try {
       const service = await Service.findByPk(req.params.id, {
         include: {
