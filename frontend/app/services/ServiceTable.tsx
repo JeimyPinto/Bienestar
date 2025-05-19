@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ServiceTableProps, Service } from "../lib/types";
+import { areaColors } from "../lib/areaColors";
 // import ServiceForm from "./ServiceForm";
 
 const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
@@ -79,7 +80,15 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
                     }`
                   : ""}
               </div>
-              <div className="min-w-[160px] truncate">{service.area}</div>
+              <div className="min-w-[160px] truncate">
+                <span
+                  className={`px-2 py-1 rounded-full text-white text-sm ${
+                    areaColors[service.area] || "bg-gray-400"
+                  }`}
+                >
+                  {service.area}
+                </span>
+              </div>{" "}
               <div className="min-w-[160px]">
                 {new Date(service.createdAt).toLocaleDateString()}
               </div>
