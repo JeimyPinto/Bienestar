@@ -144,17 +144,21 @@ class AuthController {
       // Continuar con la lógica de inicio de sesión
       const user = await User.findOne({ where: { email } });
       if (!user) {
+        // e: "email" para distinguir internamente
         return res.status(401).json({
           message:
-            "Incorrect email or password / Correo electrónico o contraseña incorrectos (e)",
+            "Incorrect email or password / Correo electrónico o contraseña incorrectos",
+          e: "email",
         });
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
+        // e: "password" para distinguir internamente
         return res.status(401).json({
           message:
-            "Incorrect email or password / Correo electrónico o contraseña incorrectos (p)",
+            "Incorrect email or password / Correo electrónico o contraseña incorrectos",
+          e: "password",
         });
       }
 

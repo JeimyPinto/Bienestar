@@ -17,12 +17,22 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
+  const [token, _setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  // Setter personalizado para token: actualiza estado y localStorage
+  const setToken = (newToken: string | null) => {
+    _setToken(newToken);
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+    } else {
+      localStorage.removeItem("token");
+    }
+  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
+    _setToken(storedToken);
 
     if (storedToken) {
       try {

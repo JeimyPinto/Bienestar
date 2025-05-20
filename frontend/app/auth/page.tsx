@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Header from "../ui/header"
+import Footer from "../ui/footer"
+import { useAuth } from "../context/AuthContext"
+import ReCAPTCHA from "react-google-recaptcha";
+import { login } from "../services/auth"
 
-const LoginPage = (): JSX.Element => {
+export default function LoginPage() {
+  const { token, setToken } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
@@ -11,159 +17,140 @@ const LoginPage = (): JSX.Element => {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  /**
-   * Función que maneja el inicio de sesión.
-   * @param e evento de formulario.
-   * @returns {Promise<void>} Retorna una promesa.
-   * @version 18/03/2025
-   * @autor Jeimy Pinto
-   */
-  const handleLogin = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    if (!recaptchaToken) {
-      setError("Por favor, completa el reCAPTCHA./ Complete the reCAPTCHA.");
-      setLoading(false);
-      return;
-    }
-
-    
-
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-
-      // Sacar el rol del token decodificado
-      const tokenPayload = JSON.parse(atob(data.token.split(".")[1]));
-
-      router.push("/dashboard");
-    } catch (err) {
-      setError((err as Error).message);
+    try {
+      if (!recaptchaToken) {
+        setError("Please complete the reCAPTCHA. / Por favor completa el reCAPTCHA.");
+        setLoading(false);
+        return;
+      }
+      const { message, token: loginToken } = await login({ email, password, recaptchaToken });
+      if (message) {
+        setError(message);
+        setLoading(false);
+      }
+      if (loginToken) {
+        console.log("Login token: ", loginToken);
+        setToken(loginToken);
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.message || "Error al iniciar sesión. / Error logging in.");
     } finally {
       setLoading(false);
     }
-  };
-
-  /**
-   * Función que maneja el cambio del reCAPTCHA.
-   * @param token token del reCAPTCHA.
-   * @since 18/05/2025
-   * @returns {void} No retorna nada.
-   * @version 18/05/2025
-   * @autor Jeimy Pinto
-   */
-  const handleRecaptchaChange = (token: string | null): void => {
-    setRecaptchaToken(token);
-  };
+  }
 
   return (
     <>
-      <header className="flex flex-col md:flex-row justify-between items-center px-6 bg-azul w-full h-30 text-xl text-white">
-        <Link href="/">
-          <Image
-            src="/images/Icono.png"
-            priority={true}
-            alt="Logo"
-            width={300}
-            height={20}
-            className="p-3"
-          />
-        </Link>
-      </header>
-      <div className="flex flex-col items-center justify-center py-20 bg-gray-100">
-        <h1 className="text-5xl font-bold mb-6 text-center">
-          Inicia sesión en el portal de bienestar del aprendiz
-        </h1>
-        <div className="py-5 text-center">
-          <p>
-            ¡Hola! Para poder iniciar sesión, asegúrate de haber sido{" "}
-            <u className="decoration-wavy decoration-cian">
-              registrado previamente
-            </u>{" "}
-            por el Área de Bienestar del Aprendiz. ¡Gracias!
-          </p>
-        </div>
-        <form
-          onSubmit={handleLogin}
-          className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg"
-        >
-          <div className="flex justify-center mb-6 bg-azul p-4 rounded-lg">
-            <Image
-              src="/images/Icono.png"
-              alt="Logo"
-              width={150}
-              height={50}
-              priority={false}
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta"
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta"
-            />
-          </div>
-          <div className="mb-6 items center justify-center flex">
-            <ReCAPTCHA
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-              onChange={handleRecaptchaChange}
-              theme="dark"
-            />
-          </div>
-          {error && (
-            <div className="mb-4 text-center">
-              <p className="text-red-500 text-sm">{error}</p>
+      <Header />
+      {token ?
+        <main>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-10 sm:px-4 sm:py-16 rounded-xl shadow-xl mx-auto w-full max-w-5xl">
+            <h1 className="text-3xl sm:text-5xl font-extrabold mb-2 sm:mb-4 text-center text-azul drop-shadow-lg">
+              ¡Has cerrado sesión exitosamente!
+            </h1>
+            <div className="bg-white/90 rounded-lg p-4 sm:p-6 shadow-md w-full max-w-lg mt-2 sm:mt-4 flex flex-col items-center">
+              <p className="text-base sm:text-lg text-gray-700 text-center mb-4">
+                Tu sesión se ha cerrado correctamente. Si deseas volver a ingresar, haz clic en el botón de abajo.
+              </p>
+              <button
+                className="mt-2 px-6 py-3 bg-magenta text-white rounded-lg font-semibold hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta transition"
+                onClick={() => router.push("/auth")}
+              >
+                Volver a iniciar sesión
+              </button>
             </div>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full p-3 bg-magenta text-white rounded-lg hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta"
+          </div>
+        </main> :
+        <main className="flex flex-col items-center justify-center min-h-[60vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-10 sm:px-4 sm:py-16 rounded-xl shadow-xl mx-auto w-full max-w-9xl">
+          <h1 className="text-3xl sm:text-5xl font-extrabold mb-2 sm:mb-4 text-center text-azul drop-shadow-lg">
+            Bienvenido al Portal de Bienestar del Aprendiz
+          </h1>
+          <div className="bg-white/90 rounded-lg p-4 sm:p-6 shadow-md w-full max-w-lg mt-2 sm:mt-4">
+            <p className="text-base sm:text-lg text-gray-700 text-center mb-2">
+              ¡Hola! Para iniciar sesión, asegúrate de haber sido{" "}
+              <span className="underline decoration-wavy decoration-cian font-semibold">
+                registrado previamente
+              </span>{" "}
+              por el Área de Bienestar del Aprendiz.
+            </p>
+          </div>
+          <form className="w-full max-w-md bg-white/95 p-6 sm:p-8 rounded-lg shadow-lg mt-6 flex flex-col gap-4"
+            autoComplete="on"
+            onSubmit={handleSubmit}
           >
-            {loading ? "Logging in..." : "Log in"}
-          </button>
-        </form>
-        <div className="py-5 text-center">
-          <p>
-            Si tiene alguna dificultad, puede contactarnos en{" "}
-            <a
-              href="mailto:portafoliobienestar24@gmail.com"
-              className="text-magenta underline"
+            <div>
+              <label
+                className="block text-gray-700 text-sm font-bold mb-1"
+                htmlFor="email"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="ejemplo@correo.com"
+                className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta transition"
+              />
+            </div>
+            <div>
+              <label
+                className="block text-gray-700 text-sm font-bold mb-1"
+                htmlFor="password"
+              >
+                Contraseña
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                placeholder="Tu contraseña"
+                className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-magenta transition"
+              />
+            </div>
+            <div className="flex items center justify-center mt-4">
+              <ReCAPTCHA
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                onChange={(token) => setRecaptchaToken(token as string | null)}
+                theme="light"
+              />
+            </div>
+            {error && (
+              <div className="mb-2 text-center">
+                <p className="text-red-500 text-sm">{error}</p>
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full p-3 bg-magenta text-white rounded-lg font-semibold hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta transition disabled:opacity-60"
             >
-              portafoliobienestar24@gmail.com
-            </a>
-          </p>
-        </div>
-      </div>
+              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+            </button>
+            <div className="text-center mt-2">
+              <a
+                href="mailto:portafoliobienestar24@gmail.com"
+                className="text-cian underline text-sm hover:text-magenta transition"
+              >
+                ¿Necesitas ayuda? Contáctanos
+              </a>
+            </div>
+          </form>
+        </main>
+      }
       <Footer />
     </>
   );
 };
 
-export default LoginPage;
