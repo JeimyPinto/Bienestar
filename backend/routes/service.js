@@ -7,17 +7,7 @@ router.get("/", authMiddleware.authenticateToken, authMiddleware.authorizeRole()
 router.get("/active", serviceController.getAllActive);
 router.get("/:id", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), serviceController.getById);
 router.post("/", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), serviceController.create);
-// router.put(
-//   "/:id",
-//   authMiddleware.authenticateToken,
-//   authMiddleware.authorizeRole(),
-//   serviceController.updateService
-// );
-// router.delete(
-//   "/:id",
-//   authMiddleware.authenticateToken,
-//   authMiddleware.authorizeRole(),
-//   serviceController.deleteService
-// );
+router.put("/:id", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), serviceController.update);
+router.delete("/:id", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), serviceController.delete);
 
 module.exports = router;

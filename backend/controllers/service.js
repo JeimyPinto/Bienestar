@@ -2,7 +2,8 @@ const db = require("../models/index.js");
 const Service = db.Service;
 const User = db.User;
 const { ValidationError, DatabaseError } = require("sequelize");
-const { serviceCreateSchema } = require("../schemas/service.js");
+const { serviceSchema } = require("../schemas/service.js");
+const { enabledRoles } = require("../utils/enabledRoles.js");
 
 class ServiceController {
   async getAll(req, res) {
@@ -104,16 +105,20 @@ class ServiceController {
 
   async create(req, res) {
     try {
-      // Verifica si el usuario autenticad o tiene el rol adecuado
+      // Verifica si el usuario autenticado tiene el rol adecuado
       if (!enabledRoles.includes(req.user.role)) {
         return res.status(403).json({
           message: "No autorizado / Not authorized",
           role: req.user.role,
         });
       }
-      const serviceData = serviceCreateSchema.parse(req.body);
+      const serviceData = serviceSchema.parse(req.body);
       const service = await Service.create({
-        ...serviceData,
+        name: serviceData.name,
+        description: serviceData.description,
+        area: serviceData.area,
+        image: serviceData.image,
+        status: "activo",
         creatorId: req.user.id,
       });
       res.status(201).send({
@@ -136,59 +141,47 @@ class ServiceController {
     }
   }
 
-  /**
-   * Actualizar un servicio
-   * @param {*} req - La solicitud HTTP
-   * @param {*} res - La respuesta HTTP
-   * @returns {Promise<void>}
-   * @version 18/03/2025
-   * @autor Jeimy Pinto
-   */
-  async updateService(req, res) {
+  async update(req, res) {
     try {
-      const serviceData = serviceCreateSchema.parse(req.body);
+      const serviceData = serviceSchema.parse(req.body);
       const service = await Service.findByPk(req.params.id);
       if (service) {
         await service.update(serviceData);
-        res.status(200).send(service);
+        res.status(200).send({
+          message: "Service updated successfully / Servicio actualizado con éxito",
+          service,
+        });
       } else {
-        res
-          .status(404)
-          .send({ message: "Service not found / Servicio no encontrado" });
+        res.status(404).send({
+          message: "Service not found / Servicio no encontrado",
+          service
+        });
       }
     } catch (error) {
-      if (error instanceof ValidationError) {
+      if (error.errors) {
         res.status(400).send({
           message: "Validation Error / Error de Validación",
-          errors: error.message,
+          errors: error.errors,
         });
-      } else if (error instanceof DatabaseError) {
+      }
+      else {
         res.status(500).send({
-          message: "Database Error / Error de Base de Datos",
+          message: "Error creating service / Error al crear servicio",
           errors: error.message,
-        });
-      } else {
-        res.status(500).send({
-          message: "Error updating service / Error al actualizar servicio",
         });
       }
     }
   }
 
-  /**
-   * Eliminar un servicio
-   * @param {*} req - La solicitud HTTP
-   * @param {*} res - La respuesta HTTP
-   * @returns {Promise<void>}
-   * @version 18/03/2025
-   * @autor Jeimy Pinto
-   */
-  async deleteService(req, res) {
+  async delete(req, res) {
     try {
       const service = await Service.findByPk(req.params.id);
       if (service) {
-        await service.destroy();
-        res.status(204).send();
+        await service.update({ status: "inactivo" });
+        res.status(200).send({
+          message: "Service set to inactive successfully / Servicio pasado a inactivo con éxito",
+          service,
+        });
       } else {
         res
           .status(404)
@@ -202,7 +195,7 @@ class ServiceController {
         });
       } else {
         res.status(500).send({
-          message: "Error deleting service / Error al eliminar servicio",
+          message: "Error setting service to inactive / Error al pasar servicio a inactivo",
         });
       }
     }

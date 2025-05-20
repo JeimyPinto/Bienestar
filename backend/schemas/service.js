@@ -3,7 +3,7 @@ const { z } = require("zod");
 /**
  * Esquemas de validación de datos para los servicios
  */
-const serviceCreateSchema = z.object({
+const serviceSchema = z.object({
   name: z.string().nonempty({
     message: "Name is required / El nombre es obligatorio",
   }),
@@ -27,5 +27,5 @@ const serviceCreateSchema = z.object({
 });
 
 module.exports = {
-  serviceCreateSchema,
+  serviceSchema,
 };

@@ -1,3 +1,4 @@
+const { enabledRoles } = require("../utils/enabledRoles.js");
 const db = require("../models/index.js");
 const bcrypt = require("bcrypt");
 const User = db.User;
@@ -5,7 +6,6 @@ const {
   userUpdateSelfSchema,
   adminUpdateUserSchema, adminCreateUserSchema
 } = require("../schemas/user.js");
-const enabledRoles = ["admin", "integrante"];
 const saltRounds = 10;
 
 class UsuarioController {
