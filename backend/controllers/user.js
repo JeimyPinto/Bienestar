@@ -13,8 +13,7 @@ class UsuarioController {
     try {
       const users = await User.findAll({
         include: {
-          association: "services",
-          required: true,
+          association: "services"
         }
       });
       if (users.length === 0) {
@@ -23,9 +22,8 @@ class UsuarioController {
         });
       }
       res.status(200).json({
-        message:
-          "Usuarios activos obtenidos correctamente / Active users retrieved successfully",
-        users: processUsers(users, req),
+        message: "Usuarios obtenidos correctamente / Users retrieved successfully",
+        users,
       });
     } catch (error) {
       return res.status(500).json({

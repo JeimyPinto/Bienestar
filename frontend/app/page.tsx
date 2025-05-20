@@ -8,19 +8,10 @@ import Image from "next/image";
 import Accordion from "./ui/accordion";
 
 export default function Page() {
-  const [token, setToken] = useState<string | null>(null);
   const [error,  setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   
-  const storedToken = localStorage.getItem("token");
-  if (!storedToken) {
-    setError(
-      "Authorization token not found / No se ha encontrado el token de autorización"
-    );
-    setLoading(false);
-  } else {
-    setToken(storedToken);
-  }
+ 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />

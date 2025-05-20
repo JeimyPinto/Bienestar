@@ -40,31 +40,13 @@ const LoginPage = (): JSX.Element => {
       return;
     }
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password, recaptchaToken }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || "Failed to log in / Error al iniciar sesión"
-        );
-      }
+    
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
 
       // Sacar el rol del token decodificado
       const tokenPayload = JSON.parse(atob(data.token.split(".")[1]));
-      const userRole = tokenPayload.role;
 
       router.push("/dashboard");
     } catch (err) {

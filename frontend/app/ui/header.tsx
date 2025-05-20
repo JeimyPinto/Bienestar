@@ -3,62 +3,31 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import UserProfilePage from "../user/UserProfilePage";
-import { jwtDecode, JwtPayload as BaseJwtPayload } from "jwt-decode";
-
-interface JwtPayload extends BaseJwtPayload {
-  id?: string;
-  firstName?: string;
-}
+import { User } from "../lib/interface";
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<JwtPayload | null>(null);
-  const [showProfile, setShowProfile] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Obtiene el token de autorización del localStorage
+  //Obtiene el token de autorización del localStorage
   useEffect(() => {
-    getToken({ setToken, setError, setLoading });
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
   }, []);
 
+  //Obtiene el usuario del token y lo actualiza conforme cambia el token
   useEffect(() => {
-    if (token) {
-      try {
-        const tokenPayload = jwtDecode<JwtPayload>(token);
-        const currentTime = Date.now() / 1000;
-
-        if (tokenPayload.exp && tokenPayload.exp < currentTime) {
-          console.warn("El token ha expirado.");
-          localStorage.removeItem("token");
-          setIsLoggedIn(false);
-        } else {
-          setIsLoggedIn(true);
-          setUser({
-            id: tokenPayload.id,
-            firstName: tokenPayload.firstName,
-            exp: tokenPayload.exp,
-          });
-        }
-      } catch (error) {
-        console.error("Error al decodificar el token:", error);
-        localStorage.removeItem("token");
-        setIsLoggedIn(false);
-      }
-    } else {
-      setIsLoggedIn(false);
+    if (!token) {
+      setUser(null);
+      return;
+    }
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setUser(payload as User);
+    } catch (err) {
+      setUser(null);
     }
   }, [token]);
-
-  // Manejar el cierre de sesión
-  function handleLogout() {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setUser(null);
-    window.location.href = "/";
-  }
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">
@@ -81,42 +50,30 @@ export default function Header() {
             <Link href="/services">Servicios</Link>
           </li>
         </ul>
-        {isLoggedIn ? (
+        {token ? (
           <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setShowProfile(true)}
-              className="flex items-center text-white hover:text-cian transition-colors duration-300"
-            >
-              <Image
-                src="/images/ico-profile.svg"
-                alt="Icon Profile"
-                width={42}
-                height={42}
-                priority
-              />
-              <span className="ml-2">{user?.firstName || "Usuario"}</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300"
-            >
-              Cerrar sesión
-            </button>
+            <Image
+              src="/images/ico-profile.svg"
+              alt="Icon Profile"
+              width={42}
+              height={42}
+              priority
+            />
+            <span className="ml-2">{user?.firstName}</span>
+            <Link href="/auth">
+              <button className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300">
+                Cerrar sesión
+              </button>
+            </Link>
           </div>
         ) : (
-          <Link href="/login">
+          <Link href="/auth">
             <button className="bg-cian text-white px-4 py-2 rounded-md hover:bg-azul hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300">
               Ingresar
             </button>
           </Link>
         )}
       </nav>
-      {showProfile && (
-        <UserProfilePage
-          userId={user?.id}
-          onClose={() => setShowProfile(false)}
-        />
-      )}
     </header>
   );
 }

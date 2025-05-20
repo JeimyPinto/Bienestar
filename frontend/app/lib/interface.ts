@@ -80,3 +80,9 @@ export interface UserFormProps {
 export interface IcoBackProps {
   role?: string;
 }
+
+export interface LoginParams {
+    email: string;
+    password: string;
+    recaptchaToken: string;
+}
