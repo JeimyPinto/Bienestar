@@ -1,33 +1,9 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
-import { User } from "../lib/interface";
 
 export default function Header() {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-
-  //Obtiene el token de autorización del localStorage
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
-  }, []);
-
-  //Obtiene el usuario del token y lo actualiza conforme cambia el token
-  useEffect(() => {
-    if (!token) {
-      setUser(null);
-      return;
-    }
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      setUser(payload as User);
-    } catch (err) {
-      setUser(null);
-    }
-  }, [token]);
+  const { user, token } = useAuth();
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">

@@ -2,18 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import Footer from "../ui/footer";
-import ReCAPTCHA from "react-google-recaptcha";
 
-/**
- * Componente que representa la página de inicio de sesión.
- * @returns {JSX.Element} Página de inicio de sesión.
- * @constructor
- * @version 18/03/2025
- * @author Jeimy Pinto
- */
 const LoginPage = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
