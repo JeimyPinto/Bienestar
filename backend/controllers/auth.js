@@ -1,37 +1,11 @@
 const db = require("../models");
 const User = db.User;
-const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const {
-  adminCreateUserSchema,
-  userUpdateSelfSchema,
-  adminUpdateUserSchema,
-  loginSchema,
-} = require("../schemas/user");
-const path = require("path");
-const fs = require("fs");
+const { adminCreateUserSchema, loginSchema, } = require("../schemas/user");
 const { verifyRecaptcha } = require("../utils/recaptcha");
 class AuthController {
-  /**
-   * Registra un nuevo usuario en el sistema.
-   *
-   * @async
-   * @function register
-   * @param {Object} req - Objeto de solicitud de Express.
-   * @param {Object} req.body - Cuerpo de la solicitud que contiene los datos del usuario.
-   * @param {Object} res - Objeto de respuesta de Express.
-   * @returns Un mensaje de éxito o un mensaje de error
-   * @since 11/03/2025
-   * @version 19/05/2025
-   * @autor Jeimy Pinto
-   * @returns {Promise<void>} - Responde con un mensaje de éxito o error.
-   * @throws {ValidationError} - Si los datos de entrada no cumplen con el esquema de validación.
-   * @throws {SequelizeValidationError} - Si hay un error de validación de Sequelize.
-   * @throws {SequelizeDatabaseError} - Si hay un error de base de datos de Sequelize.
-   * @throws {Error} - Si ocurre cualquier otro error durante el registro.
-   */
+
   async register(req, res) {
     let parsedData;
     try {
@@ -116,9 +90,8 @@ class AuthController {
         user: {
           ...newUser.toJSON(),
           image: newUser.image
-            ? `${req.protocol}://${req.get("host")}/uploads/temp/${
-                newUser.image
-              }`
+            ? `${req.protocol}://${req.get("host")}/uploads/temp/${newUser.image
+            }`
             : null,
         },
       });
@@ -145,6 +118,7 @@ class AuthController {
       }
     }
   }
+
   async login(req, res) {
     let parsedData;
     try {
@@ -219,21 +193,6 @@ class AuthController {
     }
   }
 
-  /**
-   * Cierra la sesión de un usuario.
-   * Recibe el encabezado de autorización, si el token es válido, lo agrega a la lista
-   * de tokens inválidos.
-   * @async
-   * @function logout
-   * @param {Object} req - Objeto de solicitud de Express.
-   * @param {Object} req.headers - Encabezados de la solicitud.
-   * @param {string} req.headers.authorization - Encabezado de autorización que contiene el token JWT.
-   * @param {Object} res - Objeto de respuesta de Express.
-   * @returns {Promise<void>} Envía una respuesta JSON con un mensaje de éxito si el cierre de sesión es exitoso,
-   * o un mensaje de error si el cierre de sesión falla.
-   * @version 15/11/2024
-   * @autor Jeimy Pinto
-   */
   async logout(req, res) {
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
