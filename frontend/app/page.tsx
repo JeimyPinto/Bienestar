@@ -1,16 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import ServiciosGallery from "./services/gallery";
+// import ServiciosGallery from "./services/gallery";
 import Footer from "./ui/footer";
 import Header from "./ui/header";
 import Image from "next/image";
 import Accordion from "./ui/accordion";
 
 export default function Page() {
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">

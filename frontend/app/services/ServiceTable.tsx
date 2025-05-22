@@ -1,27 +1,10 @@
 import React, { useState } from "react";
-import { ServiceTableProps, Service } from "../lib/interface";
-import { areaColors } from "../lib/areaColors";
+import { ServiceTableProps } from "../lib/interface";
+// import { areaColors } from "../lib/areaColors";
 // import ServiceForm from "./ServiceForm";
 
-const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+const ServiceTable: React.FC<ServiceTableProps> = () => {
   const [filter, setFilter] = useState("");
-
-  const handleRowClick = (service: Service) => {
-    setSelectedService(service);
-    setIsFormOpen(true);
-  };
-
-  const closeForm = () => {
-    setSelectedService(null);
-    setIsFormOpen(false);
-  };
-
-  const filteredServices = services.filter((service) =>
-    service.description.toLowerCase().includes(filter.toLowerCase())
-  );
 
   return (
     <div className="overflow-x-auto px-4">
@@ -50,7 +33,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
         </div>
 
         {/* Rows */}
-        {filteredServices.map((service) => (
+        {/* {filteredServices.map((service) => (
           <>
             <div
               key={service.id}
@@ -99,7 +82,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ services }) => {
               </div>
             </div>
           </>
-        ))}
+        ))} */}
       </div>
     </div>
   );

@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-
+import { User } from "../lib/interface";
 export default function Header() {
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -34,6 +34,7 @@ export default function Header() {
     const interval = setInterval(checkToken, 1000);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">
       <Link href="/">

@@ -16,14 +16,14 @@ export default function LoginPage() {
   const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   const cookie = document.cookie;
-  //   const tokenValue = cookie
-  //     .split("; ")
-  //     .find(row => row.startsWith("token="))
-  //     ?.split("=")[1];
-  //   setToken(tokenValue || null);
-  // }, []);
+  useEffect(() => {
+    const cookie = document.cookie;
+    const tokenValue = cookie
+      .split("; ")
+      .find(row => row.startsWith("token="))
+      ?.split("=")[1];
+    setToken(tokenValue || null);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +39,14 @@ export default function LoginPage() {
       if (message) {
         setError(message);
         setLoading(false);
-        // router.push("/dashboard");
+        router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "Error al iniciar sesión. / Error logging in.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Error al iniciar sesión. / Error logging in.");
+      } else {
+        setError("Error al iniciar sesión. / Error logging in.");
+      }
     } finally {
       setLoading(false);
     }
