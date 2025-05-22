@@ -17,14 +17,14 @@ if (process.env.NODE_ENV != "development") {
   require("dotenv").config();
 }
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // replace '*' with your domain
+  res.header("Access-Control-Allow-Origin",  "*");
   next();
 });
 /**
  * Valida que solo se pueda acceder a la API desde los dominios permitidos
  */
 const allowedOrigins = [
-  "http://localhost:3001", "http://192.168.1.11:3001",
+  "http://localhost:3001", "http://192.168.1.11:3001","http://127.0.0.1:3000 ",
   "https://frontendshinydesk.vercel.app" /*cambiar*/,
 ];
 app.use(
@@ -38,6 +38,7 @@ app.use(
       }
       return callback(null, true);
     },
+    credentials:true,
   })
 );
 /**

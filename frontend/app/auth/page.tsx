@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Header from "../ui/header"
 import Footer from "../ui/footer"
@@ -14,8 +14,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const cookie = document.cookie;
-  const token = cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+  const [token, setToken] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   const cookie = document.cookie;
+  //   const tokenValue = cookie
+  //     .split("; ")
+  //     .find(row => row.startsWith("token="))
+  //     ?.split("=")[1];
+  //   setToken(tokenValue || null);
+  // }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,10 +39,7 @@ export default function LoginPage() {
       if (message) {
         setError(message);
         setLoading(false);
-      }
-      if (token) {
-        localStorage.setItem("token", token);
-        router.push("/dashboard");
+        // router.push("/dashboard");
       }
     } catch (err: any) {
       setError(err.message || "Error al iniciar sesión. / Error logging in.");

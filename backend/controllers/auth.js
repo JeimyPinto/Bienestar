@@ -182,12 +182,12 @@ class AuthController {
       );
 
       res.cookie("token", token, {
-        httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-        maxAge: 3600000,
-      }
-      )
+        httpOnly: true, // XSS
+        secure: false, // HTTPS
+        // sameSite: "Strict", // CSRF
+        sameSite: "Lax", // CSRF
+        maxAge: 3 * 60 * 60 * 1000,
+      });
 
       res.json({
         message: "Login successful / Inicio de sesión exitoso",

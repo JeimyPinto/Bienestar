@@ -1,20 +1,39 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation"
+import Image from "next/image"
+import Link from "next/link"
+
 export default function Header() {
-  const cookie = document.cookie;
-  const token = cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   const router = useRouter();
-  let user = null;
-  if (token) {
-    try {
-      user = JSON.parse(atob(token.split(".")[1]));
-    } catch {
-      user = null;
-    }
-  }
+
+  useEffect(() => {
+    let lastToken : string | null = null;
+    const checkToken = () => {
+      const cookie = document.cookie;
+      const tokenValue = cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1] || null;
+      if (tokenValue !== lastToken) {
+        setToken(tokenValue);
+        if (tokenValue) {
+          try {
+            setUser(JSON.parse(atob(tokenValue.split(".")[1])));
+          } catch {
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+        lastToken = tokenValue;
+      }
+    };
+    const interval = setInterval(checkToken, 1000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">
       <Link href="/">
@@ -45,7 +64,7 @@ export default function Header() {
               height={42}
               priority={true}
             />
-            <span className="ml-2">{user?.id || "Usuario"}</span>
+            <span className="ml-2">{user?.firstName || "Usuario"}</span>
             <button className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300"
               onClick={() => {
                 localStorage.removeItem("token");
