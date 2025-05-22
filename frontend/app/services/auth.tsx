@@ -13,20 +13,20 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
     }
 
     try {
-        const response = await fetch(`${url}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, recaptchaToken }),
-        });
+        const response = await fetch(`${url}/login`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password, recaptchaToken }),
+                credentials: "include",
+            });
+
+        const { message } = await response.json();
 
         if (!response.ok) {
-            const { message } = await response.json();
             throw new Error(`${message || "Login failed. Please try again."} / Error de inicio de sesión. Por favor, inténtalo de nuevo.`);
         }
 
-        // Recupera el mensaje y el token del servidor
-        const { message, token } = await response.json();
-        return { message, token };
         return { message };
     } catch (error) {
         console.error("Error logging in: / Error iniciando sesión en: ", error);

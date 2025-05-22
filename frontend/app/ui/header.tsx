@@ -1,10 +1,20 @@
-import { useAuth } from "../context/AuthContext";
+"use client"
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-
 export default function Header() {
-  const { user, token } = useAuth();
-
+  const cookie = document.cookie;
+  const token = cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+  const router = useRouter();
+  let user = null;
+  if (token) {
+    try {
+      user = JSON.parse(atob(token.split(".")[1]));
+    } catch {
+      user = null;
+    }
+  }
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">
       <Link href="/">
@@ -33,14 +43,17 @@ export default function Header() {
               alt="Icon Profile"
               width={42}
               height={42}
-              priority
+              priority={true}
             />
-            <span className="ml-2">{user?.firstName}</span>
-            <Link href="/auth">
-              <button className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300">
-                Cerrar sesión
-              </button>
-            </Link>
+            <span className="ml-2">{user?.id || "Usuario"}</span>
+            <button className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300"
+              onClick={() => {
+                localStorage.removeItem("token");
+                router.push("/auth");
+              }}
+            >
+              Cerrar sesión
+            </button>
           </div>
         ) : (
           <Link href="/auth">

@@ -4,18 +4,18 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Header from "../ui/header"
 import Footer from "../ui/footer"
-import { useAuth } from "../context/AuthContext"
 import ReCAPTCHA from "react-google-recaptcha";
 import { login } from "../services/auth"
 
 export default function LoginPage() {
-  const { token, setToken } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const cookie = document.cookie;
+  const token = cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,14 +27,13 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      const { message, token: loginToken } = await login({ email, password, recaptchaToken });
+      const { message } = await login({ email, password, recaptchaToken });
       if (message) {
         setError(message);
         setLoading(false);
       }
-      if (loginToken) {
-        console.log("Login token: ", loginToken);
-        setToken(loginToken);
+      if (token) {
+        localStorage.setItem("token", token);
         router.push("/dashboard");
       }
     } catch (err: any) {
@@ -51,17 +50,19 @@ export default function LoginPage() {
         <main>
           <div className="flex flex-col items-center justify-center min-h-[60vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-10 sm:px-4 sm:py-16 rounded-xl shadow-xl mx-auto w-full max-w-5xl">
             <h1 className="text-3xl sm:text-5xl font-extrabold mb-2 sm:mb-4 text-center text-azul drop-shadow-lg">
-              ¡Has cerrado sesión exitosamente!
+              Ya tienes una sesión iniciada
             </h1>
             <div className="bg-white/90 rounded-lg p-4 sm:p-6 shadow-md w-full max-w-lg mt-2 sm:mt-4 flex flex-col items-center">
               <p className="text-base sm:text-lg text-gray-700 text-center mb-4">
-                Tu sesión se ha cerrado correctamente. Si deseas volver a ingresar, haz clic en el botón de abajo.
+                Debes cerrar sesión antes de iniciar con otra cuenta.
               </p>
               <button
                 className="mt-2 px-6 py-3 bg-magenta text-white rounded-lg font-semibold hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta transition"
-                onClick={() => router.push("/auth")}
+                onClick={() => {
+                  localStorage.removeItem("token");
+                }}
               >
-                Volver a iniciar sesión
+                Cerrar sesión
               </button>
             </div>
           </div>

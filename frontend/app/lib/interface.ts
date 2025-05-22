@@ -82,7 +82,11 @@ export interface IcoBackProps {
 }
 
 export interface LoginParams {
-    email: string;
-    password: string;
-    recaptchaToken: string;
+  email: string;
+  password: string;
+  recaptchaToken: string;
+}
+export interface ErrorMessageProps {
+  message: string;
+  onRetry?: () => void;
 }

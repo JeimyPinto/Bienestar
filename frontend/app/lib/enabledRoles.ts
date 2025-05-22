@@ -1,0 +1,1 @@
+export const ENABLED_ROLES  = [    "admin", "integrante"]

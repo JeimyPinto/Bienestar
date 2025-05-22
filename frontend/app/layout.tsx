@@ -1,5 +1,4 @@
 import "./styles/globals.css"
-import { AuthProvider } from "./context/AuthContext"
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",
@@ -19,9 +18,7 @@ export default function RootLayout({
         <meta name="description" content={metadata.description} />
       </head>
       <body className="{`${monserrate.className} antialiase`} bg-blanco">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   );

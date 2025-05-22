@@ -181,9 +181,16 @@ class AuthController {
         { expiresIn: "1h" }
       );
 
+      res.cookie("token", token, {
+        httpOnly: true,
+        // secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        maxAge: 3600000,
+      }
+      )
+
       res.json({
         message: "Login successful / Inicio de sesión exitoso",
-        token,
       });
     } catch (error) {
       console.error(
