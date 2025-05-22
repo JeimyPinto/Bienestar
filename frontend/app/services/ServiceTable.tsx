@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ServiceTableProps } from "../lib/interface";
+import { ServiceTableProps } from "../types/Service"
 // import { areaColors } from "../lib/areaColors";
 // import ServiceForm from "./ServiceForm";
 
