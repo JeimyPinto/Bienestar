@@ -4,7 +4,7 @@
 import Footer from "./ui/footer";
 import Header from "./ui/header";
 import Image from "next/image";
-import Accordion from "./ui/accordion";
+import Accordion from "./ui/accordion"
 
 export default function Page() {
 
@@ -75,7 +75,7 @@ export default function Page() {
           </div>
         </section>
         {/* <section className="w-full">
-          <ServiciosGallery />
+          <ServicesGallery />
         </section> */}
       </main>
       <Footer />

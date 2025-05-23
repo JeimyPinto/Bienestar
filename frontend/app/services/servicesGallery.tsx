@@ -7,7 +7,7 @@
 // import { Service } from "../lib/interface";
 // import { fetchServices } from "./endpoints";
 
-export default function ServiciosGallery() {
+export default function ServicesGallery() {
   <></>
 }
 //   const [services, setServices] = useState<Service[]>([]);
