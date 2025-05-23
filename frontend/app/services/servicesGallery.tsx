@@ -1,7 +1,7 @@
-import Image from "next/image";
-import ErrorMessage from "../ui/errorMessage";
-import { areaColors } from "../lib/areaColors";
-import { Service } from "../types/service";
+import Image from "next/image"
+import { areaColors } from "../lib/areaColors"
+import { Service } from "../types/service"
+import ErrorMessage from "../ui/errorMessage"
 
 export default function ServicesGallery({ services }: { services?: Service[] }) {
   if (!services || services.length === 0) {

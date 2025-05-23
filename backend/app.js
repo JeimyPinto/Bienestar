@@ -25,7 +25,7 @@ app.use((req, res, next) => {
  */
 const allowedOrigins = [
   "http://localhost:3001", "http://192.168.1.11:3001","http://127.0.0.1:3000 ",
-  "https://frontendshinydesk.vercel.app" /*cambiar*/,
+  "https://bienestar-frontend.onrender.com",
 ];
 app.use(
   cors({
