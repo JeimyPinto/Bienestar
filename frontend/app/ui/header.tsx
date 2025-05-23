@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { User } from "../types/User";
+import { User } from "../types/user";
 
 export default function Header() {
   const [token, setToken] = useState<string | null>(null);

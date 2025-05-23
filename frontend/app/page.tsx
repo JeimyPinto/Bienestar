@@ -2,9 +2,9 @@
 
 // import ServiciosGallery from "./services/gallery";
 import Footer from "./ui/footer";
-import Header from "./ui/Header";
+import Header from "./ui/header";
 import Image from "next/image";
-import Accordion from "./ui/Accordion";
+import Accordion from "./ui/accordion";
 
 export default function Page() {
 

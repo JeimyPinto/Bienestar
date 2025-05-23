@@ -1,5 +1,5 @@
 import { isValidEmail } from "../lib/isValidEmail"
-import { LoginParams } from "../types/Login"
+import { LoginParams } from "../types/login"
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/auth`
 
