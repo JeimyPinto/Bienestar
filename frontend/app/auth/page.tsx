@@ -133,7 +133,6 @@ export default function LoginPage() {
               <ReCAPTCHA
                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
                 onChange={(token) => setRecaptchaToken(token as string | null)}
-                theme="light"
               />
             </div>
             {error && (
