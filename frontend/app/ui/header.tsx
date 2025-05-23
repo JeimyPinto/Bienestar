@@ -1,9 +1,10 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { User } from "../lib/interface";
+import { User } from "../types/User";
+
 export default function Header() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {IcoBackProps} from "../lib/interface";
+import {IcoBackProps} from "../types/components/type"
 
 
 const IcoBack: React.FC<IcoBackProps> = ({ role = "user" }) => {

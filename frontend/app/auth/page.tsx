@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import Header from "../ui/header"
+import Header from "../ui/Header"
 import Footer from "../ui/footer"
 import ReCAPTCHA from "react-google-recaptcha";
 import { login } from "../services/auth"

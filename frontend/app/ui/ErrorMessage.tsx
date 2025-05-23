@@ -1,5 +1,5 @@
 import React from "react";
-import { ErrorMessageProps } from "../lib/interface";
+import { ErrorMessageProps } from "../types/components/type"
 
 
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) => {

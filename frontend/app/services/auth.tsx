@@ -1,7 +1,7 @@
-import { isValidEmail } from "../lib/isValidEmail";
-import { LoginParams } from "../lib/interface";
+import { isValidEmail } from "../lib/isValidEmail"
+import { LoginParams } from "../types/Login"
 
-const url = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
+const url = `${process.env.NEXT_PUBLIC_API_URL}/auth`
 
 
 export async function login({ email, password, recaptchaToken }: LoginParams) {
