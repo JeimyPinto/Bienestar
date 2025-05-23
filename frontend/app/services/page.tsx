@@ -1,8 +1,10 @@
+"use client"
+
 import React, { useEffect, useState } from "react";
 import { Service } from "../types/service";
 import ServicesGallery from "./servicesGallery";
 import ErrorMessage from "../ui/errorMessage";
-import { getAll } from "../services/services/service";
+import { getAllActive } from "../services/services/service";
 
 export default function ServicePage() {
     const [services, setServices] = useState<Service[]>([]);
@@ -10,7 +12,7 @@ export default function ServicePage() {
 
     useEffect(() => {
         async function fetchServices() {
-            const { services, message } = await getAll();
+            const { services, message } = await getAllActive();
             if (services) setServices(services);
             setMessage(message);
         }

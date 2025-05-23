@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import ErrorMessage from "../ui/errorMessage";
 import { areaColors } from "../lib/areaColors";
