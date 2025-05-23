@@ -1,8 +1,7 @@
 import React from "react";
-import { ErrorMessageProps } from "../types/components/type"
+import { ErrorMessageProps } from "../types/components/type";
 
-
-const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) => {
+export default function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
   return (
     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-md" role="alert">
       <strong className="font-bold">¡Error!</strong>
@@ -17,6 +16,4 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) => {
       )}
     </div>
   );
-};
-
-export default ErrorMessage;
+}
