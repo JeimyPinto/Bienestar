@@ -32,9 +32,7 @@ export default function Header() {
         lastToken = tokenValue;
       }
     };
-    const interval = setInterval(checkToken, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [token]);
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">
