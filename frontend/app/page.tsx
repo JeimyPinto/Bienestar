@@ -43,7 +43,7 @@ export default function Page() {
           <h2 className="text-3xl font-bold mb-4 text-center">Contacto</h2>
           <div className="flex flex-col md:flex-row justify-around items-center">
             <Image
-              src="/images/qr-contacto.png"
+              src="QR-contacto.png"
               alt="QR contacto"
               width={300}
               height={300}
