@@ -12,12 +12,14 @@ export default function Header() {
 
   useEffect(() => {
     let lastToken: string | null = null;
+
     const checkToken = () => {
       const cookie = document.cookie;
-      const tokenValue = cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1] || null;
+      const tokenValue =
+        cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1] || null;
       if (tokenValue !== lastToken) {
         setToken(tokenValue);
         if (tokenValue) {
@@ -32,8 +34,11 @@ export default function Header() {
         lastToken = tokenValue;
       }
     };
-    checkToken();
-  }, [token]);
+
+    const interval = setInterval(checkToken, 1000); // revisa cada segundo
+
+    return () => clearInterval(interval); // limpia el intervalo al desmontar
+  }, []);
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">

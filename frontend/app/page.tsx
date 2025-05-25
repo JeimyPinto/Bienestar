@@ -1,13 +1,31 @@
 "use client";
 
-// import ServiciosGallery from "./services/gallery";
+import { useEffect, useState } from "react";
+import ServicesGallery from "./services/servicesGallery";
 import Footer from "./ui/footer";
 import Header from "./ui/header";
 import Image from "next/image";
 import Accordion from "./ui/accordion"
+import { getAllActive } from "./services/services/service";
+import { Service } from "./types/service";
 
 export default function Page() {
-
+  const [services, setServices] = useState<Service[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
+  useEffect(() => {
+    async function fetchServices() {
+      const { services, message } = await getAllActive();
+      if (message) {
+        setMessage(message);
+      }
+      if (services) {
+        setServices(services);
+        setMessage(message)
+      }
+    }
+    fetchServices();
+  }
+    , []);
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
@@ -43,7 +61,7 @@ export default function Page() {
           <h2 className="text-3xl font-bold mb-4 text-center">Contacto</h2>
           <div className="flex flex-col md:flex-row justify-around items-center">
             <Image
-              src="QR-contacto.png"
+              src="/images/QR-contacto.png"
               alt="QR contacto"
               width={300}
               height={300}
@@ -74,9 +92,7 @@ export default function Page() {
             </div>
           </div>
         </section>
-        {/* <section className="w-full">
-          <ServicesGallery />
-        </section> */}
+        <ServicesGallery services={services} />
       </main>
       <Footer />
     </div>
