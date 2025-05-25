@@ -4,11 +4,11 @@ import { Service } from "../types/service"
 import ErrorMessage from "../ui/errorMessage"
 import {formatDate} from "../lib/formateDate"
 
-export default function ServicesGallery({ services }: { services?: Service[] }) {
+export default function ServicesGallery({ services, message }: { services?: Service[]; message?: string }) {
   if (!services || services.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-4">
-        <ErrorMessage message="Servicios no disponibles." />
+        <ErrorMessage message={message || "Servicios no disponibles."} />
       </div>
     );
   }

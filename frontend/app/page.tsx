@@ -92,7 +92,7 @@ export default function Page() {
             </div>
           </div>
         </section>
-        <ServicesGallery services={services} />
+        <ServicesGallery services={services} message={message ?? undefined}/>
       </main>
       <Footer />
     </div>
