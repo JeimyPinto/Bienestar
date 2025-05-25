@@ -16,15 +16,12 @@ if (process.env.NODE_ENV != "development") {
   // Se carga la configuración archivo .env al process.env
   require("dotenv").config();
 }
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin",  "*");
-  next();
-});
 /**
  * Valida que solo se pueda acceder a la API desde los dominios permitidos
  */
 const allowedOrigins = [
-  "http://localhost:3001", "http://192.168.1.11:3001","http://127.0.0.1:3000 ",
+  "http://localhost:3001",
+  , "http://127.0.0.1:3000 ",
   "https://bienestar-frontend.onrender.com",
 ];
 app.use(
@@ -38,7 +35,7 @@ app.use(
       }
       return callback(null, true);
     },
-    credentials:true,
+    credentials: true,
   })
 );
 /**

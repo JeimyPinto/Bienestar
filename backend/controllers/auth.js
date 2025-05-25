@@ -183,8 +183,8 @@ class AuthController {
 
       res.cookie("token", token, {
         httpOnly: true, // XSS
-        secure: true, // HTTPS
-        sameSite: "Strict", // CSRF
+        secure: process.env.NODE_ENV === "production"? true : false, // HTTPS
+        sameSite: process.env.NODE_ENV === "production" ? "Strict" : "None", // CSRF
         maxAge: 3 * 60 * 60 * 1000,
       });
 
