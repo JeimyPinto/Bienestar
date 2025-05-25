@@ -2,39 +2,42 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-// import Image from "next/image";
-// import formatDate from "../../lib/formatDate";
-// import { areaColors } from "../../lib/areaColors";
-// import { Service } from "../../lib/interface";
+import Image from "next/image";
+import { areaColors } from "../../lib/areaColors";
 import { User } from "../../types/user";
+import { Service } from "../../types/service";
+import { formatDate } from "../../lib/formateDate"
+
 
 export default function DashboardAdmin() {
     const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+    const [services, setServices] = useState<Service[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
         let lastToken: string | null = null;
-        const checkToken = () => {
-            const cookie = document.cookie;
-            const tokenValue = cookie
-                .split("; ")
-                .find((row) => row.startsWith("token="))
-                ?.split("=")[1] || null;
-            if (tokenValue !== lastToken) {
-                setToken(tokenValue);
-                if (tokenValue) {
-                    try {
-                        setUser(JSON.parse(atob(tokenValue.split(".")[1])));
-                    } catch {
-                        setUser(null);
-                    }
-                } else {
-                    setUser(null);
+        const cookie = document.cookie;
+        const tokenValue = cookie
+            .split("; ")
+            .find((row) => row.startsWith("token="))
+            ?.split("=")[1] || null;
+        if (tokenValue !== lastToken) {
+            setToken(tokenValue);
+            if (tokenValue) {
+                try {
+                    const parsedUser: User = JSON.parse(atob(tokenValue.split(".")[1]));
+                    setServices(parsedUser.services || []);
+                    setLoading(false);
+                } catch {
+                    setServices([]);
                 }
-                lastToken = tokenValue;
+            } else {
+                setServices([]);
             }
-        };
+            lastToken = tokenValue;
+        }
     }, [token]);
 
 
@@ -78,7 +81,11 @@ export default function DashboardAdmin() {
                     <div className="bg-red-100 text-red-700 p-4 rounded-md shadow-md">
                         <p>{error}</p>
                         <button
-                            onClick={loadServices}
+                            onClick={() => {
+                                setLoading(true);
+                                setError(null);
+                                setToken(token => token);
+                            }}
                             className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
                         >
                             Retry

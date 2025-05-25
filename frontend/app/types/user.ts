@@ -1,3 +1,5 @@
+import { Service } from "./service";
+
 export interface User {
     id: string;
     firstName: string;
@@ -6,15 +8,14 @@ export interface User {
     documentNumber: string;
     phone: string;
     email: string;
-    role: string;
+    password?: string; // opcional para no exponer siempre
     status: string;
+    role: string;
     image?: string;
-    profileImage?: File | null;
-    password?: string;
     createdAt: string;
     updatedAt: string;
+    services?: Array<Service>;
 }
-
 
 export interface UserTableProps {
     users: Array<{

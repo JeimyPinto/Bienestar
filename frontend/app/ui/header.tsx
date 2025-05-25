@@ -11,7 +11,7 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    let lastToken : string | null = null;
+    let lastToken: string | null = null;
     const checkToken = () => {
       const cookie = document.cookie;
       const tokenValue = cookie
@@ -32,6 +32,7 @@ export default function Header() {
         lastToken = tokenValue;
       }
     };
+    checkToken();
   }, [token]);
 
   return (

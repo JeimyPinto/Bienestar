@@ -36,6 +36,7 @@ export default function DashboardPage() {
         lastToken = tokenValue;
       }
     };
+    checkToken();
   }, [token]);
 
   return (

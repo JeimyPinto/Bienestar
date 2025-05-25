@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { ServiceTableProps } from "../types/service"
+import { Service } from "../types/service"
 // import { areaColors } from "../lib/areaColors";
-// import ServiceForm from "./ServiceForm";
 
-const ServiceTable: React.FC<ServiceTableProps> = () => {
+const ServiceTable: React.FC<Service> = () => {
   const [filter, setFilter] = useState("");
 
   return (

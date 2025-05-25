@@ -2,6 +2,7 @@ import Image from "next/image"
 import { areaColors } from "../lib/areaColors"
 import { Service } from "../types/service"
 import ErrorMessage from "../ui/errorMessage"
+import {formatDate} from "../lib/formateDate"
 
 export default function ServicesGallery({ services }: { services?: Service[] }) {
   if (!services || services.length === 0) {
@@ -62,13 +63,3 @@ export default function ServicesGallery({ services }: { services?: Service[] }) 
   );
 }
 
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("es-CO", {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}

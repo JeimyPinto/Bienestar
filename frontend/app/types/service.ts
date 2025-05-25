@@ -1,30 +1,23 @@
 import { User } from './user';
 
-export interface Service {
-    id: number;
-    name: string;
-    description: string;
-    creator: User;
-    area: string;
-    image: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-    creatorId: string;
-}
+export type Area =
+  | 'Salud'
+  | 'Arte y Cultura'
+  | 'Deporte y Recreación'
+  | 'Apoyo Socioeconomico y Reconocimiento a la Excelencia'
+  | 'Apoyo Psicosocial';
 
-export interface ServiceTableProps {
-  services: Array<{
-    id: number;
-    name: string;
-    description: string;
-    creator: User;
-    area: string;
-    image: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-    creatorId: string;
-  }>;
-  setServices: React.Dispatch<React.SetStateAction<Service[]>>;
+export type ServiceStatus = 'activo' | 'inactivo';
+
+export interface Service {
+  id: number;
+  name: string;
+  description: string;
+  creatorId: number;
+  creator?: User;
+  area: Area;
+  image: string;
+  status: ServiceStatus;
+  createdAt: string;
+  updatedAt: string;
 }
