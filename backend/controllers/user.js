@@ -71,7 +71,7 @@ class UsuarioController {
         offset,
         include: {
           association: "services",
-          required: true,
+          required: false,
         },
       });
       const totalPages = Math.ceil(totalUsers / limit);

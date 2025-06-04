@@ -49,7 +49,6 @@ export default function UserTable() {
                     setError(data.error);
                 } else if (data.users) {
                     setUsers(data.users);
-                    console.log("Users loaded:", data.users);
                     setCurrentPage(data.currentPage);
                     setTotalUsers(data.totalUsers);
                     setTotalPages(data.totalPages);
