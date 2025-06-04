@@ -22,7 +22,9 @@ export interface UserTableProps {
     currentPage: number;
     totalUsers: number;
     totalPages: number;
+    limit: number;
     setCurrentPage: (page: number) => void;
+    setLimit: React.Dispatch<React.SetStateAction<number>>;
     token: string | null;
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }

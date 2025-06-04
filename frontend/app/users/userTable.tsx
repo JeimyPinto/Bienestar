@@ -1,18 +1,78 @@
-import React, { useState, useRef } from "react"
-import { UserTableProps } from "../types/user"
+import React, { useEffect, useState, useRef } from "react"
 import { useColumnSorter } from "../lib/useColumnSorter"
 import { User } from "../types/user"
+import ErrorMessage from "../ui/errorMessage";
+import { getAllPaginated } from "../services/services/user";
 
-export default function UserTable(props: UserTableProps) {
-    const {
-        users,
-        currentPage,
-        totalUsers,
-        totalPages,
-        setCurrentPage,
-        token,
-        setUsers,
-    } = props;
+export default function UserTable() {
+    const [token, setToken] = useState<string | null>(null);
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [limit, setLimit] = useState<number>(10);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalUsers, setTotalUsers] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let tokenValue: string | null = null;
+
+        // Obtener el token dependiendo del entorno
+        if (
+            process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
+            process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
+        ) {
+            tokenValue = localStorage.getItem("token");
+        } else {
+            const cookie = document.cookie;
+            tokenValue =
+                cookie
+                    .split("; ")
+                    .find((row) => row.startsWith("token="))
+                    ?.split("=")[1] || null;
+        }
+
+        if (tokenValue) {
+            setToken(tokenValue);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!token) {
+            setError("No authentication token found / No se ha encontrado el token de autenticación.");
+            setLoading(false);
+            return;
+        }
+
+        let isMounted = true;
+        setLoading(true);
+        setError(null);
+
+        const loadUsers = async () => {
+            try {
+                const data = await getAllPaginated(currentPage, limit, token);
+                if (!isMounted) return;
+                if (data.error) {
+                    setError(data.error);
+                } else if (data.users) {
+                    setUsers(data.users);
+                    setCurrentPage(data.currentPage);
+                    setTotalUsers(data.totalUsers);
+                    setTotalPages(data.totalPages);
+                }
+            } catch {
+                if (isMounted) setError("Error al cargar los usuarios. / Error loading users.");
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        loadUsers();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [token, currentPage]);
     const {
         sortedData: sortedUsers,
         handleSort,
@@ -30,6 +90,27 @@ export default function UserTable(props: UserTableProps) {
     }
     return (
         <div className="overflow-x-auto px-4">
+            {error && (
+                <div className="mb-4">
+                    <ErrorMessage message={error} />
+                </div>
+            )}
+            <div className="flex justify-end items-center mb-2">
+                <label className="mr-2 text-sm text-gray-700">Mostrar:</label>
+                <select
+                    value={limit}
+                    onChange={e => {
+                        setLimit(Number(e.target.value));
+                        setCurrentPage(1); // Reinicia a la primera página al cambiar el límite
+                    }}
+                    className="border rounded px-2 py-1 text-sm"
+                >
+                    {[10, 25, 50, 100].map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                </select>
+                <span className="ml-2 text-sm text-gray-700">por página</span>
+            </div>
             <div className="max-w-8xl mx-auto bg-blanco border border-azul shadow-md rounded-lg text-center">
                 {/* Header */}
                 <div className="grid grid-cols-12 bg-cian text-azul font-semibold px-4 py-2">
@@ -62,7 +143,7 @@ export default function UserTable(props: UserTableProps) {
                     >
                         Número de Documento{" "}
                         {sortColumn === "documentNumber" &&
-                            (sortOrder === "asc" ? "↑" : "↓")}
+                            (sortOrder === "asc" ? "⬆️" : "⬇️")}
                     </div>
                     <div onClick={() => handleSort("phone")} className="cursor-pointer">
                         Teléfono{" "}
@@ -101,7 +182,11 @@ export default function UserTable(props: UserTableProps) {
                         <div>
                             {user.image ? (
                                 <img
-                                    src={user.image}
+                                    src={
+                                        user?.image
+                                            ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + user.image
+                                            : "/images/ico-profile.svg"
+                                    }
                                     alt={`${user.firstName} avatar`}
                                     className="w-10 h-10 rounded-full object-cover"
                                 />

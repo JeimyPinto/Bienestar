@@ -27,12 +27,16 @@ const authMiddleware = {
         status: decoded.status,
         role: decoded.role,
         image: decoded.image,
+        createdAt: decoded.createdAt,
+        updatedAt: decoded.updatedAt,
       };
       next();
     } catch (err) {
       return res
         .status(403)
-        .json({ error: "Token no válido / Invalid token" });
+        .json({
+          error: "Token no válido / Invalid token ( " + err.message + " )",
+        });
     }
   },
 
