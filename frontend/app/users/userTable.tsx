@@ -55,7 +55,7 @@ export default function UserTable() {
                 const data = await getAllPaginated(currentPage, limit, token);
                 if (!isMounted) return;
                 if (data.error) {
-                    setError(data.error);
+                    setError(typeof data.error === "string" ? data.error : data.error?.message || String(data.error));
                 } else if (data.users) {
                     setUsers(data.users);
                     setCurrentPage(data.currentPage);

@@ -2,7 +2,6 @@ const moment = require("moment");
 
 class FileController {
     upload(req, res) {
-        console.log("Almacenando archivo... / Storing file...", req.file);
         try {
             res.send({
                 status: "success",

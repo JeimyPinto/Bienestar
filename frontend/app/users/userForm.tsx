@@ -73,8 +73,6 @@ export default function UserForm(props: UserFormProps) {
                     let responseData;
                     // Usar newUser.file si existe
                     if (newUser.file) {
-                        console.log("File exists:", newUser.file);
-                        console.log("Usser data:", newUser);
                         responseData = await create(newUser, newUser.file, token);
                     } else {
                         console.log("No file, using profileImage:", newUser.file);

@@ -126,8 +126,6 @@ class UsuarioController {
    */
   async create(req, res) {
     try {
-      console.log("userData", req.body);
-      console.log("req.file", req.file);
       const userData = await adminCreateUserSchema.parseAsync(req.body);
       // Si password está vacío o no viene, usar documentNumber como password
       const plainPassword = userData.password && userData.password.trim() !== ""
@@ -150,16 +148,9 @@ class UsuarioController {
 
       // Si se proporciona una imagen, usar FileController para manejar la carga
       if (req.file) {
-        const fileResponse = FileController.upload(req, res);
-        if (fileResponse.ok)
-          user.image = fileResponse.destination + "/" + fileResponse.filename;
-        user.update({ image: user.image });
-      } else {
-        return res.status(500).json({
-          message: "Error al cargar la imagen / Error uploading image",
-          error: "No se recibió archivo de imagen / No image file received",
-          user: user,
-        });
+        // Guarda el nombre o la ruta del archivo en el usuario
+        user.image = req.file.filename;
+        await user.update({ image: user.image });
       }
       res.status(201).json({
         message: "Usuario creado correctamente / User created successfully",

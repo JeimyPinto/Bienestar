@@ -34,9 +34,15 @@ export async function create(user: any, file?: File, token?: string) {
             const formData = new FormData();
             Object.entries(user).forEach(([key, value]) => {
                 if (key !== "file") formData.append(key, value as string);
-            }); body = formData;
+            });
             formData.append("file", file);
-            // Do not set Content-Type header for FormData
+
+            // Depuración: muestra todos los pares clave-valor
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ':', pair[1]);
+            }
+
+            body = formData;
         } else {
             body = JSON.stringify(user);
             headers["Content-Type"] = "application/json";
@@ -45,7 +51,6 @@ export async function create(user: any, file?: File, token?: string) {
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
         }
-
         const response = await fetch(url, {
             method: "POST",
             headers,
