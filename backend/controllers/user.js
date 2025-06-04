@@ -1,4 +1,4 @@
-const { enabledRoles } = require("../utils/enabledRoles.js");
+const enabledRoles = require("../utils/enabledRoles.js");
 const db = require("../models/index.js");
 const bcrypt = require("bcrypt");
 const User = db.User;
@@ -125,26 +125,8 @@ class UsuarioController {
    * Si se proporciona una imagen, se maneja la carga usando FileController.
    */
   async create(req, res) {
-    if (!req.user || !req.user.role) {
-      return res.status(401).json({ message: "No autenticado / Not authenticated" });
-    }
-    if (!enabledRoles.includes(req.user.role)) {
-      return res.status(403).json({
-        message: "No autorizado / Not authorized",
-        role: req.user.role,
-      });
-    }
-    // Verifica si el usuario autenticado tiene el rol adecuado
-    if (!enabledRoles.includes(req.user.role)) {
-      return res.status(403).json({
-        message: "No autorizado / Not authorized",
-        role: req.user.role,
-      });
-    }
     try {
-
       const userData = await adminCreateUserSchema.parseAsync(req.body);
-
       // Si password está vacío o no viene, usar documentNumber como password
       const plainPassword = userData.password && userData.password.trim() !== ""
         ? userData.password
@@ -183,7 +165,10 @@ class UsuarioController {
     } catch (error) {
       if (error.errors) {
         res.status(400).json({
-          error: "Error de validación / Validation error () " + error.errors.map(e => e.message).join(", "),
+          error: "Error de validación / Validation error: " +
+            error.errors
+              .map(e => `${e.path?.join(".")}: ${e.message}`)
+              .join("; ")
         });
       } else {
         res.status(500).json({

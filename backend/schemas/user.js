@@ -11,7 +11,12 @@ const adminCreateUserSchema = z
   .object({
     firstName: z
       .string()
-      .nonempty({ message: "First name is required / El nombre es obligatorio" }),
+      .nonempty({
+        errorMap: () => ({
+          message: "First name is required / El nombre es obligatorio",
+        })
+      }
+      ),
     lastName: z
       .string()
       .nonempty({ message: "Last name is required / El apellido es obligatorio" }),
@@ -37,15 +42,11 @@ const adminCreateUserSchema = z
         message: "Invalid email address / Dirección de correo electrónico no válida",
       }),
     password: z.string().optional(),
-    status: z.enum(
-      ["activo", "inactivo"],
-      {
-        errorMap: () => ({
-          message:
-            "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'",
-        }),
-      }
-    ),
+    status: z
+      .enum(["activo", "inactivo"], {
+        message: "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'",
+      })
+      .optional(),
     role: z.string().nonempty({
       message: "Role is required / El rol es obligatorio",
     }),
@@ -60,16 +61,11 @@ const adminCreateUserSchema = z
   )
   .transform((data) => ({
     ...data,
+    status: data.status || "activo",
     password: data.password || data.documentNumber,
   }));
 
-/**
- * Esquema para la actualización de datos por el usuario
- * @type {z.ZodObject}
- * @const userUpdateSelfSchema
- * @version 18/03/2025
- * @autor Jeimy Pinto
- */
+
 const userUpdateSelfSchema = z
   .object({
     firstName: z
@@ -110,13 +106,7 @@ const userUpdateSelfSchema = z
     path: ["role"],
   });
 
-/**
- * Esquema para la actualización de datos por el administrador
- * @type {z.ZodObject}
- * @const adminUpdateUserSchema
- * @version 18/03/2025
- * @autor Jeimy Pinto
- */
+
 const adminUpdateUserSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
@@ -130,10 +120,9 @@ const adminUpdateUserSchema = z.object({
   password: z.string().optional(),
   role: z.string().optional(),
   status: z
-    .enum(
-      ["activo", "inactivo"],
-      "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'"
-    )
+    .enum(["activo", "inactivo"], {
+      message: "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'",
+    })
     .optional(),
   image: z.string().optional(),
   updatedAt: z.string().optional(),
