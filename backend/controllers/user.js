@@ -2,6 +2,7 @@ const { enabledRoles } = require("../utils/enabledRoles.js");
 const db = require("../models/index.js");
 const bcrypt = require("bcrypt");
 const User = db.User;
+const FileController = require("./file.js");
 const {
   userUpdateSelfSchema,
   adminUpdateUserSchema, adminCreateUserSchema
@@ -118,15 +119,29 @@ class UsuarioController {
     }
   }
 
+  /**
+   * Crea un nuevo usuario. Solo usuarios con roles habilitados pueden crear usuarios.
+   * Si no se proporciona contraseña, se usa el número de documento como contraseña.
+   * Si se proporciona una imagen, se maneja la carga usando FileController.
+   */
   async create(req, res) {
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({ message: "No autenticado / Not authenticated" });
+    }
+    if (!enabledRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: "No autorizado / Not authorized",
+        role: req.user.role,
+      });
+    }
+    // Verifica si el usuario autenticado tiene el rol adecuado
+    if (!enabledRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: "No autorizado / Not authorized",
+        role: req.user.role,
+      });
+    }
     try {
-      // Verifica si el usuario autenticado tiene el rol adecuado
-      if (!enabledRoles.includes(req.user.role)) {
-        return res.status(403).json({
-          message: "No autorizado / Not authorized",
-          role: req.user.role,
-        });
-      }
 
       const userData = await adminCreateUserSchema.parseAsync(req.body);
 
@@ -149,13 +164,18 @@ class UsuarioController {
         image: null, // temporalmente null
       });
 
-      // Si hay imagen, actualizamos el campo con la ruta correspondiente
-      if (userData.image) {
-        const imagePath = `/images/users/${user.id}/${userData.image}`;
-        await user.update({ image: imagePath });
-        user.image = imagePath;
+      if (req.file) {
+        // Si se proporciona una imagen, usar FileController para manejar la carga
+        const fileResponse = FileController.upload(req, res);
+        if (fileResponse.ok)
+          user.image = fileResponse.destination + "/" + fileResponse.filename;
+        user.update({ image: user.image });
       }
-
+      else
+        return res.status(500).json({
+          message: "Error al cargar la imagen / Error uploading image",
+          error: fileResponse.error,
+        });
       res.status(201).json({
         message: "Usuario creado correctamente / User created successfully",
         user,
@@ -167,7 +187,7 @@ class UsuarioController {
         });
       } else {
         res.status(500).json({
-          meserrorsage: "Error al crear el usuario / Error creating user (" + error.message + ")",
+          error: "Error al crear el usuario / Error creating user (" + error.message + ")",
         });
       }
     }
@@ -264,33 +284,33 @@ class UsuarioController {
     }
   }
 
-  async getUsersWithServices(req, res) {
-    try {
-      const users = await User.findAll({
-        include: {
-          association: "services",
-          required: true,
-        },
-      });
+  // async getUsersWithServices(req, res) {
+  //   try {
+  //     const users = await User.findAll({
+  //       include: {
+  //         association: "services",
+  //         required: true,
+  //       },
+  //     });
 
-      if (users.length === 0) {
-        return res.status(404).json({
-          message:
-            "Ningún usuario ha creado servicios / No users have created services",
-        });
-      }
-      res.status(200).json({
-        message:
-          "Usuarios obtenidos correctamente / Users retrieved successfully",
-        users,
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: "Error al obtener los usuarios / Error retrieving users",
-        error: error.message,
-      });
-    }
-  }
+  //     if (users.length === 0) {
+  //       return res.status(404).json({
+  //         message:
+  //           "Ningún usuario ha creado servicios / No users have created services",
+  //       });
+  //     }
+  //     res.status(200).json({
+  //       message:
+  //         "Usuarios obtenidos correctamente / Users retrieved successfully",
+  //       users,
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       message: "Error al obtener los usuarios / Error retrieving users",
+  //       error: error.message,
+  //     });
+  //   }
+  // }
 }
 
 module.exports = new UsuarioController();

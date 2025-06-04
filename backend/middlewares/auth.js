@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const enabledRoles = require("../utils/enabledRoles.js");
 
 const authMiddleware = {
   /**
@@ -40,14 +41,7 @@ const authMiddleware = {
     }
   },
 
-  /**
-   * Permite autorizar el acceso a una ruta solo si el rol del usuario es admin
-   * @param {Array} roles - Lista de roles permitidos, por defecto solo 'admin'
-   * @returns {Function} Middleware para autorizar el acceso a una ruta
-   * @version 18/03/2025
-   * @autor Jeimy Pinto
-   */
-  authorizeRole: (roles = ["admin"]) => {
+  authorizeRole: (roles = enabledRoles) => {
     return (req, res, next) => {
       if (!roles.includes(req.user.role)) {
         return res.status(403).json({
