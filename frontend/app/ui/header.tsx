@@ -14,12 +14,22 @@ export default function Header() {
     let lastToken: string | null = null;
 
     const checkToken = () => {
-      const cookie = document.cookie;
-      const tokenValue =
-        cookie
-          .split("; ")
-          .find((row) => row.startsWith("token="))
-          ?.split("=")[1] || null;
+      let tokenValue: string | null = null;
+      // Si está en desarrollo, busca el token en localStorage, si no, en la cookie
+      if (
+        process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
+        process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
+      ) {
+        tokenValue = localStorage.getItem("token");
+      } else {
+        const cookie = document.cookie;
+        tokenValue =
+          cookie
+            .split("; ")
+            .find((row) => row.startsWith("token="))
+            ?.split("=")[1] || null;
+      }
+
       if (tokenValue !== lastToken) {
         setToken(tokenValue);
         if (tokenValue) {
@@ -35,9 +45,9 @@ export default function Header() {
       }
     };
 
-    const interval = setInterval(checkToken, 1000); // revisa cada segundo
+    const interval = setInterval(checkToken, 1000);
 
-    return () => clearInterval(interval); // limpia el intervalo al desmontar
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -62,16 +72,23 @@ export default function Header() {
           </li>
         </ul>
         {token ? (
-          <div className="flex items-center space-x-4">
-            <Image
-              src="/images/ico-profile.svg"
-              alt="Icon Profile"
-              width={42}
-              height={42}
-              priority={true}
-            />
-            <span className="ml-2">{user?.firstName || "Usuario"}</span>
-            <button className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300"
+          <>
+            <Link href="/dashboard" className="flex items-center space-x-4">
+              <Image
+                src={
+                  user?.image
+                    ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + user.image
+                    : "/images/ico-profile.svg"
+                }
+                alt={`${user?.firstName ?? ""}`.trim() || "Icono de usuario"}
+                width={42}
+                height={42}
+                priority={true}
+              />
+              <span className="ml-2">{user?.firstName || "Usuario"}</span>
+            </Link>
+            <button
+              className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300 ml-2"
               onClick={() => {
                 localStorage.removeItem("token");
                 router.push("/auth");
@@ -79,7 +96,7 @@ export default function Header() {
             >
               Cerrar sesión
             </button>
-          </div>
+          </>
         ) : (
           <Link href="/auth">
             <button className="bg-cian text-white px-4 py-2 rounded-md hover:bg-azul hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300">
@@ -88,6 +105,6 @@ export default function Header() {
           </Link>
         )}
       </nav>
-    </header>
+    </header >
   );
 }

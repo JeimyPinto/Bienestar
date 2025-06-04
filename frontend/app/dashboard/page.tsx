@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Header from "../ui/header"
+import UserCard from "../users/userCard"
 import DashboardAdmin from "./admin/page"
 import DashboardUser from "./user/page"
 import { User } from "../types/user"
@@ -15,35 +16,41 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    let lastToken: string | null = null;
-    const checkToken = () => {
+    let tokenValue: string | null = null;
+
+    // Obtener el token dependiendo del entorno
+    if (
+      process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
+      process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
+    ) {
+      tokenValue = localStorage.getItem("token");
+    } else {
       const cookie = document.cookie;
-      const tokenValue = cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1] || null;
-      if (tokenValue !== lastToken) {
-        setToken(tokenValue);
-        if (tokenValue) {
-          try {
-            setUser(JSON.parse(atob(tokenValue.split(".")[1])));
-          } catch {
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-        }
-        lastToken = tokenValue;
+      tokenValue =
+        cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1] || null;
+    }
+
+    setToken(tokenValue);
+
+    if (tokenValue) {
+      try {
+        setUser(JSON.parse(atob(tokenValue.split(".")[1])));
+      } catch {
+        setUser(null);
       }
-    };
-    checkToken();
-  }, [token]);
+    } else {
+      setUser(null);
+    }
+  }, []);
 
   return (
     <>
       <Header />
       <main className="container mx-auto p-6">
-        {/* <ProfileCard /> */}
+        <UserCard user={user} />
         <section className="bg-white shadow-md rounded-lg p-6 mt-6">
           <h2 className="text-2xl font-bold mb-4">
             Solicitudes de Remisión Pendientes

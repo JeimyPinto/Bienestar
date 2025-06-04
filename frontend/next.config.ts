@@ -8,5 +8,10 @@ module.exports = {
         pathname: "/uploads/temp/**", // Ruta donde se encuentran las imágenes
       },
     ],
+    domains: [
+      "127.0.0.1",
+      "localhost",
+      "bienestar-backend.onrender.com",
+    ],
   },
 };

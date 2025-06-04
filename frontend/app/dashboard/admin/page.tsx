@@ -11,34 +11,46 @@ import { formatDate } from "../../lib/formateDate"
 
 export default function DashboardAdmin() {
     const [token, setToken] = useState<string | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
-        let lastToken: string | null = null;
-        const cookie = document.cookie;
-        const tokenValue = cookie
-            .split("; ")
-            .find((row) => row.startsWith("token="))
-            ?.split("=")[1] || null;
-        if (tokenValue !== lastToken) {
-            setToken(tokenValue);
-            if (tokenValue) {
-                try {
-                    const parsedUser: User = JSON.parse(atob(tokenValue.split(".")[1]));
-                    setServices(parsedUser.services || []);
-                    setLoading(false);
-                } catch {
-                    setServices([]);
-                }
-            } else {
+        let tokenValue: string | null = null;
+
+        // Obtener el token dependiendo del entorno
+        if (
+            process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
+            process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
+        ) {
+            tokenValue = localStorage.getItem("token");
+        } else {
+            const cookie = document.cookie;
+            tokenValue =
+                cookie
+                    .split("; ")
+                    .find((row) => row.startsWith("token="))
+                    ?.split("=")[1] || null;
+        }
+
+        setToken(tokenValue);
+
+        if (tokenValue) {
+            try {
+                const parsedUser: User = JSON.parse(atob(tokenValue.split(".")[1]));
+                setUser(parsedUser);
+                setServices(parsedUser.services || []);
+            } catch {
+                setUser(null);
                 setServices([]);
             }
-            lastToken = tokenValue;
+        } else {
+            setUser(null);
+            setServices([]);
         }
-    }, [token]);
+    }, []);
 
 
     return (
@@ -66,7 +78,7 @@ export default function DashboardAdmin() {
                     </button>
                 </div>
             </section>
-            <section className="bg-white shadow-md rounded-lg p-6 mt-6">
+            {/* <section className="bg-white shadow-md rounded-lg p-6 mt-6">
                 <h2 className="text-2xl font-bold mb-4">Servicios Creados</h2>
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -91,11 +103,12 @@ export default function DashboardAdmin() {
                             Retry
                         </button>
                     </div>
-                ) : services.length === 0 ? (
-                    <p>No hay servicios creados.</p>
+                ) : user?.services?.length === 0 ? (
+                    <p className="text-gray-600">No hay servicios creados por el usuario.</p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {services.map((service) => (
+                        {user?.services?.map(service => (
+
                             <div
                                 key={service.id}
                                 className="bg-white shadow-lg rounded-lg overflow-hidden transform transition-transform hover:scale-105"
@@ -134,7 +147,7 @@ export default function DashboardAdmin() {
                         ))}
                     </div>
                 )}
-            </section>
+            </section> */}
         </>
     );
 }
