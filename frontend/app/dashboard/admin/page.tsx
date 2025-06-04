@@ -60,7 +60,7 @@ export default function DashboardAdmin() {
                 <div className="flex flex-col gap-4">
                     <button
                         className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
-                        onClick={() => router.push("/user")}
+                        onClick={() => router.push("/users")}
                     >
                         Panel de usuarios
                     </button>

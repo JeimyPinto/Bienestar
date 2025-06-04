@@ -11,7 +11,6 @@ import { ENABLED_ROLES } from "../lib/enabledRoles"
 
 
 export default function DashboardPage() {
-  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
@@ -32,8 +31,6 @@ export default function DashboardPage() {
           .find((row) => row.startsWith("token="))
           ?.split("=")[1] || null;
     }
-
-    setToken(tokenValue);
 
     if (tokenValue) {
       try {

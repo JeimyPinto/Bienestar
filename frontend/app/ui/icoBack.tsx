@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {IcoBackProps} from "../types/components/type"
+import { IcoBackProps } from "../types/components/type";
 
-
-const IcoBack: React.FC<IcoBackProps> = ({ role = "user" }) => {
-  const href = role === "user" ? "/dashboard/user" : "/dashboard/admin";
+const IcoBack: React.FC<IcoBackProps> = () => {
+  const href = "/dashboard";
 
   return (
     <div className="fixed top-28 left-5 bg-azul p-2 rounded-lg hover:bg-cian hover:scale-125 transition-transform duration-300">
