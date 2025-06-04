@@ -12,7 +12,7 @@ const authMiddleware = {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if (!token)
-      return res.status(401).json({ message: "Token no proporcionado" });
+      return res.status(401).json({ error: "Token no proporcionado / Token not provided" });
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -32,7 +32,7 @@ const authMiddleware = {
     } catch (err) {
       return res
         .status(403)
-        .json({ message: "Token no válido / Invalid token" });
+        .json({ error: "Token no válido / Invalid token" });
     }
   },
 
@@ -47,7 +47,7 @@ const authMiddleware = {
     return (req, res, next) => {
       if (!roles.includes(req.user.role)) {
         return res.status(403).json({
-          message:
+          error:
             "No tiene los permisos para acceder a esta ruta / You do not have permission to access this route",
         });
       }

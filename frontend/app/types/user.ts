@@ -18,23 +18,11 @@ export interface User {
 }
 
 export interface UserTableProps {
-    users: Array<{
-        id: string;
-        image?: string;
-        firstName: string;
-        lastName: string;
-        email: string;
-        documentType: string;
-        documentNumber: string;
-        phone: string;
-        role: string;
-        status: string;
-        createdAt: string | Date;
-        updatedAt: string | Date;
-    }>;
+    users: User[];
     currentPage: number;
-    setCurrentPage: (page: number) => void;
+    totalUsers: number;
     totalPages: number;
+    setCurrentPage: (page: number) => void;
     token: string | null;
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }

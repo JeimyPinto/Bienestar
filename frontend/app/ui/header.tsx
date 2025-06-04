@@ -21,6 +21,7 @@ export default function Header() {
         process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
       ) {
         tokenValue = localStorage.getItem("token");
+        setToken(tokenValue);
       } else {
         const cookie = document.cookie;
         tokenValue =
