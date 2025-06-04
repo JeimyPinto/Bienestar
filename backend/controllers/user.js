@@ -148,8 +148,13 @@ class UsuarioController {
 
       // Si se proporciona una imagen, usar FileController para manejar la carga
       if (req.file) {
-        // Guarda el nombre o la ruta del archivo en el usuario
-        user.image = req.file.filename;
+        // Guarda la ruta relativa desde /upload hasta el final
+        const uploadIndex = req.file.path.indexOf("/upload");
+        if (uploadIndex !== -1) {
+          user.image = req.file.path.substring(uploadIndex);
+        } else {
+          user.image = req.file.path; // fallback por si no encuentra /upload
+        }
         await user.update({ image: user.image });
       }
       res.status(201).json({
