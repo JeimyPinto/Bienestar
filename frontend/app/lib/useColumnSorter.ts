@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 
-// T es el tipo de los objetos del array (por ejemplo, User)
+// Puedes personalizar aquí los nombres de columnas de fecha
+const dateColumns = ["createdAt", "updatedAt"];
+
 export function useColumnSorter<T extends Record<string, any>>(data: T[], defaultColumn: keyof T = "firstName") {
     const [sortColumn, setSortColumn] = useState<keyof T>(defaultColumn);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -19,16 +21,24 @@ export function useColumnSorter<T extends Record<string, any>>(data: T[], defaul
             const aValue = a[sortColumn];
             const bValue = b[sortColumn];
 
-            // Manejo especial para fechas
-            if (aValue instanceof Date && bValue instanceof Date) {
+            // Si la columna es de fecha, convierte a Date SOLO para comparar
+            if (dateColumns.includes(sortColumn as string)) {
+                const aDate = new Date(aValue);
+                const bDate = new Date(bValue);
                 return sortOrder === "asc"
-                    ? aValue.getTime() - bValue.getTime()
-                    : bValue.getTime() - aValue.getTime();
+                    ? aDate.getTime() - bDate.getTime()
+                    : bDate.getTime() - aDate.getTime();
             }
 
             // Manejo para strings y números
-            if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-            if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+            if (typeof aValue === "string" && typeof bValue === "string") {
+                return sortOrder === "asc"
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            }
+            if (typeof aValue === "number" && typeof bValue === "number") {
+                return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+            }
             return 0;
         });
     }, [data, sortColumn, sortOrder]);

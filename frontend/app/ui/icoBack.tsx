@@ -12,7 +12,7 @@ const IcoBack: React.FC<IcoBackProps> = () => {
       <Link href={href} className="flex items-center justify-center">
         <Image
           src="/images/ico-back.svg"
-          priority={true}
+          priority={false}
           loading="eager"
           alt="Icono de regreso"
           width={42}
