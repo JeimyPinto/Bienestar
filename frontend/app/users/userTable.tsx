@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useColumnSorter } from "../lib/useColumnSorter";
-import { User } from "../types/user";
+import { User } from "../types/user"
 import ErrorMessage from "../ui/errorMessage";
+import UserForm from "./userForm";
 import { getAllPaginated } from "../services/services/user";
 
 export default function UserTable() {
@@ -13,7 +14,15 @@ export default function UserTable() {
     const [totalUsers, setTotalUsers] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
-
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const userEditFormRef = useRef<any>(null);
+    const {
+        sortedData: sortedUsers,
+        handleSort,
+        sortColumn,
+        sortOrder,
+    } = useColumnSorter(users);
     useEffect(() => {
         let tokenValue: string | null = null;
         if (
@@ -63,28 +72,18 @@ export default function UserTable() {
         return () => { isMounted = false; };
     }, [token, currentPage, limit]);
 
-    const {
-        sortedData: sortedUsers,
-        handleSort,
-        sortColumn,
-        sortOrder,
-    } = useColumnSorter(users);
-
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const userEditFormRef = useRef<any>(null);
-
     function handleRowClick(user: User) {
         setSelectedUser(user);
         setIsFormOpen(true);
-        userEditFormRef.current?.showModal();
+        setTimeout(() => {
+            userEditFormRef.current?.showModal();
+        }, 0);
     }
 
     return (
         <section className="w-full max-w-8xl mx-auto px-2 py-6">
             <div className="flex flex-col gap-4">
                 <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-                    <h2 className="text-2xl font-bold text-azul">Usuarios</h2>
                     <div className="flex items-center gap-2">
                         <label className="text-sm text-gray-700">Mostrar:</label>
                         <select
@@ -111,7 +110,10 @@ export default function UserTable() {
                     <table className="min-w-full divide-y divide-cian">
                         <thead className="bg-cian text-azul">
                             <tr>
-                                <th className="px-2 py-3 text-xs font-semibold">ID</th>
+                                <th className="px-2 py-3 text-xs font-semibold"
+                                    onClick={() => handleSort("id")}>
+                                    ID {sortColumn === "id" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
+                                </th>
                                 <th className="px-2 py-3 text-xs font-semibold">Imagen</th>
                                 <th
                                     className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
@@ -270,6 +272,16 @@ export default function UserTable() {
                         Siguiente
                     </button>
                 </nav>
+
+                {isFormOpen && selectedUser && (
+                    <UserForm
+                        dialogRef={userEditFormRef}
+                        closeDialog={() => setIsFormOpen(false)}
+                        onClose={() => setIsFormOpen(false)}
+                        mode="edit"
+                        userToEdit={selectedUser}
+                    />
+                )}
             </div>
         </section>
     );

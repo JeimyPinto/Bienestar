@@ -31,10 +31,6 @@ export interface UserTableProps {
 export interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement>;
     closeDialog: () => void;
-    setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-    setSuccessMessage: React.Dispatch<React.SetStateAction<string | null>>;
-    token: string | null;
-    user?: User;
     onClose: () => void;
     mode: "create" | "edit";
     userToEdit?: User;

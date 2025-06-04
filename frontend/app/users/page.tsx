@@ -1,25 +1,37 @@
 "use client"
 
-
-import React from "react";
+import React, { useState, useRef } from "react"
 import Header from "../ui/header"
 import IcoBack from "../ui/icoBack"
-import UserTable from "./userTable";
-
+import UserTable from "./userTable"
+import UserForm from "./userForm"
+import { User } from "../types/user"
 
 export default function UsersPage() {
-    
-    const dialogRef = React.useRef<HTMLDialogElement>(null);
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [mode, setMode] = useState<"create" | "edit">("create");
+    const [userToEdit, setUserToEdit] = useState<User | undefined>(undefined);
 
-  
+    const openCreateDialog = () => {
+        setMode("create");
+        setUserToEdit(undefined);
+        setIsFormOpen(true);
+        setTimeout(() => dialogRef.current?.showModal(), 0);
+    };
 
-    const openDialog = () => {
-        dialogRef.current?.showModal();
+    const openEditDialog = (user: User) => {
+        setMode("edit");
+        setUserToEdit(user);
+        setIsFormOpen(true);
+        setTimeout(() => dialogRef.current?.showModal(), 0);
     };
 
     const closeDialog = () => {
+        setIsFormOpen(false);
         dialogRef.current?.close();
     };
+
     return (
         <>
             <Header />
@@ -29,14 +41,22 @@ export default function UsersPage() {
                     Listado de Usuarios
                 </h1>
                 <button
-                    onClick={openDialog}
+                    onClick={openCreateDialog}
                     className="bg-gradient-to-r from-azul to-magenta text-white py-2 px-4 rounded-md shadow-md hover:from-green-500 hover:to-blue-500 transition-all duration-300"
                 >
                     Añadir Nuevo Usuario
                 </button>
             </main>
-            <UserTable />
-
+            <UserTable/>
+            {isFormOpen && (
+                <UserForm
+                    dialogRef={dialogRef}
+                    closeDialog={closeDialog}
+                    onClose={closeDialog}
+                    mode={mode}
+                    userToEdit={userToEdit}
+                />
+            )}
         </>
     );
 }
