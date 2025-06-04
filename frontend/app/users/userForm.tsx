@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { UserFormProps, User } from "../types/user"
-import { create } from "../services/services/user";
+import { create, update } from "../services/services/user";
 const emptyUser: User = {
     id: "",
     firstName: "",
@@ -65,45 +65,58 @@ export default function UserForm(props: UserFormProps) {
         }
     }
 
-    function handleSubmit(event: React.FormEvent) {
+    async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        if (mode === "create" && token) {
-            (async () => {
-                try {
-                    let responseData;
-                    // Usar newUser.file si existe
-                    if (newUser.file) {
-                        responseData = await create(newUser, newUser.file, token);
-                    } else {
-                        console.log("No file, using profileImage:", newUser.file);
-                        responseData = await create(newUser, undefined, token);
-                    }
 
-                    if (responseData.error) {
-                        if (props.setErrorMessage) {
-                            props.setErrorMessage(
-                                responseData.error || "Error al crear el usuario. / Error creating user."
-                            );
-                        }
-                    } else if (props.setSuccessMessage) {
-                        props.setSuccessMessage(
-                            responseData.message ||
-                            "Usuario creado exitosamente. / User created successfully."
-                        );
-                        window.location.reload();
-                    }
-                } catch (error) {
-                    if (props.setErrorMessage) {
-                        props.setErrorMessage("Error al crear el usuario. / Error creating user.");
-                    }
+        if (!token) return;
+
+        try {
+            let responseData;
+
+            if (mode === "create") {
+                responseData = await create(
+                    newUser,
+                    newUser.file ? newUser.file : undefined,
+                    token
+                );
+                if (responseData.error) {
+                    props.setErrorMessage?.(
+                        responseData.error || "Error al crear el usuario. / Error creating user."
+                    );
+                } else {
+                    props.setSuccessMessage?.(
+                        responseData.message || "Usuario creado exitosamente. / User created successfully."
+                    );
                 }
-            })();
-        } else if (mode === "edit" && token) {
-            // Aquí va la llamada a la función para editar usuario
+            } else if (mode === "edit") {
+                responseData = await update(
+                    newUser.id,
+                    newUser,
+                    newUser.file ? newUser.file : undefined,
+                    token
+                );
+                if (responseData.error) {
+                    props.setErrorMessage?.(
+                        responseData.error || "Error al actualizar el usuario. / Error updating user."
+                    );
+                } else {
+                    props.setSuccessMessage?.(
+                        responseData.message || "Usuario actualizado exitosamente. / User updated successfully."
+                    );
+                }
+            }
+        } catch (error) {
+            if (mode === "create") {
+                props.setErrorMessage?.("Error al crear el usuario. / Error creating user.");
+            } else if (mode === "edit") {
+                props.setErrorMessage?.("Error al actualizar el usuario. / Error updating user.");
+            }
         }
-        if (onClose) onClose();
+
+        onClose?.();
         closeDialog();
     }
+
     return (
         <dialog
             ref={dialogRef}

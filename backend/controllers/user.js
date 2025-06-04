@@ -148,12 +148,13 @@ class UsuarioController {
 
       // Si se proporciona una imagen, usar FileController para manejar la carga
       if (req.file) {
-        // Guarda la ruta relativa desde /upload hasta el final
-        const uploadIndex = req.file.path.indexOf("/upload");
+        // Normaliza la ruta para que funcione en Windows y Linux
+        const fullPath = req.file.path.replace(/\\/g, "/");
+        const uploadIndex = fullPath.indexOf("uploads");
         if (uploadIndex !== -1) {
-          user.image = req.file.path.substring(uploadIndex);
+          user.image = fullPath.substring(uploadIndex);
         } else {
-          user.image = req.file.path; // fallback por si no encuentra /upload
+          user.image = req.file.filename;
         }
         await user.update({ image: user.image });
       }
@@ -200,47 +201,53 @@ class UsuarioController {
       }
 
       let userData;
-      let passwordHash;
-      if (enabledRoles.includes(req.user.role)) {
+      let updateFields = {};
+      let isAdmin = enabledRoles.includes(req.user.role);
+
+      if (isAdmin) {
         userData = await adminUpdateUserSchema.parseAsync(req.body);
-        passwordHash = bcrypt.hashSync(userData.password, saltRounds);
-        await user.update({
+        updateFields = {
           firstName: userData.firstName,
           lastName: userData.lastName,
           documentType: userData.documentType,
           documentNumber: userData.documentNumber,
           phone: userData.phone,
           email: userData.email,
-          password: passwordHash,
           status: userData.status,
           role: userData.role,
-          image: userData.image,
-        });
-        res.status(200).json({
-          message: "Usuario actualizado correctamente por " + req.user.role + " / User updated successfully by " + req.user.role,
-          user,
-        });
+        };
+        if (userData.password) {
+          updateFields.password = await bcrypt.hash(userData.password, saltRounds);
+        }
+        if (userData.image !== undefined) updateFields.image = userData.image;
       } else {
         userData = await userUpdateSelfSchema.parseAsync(req.body);
-        passwordHash = bcrypt.hashSync(userData.password, saltRounds);
-        // Solo permitir actualizar phone, email, image y password
-        const updateFields = {};
         if (userData.phone !== undefined) updateFields.phone = userData.phone;
         if (userData.email !== undefined) updateFields.email = userData.email;
         if (userData.image !== undefined) updateFields.image = userData.image;
-        if (userData.password !== undefined) {
-          updateFields.password = passwordHash;
+        if (userData.password) {
+          updateFields.password = await bcrypt.hash(userData.password, saltRounds);
         }
-
-        await user.update(updateFields);
-
-        // Excluir la contraseña del usuario al devolver los datos
-        const { password, ...userWithoutPassword } = user.get({ plain: true });
-        res.status(200).json({
-          message: "Usuario actualizado correctamente por " + req.user.role + " / User updated successfully by " + req.user.role,
-          user: userWithoutPassword,
-        });
       }
+
+      // Manejo de archivo si se subió uno nuevo
+      if (req.file) {
+        const fullPath = req.file.path.replace(/\\/g, "/");
+        const uploadIndex = fullPath.indexOf("uploads");
+        updateFields.image = uploadIndex !== -1
+          ? fullPath.substring(uploadIndex)
+          : req.file.filename;
+      }
+
+      await user.update(updateFields);
+
+      // Excluir la contraseña del usuario al devolver los datos
+      const { password, ...userWithoutPassword } = user.get({ plain: true });
+
+      res.status(200).json({
+        message: `Usuario actualizado correctamente por ${req.user.role} / User updated successfully by ${req.user.role}`,
+        user: userWithoutPassword,
+      });
     } catch (error) {
       if (error.errors) {
         res.status(400).json({

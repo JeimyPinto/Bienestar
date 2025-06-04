@@ -8,7 +8,7 @@ router.get("/active", userController.getAllActive);
 router.get("/paginated", userController.getAllPaginated);
 router.get("/:id", userController.getById);
 router.post("/", uploadUser.single("file"), userController.create);
-router.put("/:id", userController.update);
+router.put("/:id", uploadUser.single("file"), userController.update);
 router.delete("/:id", userController.delete);
 
 

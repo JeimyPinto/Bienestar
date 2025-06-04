@@ -33,7 +33,7 @@ export async function create(user: any, file?: File, token?: string) {
         if (file) {
             const formData = new FormData();
             Object.entries(user).forEach(([key, value]) => {
-                if (key !== "file") formData.append(key, value as string);
+                if (key !== "file") formData.append(key, value !== undefined && value !== null ? String(value) : "");
             });
             formData.append("file", file);
 
@@ -61,6 +61,54 @@ export async function create(user: any, file?: File, token?: string) {
         if (!response.ok) {
             return {
                 message: `${data.message || "Error al crear el usuario."} / Error creating user.`,
+                error: data.error,
+            };
+        }
+        return data;
+    } catch (error) {
+        return {
+            message: "Error Service /Error en el servidor.",
+            error,
+        };
+    }
+}
+
+export async function update(id: string, user: any, file?: File, token?: string) {
+    try {
+        let body: BodyInit;
+        let headers: Record<string, string> = {};
+
+        if (file) {
+            const formData = new FormData();
+            Object.entries(user).forEach(([key, value]) => {
+                if (key !== "file") formData.append(key, value !== undefined && value !== null ? String(value) : "");
+            });
+            formData.append("file", file);
+
+            // Depuración: muestra todos los pares clave-valor
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ':', pair[1]);
+            }
+
+            body = formData;
+        } else {
+            body = JSON.stringify(user);
+            headers["Content-Type"] = "application/json";
+        }
+
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+        const response = await fetch(`${url}/${id}`, {
+            method: "PUT",
+            headers,
+            body,
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return {
+                message: `${data.message || "Error al actualizar el usuario."} / Error updating user.`,
                 error: data.error,
             };
         }
