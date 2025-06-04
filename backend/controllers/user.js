@@ -120,7 +120,7 @@ class UsuarioController {
 
   async create(req, res) {
     try {
-      // Verifica si el usuario autenticad o tiene el rol adecuado
+      // Verifica si el usuario autenticado tiene el rol adecuado
       if (!enabledRoles.includes(req.user.role)) {
         return res.status(403).json({
           message: "No autorizado / Not authorized",
@@ -146,8 +146,16 @@ class UsuarioController {
         password: hashedPassword,
         status: "activo",
         role: userData.role,
-        image: userData.image,
+        image: null, // temporalmente null
       });
+
+      // Si hay imagen, actualizamos el campo con la ruta correspondiente
+      if (userData.image) {
+        const imagePath = `/images/users/${user.id}/${userData.image}`;
+        await user.update({ image: imagePath });
+        user.image = imagePath;
+      }
+
       res.status(201).json({
         message: "Usuario creado correctamente / User created successfully",
         user,
@@ -155,13 +163,11 @@ class UsuarioController {
     } catch (error) {
       if (error.errors) {
         res.status(400).json({
-          message: "Error de validación / Validation error",
-          errors: error.errors,
+          error: "Error de validación / Validation error () " + error.errors.map(e => e.message).join(", "),
         });
       } else {
         res.status(500).json({
-          message: "Error al crear el usuario / Error creating user",
-          error: error.message,
+          meserrorsage: "Error al crear el usuario / Error creating user (" + error.message + ")",
         });
       }
     }

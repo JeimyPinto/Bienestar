@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { UserFormProps, User } from "../types/user"
-
+import { create } from "../services/services/user";
 const emptyUser: User = {
     id: "",
     firstName: "",
@@ -64,14 +64,30 @@ export default function UserForm(props: UserFormProps) {
             }));
         }
     }
+
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        if (mode === "create") {
-            // Aquí va la llamada a la función para crear usuario
-            // createUser(newUser, token);
-        } else if (mode === "edit") {
+        if (mode === "create" && token) {
+            create(newUser, token)
+                .then(({ message, error, user }) => {
+                    if (error) {
+                        props.setErrorMessage?.(error);
+                        props.setSuccessMessage?.("");
+                    } else {
+                        props.setSuccessMessage?.(message || "Usuario creado correctamente. / User created successfully.");
+                        props.setErrorMessage?.("");
+                    }
+                })
+                .catch((err) => {
+                    props.setErrorMessage?.("Error al crear usuario. / Error creating user.");
+                    props.setSuccessMessage?.("");
+                    console.error(err);
+                });
+        } else if (mode === "edit" && token) {
             // Aquí va la llamada a la función para editar usuario
-            // updateUser(newUser, token);
+            // updateUser(newUser, token)
+            //     .then(...)
+            //     .catch(...);
         }
         if (onClose) onClose();
         closeDialog();

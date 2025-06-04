@@ -34,4 +34,8 @@ export interface UserFormProps {
     onClose: () => void;
     mode: "create" | "edit";
     userToEdit?: User;
+    successMessage?: string;
+    setSuccessMessage?: React.Dispatch<React.SetStateAction<string>>;
+    errorMessage?: string;
+    setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
 }

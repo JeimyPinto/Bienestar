@@ -5,6 +5,8 @@ import Header from "../ui/header"
 import IcoBack from "../ui/icoBack"
 import UserTable from "./userTable"
 import UserForm from "./userForm"
+import ErrorMessage from "../ui/errorMessage";
+import SuccessMessage from "../ui/successMessage";
 import { User } from "../types/user"
 
 export default function UsersPage() {
@@ -12,7 +14,9 @@ export default function UsersPage() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [userToEdit, setUserToEdit] = useState<User | undefined>(undefined);
-
+    const [successMessage, setSuccessMessage] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    
     const openCreateDialog = () => {
         setMode("create");
         setUserToEdit(undefined);
@@ -47,7 +51,11 @@ export default function UsersPage() {
                     Añadir Nuevo Usuario
                 </button>
             </main>
-            <UserTable/>
+
+            {errorMessage && <ErrorMessage message={errorMessage} />}
+            {successMessage && <SuccessMessage message={successMessage} />}
+
+            <UserTable />
             {isFormOpen && (
                 <UserForm
                     dialogRef={dialogRef}
@@ -55,6 +63,8 @@ export default function UsersPage() {
                     onClose={closeDialog}
                     mode={mode}
                     userToEdit={userToEdit}
+                    setSuccessMessage={setSuccessMessage}
+                    setErrorMessage={setErrorMessage}
                 />
             )}
         </>

@@ -6,6 +6,7 @@ const userRoutes = require("./user.js");
 const authRouter = require("./auth.js");
 const serviceRoutes = require("./service.js");
 const requestRoutes = require("./request.js");
+const fileRoutes = require("./file.js");
 const authMiddleware = require("../middlewares/auth.js");
 
 router.get("/", (req, res) => {
@@ -15,5 +16,6 @@ router.use("/auth", authRouter);
 router.use("/users", authMiddleware.authenticateToken, authMiddleware.authorizeRole(), userRoutes);
 router.use("/services", serviceRoutes);
 router.use("/requests", authMiddleware.authenticateToken, requestRoutes);
+router.use("/files", authMiddleware.authenticateToken, fileRoutes);
 
 module.exports = router;

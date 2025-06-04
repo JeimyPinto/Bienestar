@@ -1,14 +1,18 @@
+const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "..", "uploads", "temp")); // Carpeta temporal
+    const uploadPath = path.join(__dirname, "..", "uploads");
+    fs.mkdirSync(uploadPath, { recursive: true });
+    cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    const fileName = file.originalname.replace(/\s+/g, "_").toLowerCase();
-    cb(null, fileName);
-  },
+    let extArray = file.mimetype.split("/");
+    let extension = extArray[extArray.length - 1];
+    cb(null, file.fieldname + '-' + Date.now() + '.' + extension);
+  }
 });
 
 // Filtro para validar el tipo de archivo

@@ -4,7 +4,7 @@ const router = express.Router();
 const authController = require("../controllers/auth.js");
 const authMiddleware = require("../middlewares/auth.js");
 
-const { upload } = require("../config/multerConfig.js");
+const { upload } = require("../config/multer.js");
 
 router.post(
   "/register",
