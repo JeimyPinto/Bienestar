@@ -126,6 +126,8 @@ class UsuarioController {
    */
   async create(req, res) {
     try {
+      console.log("userData", req.body);
+      console.log("req.file", req.file);
       const userData = await adminCreateUserSchema.parseAsync(req.body);
       // Si password está vacío o no viene, usar documentNumber como password
       const plainPassword = userData.password && userData.password.trim() !== ""
@@ -143,40 +145,52 @@ class UsuarioController {
         password: hashedPassword,
         status: "activo",
         role: userData.role,
-        image: null, // temporalmente null
+        image: null // temporalmente null, para manejar la imagen después
       });
 
+      // Si se proporciona una imagen, usar FileController para manejar la carga
       if (req.file) {
-        // Si se proporciona una imagen, usar FileController para manejar la carga
         const fileResponse = FileController.upload(req, res);
         if (fileResponse.ok)
           user.image = fileResponse.destination + "/" + fileResponse.filename;
         user.update({ image: user.image });
-      }
-      else
+      } else {
         return res.status(500).json({
           message: "Error al cargar la imagen / Error uploading image",
-          error: fileResponse.error,
+          error: "No se recibió archivo de imagen / No image file received",
+          user: user,
         });
+      }
       res.status(201).json({
         message: "Usuario creado correctamente / User created successfully",
+        error: null,
         user,
       });
     } catch (error) {
+      // Errores de validación de Zod
       if (error.errors) {
-        res.status(400).json({
-          error: "Error de validación / Validation error: " +
+        return res.status(400).json({
+          message: null,
+          error:
+            "Error de validación / Validation error: " +
             error.errors
-              .map(e => `${e.path?.join(".")}: ${e.message}`)
-              .join("; ")
-        });
-      } else {
-        res.status(500).json({
-          error: "Error al crear el usuario / Error creating user (" + error.message + ")",
+              .map((e) => `${e.path?.join(".")}: ${e.message}`)
+              .join("; "),
+          user: null,
         });
       }
+      // Otros errores
+      res.status(500).json({
+        message: null,
+        error:
+          "Error al crear el usuario / Error creating user (" +
+          error.message +
+          ")",
+        user: null,
+      });
     }
   }
+
 
   async update(req, res) {
     try {

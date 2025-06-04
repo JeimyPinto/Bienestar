@@ -15,6 +15,7 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     services?: Array<Service>;
+    file?: File | null; // opcional para manejar archivos
 }
 
 export interface UserTableProps {

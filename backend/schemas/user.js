@@ -11,60 +11,38 @@ const adminCreateUserSchema = z
   .object({
     firstName: z
       .string()
-      .nonempty({
-        errorMap: () => ({
-          message: "First name is required / El nombre es obligatorio",
-        })
-      }
-      ),
+      .nonempty({ message: "First name is required / El nombre es obligatorio" }),
     lastName: z
       .string()
       .nonempty({ message: "Last name is required / El apellido es obligatorio" }),
     documentType: z
       .string()
-      .nonempty({
-        message:
-          "Document type is required / El tipo de documento es obligatorio",
-      }),
+      .nonempty({ message: "Document type is required / El tipo de documento es obligatorio" }),
     documentNumber: z
       .string()
-      .nonempty({
-        message: "Document number is required / El número de documento es obligatorio",
-      }),
+      .nonempty({ message: "Document number is required / El número de documento es obligatorio" }),
     phone: z
       .string()
-      .nonempty(
-        { message: "Phone number is required / El número de teléfono es obligatorio" }
-      ),
+      .nonempty({ message: "Phone number is required / El número de teléfono es obligatorio" }),
     email: z
       .string()
-      .email({
-        message: "Invalid email address / Dirección de correo electrónico no válida",
-      }),
+      .email({ message: "Invalid email address / Dirección de correo electrónico no válida" }),
     password: z.string().optional(),
     status: z
       .enum(["activo", "inactivo"], {
         message: "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'",
       })
       .optional(),
-    role: z.string().nonempty({
-      message: "Role is required / El rol es obligatorio",
-    }),
-    image: z.string().optional(),
+    role: z
+      .string()
+      .nonempty({ message: "Role is required / El rol es obligatorio" }),
+    image: z.string().optional(), // nombre del archivo, si lo quieres guardar
   })
-  .refine(
-    (data) => !!data.documentNumber,
-    {
-      message: "Document number must be unique / El número de documento debe ser único",
-      path: ["documentNumber"],
-    }
-  )
   .transform((data) => ({
     ...data,
     status: data.status || "activo",
     password: data.password || data.documentNumber,
   }));
-
 
 const userUpdateSelfSchema = z
   .object({

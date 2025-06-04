@@ -25,15 +25,31 @@ export async function getAllPaginated(page = 1, limit = 10, token?: string) {
     }
 }
 
-export async function create(user: any, image: File, token?: string) {
+export async function create(user: any, file?: File, token?: string) {
     try {
+        let body: BodyInit;
+        let headers: Record<string, string> = {};
+
+        if (file) {
+            const formData = new FormData();
+            Object.entries(user).forEach(([key, value]) => {
+                if (key !== "file") formData.append(key, value as string);
+            }); body = formData;
+            formData.append("file", file);
+            // Do not set Content-Type header for FormData
+        } else {
+            body = JSON.stringify(user);
+            headers["Content-Type"] = "application/json";
+        }
+
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
         const response = await fetch(url, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...(token && { Authorization: `Bearer ${token}` }),
-            },
-            body: JSON.stringify(user),
+            headers,
+            body,
             credentials: "include",
         });
         const data = await response.json();
@@ -42,9 +58,6 @@ export async function create(user: any, image: File, token?: string) {
                 message: `${data.message || "Error al crear el usuario."} / Error creating user.`,
                 error: data.error,
             };
-        }
-        //Guardar la imagen si se proporciona y retorna el usuario creado
-        if(image) {
         }
         return data;
     } catch (error) {

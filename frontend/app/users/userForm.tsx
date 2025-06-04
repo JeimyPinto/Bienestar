@@ -68,26 +68,40 @@ export default function UserForm(props: UserFormProps) {
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         if (mode === "create" && token) {
-            create(newUser, token)
-                .then(({ message, error, user }) => {
-                    if (error) {
-                        props.setErrorMessage?.(error);
-                        props.setSuccessMessage?.("");
+            (async () => {
+                try {
+                    let responseData;
+                    // Usar newUser.file si existe
+                    if (newUser.file) {
+                        console.log("File exists:", newUser.file);
+                        console.log("Usser data:", newUser);
+                        responseData = await create(newUser, newUser.file, token);
                     } else {
-                        props.setSuccessMessage?.(message || "Usuario creado correctamente. / User created successfully.");
-                        props.setErrorMessage?.("");
+                        console.log("No file, using profileImage:", newUser.file);
+                        responseData = await create(newUser, undefined, token);
                     }
-                })
-                .catch((err) => {
-                    props.setErrorMessage?.("Error al crear usuario. / Error creating user.");
-                    props.setSuccessMessage?.("");
-                    console.error(err);
-                });
+
+                    if (responseData.error) {
+                        if (props.setErrorMessage) {
+                            props.setErrorMessage(
+                                responseData.error || "Error al crear el usuario. / Error creating user."
+                            );
+                        }
+                    } else if (props.setSuccessMessage) {
+                        props.setSuccessMessage(
+                            responseData.message ||
+                            "Usuario creado exitosamente. / User created successfully."
+                        );
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    if (props.setErrorMessage) {
+                        props.setErrorMessage("Error al crear el usuario. / Error creating user.");
+                    }
+                }
+            })();
         } else if (mode === "edit" && token) {
             // Aquí va la llamada a la función para editar usuario
-            // updateUser(newUser, token)
-            //     .then(...)
-            //     .catch(...);
         }
         if (onClose) onClose();
         closeDialog();
@@ -163,7 +177,11 @@ export default function UserForm(props: UserFormProps) {
                             onChange={handleInputChange}
                             className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
                             required
+                            aria-required="true"
                         >
+                            <option value="" disabled>
+                                Seleccione una opción
+                            </option>
                             <option value="CC">Cédula de Ciudadanía</option>
                             <option value="CE">Cédula de Extranjería</option>
                             <option value="PA">Pasaporte</option>
@@ -210,7 +228,6 @@ export default function UserForm(props: UserFormProps) {
                             value={newUser.password}
                             onChange={handleInputChange}
                             className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required={mode === "create"}
                         />
                     </div>
                 </div>
@@ -259,13 +276,15 @@ export default function UserForm(props: UserFormProps) {
                     )}
                     <input
                         type="file"
-                        name="profileImage"
+                        name="file"
                         accept="image/*"
                         onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
+                                const file = e.target.files[0];
                                 setNewUser((prevUser) => ({
                                     ...prevUser,
-                                    profileImage: e.target.files![0],
+                                    file: file, // el archivo real
+                                    image: file.name, // el nombre del archivo
                                 }));
                             }
                         }}
