@@ -2,7 +2,6 @@
 
 import React, { useState, useRef } from "react"
 import Header from "../ui/header"
-import IcoBack from "../ui/icoBack"
 import UserTable from "./userTable"
 import UserForm from "./userForm"
 import ErrorMessage from "../ui/errorMessage";
@@ -39,8 +38,7 @@ export default function UsersPage() {
     return (
         <>
             <Header />
-            <IcoBack />
-            <main className="flex flex-col md:flex-row justify-between items-center mb-8 p-8 bg-gray-100 rounded-lg shadow-md">
+            <main className="flex flex-col md:flex-row justify-around items-center mb-8 p-8 bg-gray-100 rounded-lg shadow-md">
                 <h1 className="text-3xl font-extrabold text-gray-900 mb-4 md:mb-0 ml-20">
                     Listado de Usuarios
                 </h1>

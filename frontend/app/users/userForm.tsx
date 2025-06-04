@@ -105,6 +105,7 @@ export default function UserForm(props: UserFormProps) {
                     );
                 }
             }
+            window.location.reload(); // Recargar la página para reflejar los cambios
         } catch (error) {
             if (mode === "create") {
                 props.setErrorMessage?.("Error al crear el usuario. / Error creating user.");
@@ -279,7 +280,11 @@ export default function UserForm(props: UserFormProps) {
                     {mode === "edit" && newUser.image && (
                         <div className="mb-4">
                             <img
-                                src={newUser.image}
+                                src={
+                                    newUser?.image
+                                        ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + newUser.image
+                                        : "/images/ico-profile.svg"
+                                }
                                 alt={`${newUser.firstName} avatar`}
                                 className="w-24 h-24 rounded-full object-cover"
                             />
