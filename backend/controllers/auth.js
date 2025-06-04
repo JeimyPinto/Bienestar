@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { adminCreateUserSchema, loginSchema, } = require("../schemas/user");
 const { verifyRecaptcha } = require("../utils/recaptcha");
+const e = require("express");
 class AuthController {
 
   async register(req, res) {
@@ -138,7 +139,11 @@ class AuthController {
       // Validar el token de reCAPTCHA usando el módulo externo
       const recaptchaSuccess = await verifyRecaptcha(recaptchaToken);
       if (!recaptchaSuccess) {
-        return res.status(400).json({ message: "Invalid reCAPTCHA token / Token de reCAPTCHA inválido" });
+        return res.status(400).json({
+          message: "Invalid reCAPTCHA token / Token de reCAPTCHA inválido",
+          token: null,
+          error: "recaptcha"
+        });
       }
 
       // Continuar con la lógica de inicio de sesión
@@ -148,7 +153,8 @@ class AuthController {
         return res.status(401).json({
           message:
             "Incorrect email or password / Correo electrónico o contraseña incorrectos",
-          e: "email",
+          token: null,
+          error: "email",
         });
       }
 
@@ -158,7 +164,8 @@ class AuthController {
         return res.status(401).json({
           message:
             "Incorrect email or password / Correo electrónico o contraseña incorrectos",
-          e: "password",
+          token: null,
+          error: "password",
         });
       }
 
@@ -181,16 +188,21 @@ class AuthController {
         { expiresIn: "1h" }
       );
 
-      res.cookie("token", token, {
-        httpOnly: true, // XSS
-        secure: process.env.NODE_ENV === "production"? true : false, // HTTPS
-        sameSite: process.env.NODE_ENV === "production" ? "Strict" : "None", // CSRF
-        maxAge: 3 * 60 * 60 * 1000,
+      if (process.NODE_ENV == "produccion") {
+        res.cookie("token", token, {
+          httpOnly: true, // XSS
+          secure: true, // HTTPS
+          sameSite: "Strict",// CSRF
+          maxAge: 3 * 60 * 60 * 1000,
+        });
+      }
+
+      res.status(200).json({
+        message: "Login successful / Inicio de sesión exitoso",
+        token,
+        error: null,
       });
 
-      res.json({
-        message: "Login successful / Inicio de sesión exitoso",
-      });
     } catch (error) {
       console.error(
         "Error during login / Error durante el inicio de sesión:",
@@ -198,7 +210,8 @@ class AuthController {
       );
       res.status(500).json({
         message: "Error during login / Error durante el inicio de sesión",
-        error,
+        token: null,
+        error: error.message,
       });
     }
   }

@@ -16,15 +16,6 @@ export default function LoginPage() {
   const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const cookie = document.cookie;
-    const tokenValue = cookie
-      .split("; ")
-      .find(row => row.startsWith("token="))
-      ?.split("=")[1];
-    setToken(tokenValue || null);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -32,25 +23,43 @@ export default function LoginPage() {
     try {
       if (!recaptchaToken) {
         setError("Please complete the reCAPTCHA. / Por favor completa el reCAPTCHA.");
-        setLoading(false);
-        return;
+        return setLoading(false);
       }
-      const { message } = await login({ email, password, recaptchaToken });
-      if (message) {
-        setError(message);
-        setLoading(false);
-        router.push("/dashboard");
+
+      const { message, token, error } = await login({ email, password, recaptchaToken });
+
+      if (error || message) {
+        setError(message || "Error al iniciar sesión. / Error logging in.");
+        if (error) {
+          console.error("Error desde el backend:/ Backend error", error);
+        }
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message || "Error al iniciar sesión. / Error logging in.");
+
+      //Si el entorno es localhost, guarda el token en localStorage, de lo contrario, lo salva en una cookie
+      if (
+        process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
+        process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
+      ) {
+        if (token) {
+          localStorage.setItem("token", token);
+          setToken(token);
+        }
       } else {
-        setError("Error al iniciar sesión. / Error logging in.");
+        const tokenValue = document.cookie
+          .split("; ")
+          .find(row => row.startsWith("token="))
+          ?.split("=")[1];
+        setToken(tokenValue || null);
       }
+
+      router.push("/dashboard");
+      return setLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message || "Error al iniciar sesión. / Error logging in." : "Error al iniciar sesión. / Error logging in.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <>

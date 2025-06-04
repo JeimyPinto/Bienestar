@@ -21,13 +21,14 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
                 credentials: "include",
             });
 
-        const { message } = await response.json();
+        const { message, token, error } = await response.json();
 
         if (!response.ok) {
-            throw new Error(`${message || "Login failed. Please try again."} / Error de inicio de sesión. Por favor, inténtalo de nuevo.`);
+            return {
+                message: message || "Login failed. Please try again. / Error de inicio de sesión. Por favor, inténtalo de nuevo.", token: null, error: error || null
+            };
         }
-
-        return { message };
+        return { message, token, error: null };
     } catch (error) {
         console.error("Error logging in: / Error iniciando sesión en: ", error);
         throw new Error("Login failed. Please try again. / Error de inicio de sesión. Por favor, inténtalo de nuevo.");
