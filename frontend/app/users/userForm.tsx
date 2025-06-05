@@ -23,7 +23,7 @@ export default function UserForm(props: UserFormProps) {
     const [token, setToken] = useState<string | null>(null);
     const [newUser, setNewUser] = useState<User>(emptyUser);
 
-    // Obtener token y usuario autenticado (opcional, puedes quitar si no lo usas aquí)
+    // Obtener token y usuario autenticado
     useEffect(() => {
         let tokenValue: string | null = null;
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
@@ -56,11 +56,12 @@ export default function UserForm(props: UserFormProps) {
             [name]: value,
         }));
     }
+
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
             setNewUser((prevUser) => ({
                 ...prevUser,
-                profileImage: e.target.files![0],
+                file: e.target.files![0],
             }));
         }
     }

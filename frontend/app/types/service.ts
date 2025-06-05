@@ -21,3 +21,15 @@ export interface Service {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ServiceFormProps {
+    dialogRef: React.RefObject<HTMLDialogElement>;
+    closeDialog: () => void;
+    onClose: () => void;
+    mode: "create" | "edit";
+    serviceToEdit?: Service;
+    successMessage?: string;
+    setSuccessMessage?: React.Dispatch<React.SetStateAction<string>>;
+    errorMessage?: string;
+    setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
+}
