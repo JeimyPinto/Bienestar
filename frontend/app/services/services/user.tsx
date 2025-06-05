@@ -36,12 +36,6 @@ export async function create(user: any, file?: File, token?: string) {
                 if (key !== "file") formData.append(key, value !== undefined && value !== null ? String(value) : "");
             });
             formData.append("file", file);
-
-            // Depuración: muestra todos los pares clave-valor
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ':', pair[1]);
-            }
-
             body = formData;
         } else {
             body = JSON.stringify(user);
@@ -84,12 +78,6 @@ export async function update(id: string, user: any, file?: File, token?: string)
                 if (key !== "file") formData.append(key, value !== undefined && value !== null ? String(value) : "");
             });
             formData.append("file", file);
-
-            // Depuración: muestra todos los pares clave-valor
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ':', pair[1]);
-            }
-
             body = formData;
         } else {
             body = JSON.stringify(user);

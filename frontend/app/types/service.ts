@@ -10,7 +10,7 @@ export type Area =
 export type ServiceStatus = 'activo' | 'inactivo';
 
 export interface Service {
-  id: number;
+  id: string;
   name: string;
   description: string;
   creatorId: number;
@@ -20,16 +20,17 @@ export interface Service {
   status: ServiceStatus;
   createdAt: string;
   updatedAt: string;
+  file?: File | null; // opcional para manejar archivos
 }
 
 export interface ServiceFormProps {
-    dialogRef: React.RefObject<HTMLDialogElement>;
-    closeDialog: () => void;
-    onClose: () => void;
-    mode: "create" | "edit";
-    serviceToEdit?: Service;
-    successMessage?: string;
-    setSuccessMessage?: React.Dispatch<React.SetStateAction<string>>;
-    errorMessage?: string;
-    setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
+  dialogRef: React.RefObject<HTMLDialogElement>;
+  closeDialog: () => void;
+  onClose: () => void;
+  mode: "create" | "edit";
+  serviceToEdit?: Service;
+  successMessage?: string;
+  setSuccessMessage?: React.Dispatch<React.SetStateAction<string>>;
+  errorMessage?: string;
+  setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
 }

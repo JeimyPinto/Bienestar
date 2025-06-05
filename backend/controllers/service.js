@@ -112,13 +112,6 @@ class ServiceController {
 
   async create(req, res) {
     try {
-      // Verifica si el usuario autenticado tiene el rol adecuado
-      if (!enabledRoles.includes(req.user.role)) {
-        return res.status(403).json({
-          message: "No autorizado / Not authorized",
-          role: req.user.role,
-        });
-      }
       const serviceData = serviceSchema.parse(req.body);
       const service = await Service.create({
         name: serviceData.name,
