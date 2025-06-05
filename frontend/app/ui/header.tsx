@@ -86,7 +86,9 @@ export default function Header() {
                 height={42}
                 priority={true}
               />
-              <span className="ml-2">{user?.firstName || "Usuario"}</span>
+              <span className="ml-2">
+                Dashboard de {user?.firstName ? user.firstName.split(" ")[0] : "Usuario"}
+              </span>
             </Link>
             <button
               className="bg-magenta text-white px-4 py-2 rounded-md hover:bg-cian hover:border-2 hover:border-white hover:shadow-md hover:shadow-white transition-all duration-300 ml-2"

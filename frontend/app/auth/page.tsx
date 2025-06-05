@@ -35,15 +35,17 @@ export default function LoginPage() {
         }
       }
 
+      if (!token) {
+        setError("No se recibió un token de autenticación. / No authentication token received.");
+        setLoading(false);
+        return;
+      }
       //Si el entorno es localhost, guarda el token en localStorage, de lo contrario, lo salva en una cookie
       if (
         process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
         process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
       ) {
-        if (token) {
-          localStorage.setItem("token", token);
-          setToken(token);
-        }
+        localStorage.setItem("token", token);
       } else {
         const tokenValue = document.cookie
           .split("; ")
@@ -51,9 +53,9 @@ export default function LoginPage() {
           ?.split("=")[1];
         setToken(tokenValue || null);
       }
-
+      
       router.push("/dashboard");
-      return setLoading(false);
+      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message || "Error al iniciar sesión. / Error logging in." : "Error al iniciar sesión. / Error logging in.");
     } finally {

@@ -40,8 +40,6 @@ export default function DashboardAdmin() {
                 const parsedUser: User = JSON.parse(atob(tokenValue.split(".")[1]));
                 setUser(parsedUser);
                 setServices(parsedUser.services || []);
-                console.log("user:", parsedUser); // <-- Aquí ves todo el usuario
-                console.log("user.services:", parsedUser.services);
             } catch {
                 setUser(null);
                 setServices([]);
