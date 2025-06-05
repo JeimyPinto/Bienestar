@@ -1,125 +1,12 @@
 const db = require("../models");
 const User = db.User;
+const Service = db.Service;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { adminCreateUserSchema, loginSchema, } = require("../schemas/user");
 const { verifyRecaptcha } = require("../utils/recaptcha");
 const e = require("express");
 class AuthController {
-
-  async register(req, res) {
-    let parsedData;
-    try {
-      parsedData = await adminCreateUserSchema.parseAsync(req.body);
-    } catch (validationError) {
-      console.error("Validation error:/Error de validación:", validationError);
-      return res.status(400).json({
-        message: "Validation error/Error de validación",
-        errors: validationError.errors,
-      });
-    }
-
-    const {
-      firstName,
-      lastName,
-      documentType,
-      documentNumber,
-      phone,
-      email,
-      password,
-      role,
-      status = "activo",
-    } = parsedData;
-
-    try {
-      const user = await User.findOne({ where: { documentNumber } });
-      if (user) {
-        return res.status(400).json({
-          message:
-            "A user with that document already exists / Ya existe un usuario con ese documento",
-        });
-      }
-      let fileName = null;
-      // Si hay un archivo, cambiar su nombre a un UUID y moverlo a uploads/temp
-      if (req.file) {
-        const tempPath = path.join(
-          __dirname,
-          "..",
-          "uploads",
-          "temp",
-          req.file.filename
-        );
-        // Generar un nuevo nombre único para el archivo
-        fileName = `${crypto.randomUUID()}${path.extname(
-          req.file.originalname
-        )}`;
-        const finalPath = path.join(
-          __dirname,
-          "..",
-          "uploads",
-          "temp",
-          fileName
-        );
-
-        try {
-          // Renombrar el archivo
-          fs.renameSync(tempPath, finalPath);
-          console.log("Archivo renombrado y movido a:", finalPath);
-        } catch (error) {
-          console.error("Error al mover el archivo:", error);
-          return res.status(500).json({
-            message: "Error processing the file / Error procesando el archivo",
-            error: error.message,
-          });
-        }
-      }
-      // Crear el usuario en la base de datos
-      const newUser = await User.create({
-        firstName,
-        lastName,
-        documentType,
-        documentNumber,
-        phone,
-        email,
-        password: bcrypt.hashSync(password, 10),
-        image: fileName,
-        status,
-        role,
-      });
-      res.json({
-        message: "User registered successfully / Usuario registrado con éxito",
-        user: {
-          ...newUser.toJSON(),
-          image: newUser.image
-            ? `${req.protocol}://${req.get("host")}/uploads/temp/${newUser.image
-            }`
-            : null,
-        },
-      });
-    } catch (error) {
-      console.error(
-        "Error during registration / Error durante el registro:",
-        error
-      );
-      if (error.name === "SequelizeValidationError") {
-        res.status(400).json({
-          message: "Validation error / Error de validación",
-          errors: error.errors,
-        });
-      } else if (error.name === "SequelizeDatabaseError") {
-        res.status(500).json({
-          message: "Database error / Error de base de datos",
-          error: error.message,
-        });
-      } else {
-        res.status(500).json({
-          message: "Error registering the user / Error registrando el usuario",
-          error: error.message,
-        });
-      }
-    }
-  }
-
   async login(req, res) {
     let parsedData;
     try {
@@ -168,6 +55,20 @@ class AuthController {
           error: "password",
         });
       }
+      // Obtener los servicios asociados al usuario
+      const services = await Service.findAll({
+        where: { creatorId: user.id },
+        attributes: [
+          "id",
+          "name",
+          "description",
+          "area",
+          "image",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+      });
 
       const token = jwt.sign(
         {
@@ -183,6 +84,7 @@ class AuthController {
           image: user.image,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
+          services: services || [],
         },
         process.env.JWT_SECRET,
         { expiresIn: "1h" }

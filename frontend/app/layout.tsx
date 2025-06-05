@@ -13,6 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta charSet="UTF-8" />
         <link rel="icon" href="/images/favicon.png" />
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />

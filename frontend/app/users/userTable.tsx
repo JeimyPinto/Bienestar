@@ -172,10 +172,10 @@ export default function UserTable() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-cian">
-                            {loading ? (
-                                <tr>
-                                    <td colSpan={12} className="py-8 text-center text-azul">
-                                        Cargando usuarios...
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan={12} className="py-8 text-center text-azul">
+                                            Cargando usuarios...
                                     </td>
                                 </tr>
                             ) : sortedUsers.length === 0 ? (

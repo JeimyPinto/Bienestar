@@ -54,27 +54,34 @@ class ServiceController {
       });
       if (services.length === 0) {
         return res.status(404).send({
-          message: "No se encontraron servicios activos / No active services found",
+          message:null,
+          error:  "No se encontraron servicios activos / No active services found",
+          services: null,
         });
       }
       res.status(200).send({
         message: "Active services retrieved successfully / Servicios activos recuperados con éxito",
+        error: null,
         services,
       });
     } catch (error) {
       if (error instanceof ValidationError) {
         res.status(400).send({
-          message: "Validation Error / Error de Validación",
-          errors: error.message,
+          message: null,
+          error: "Validation Error / Error de Validación" + error.message,
+          services: null,
         });
       } else if (error instanceof DatabaseError) {
         res.status(500).send({
-          message: "Database Error / Error de Base de Datos",
-          errors: error.message,
+          message: null,
+          error: "Database Error / Error de Base de Datos" + error.message,
+          services: null,
         });
       } else {
         res.status(500).send({
-          message: "Error retrieving active services / Error al recuperar servicios activos",
+          message: null,
+          error: "Error retrieving active services / Error al recuperar servicios activos",
+          services: null,
         });
       }
     }

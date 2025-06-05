@@ -15,9 +15,6 @@ export default function ServicesGallery({ services, message }: { services?: Serv
 
   return (
     <section className="w-full flex flex-col items-center justify-center p-4 bg-gray-50">
-      <h1 className="text-4xl font-extrabold mb-6 text-gray-800 tracking-tight text-center">
-        Estos son nuestros servicios
-      </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full max-w-7xl">
         {services.map((service) => (
           <div

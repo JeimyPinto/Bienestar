@@ -12,20 +12,21 @@ import { Service } from "./types/service";
 export default function Page() {
   const [services, setServices] = useState<Service[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  
   useEffect(() => {
-    async function fetchServices() {
+    const fetchServices = async () => {
       const { services, message } = await getAllActive();
       if (message) {
         setMessage(message);
       }
       if (services) {
         setServices(services);
-        setMessage(message)
+        setMessage(message);
       }
-    }
+    };
     fetchServices();
-  }
-    , []);
+  }, [setServices, setMessage]);
+  
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
@@ -92,7 +93,12 @@ export default function Page() {
             </div>
           </div>
         </section>
-        <ServicesGallery services={services} message={message ?? undefined}/>
+        <section className="w-full bg-white rounded-lg shadow-lg p-8 mb-8">
+          <h1 className="text-4xl font-extrabold mb-6 text-gray-800 tracking-tight text-center">
+            Estos son nuestros servicios
+          </h1>
+          <ServicesGallery services={services} message={message ?? undefined} />
+        </section>
       </main>
       <Footer />
     </div>
