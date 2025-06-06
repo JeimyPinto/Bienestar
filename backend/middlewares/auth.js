@@ -43,11 +43,11 @@ const authMiddleware = {
 
   authorizeRole: (roles = enabledRoles) => {
     return (req, res, next) => {
+      if (!req.user) {
+        return res.status(401).json({ message: "No autorizado / Unauthorized" });
+      }
       if (!roles.includes(req.user.role)) {
-        return res.status(403).json({
-          error:
-            "No tiene los permisos para acceder a esta ruta / You do not have permission to access this route",
-        });
+        return res.status(403).json({ message: "No tienes permisos / Forbidden" });
       }
       next();
     };

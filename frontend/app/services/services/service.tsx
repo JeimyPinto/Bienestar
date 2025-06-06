@@ -122,7 +122,7 @@ export async function update(id: string, service: any, file?: File, token?: stri
         if (file) {
             const formData = new FormData();
             Object.entries(service).forEach(([key, value]) => {
-                if (key !== "file") formData.append(key, value !== undefined && value !== null ? String(value) : "");
+                if (key !== "file" && key !== "id") formData.append(key, value !== undefined && value !== null ? String(value) : "");
             });
             formData.append("file", file);
             body = formData;

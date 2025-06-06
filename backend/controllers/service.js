@@ -54,8 +54,8 @@ class ServiceController {
       });
       if (services.length === 0) {
         return res.status(404).send({
-          message:null,
-          error:  "No se encontraron servicios activos / No active services found",
+          message: null,
+          error: "No se encontraron servicios activos / No active services found",
           services: null,
         });
       }
@@ -112,32 +112,56 @@ class ServiceController {
 
   async create(req, res) {
     try {
-      const serviceData = serviceSchema.parse(req.body);
+      if (req.body.creatorId) {
+        req.body.creatorId = Number(req.body.creatorId);
+      }
+      const serviceData = await serviceSchema.parseAsync(req.body);
+
       const service = await Service.create({
-        name: serviceData.name,
-        description: serviceData.description,
-        area: serviceData.area,
-        image: serviceData.image,
-        status: "activo",
-        creatorId: req.user.id,
+        ...serviceData,
+        image: null,
       });
+
+      if (req.file) {
+        //Normalizar la ruta que funcione en Windows y Linux
+        const fullPath = req.file.path.replace(/\\/g, "/");
+        const uploadIndex = fullPath.indexOf("uploads");
+
+        if (uploadIndex !== -1) {
+          service.image = fullPath.substring(uploadIndex);
+        } else {
+          service.image = req.file.filename;
+        }
+
+        await service.update({ image: service.image });
+      }
       res.status(201).send({
         message: "Service created successfully / Servicio creado con éxito",
+        errors: null,
         service,
       });
     } catch (error) {
+      // Errores de validación de Zod
       if (error.errors) {
-        res.status(400).send({
-          message: "Validation Error / Error de Validación",
-          errors: error.errors,
+        return res.status(400).json({
+          message: null,
+          error:
+            "Error de validación / Validation error: " +
+            error.errors
+              .map((e) => `${e.path?.join(".")}: ${e.message}`)
+              .join("; "),
+          user: null,
         });
       }
-      else {
-        res.status(500).send({
-          message: "Error creating service / Error al crear servicio",
-          errors: error.message,
-        });
-      }
+      // Otros errores
+      res.status(500).json({
+        message: null,
+        error:
+          "Error al crear el usuario / Error creating user (" +
+          error.message +
+          ")",
+        user: null,
+      });
     }
   }
 

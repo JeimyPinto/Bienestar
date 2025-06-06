@@ -4,19 +4,17 @@ import React, { useEffect, useState, useRef } from "react";
 import { Service } from "../types/service";
 import { User } from "../types/user";
 import Header from "../ui/header";
-import Footer from "../ui/footer";
 import ErrorMessage from "../ui/errorMessage";
 import ServicesGallery from "./servicesGallery";
 import ServiceTable from "./serviceTable";
 import SectionHeader from "../ui/sectionHeader";
 import { getAllActive } from "../services/services/service";
-// Importa SuccessMessage y ServiceForm si existen
-// import SuccessMessage from "../ui/successMessage";
-// import ServiceForm from "./serviceForm";
+import ServiceForm from "./serviceForm";
 
 export default function ServicePage() {
     const [user, setUser] = useState<User | null>(null);
     const [services, setServices] = useState<Service[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -55,9 +53,21 @@ export default function ServicePage() {
     useEffect(() => {
         async function fetchServices() {
             setLoading(true);
-            const { services, message } = await getAllActive();
-            if (services) setServices(services);
-            setMessage(message);
+            const { services, message, error } = await getAllActive();
+
+            if (services) {
+                setServices(services);
+                setMessage(typeof message === "string" ? message : "");
+                setErrorMessage(""); // Limpia error si hay servicios
+            } else {
+                setServices([]);
+                setMessage(""); // Limpia mensaje si hay error
+                setErrorMessage(
+                    typeof error === "string"
+                        ? error
+                        : error?.message || error?.toString?.() || "Ocurrió un error"
+                );
+            }
             setLoading(false);
         }
         fetchServices();
@@ -108,9 +118,11 @@ export default function ServicePage() {
                         buttonText="Añadir Nuevo Servicio"
                         onButtonClick={openCreateDialog}
                     />
-                    {errorMessage && <ErrorMessage message={errorMessage} />}
+                    {errorMessage && (
+                        <ErrorMessage message={errorMessage} />
+                    )}
                     <ServiceTable />
-                    {/* {isFormOpen && (
+                    {isFormOpen && (
                         <ServiceForm
                             dialogRef={dialogRef}
                             closeDialog={closeDialog}
@@ -120,7 +132,7 @@ export default function ServicePage() {
                             setSuccessMessage={setSuccessMessage}
                             setErrorMessage={setErrorMessage}
                         />
-                    )} */}
+                    )}
                 </>
             )}
         </>

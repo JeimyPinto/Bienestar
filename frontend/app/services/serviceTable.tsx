@@ -113,7 +113,11 @@ export default function ServicePage() {
                       <td className="px-3 py-4">
                         {service.image ? (
                           <img
-                            src={service.image}
+                            src={
+                              service?.image
+                                ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + service.image
+                                : "/images/ico-profile.svg"
+                            }
                             alt={`${service.name} avatar`}
                             className="w-12 h-12 rounded-lg object-cover border border-cian shadow"
                           />
@@ -131,8 +135,8 @@ export default function ServicePage() {
                       <td className="px-3 py-4">
                         <span
                           className={`px-2 py-1 rounded-md text-xs font-medium ${service.area && areaColors[service.area]
-                              ? areaColors[service.area] + " text-white"
-                              : "bg-gray-300 text-gray-600"
+                            ? areaColors[service.area] + " text-white"
+                            : "bg-gray-300 text-gray-600"
                             }`}
                         >
                           {service.area || "Sin área"}

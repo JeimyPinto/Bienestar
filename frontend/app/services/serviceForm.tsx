@@ -90,9 +90,12 @@ export default function ServiceForm(props: ServiceFormProps) {
             let responseData;
 
             if (mode === "create") {
+                const { file, image, createdAt, updatedAt, ...serviceData } = newService;
+                serviceData.creatorId = user?.id ? Number(user.id) : 0;
+
                 responseData = await create(
-                    newService,
-                    newService.file ? newService.file : undefined,
+                    serviceData,
+                    file ? file : undefined,
                     token
                 );
                 if (responseData.error) {
