@@ -176,32 +176,31 @@ class ServiceController {
         });
       }
 
-      let serviceData;
-      let updatedFields = {};
+      if (req.body.creatorId) {
+        req.body.creatorId = Number(req.body.creatorId);
+      }
 
-      userData = await serviceSchema.parseAsync(req.body);
-      updatedFields = {
-        ...userData,
+      const serviceData = await serviceSchema.parseAsync(req.body);
+      let updatedFields = {
+        ...serviceData,
         image: null,
       };
+
+      await service.update(updatedFields);
 
       if (req.file) {
         const fullPath = req.file.path.replace(/\\/g, "/");
         const uploadIndex = fullPath.indexOf("uploads");
-        if (uploadIndex !== -1) {
-          updatedFields.image = fullPath.substring(uploadIndex);
-        } else {
-          updatedFields.image = req.file.filename;
-        }
-
-        await service.update({ image: updatedFields.image });
-
-        res.status(200).send({
-          message: "Service updated successfully / Servicio actualizado con éxito",
-          error: null,
-          service: { ...service.toJSON(), ...updatedFields },
-        });
+        const imagePath = uploadIndex !== -1 ? fullPath.substring(uploadIndex) : req.file.filename;
+        await service.update({ image: imagePath });
+        updatedFields.image = imagePath;
       }
+
+      res.status(200).send({
+        message: "Service updated successfully / Servicio actualizado con éxito",
+        error: null,
+        service: { ...service.toJSON(), ...updatedFields },
+      });
     } catch (error) {
       if (error.errors) {
         res.status(400).json({
