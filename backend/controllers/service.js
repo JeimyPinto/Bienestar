@@ -150,7 +150,7 @@ class ServiceController {
             error.errors
               .map((e) => `${e.path?.join(".")}: ${e.message}`)
               .join("; "),
-          user: null,
+          service: null,
         });
       }
       // Otros errores
@@ -160,38 +160,60 @@ class ServiceController {
           "Error al crear el usuario / Error creating user (" +
           error.message +
           ")",
-        user: null,
+        service: null,
       });
     }
   }
 
   async update(req, res) {
     try {
-      const serviceData = serviceSchema.parse(req.body);
-      const service = await Service.findByPk(req.params.id);
-      if (service) {
-        await service.update(serviceData);
+      const serviceId = req.params.id;
+      const service = await Service.findByPk(serviceId);
+      if (!service) {
+        return res.status(404).send({
+          message: "Service not found / Servicio no encontrado",
+          role: req.user.role,
+        });
+      }
+
+      let serviceData;
+      let updatedFields = {};
+
+      userData = await serviceSchema.parseAsync(req.body);
+      updatedFields = {
+        ...userData,
+        image: null,
+      };
+
+      if (req.file) {
+        const fullPath = req.file.path.replace(/\\/g, "/");
+        const uploadIndex = fullPath.indexOf("uploads");
+        if (uploadIndex !== -1) {
+          updatedFields.image = fullPath.substring(uploadIndex);
+        } else {
+          updatedFields.image = req.file.filename;
+        }
+
+        await service.update({ image: updatedFields.image });
+
         res.status(200).send({
           message: "Service updated successfully / Servicio actualizado con éxito",
-          service,
-        });
-      } else {
-        res.status(404).send({
-          message: "Service not found / Servicio no encontrado",
-          service
+          error: null,
+          service: { ...service.toJSON(), ...updatedFields },
         });
       }
     } catch (error) {
       if (error.errors) {
-        res.status(400).send({
-          message: "Validation Error / Error de Validación",
-          errors: error.errors,
+        res.status(400).json({
+          message: "Error de validación / Validation error",
+          error: error.errors,
+          service: null,
         });
-      }
-      else {
-        res.status(500).send({
-          message: "Error creating service / Error al crear servicio",
-          errors: error.message,
+      } else {
+        res.status(500).json({
+          message: "Error al actualizar el usuario / Error updating user",
+          error: error.message,
+          service: null,
         });
       }
     }

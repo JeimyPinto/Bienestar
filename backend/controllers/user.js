@@ -207,14 +207,7 @@ class UsuarioController {
       if (isAdmin) {
         userData = await adminUpdateUserSchema.parseAsync(req.body);
         updateFields = {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          documentType: userData.documentType,
-          documentNumber: userData.documentNumber,
-          phone: userData.phone,
-          email: userData.email,
-          status: userData.status,
-          role: userData.role,
+          ...userData,
         };
         if (userData.password) {
           updateFields.password = await bcrypt.hash(userData.password, saltRounds);
@@ -252,12 +245,14 @@ class UsuarioController {
       if (error.errors) {
         res.status(400).json({
           message: "Error de validación / Validation error",
-          errors: error.errors,
+          error: error.errors,
+          user: null,
         });
       } else {
         res.status(500).json({
           message: "Error al actualizar el usuario / Error updating user",
           error: error.message,
+          user: null,
         });
       }
     }
