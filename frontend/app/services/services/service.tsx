@@ -12,7 +12,7 @@ export async function getAllActive() {
 
         const data = await response.json();
 
-        if (!response.ok) {
+        if (response.ok) {
             return {
                 message: data.message,
                 error: null,
@@ -24,6 +24,41 @@ export async function getAllActive() {
                 error: data.error || "Error al obtener los servicios.",
                 services: null,
 
+            };
+        }
+    } catch (error) {
+        return {
+            message: null,
+            error: "Server error while fetching services. / Error en el servidor al obtener los servicios.",
+            services: null,
+        };
+    }
+}
+
+export async function getAll(token?: string) {
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            return {
+                message: data.message,
+                error: null,
+                services: data.services,
+            };
+        } else {
+            return {
+                message: null,
+                error: data.error || "Error fetching services. / Error al obtener los servicios.",
+                services: null,
             };
         }
     } catch (error) {

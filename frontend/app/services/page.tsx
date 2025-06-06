@@ -8,6 +8,7 @@ import Footer from "../ui/footer";
 import ErrorMessage from "../ui/errorMessage";
 import ServicesGallery from "./servicesGallery";
 import ServiceTable from "./serviceTable";
+import SectionHeader from "../ui/sectionHeader";
 import { getAllActive } from "../services/services/service";
 // Importa SuccessMessage y ServiceForm si existen
 // import SuccessMessage from "../ui/successMessage";
@@ -101,7 +102,12 @@ export default function ServicePage() {
                     )}
                 </main>
             ) : (
-                <main className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-8 sm:px-6 sm:py-12 md:px-10 md:py-16 shadow-xl mx-auto w-full max-w-full transition-all">
+                <>
+                    <SectionHeader
+                        title="Listado de Servicios"
+                        buttonText="Añadir Nuevo Servicio"
+                        onButtonClick={openCreateDialog}
+                    />
                     {errorMessage && <ErrorMessage message={errorMessage} />}
                     <ServiceTable />
                     {/* {isFormOpen && (
@@ -115,9 +121,8 @@ export default function ServicePage() {
                             setErrorMessage={setErrorMessage}
                         />
                     )} */}
-                </main>
+                </>
             )}
-            <Footer />
         </>
     );
 }
