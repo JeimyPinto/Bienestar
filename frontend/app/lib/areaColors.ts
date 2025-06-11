@@ -1,5 +1,5 @@
 export const areaColors: { [key: string]: string } = {
-  "Salud": "bg-azul",
+  "Salud": "bg-azul text-white",
   "Arte y Cultura": "bg-magenta",
   "Deporte y Recreación": "bg-colorWpp text-black",
   "Apoyo Socioeconomico y Reconocimiento a la Excelencia": "bg-amarillo text-black",

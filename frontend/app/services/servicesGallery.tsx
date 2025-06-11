@@ -2,7 +2,7 @@ import Image from "next/image"
 import { areaColors } from "../lib/areaColors"
 import { Service } from "../types/service"
 import ErrorMessage from "../ui/errorMessage"
-import {formatDate} from "../lib/formateDate"
+import { formatDate } from "../lib/formateDate"
 
 export default function ServicesGallery({ services, message }: { services?: Service[]; message?: string }) {
   if (!services || services.length === 0) {
@@ -24,9 +24,9 @@ export default function ServicesGallery({ services, message }: { services?: Serv
             <div className="relative w-full h-48">
               <Image
                 src={
-                  service.image
-                    ? `/images/services/${service.id}/${service.image}`
-                    : "/images/logo-sena.png"
+                  service?.image
+                    ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + service.image
+                    : "/images/ico-profile.svg"
                 }
                 alt={`Imagen del servicio ${service.name}`}
                 className="object-cover"
