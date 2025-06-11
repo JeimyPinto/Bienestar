@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Service } from "../types/service";
 import { User } from "../types/user";
+import { Request } from "../types/request";
 import Header from "../ui/header";
 import ErrorMessage from "../ui/errorMessage";
 import RequestTable from "./requestTable";
@@ -11,6 +12,7 @@ import RequestForm from "./requestForm";
 import { getAllActive } from "../services/services/request"
 
 export default function ServicePage() {
+    const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [requests, setRequests] = useState<Service[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -23,54 +25,57 @@ export default function ServicePage() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const dialogRef = useRef<HTMLDialogElement>(null);
 
+    // Obtener token y usuario autenticado
     useEffect(() => {
         let tokenValue: string | null = null;
-        if (
-            process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
-            process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
-        ) {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
+        // Extraer el token del localStorage o de las cookies
+        const extractUserFromToken = (token: string) => {
+            try {
+                return JSON.parse(atob(token.split(".")[1]));
+            } catch {
+                return null;
+            }
+        };
+
+        if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
             tokenValue = localStorage.getItem("token");
         } else {
+            // Buscar token en cookies
             const cookie = document.cookie;
-            tokenValue =
-                cookie
-                    .split("; ")
-                    .find((row) => row.startsWith("token="))
-                    ?.split("=")[1] || null;
+            tokenValue = cookie.split("; ").find((row) =>
+                row.startsWith("token="))?.split("=")[1] || null;
         }
+
+        setToken(tokenValue);
+
         if (tokenValue) {
-            try {
-                setUser(JSON.parse(atob(tokenValue.split(".")[1])));
-            } catch {
-                setUser(null);
-            }
+            setUser(extractUserFromToken(tokenValue));
         } else {
             setUser(null);
         }
     }, []);
 
     useEffect(() => {
+        if (!token) return;
+
         async function fetchServices() {
             setLoading(true);
-            const { requests, message, error } = await getAllActive();
-
-            if (requests) {
-                setRequests(requests);
-                setMessage(typeof message === "string" ? message : "");
-                setErrorMessage(""); // Limpia error si hay servicios
-            } else {
+            const { requests, message, error } = await getAllActive(token || undefined);
+            if (error) {
+                setErrorMessage(error);
                 setRequests([]);
-                setMessage(""); // Limpia mensaje si hay error
-                setErrorMessage(
-                    typeof error === "string"
-                        ? error
-                        : error?.message || error?.toString?.() || "Ocurrió un error"
-                );
+            } else if (message) {
+                setSuccessMessage(message);
+                if (requests) {
+                    setRequests(requests);
+                }
             }
             setLoading(false);
         }
         fetchServices();
-    }, []);
+    }, [token]);
 
     const openCreateDialog = () => {
         setMode("create");

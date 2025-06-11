@@ -2,11 +2,14 @@ import { error } from "console";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/requests`;
 
-export async function getAllActive() {
+export async function getAllActive(token?: string) {
     try {
         const response = await fetch(`${url}/active`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
             credentials: "include",
         });
 

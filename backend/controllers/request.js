@@ -4,7 +4,7 @@ const User = db.User;
 const Request = db.Request;
 const { requestSchema } = require("../schemas/request.js");
 const { enabledRoles } = require("../utils/enabledRoles.js");
-
+const { DatabaseError, ValidationError } = require("sequelize");
 class ServiceController {
     async getAll(req, res) {
         try {
@@ -48,7 +48,6 @@ class ServiceController {
         }
     }
 
-    //Obitener todos las solicitudes activas
     async getAllActive(req, res) {
         try {
             const requests = await Request.findAll({
@@ -66,27 +65,35 @@ class ServiceController {
             });
             if (requests.length === 0) {
                 return res.status(404).send({
-                    message: "No active requests found / No se encontraron solicitudes activas",
+                    message: null,
+                    error: "No active requests found / No se encontraron solicitudes activas",
+                    requests: [],
+
                 });
             }
             res.status(200).send({
                 message: "Active requests retrieved successfully / Solicitudes activas recuperadas con éxito",
+                error: null,
                 requests,
             });
         } catch (error) {
             if (error instanceof ValidationError) {
                 res.status(400).send({
-                    message: "Validation Error / Error de Validación",
-                    errors: error.message,
+                    message: null,
+                    error: "Validation Error / Error de Validación ( " + error.message + " )",
+                    requests: [],
                 });
             } else if (error instanceof DatabaseError) {
                 res.status(500).send({
                     message: "Database Error / Error de Base de Datos",
-                    errors: error.message,
+                    error: error.message,
+                    requests: [],
                 });
             } else {
                 res.status(500).send({
-                    message: "Error retrieving active requests / Error al recuperar solicitudes activas",
+                    message: null,
+                    error: "Error retrieving active requests / Error al recuperar solicitudes activas",
+                    requests: [],
                 });
             }
         }
