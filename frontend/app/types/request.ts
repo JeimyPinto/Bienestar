@@ -1,3 +1,6 @@
+import { User } from "./user";
+import { Service } from "./service";
+
 export interface Request {
     id: number;
     userId: number;
@@ -6,6 +9,8 @@ export interface Request {
     status?: boolean;
     createdAt?: string;
     updatedAt?: string;
+    applicant?: User;
+    service?: Service;
 }
 
 export interface RequestsFormProps {
