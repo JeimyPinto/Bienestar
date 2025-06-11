@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import ServicesGallery from "../../services/servicesGallery";
-import { User } from "../../types/user";
-import { Service } from "../../types/service";
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import ServicesGallery from "../../services/servicesGallery"
+import { User } from "../../types/user"
+import { Service } from "../../types/service"
+import extractUserFromToken from "../../lib/extractUserFromToken"
 
 
 export default function DashboardAdmin() {
@@ -30,7 +31,7 @@ export default function DashboardAdmin() {
 
         if (tokenValue) {
             try {
-                const parsedUser: User = JSON.parse(atob(tokenValue.split(".")[1]));
+                const parsedUser = extractUserFromToken(tokenValue) as User;
                 setServices(parsedUser.services || []);
             } catch {
                 setServices([]);
@@ -45,24 +46,24 @@ export default function DashboardAdmin() {
         <>
             <section className="bg-white shadow-md rounded-lg p-6 mt-6">
                 <h2 className="text-2xl font-bold mb-4">Opciones de Administrador</h2>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                     <button
-                        className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
+                        className="flex-1 min-w-[150px] bg-azul text-white py-2 px-4 rounded-lg hover:bg-cian transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-cian"
                         onClick={() => router.push("/users")}
                     >
                         Panel de usuarios
                     </button>
                     <button
-                        className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
+                        className="flex-1 min-w-[150px] bg-azul text-white py-2 px-4 rounded-lg hover:bg-cian transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-cian"
                         onClick={() => router.push("/services")}
                     >
                         Panel de servicios
                     </button>
                     <button
-                        className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
+                        className="flex-1 min-w-[150px] bg-azul text-white py-2 px-4 rounded-lg hover:bg-cian transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-cian"
                         onClick={() => router.push("/requests")}
                     >
-                        Panel de solicitudes de remisión
+                        Solicitudes de remisión
                     </button>
                 </div>
             </section>

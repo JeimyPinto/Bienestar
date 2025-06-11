@@ -7,6 +7,7 @@ import { create, update } from "../services/services/request"
 import { getAllActive as getAllServices } from "../services/services/service"
 import { getAllActive as getAllUsers } from "../services/services/user"
 import { ENABLED_ROLES } from "../lib/enabledRoles"
+import extractUserFromToken from "../lib/extractUserFromToken"
 const emptyRequest: Request = {
     id: 0,
     userId: 0,
@@ -35,20 +36,6 @@ export default function RequestsForm(props: RequestsFormProps) {
     useEffect(() => {
         let tokenValue: string | null = null;
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-        // Extraer el token del localStorage o de las cookies
-        const extractUserFromToken = (token: string) => {
-        try {
-          const base64Url = token.split(".")[1];
-          let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-          while (base64.length % 4 !== 0) {
-            base64 += "=";
-          }
-          return JSON.parse(atob(base64));
-        } catch {
-          return null;
-        }
-      };
 
         if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
             tokenValue = localStorage.getItem("token");

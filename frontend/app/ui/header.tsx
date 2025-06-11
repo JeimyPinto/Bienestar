@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { User } from "../types/user"
 import isTokenExpired from "../lib/isTokenExpired"
+import extractUserFromToken from "../lib/extractUserFromToken"
 
 export default function Header() {
   const [token, setToken] = useState<string | null>(null);
@@ -16,19 +17,6 @@ export default function Header() {
     const fetchData = async () => {
       let tokenValue: string | null = null;
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-      const extractUserFromToken = (token: string) => {
-        try {
-          const base64Url = token.split(".")[1];
-          let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-          while (base64.length % 4 !== 0) {
-            base64 += "=";
-          }
-          return JSON.parse(atob(base64));
-        } catch {
-          return null;
-        }
-      };
 
       if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
         tokenValue = localStorage.getItem("token");
@@ -46,7 +34,6 @@ export default function Header() {
         } else {
           setToken(tokenValue);
           const userPayload = extractUserFromToken(tokenValue);
-          console.log("User payload:", userPayload);
           setUser(userPayload as User);
         }
       } else {

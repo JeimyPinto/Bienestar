@@ -5,6 +5,7 @@ import { ServiceFormProps, Service } from "../types/service"
 import { User } from "../types/user"
 import { create, update } from "../services/services/service"
 import { Area } from "../types/service";
+import extractUserFromToken from "../lib/extractUserFromToken"
 
 const emptyService: Service = {
     id: "",
@@ -28,20 +29,6 @@ export default function ServiceForm(props: ServiceFormProps) {
     useEffect(() => {
         let tokenValue: string | null = null;
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-        // Extraer el token del localStorage o de las cookies
-       const extractUserFromToken = (token: string) => {
-        try {
-          const base64Url = token.split(".")[1];
-          let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-          while (base64.length % 4 !== 0) {
-            base64 += "=";
-          }
-          return JSON.parse(atob(base64));
-        } catch {
-          return null;
-        }
-      };
 
         if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
             tokenValue = localStorage.getItem("token");
