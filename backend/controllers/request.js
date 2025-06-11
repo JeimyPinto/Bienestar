@@ -3,7 +3,6 @@ const Service = db.Service;
 const User = db.User;
 const Request = db.Request;
 const { requestSchema } = require("../schemas/request.js");
-const { enabledRoles } = require("../utils/enabledRoles.js");
 const { DatabaseError, ValidationError } = require("sequelize");
 class ServiceController {
     async getAll(req, res) {
@@ -130,35 +129,27 @@ class ServiceController {
 
     async create(req, res) {
         try {
-            // Verifica si el usuario autenticado tiene el rol adecuado
-            if (!enabledRoles.includes(req.user.role)) {
-                return res.status(403).json({
-                    message: "No autorizado / Not authorized",
-                    role: req.user.role,
-                });
-            }
-            const requestData = serviceSchema.parse(req.body);
-            const request = await Request.create({
-                creatorId: requestData.creatorId,
-                serviceId: requestData.serviceId,
-                status: requestData.status,
-                description: requestData.description,
-            });
+            console.log("Request body:", req.body);
+            const requestData = requestSchema.parse(req.body)
+            const request = await Request.create(requestData)
             res.status(201).send({
                 message: "Request created successfully / Solicitud creada con éxito",
+                error: null,
                 request,
             });
         } catch (error) {
             if (error.errors) {
                 res.status(400).send({
-                    message: "Validation Error / Error de Validación",
-                    errors: error.errors,
+                    message: null,
+                    error: "Validation Error / Error de Validación ( " + error.message + " )",
+                    request: null,
                 });
             }
             else {
                 res.status(500).send({
-                    message: "Error creating request / Error al crear solicitud",
-                    errors: error.message,
+                    message: null,
+                    error: "Error creating request / Error al crear solicitud ( " + error.message + " )",
+                    request: null,
                 });
             }
         }

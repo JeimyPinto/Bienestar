@@ -15,11 +15,20 @@ const emptyRequest: Request = {
     status: true,
 };
 
-export default function RequestForm(props: RequestsFormProps) {
-    const { dialogRef, closeDialog, onClose, mode, requestToEdit } = props;
+export default function RequestsForm(props: RequestsFormProps) {
+    const {
+        dialogRef,
+        closeDialog,
+        onClose,
+        mode,
+        requestToEdit,
+        successMessage: propSuccessMessage,
+        setSuccessMessage,
+        errorMessage: propErrorMessage,
+        setErrorMessage,
+        isLoading,
+    } = props;
     const [token, setToken] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
     const [users, setUsers] = useState<User[]>([]);
     const [services, setServices] = useState<Service[]>([]);
@@ -59,32 +68,25 @@ export default function RequestForm(props: RequestsFormProps) {
     }, []);
 
     useEffect(() => {
-        if (!token) {
-            setErrorMessage("No authentication token found / No se ha encontrado el token de autenticación.");
-            setLoading(false);
-            return;
-        }
+        if (!token) return;
         const loadUsers = async () => {
             try {
                 const { message, error, users } = await getAllUsers(token);
                 if (error) {
                     setUsers([]);
-                    props.setErrorMessage?.(
+                    setErrorMessage?.(
                         typeof error === "string" ? error : error?.message || String(error)
                     );
-                    setSuccessMessage("");
                 } else {
                     if (message) {
-                        setSuccessMessage(message || "Usuarios cargados exitosamente. / Users loaded successfully.");
-                        setErrorMessage("");
+                        setSuccessMessage?.(message || "Usuarios cargados exitosamente. / Users loaded successfully.");
                     }
                     if (users) {
                         setUsers(users);
                     }
                 }
             } catch (error) {
-                props.setErrorMessage?.("Error al cargar los usuarios / Error loading users. (" + error + ")");
-                setSuccessMessage("");
+                props.setErrorMessage?.("Error al cargar los usuarios / Error loading users (" + String(error) + ")");
                 setUsers([]);
             }
         }
@@ -93,20 +95,20 @@ export default function RequestForm(props: RequestsFormProps) {
                 const { message, error, services } = await getAllServices();
                 if (error) {
                     setServices([]);
-                    props.setErrorMessage?.(errorMessage +
+                    setErrorMessage?.(
                         typeof error === "string" ? error : error?.message || String(error)
                     );
-                    setSuccessMessage("");
                 } else {
-                    setServices(services || []);
-                    setSuccessMessage(message || "Servicios cargados exitosamente. / Services loaded successfully.");
-                    setErrorMessage("");
+                    if (message) {
+                        setSuccessMessage?.(message || "Servicios cargados exitosamente. / Services loaded successfully.");
+                    }
+                    if (services) {
+                        setServices(services);
+                    }
                 }
             }
             catch (error) {
                 props.setErrorMessage?.("Error al cargar los servicios / Error loading services.");
-                setSuccessMessage("");
-                setServices([]);
             }
         }
         loadUsers();
@@ -126,59 +128,56 @@ export default function RequestForm(props: RequestsFormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-
+        console.log("Submitting request:", newRequest);
         if (!token) return;
 
         try {
-            let responseData: any = {};
-
             if (mode === "create") {
-                const { serviceId, description } = newRequest;
-                const status = newRequest.status === true;
-                responseData = {
-                    userId: user?.role === "admin" ? newRequest.userId : user?.id ? Number(user.id) : 0,
-                    serviceId,
-                    description,
-                    status,
-                };
 
-                responseData = await create(responseData, token);
-                if (responseData.error) {
+                const { message, error, request } = await create(newRequest, token);
+                if (error) {
                     props.setErrorMessage?.(
-                        responseData.error || "Error al crear la solicitud. / Error creating request."
-                    );
+                        error || "Error al crear la solicitud. / Error creating request."
+                    ); 
+                    props.setSuccessMessage?.("");
+
                 } else {
-                    props.setSuccessMessage?.(
-                        responseData.message || "Solicitud creada exitosamente. / Request created successfully."
-                    );
+                    if (message) {
+                        props.setSuccessMessage?.(
+                            message || "Solicitud creada exitosamente. / Request created successfully."
+                        );
+                        props.setErrorMessage?.("");
+                    }
+                    setNewRequest(emptyRequest); // Limpiar el formulario después de crear
                 }
             } else if (mode === "edit") {
-                const { userId, serviceId, description } = newRequest;
-                const status = newRequest.status === true;
-                const updateData = {
-                    userId: user?.role === "admin" ? userId : user?.id ? Number(user.id) : 0,
-                    serviceId,
-                    description,
-                    status,
-                };
-
-                responseData = await update(requestToEdit?.id || 0, updateData, token);
-                if (responseData.error) {
+                if (!requestToEdit) {
+                    props.setErrorMessage?.("No hay solicitud para editar. / No request to edit.");
+                    return;
+                }
+                const { message, error } = await update(
+                    requestToEdit.id,
+                    newRequest,
+                    token
+                );
+                if (error) {
                     props.setErrorMessage?.(
-                        responseData.error || "Error al actualizar la solicitud. / Error updating request."
+                        error || "Error al actualizar la solicitud. / Error updating request."
                     );
                 } else {
                     props.setSuccessMessage?.(
-                        responseData.message || "Solicitud actualizada exitosamente. / Request updated successfully."
+                        message || "Solicitud actualizada exitosamente. / Request updated successfully."
                     );
+                    props.setErrorMessage?.("");
+                    setNewRequest(emptyRequest); // Limpiar el formulario después de editar
                 }
             }
-            window.location.reload(); // Recargar la página para reflejar los cambios
+             window.location.reload(); // Recargar la página para reflejar los cambios
         } catch (error) {
             if (mode === "create") {
-                props.setErrorMessage?.("Error al crear la solicitud. / Error creating request.");
+                props.setErrorMessage?.("Error al crear la solicitud. / Error creating request. (" + String(error) + ")");
             } else if (mode === "edit") {
-                props.setErrorMessage?.("Error al actualizar la solicitud. / Error updating request.");
+                props.setErrorMessage?.("Error al actualizar la solicitud. / Error updating request. (" + String(error) + ")");
             }
         }
 

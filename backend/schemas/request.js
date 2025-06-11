@@ -4,6 +4,7 @@ const { z } = require("zod");
  * Esquemas de validación de datos para los servicios
  */
 const requestSchema = z.object({
+    id: z.number().int().optional(),
     userId: z.number().int().positive({
         message: "User ID must be a positive integer / El ID del usuario debe ser un número entero positivo",
     }),

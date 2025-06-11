@@ -145,11 +145,7 @@ class ServiceController {
       if (error.errors) {
         return res.status(400).json({
           message: null,
-          error:
-            "Error de validación / Validation error: " +
-            error.errors
-              .map((e) => `${e.path?.join(".")}: ${e.message}`)
-              .join("; "),
+          error: "Validation Error / Error de Validación ( " + error.message + " )",
           service: null,
         });
       }
@@ -183,7 +179,7 @@ class ServiceController {
       const serviceData = await serviceSchema.parseAsync(req.body);
       let updatedFields = { ...serviceData };
 
-      
+
       if (req.file) {
         const fullPath = req.file.path.replace(/\\/g, "/");
         const uploadIndex = fullPath.indexOf("uploads");
@@ -192,7 +188,7 @@ class ServiceController {
         updatedFields.image = imagePath;
       }
       await service.update(updatedFields);
-      
+
       res.status(200).send({
         message: "Service updated successfully / Servicio actualizado con éxito",
         error: null,

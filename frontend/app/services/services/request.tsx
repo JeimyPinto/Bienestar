@@ -74,15 +74,12 @@ export async function getAll(token?: string) {
 
 export async function create(request: any, token?: string) {
     try {
-        let body: BodyInit;
-        let headers: Record<string, string> = {};
-
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
         const response = await fetch(url, {
             method: "POST",
-            headers,
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
             body: JSON.stringify(request),
             credentials: "include",
         });

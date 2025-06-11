@@ -4,6 +4,8 @@ export interface Request {
     serviceId: number;
     description?: string;
     status?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface RequestsFormProps {
