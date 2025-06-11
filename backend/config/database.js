@@ -9,13 +9,20 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
     port: parseInt(process.env.DB_PORT, 10),
+    dialectOptions: {
+      charset: 'utf8mb4',
+    },
+    define: {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_general_ci',
+    },
   }
 );
 
 function connectDB() {
   return sequelize.authenticate()
     .then(() => {
-      console.log('Conexión a la base de datos exitosa');
+      console.log(`Conexión a la base de datos exitosa: ${process.env.DB_NAME}`);
       return sequelize;
     })
     .catch((error) => {

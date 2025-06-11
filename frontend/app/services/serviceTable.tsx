@@ -3,7 +3,7 @@ import { Service } from "../types/service"
 import ErrorMessage from "../ui/errorMessage";
 import ServiceForm from "./serviceForm";
 import { getAll } from "../services/services/service"
-import { areaColors } from "../lib/areaColors";
+import { areaColors } from "../styles/areaColors";
 
 export default function ServicePage() {
   const [token, setToken] = useState<string | null>(null);

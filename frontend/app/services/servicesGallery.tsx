@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { areaColors } from "../lib/areaColors"
+import { areaColors } from "../styles/areaColors"
 import { Service } from "../types/service"
 import ErrorMessage from "../ui/errorMessage"
 import { formatDate } from "../lib/formateDate"

@@ -3,7 +3,7 @@ import { Request } from "../types/request"
 import ErrorMessage from "../ui/errorMessage";
 import RequestForm from "./requestForm"
 import { getAll } from "../services/services/request"
-import { areaColors } from "../lib/areaColors";
+import { areaColors } from "../styles/areaColors";
 
 export default function RequestPage() {
   const [token, setToken] = useState<string | null>(null);
