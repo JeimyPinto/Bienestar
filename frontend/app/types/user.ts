@@ -1,4 +1,5 @@
 import { Service } from "./service";
+import { Request } from "./request";
 
 export interface User {
     id: string;
@@ -8,14 +9,15 @@ export interface User {
     documentNumber: string;
     phone: string;
     email: string;
-    password?: string; // opcional para no exponer siempre
+    password?: string;
     status: string;
     role: string;
     image?: string;
     createdAt: string;
     updatedAt: string;
-    services?: Array<Service>;
-    file?: File | null; // opcional para manejar archivos
+    services?: Service[];
+    requests?: Request[];
+    file?: File | null;
 }
 
 export interface UserTableProps {

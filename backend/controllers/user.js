@@ -13,9 +13,10 @@ class UsuarioController {
   async getAll(req, res) {
     try {
       const users = await User.findAll({
-        include: {
-          association: "services"
-        }
+        include: [
+          { association: "services" },
+          { association: "requests" },
+        ]
       });
       if (users.length === 0) {
         return res.status(404).json({
@@ -38,9 +39,10 @@ class UsuarioController {
   async getAllActive(req, res) {
     try {
       const users = await User.findAll({
-        include: {
-          association: "services",
-        },
+        include: [
+          { association: "services" },
+          { association: "requests" },
+        ],
         where: { status: "activo" },
       });
       if (users.length === 0) {
@@ -57,7 +59,7 @@ class UsuarioController {
     } catch (error) {
       res.status(500).json({
         message: null,
-        error:  "Error al obtener los usuarios / Error retrieving users (" + error.message + ")",
+        error: "Error al obtener los usuarios / Error retrieving users (" + error.message + ")",
         users: null,
       });
     }

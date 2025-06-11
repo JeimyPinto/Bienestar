@@ -59,7 +59,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="flex flex-col md:flex-row justify-between items-center px-6 py-4 bg-azul w-full h-auto text-xl text-white shadow-lg">
+    <header className="flex flex-col md:flex-row justify-between items-center px-4 py-3 md:px-6 md:py-4 bg-azul w-full h-auto text-base md:text-xl text-white shadow-lg">
       <Link href="/">
         <Image
           src="/images/Icono.png"
@@ -70,7 +70,7 @@ export default function Header() {
           className="p-3"
         />
       </Link>
-      <nav className="flex items-center space-x-4 mt-4 md:mt-0">
+      <nav className="flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-4 mt-4 md:mt-0 w-full md:w-auto">
         <ul className="flex gap-5 p-2">
           <li className="text-white hover:text-cian transition-colors duration-300">
             <Link href="/integrantes">Integrantes</Link>
