@@ -181,13 +181,9 @@ class ServiceController {
       }
 
       const serviceData = await serviceSchema.parseAsync(req.body);
-      let updatedFields = {
-        ...serviceData,
-        image: null,
-      };
+      let updatedFields = { ...serviceData };
 
-      await service.update(updatedFields);
-
+      
       if (req.file) {
         const fullPath = req.file.path.replace(/\\/g, "/");
         const uploadIndex = fullPath.indexOf("uploads");
@@ -195,7 +191,8 @@ class ServiceController {
         await service.update({ image: imagePath });
         updatedFields.image = imagePath;
       }
-
+      await service.update(updatedFields);
+      
       res.status(200).send({
         message: "Service updated successfully / Servicio actualizado con éxito",
         error: null,

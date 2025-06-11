@@ -58,7 +58,10 @@ export default function ServiceForm(props: ServiceFormProps) {
     // Inicializar el formulario según el modo
     useEffect(() => {
         if (mode === "edit" && serviceToEdit) {
-            setNewService(serviceToEdit);
+            setNewService({
+                ...serviceToEdit,
+                file: null, // Limpiar el archivo anterior si es edición
+            });
         } else if (mode === "create") {
             setNewService(emptyService);
         }
@@ -74,9 +77,11 @@ export default function ServiceForm(props: ServiceFormProps) {
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
             setNewService((prevService) => ({
                 ...prevService,
-                file: e.target.files![0],
+                file: file,
+                image: URL.createObjectURL(file), // Previsualizar la imagen nueva
             }));
         }
     }
@@ -240,9 +245,10 @@ export default function ServiceForm(props: ServiceFormProps) {
                             <div className="mb-4">
                                 <img
                                     src={
-                                        newService?.image
-                                            ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + newService.image
-                                            : "/images/ico-profile.svg"
+                                        // Si hay un archivo seleccionado, muestra la previsualización, si no, la imagen original
+                                        newService.file
+                                            ? newService.image
+                                            : (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + (serviceToEdit?.image || newService.image)
                                     }
                                     alt={`${newService.name} avatar`}
                                     className="w-24 h-24 rounded-full object-cover"
@@ -253,16 +259,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                             type="file"
                             name="file"
                             accept="image/*"
-                            onChange={(e) => {
-                                if (e.target.files && e.target.files[0]) {
-                                    const file = e.target.files[0];
-                                    setNewService((prevService) => ({
-                                        ...prevService,
-                                        file: file,
-                                        image: URL.createObjectURL(file), // Previsualizar la imagen
-                                    }));
-                                }
-                            }}
+                            onChange={handleFileChange}
                             className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
                         />
                     </div>
