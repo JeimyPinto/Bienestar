@@ -188,7 +188,7 @@ export default function UserTable() {
                                 sortedUsers.map((user: User) => (
                                     <tr
                                         key={user.id}
-                                        className="hover:bg-amarillo transition cursor-pointer"
+                                        className="hover:scale-[1.01] transition-all duration-150 cursor-pointer"
                                         onClick={() => handleRowClick(user)}
                                     >
                                         <td className="px-2 py-2 text-center">{user.id}</td>

@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Header from "../ui/header"
 import Footer from "../ui/footer"
+import ErrorMessage from "../ui/errorMessage";
 import ReCAPTCHA from "react-google-recaptcha"
 import { login } from "../services/services/auth"
 
@@ -105,6 +106,7 @@ export default function LoginPage() {
             autoComplete="on"
             onSubmit={handleSubmit}
           >
+            {error && <ErrorMessage message={error} />}
             <div>
               <label
                 className="block text-gray-700 text-sm font-bold mb-1"
