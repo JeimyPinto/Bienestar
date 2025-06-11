@@ -40,7 +40,6 @@ class UsuarioController {
       const users = await User.findAll({
         include: {
           association: "services",
-          required: true,
         },
         where: { status: "activo" },
       });
@@ -52,12 +51,14 @@ class UsuarioController {
       res.status(200).json({
         message:
           "Usuarios activos obtenidos correctamente / Active users retrieved successfully",
-        users: processUsers(users, req),
+        users: users,
+        error: null,
       });
     } catch (error) {
       res.status(500).json({
-        message: "Error al obtener los usuarios / Error retrieving users",
-        error: error.message,
+        message: null,
+        error:  "Error al obtener los usuarios / Error retrieving users (" + error.message + ")",
+        users: null,
       });
     }
   }
@@ -86,8 +87,9 @@ class UsuarioController {
       });
     } catch (error) {
       res.status(500).json({
-        message: "Error al obtener los usuarios / Error retrieving users",
-        error: error.message,
+        message: null,
+        error: "Error al obtener los usuarios / Error retrieving users (" + error.message + ")",
+        users: null,
       });
     }
   }
@@ -280,34 +282,6 @@ class UsuarioController {
       });
     }
   }
-
-  // async getUsersWithServices(req, res) {
-  //   try {
-  //     const users = await User.findAll({
-  //       include: {
-  //         association: "services",
-  //         required: true,
-  //       },
-  //     });
-
-  //     if (users.length === 0) {
-  //       return res.status(404).json({
-  //         message:
-  //           "Ningún usuario ha creado servicios / No users have created services",
-  //       });
-  //     }
-  //     res.status(200).json({
-  //       message:
-  //         "Usuarios obtenidos correctamente / Users retrieved successfully",
-  //       users,
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({
-  //       message: "Error al obtener los usuarios / Error retrieving users",
-  //       error: error.message,
-  //     });
-  //   }
-  // }
 }
 
 module.exports = new UsuarioController();

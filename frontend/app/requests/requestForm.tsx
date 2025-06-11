@@ -4,7 +4,6 @@ import { RequestsFormProps, Request } from "../types/request"
 import { User } from "../types/user"
 import { Service } from "../types/service"
 import { create, update } from "../services/services/request"
-import { Area } from "../types/service";
 import { getAllActive as getAllServices } from "../services/services/service"
 import { getAllActive as getAllUsers } from "../services/services/user"
 
@@ -19,7 +18,8 @@ const emptyRequest: Request = {
 export default function RequestForm(props: RequestsFormProps) {
     const { dialogRef, closeDialog, onClose, mode, requestToEdit } = props;
     const [token, setToken] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
     const [users, setUsers] = useState<User[]>([]);
     const [services, setServices] = useState<Service[]>([]);
@@ -60,7 +60,7 @@ export default function RequestForm(props: RequestsFormProps) {
 
     useEffect(() => {
         if (!token) {
-            setError("No authentication token found / No se ha encontrado el token de autenticación.");
+            setErrorMessage("No authentication token found / No se ha encontrado el token de autenticación.");
             setLoading(false);
             return;
         }
@@ -72,11 +72,20 @@ export default function RequestForm(props: RequestsFormProps) {
                     props.setErrorMessage?.(
                         typeof error === "string" ? error : error?.message || String(error)
                     );
+                    setSuccessMessage("");
                 } else {
-                    setUsers(users || []);
+                    if (message) {
+                        setSuccessMessage(message || "Usuarios cargados exitosamente. / Users loaded successfully.");
+                        setErrorMessage("");
+                    }
+                    if (users) {
+                        setUsers(users);
+                    }
                 }
             } catch (error) {
-                props.setErrorMessage?.("Error al cargar los usuarios / Error loading users.");
+                props.setErrorMessage?.("Error al cargar los usuarios / Error loading users. (" + error + ")");
+                setSuccessMessage("");
+                setUsers([]);
             }
         }
         const loadServices = async () => {
@@ -84,15 +93,20 @@ export default function RequestForm(props: RequestsFormProps) {
                 const { message, error, services } = await getAllServices();
                 if (error) {
                     setServices([]);
-                    props.setErrorMessage?.(
+                    props.setErrorMessage?.(errorMessage +
                         typeof error === "string" ? error : error?.message || String(error)
                     );
+                    setSuccessMessage("");
                 } else {
                     setServices(services || []);
+                    setSuccessMessage(message || "Servicios cargados exitosamente. / Services loaded successfully.");
+                    setErrorMessage("");
                 }
             }
             catch (error) {
                 props.setErrorMessage?.("Error al cargar los servicios / Error loading services.");
+                setSuccessMessage("");
+                setServices([]);
             }
         }
         loadUsers();
@@ -191,46 +205,41 @@ export default function RequestForm(props: RequestsFormProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Si el usuario es admin, mostrar selectores de usuario y servicio */}
                     {user?.role === "admin" ? (
-                        <>
-                            <div>
-                                <label className="block text-sm font-medium text-azul">
-                                    Usuario
-                                </label>
-                                <select
-                                    name="userId"
-                                    value={newRequest.userId}
-                                    onChange={e =>
-                                        setNewRequest({ ...newRequest, userId: Number(e.target.value) })
-                                    }
-                                    className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                                    required
-                                >
-                                    <option value="">Seleccione un usuario</option>
-                                    {users.map(u => (
-                                        <option key={u.id} value={u.id}>
-                                            {u.firstName} {u.lastName}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </>
+                        <div>
+                            <label className="block text-sm font-medium text-azul">
+                                Usuario
+                            </label>
+                            <select
+                                name="userId"
+                                value={newRequest.userId}
+                                onChange={e =>
+                                    setNewRequest({ ...newRequest, userId: Number(e.target.value) })
+                                }
+                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
+                                required
+                            >
+                                <option value="">Seleccione un usuario</option>
+                                {users.map(u => (
+                                    <option key={u.id} value={u.id}>
+                                        {u.firstName} {u.lastName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     ) : (
-                        <>
-                            {/* Si es usuario normal, mostrar su nombre y el selector de servicios */}
-                            <div>
-                                <label className="block text-sm font-medium text-azul">
-                                    Usuario
-                                </label>
-                                <input
-                                    type="text"
-                                    name="userId"
-                                    value={user ? `${user.firstName} ${user.lastName}` : ""}
-                                    readOnly
-                                    className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
-                                    data-userid={user?.id}
-                                />
-                            </div>
-                        </>
+                        <div>
+                            <label className="block text-sm font-medium text-azul">
+                                Usuario
+                            </label>
+                            <input
+                                type="text"
+                                name="userId"
+                                value={user ? `${user.firstName} ${user.lastName}` : ""}
+                                readOnly
+                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
+                                data-userid={user?.id}
+                            />
+                        </div>
                     )}
                     <div>
                         <label className="block text-sm font-medium text-azul">
@@ -253,39 +262,50 @@ export default function RequestForm(props: RequestsFormProps) {
                             ))}
                         </select>
                     </div>
-                    <div>
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-medium text-azul">
                             Descripción
                         </label>
-                        <input
-                            type="text"
+                        <textarea
                             name="description"
                             value={newRequest.description}
                             onChange={e =>
                                 setNewRequest({ ...newRequest, description: e.target.value })
                             }
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
+                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul resize-y min-h-[120px]"
                             required
+                            rows={6}
+                            placeholder="Escribe aquí la historia o descripción detallada..."
                         />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-azul">
                             Estado
                         </label>
-                        <select
-                            name="status"
-                            value={newRequest.status ? "activo" : "inactivo"}
-                            onChange={e =>
-                                setNewRequest({
-                                    ...newRequest,
-                                    status: e.target.value === "activo"
-                                })
-                            }
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                        >
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
-                        </select>
+                        {mode === "create" ? (
+                            <input
+                                type="text"
+                                name="status"
+                                value="Activo"
+                                readOnly
+                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
+                            />
+                        ) : (
+                            <select
+                                name="status"
+                                value={newRequest.status ? "activo" : "inactivo"}
+                                onChange={e =>
+                                    setNewRequest({
+                                        ...newRequest,
+                                        status: e.target.value === "activo"
+                                    })
+                                }
+                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
+                            >
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        )}
                     </div>
                 </div>
                 <div className="flex justify-end mt-6">
