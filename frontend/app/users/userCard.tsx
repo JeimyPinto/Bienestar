@@ -14,8 +14,8 @@ export default function UserCard({ user }: { user: User | null }) {
     }
 
     return (
-        <div className="bg-white shadow-md rounded-lg p-6 mt-6 max-w-md mx-auto">
-            <div className="flex items-center gap-4">
+        <div className="bg-white shadow-md rounded-lg p-6 mt-6 max-w-md mx-auto w-full">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
                 <Image
                     src={
                         user.image
@@ -25,14 +25,14 @@ export default function UserCard({ user }: { user: User | null }) {
                     alt={`${user.firstName} ${user.lastName}`}
                     width={100}
                     height={100}
-                    className="rounded-full object-cover"
+                    className="rounded-full object-cover w-24 h-24"
                 />
-                <div>
-                    <h2 className="text-xl font-bold">{`${user.firstName} ${user.lastName}`}</h2>
-                    <p className="text-gray-600 font-semibold capitalize">{user.role}</p>
-                    <p className="text-gray-600">{user.email}</p>
-                    <p className="text-gray-600">{user.phone}</p>
-                    <p className="text-gray-600">
+                <div className="text-center sm:text-left w-full">
+                    <h2 className="text-xl font-bold break-words">{`${user.firstName} ${user.lastName}`}</h2>
+                    <p className="text-gray-600 font-semibold capitalize break-words">{user.role}</p>
+                    <p className="text-gray-600 break-words">{user.email}</p>
+                    <p className="text-gray-600 break-words">{user.phone}</p>
+                    <p className="text-gray-600 break-words">
                         {user.documentType}: {user.documentNumber}
                     </p>
                     <p
@@ -43,7 +43,7 @@ export default function UserCard({ user }: { user: User | null }) {
                     </p>
                 </div>
             </div>
-            <div className="mt-4 text-xs text-gray-500">
+            <div className="mt-4 text-xs text-gray-500 flex flex-col sm:flex-row gap-2 sm:justify-between">
                 <p>Creado: {new Date(user.createdAt).toLocaleDateString("es-CO")}</p>
                 <p>Actualizado: {new Date(user.updatedAt).toLocaleDateString("es-CO")}</p>
             </div>
