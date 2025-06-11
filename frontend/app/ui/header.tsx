@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { User } from "../types/user";
+import { User } from "../types/user"
+import isTokenExpired from "../lib/isTokenExpired"
 
 export default function Header() {
   const [token, setToken] = useState<string | null>(null);
@@ -30,7 +31,13 @@ export default function Header() {
             .find((row) => row.startsWith("token="))
             ?.split("=")[1] || null;
       }
-
+      // Si el token está expirado, elimínalo y limpia el usuario
+      if (tokenValue && isTokenExpired(tokenValue)) {
+        localStorage.removeItem("token");
+        setToken(null);
+        setUser(null);
+        tokenValue = null;
+      }
       if (tokenValue !== lastToken) {
         setToken(tokenValue);
         if (tokenValue) {

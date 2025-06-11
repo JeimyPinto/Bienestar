@@ -70,7 +70,7 @@ export default function DashboardAdmin() {
                     </button>
                     <button
                         className="bg-azul text-white py-2 px-4 rounded hover:bg-cian transition duration-300"
-                        onClick={() => router.push("/request")}
+                        onClick={() => router.push("/requests")}
                     >
                         Panel de solicitudes de remisión
                     </button>

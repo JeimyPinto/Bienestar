@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Header from "../ui/header"
 import Footer from "../ui/footer"
-import ReCAPTCHA from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha"
 import { login } from "../services/services/auth"
 
 export default function LoginPage() {

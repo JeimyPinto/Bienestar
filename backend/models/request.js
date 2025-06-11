@@ -5,7 +5,6 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Request extends Model {
     static associate(models) {
-      // define association here
       Request.belongsTo(models.User, {
         foreignKey: 'userId',
         as: 'user'
