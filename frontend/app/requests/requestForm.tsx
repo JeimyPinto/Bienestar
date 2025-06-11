@@ -77,6 +77,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                     setErrorMessage?.(
                         typeof error === "string" ? error : error?.message || String(error)
                     );
+                    return;
                 } else {
                     if (message) {
                         setSuccessMessage?.(message || "Usuarios cargados exitosamente. / Users loaded successfully.");
@@ -128,19 +129,23 @@ export default function RequestsForm(props: RequestsFormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        console.log("Submitting request:", newRequest);
         if (!token) return;
 
         try {
-            if (mode === "create") {
+            // Convertir el valor de status a booleano si es un string ("activo"/"inactivo")
+            let requestData = { ...newRequest };
+            if (typeof requestData.status === "string") {
+                requestData.status = requestData.status === "activo";
+            }
 
-                const { message, error, request } = await create(newRequest, token);
+            if (mode === "create") {
+                const { message, error, request } = await create(requestData, token);
                 if (error) {
                     props.setErrorMessage?.(
                         error || "Error al crear la solicitud. / Error creating request."
-                    ); 
+                    );
                     props.setSuccessMessage?.("");
-
+                    return; // Detener si hay error
                 } else {
                     if (message) {
                         props.setSuccessMessage?.(
@@ -157,28 +162,30 @@ export default function RequestsForm(props: RequestsFormProps) {
                 }
                 const { message, error } = await update(
                     requestToEdit.id,
-                    newRequest,
+                    requestData,
                     token
                 );
                 if (error) {
                     props.setErrorMessage?.(
                         error || "Error al actualizar la solicitud. / Error updating request."
                     );
+                    closeDialog();
+                    return; // Detener si hay error
                 } else {
                     props.setSuccessMessage?.(
                         message || "Solicitud actualizada exitosamente. / Request updated successfully."
                     );
                     props.setErrorMessage?.("");
-                    setNewRequest(emptyRequest); // Limpiar el formulario después de editar
+                    setNewRequest(emptyRequest);
                 }
             }
-             window.location.reload(); // Recargar la página para reflejar los cambios
+            window.location.reload(); // Recargar la página para reflejar los cambios
         } catch (error) {
-            if (mode === "create") {
-                props.setErrorMessage?.("Error al crear la solicitud. / Error creating request. (" + String(error) + ")");
-            } else if (mode === "edit") {
-                props.setErrorMessage?.("Error al actualizar la solicitud. / Error updating request. (" + String(error) + ")");
-            }
+            props.setErrorMessage?.(
+                `Error al crear/actualizar la solicitud. (${String(error)})`
+            );
+            closeDialog(); // Cierra el modal
+            return;
         }
 
         onClose?.();

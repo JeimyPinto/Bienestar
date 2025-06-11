@@ -103,16 +103,13 @@ export async function create(request: any, token?: string) {
 
 export async function update(id: number, request: any, token?: string) {
     try {
-        let body: BodyInit;
-        let headers: Record<string, string> = {};
-
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
         const response = await fetch(`${url}/${id}`, {
             method: "PUT",
-            headers,
-            body: JSON.stringify({ status: "active" }),
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: JSON.stringify(request),
             credentials: "include",
         });
         const data = await response.json();

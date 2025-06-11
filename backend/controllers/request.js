@@ -129,7 +129,6 @@ class ServiceController {
 
     async create(req, res) {
         try {
-            console.log("Request body:", req.body);
             const requestData = requestSchema.parse(req.body)
             const request = await Request.create(requestData)
             res.status(201).send({
@@ -158,30 +157,34 @@ class ServiceController {
     async update(req, res) {
         try {
             const requestData = requestSchema.parse(req.body);
-            const request = await request.findByPk(req.params.id);
+            const request = await Request.findByPk(req.params.id);
             if (request) {
                 await request.update(requestData);
                 res.status(200).send({
                     message: "Request updated successfully / Solicitud actualizada con éxito",
+                    error: null,
                     request,
                 });
             } else {
                 res.status(404).send({
-                    message: "Request not found / Solicitud no encontrada",
+                    message: null,
+                    error: "Request not found / Solicitud no encontrada ( " + req.params.id + " )",
                     request
                 });
             }
         } catch (error) {
             if (error.errors) {
                 res.status(400).send({
-                    message: "Validation Error / Error de Validación",
-                    errors: error.errors,
+                    message: null,
+                    error: "Validation Error / Error de Validación ( " + error.message + " )",
+                    request: null,
                 });
             }
             else {
                 res.status(500).send({
-                    message: "Error updating request / Error al actualizar solicitud",
-                    errors: error.message,
+                    message: null,
+                    error: "Error updating request / Error al actualizar solicitud ( " + error.message + " )",
+                    request: null,
                 });
             }
         }

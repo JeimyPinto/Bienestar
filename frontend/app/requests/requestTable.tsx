@@ -51,12 +51,15 @@ export default function RequestPage() {
     loadRequests();
   }, [token]);
 
+  useEffect(() => {
+    if (isFormOpen && selectedRequest && requestEditFormRef.current) {
+      requestEditFormRef.current.showModal();
+    }
+  }, [isFormOpen, selectedRequest]);
+
   function handleRowClick(request: Request) {
     setSelectedRequest(request);
     setIsFormOpen(true);
-    if (requestEditFormRef.current) {
-      requestEditFormRef.current.showModal();
-    }
   }
 
   return (
@@ -97,7 +100,7 @@ export default function RequestPage() {
                   requests.map((request, idx) => (
                     <tr
                       key={request.id}
-                      className="hover:bg-cian/10 transition-colors cursor-pointer"
+                      className="hover:bg-cian/20 hover:scale-[1.01] transition-all duration-150 cursor-pointer"
                       onClick={() => handleRowClick(request)}
                     >
                       <td className="px-3 py-4 text-sm text-gray-700">{idx + 1}</td>
@@ -117,11 +120,11 @@ export default function RequestPage() {
                       <td className="px-3 py-4 text-sm text-gray-700">
                         {request.description || "Sin descripción / No description"}
                       </td>
-                        <td className="px-3 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm">
                         <span className={`px-2 py-1 rounded-md text-xs font-semibold ${request.status ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                           {request.status ? "Activo" : "Inactivo"}
                         </span>
-                        </td>
+                      </td>
                       <td className="px-3 py-4 text-sm text-gray-700">
                         {request.createdAt ? new Date(request.createdAt).toLocaleString() : "-"}
                       </td>
