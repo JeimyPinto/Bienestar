@@ -4,7 +4,9 @@ import ErrorMessage from "../ui/errorMessage";
 import RequestForm from "./requestForm"
 import { getAll } from "../services/services/request"
 import { areaColors } from "../styles/areaColors";
-export default function RequestPage() {
+
+
+export default function RequestTable() {
   const [token, setToken] = useState<string | null>(null);
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

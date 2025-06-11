@@ -14,23 +14,26 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'creatorId',
         as: 'services'
       });
-    }
-  }
-  User.init({
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
-    documentType: DataTypes.STRING,
-    documentNumber: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    status: DataTypes.STRING,
-    role: DataTypes.STRING,
-    image: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'User',
-    timestamps: true,
-  });
-  return User;
-};
+      User.hasMany(models.Request, {
+        foreignKey: 'userId',
+        as: 'requests'
+      });
+
+      User.init({
+        firstName: DataTypes.STRING,
+        lastName: DataTypes.STRING,
+        documentType: DataTypes.STRING,
+        documentNumber: DataTypes.STRING,
+        phone: DataTypes.STRING,
+        email: DataTypes.STRING,
+        password: DataTypes.STRING,
+        status: DataTypes.STRING,
+        role: DataTypes.STRING,
+        image: DataTypes.STRING
+      }, {
+        sequelize,
+        modelName: 'User',
+        timestamps: true,
+      });
+      return User;
+    };

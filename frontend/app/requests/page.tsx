@@ -11,7 +11,7 @@ import SectionHeader from "../ui/sectionHeader";
 import RequestForm from "./requestForm";
 import { getAllActive } from "../services/services/request"
 
-export default function ServicePage() {
+export default function RequestPage() {
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [requests, setRequests] = useState<Service[]>([]);

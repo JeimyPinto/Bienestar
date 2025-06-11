@@ -70,6 +70,19 @@ class AuthController {
         ],
       });
 
+      // Obtener las requests asociadas al usuario
+      const requests = await db.Request.findAll({
+        where: { userId: user.id },
+        attributes: [
+          "id",
+          "serviceId",
+          "description",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+      });
+
       const token = jwt.sign(
         {
           id: user.id,
@@ -85,6 +98,7 @@ class AuthController {
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
           services: services || [],
+          requests: requests || [],
         },
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
