@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { useColumnSorter } from "../lib/useColumnSorter";
 import { User } from "../types/user"
 import ErrorMessage from "../ui/errorMessage";
@@ -16,7 +17,7 @@ export default function UserTable() {
     const [error, setError] = useState<string | null>(null);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const userEditFormRef = useRef<any>(null);
+    const userEditFormRef = useRef<HTMLDialogElement>(null);
     const {
         sortedData: sortedUsers,
         handleSort,
@@ -172,10 +173,10 @@ export default function UserTable() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-cian">
-                                {loading ? (
-                                    <tr>
-                                        <td colSpan={12} className="py-8 text-center text-azul">
-                                            Cargando usuarios...
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={12} className="py-8 text-center text-azul">
+                                        Cargando usuarios...
                                     </td>
                                 </tr>
                             ) : sortedUsers.length === 0 ? (
@@ -194,13 +195,15 @@ export default function UserTable() {
                                         <td className="px-2 py-2 text-center">{user.id}</td>
                                         <td className="px-2 py-2 flex justify-center">
                                             {user.image ? (
-                                                <img
+                                                <Image
                                                     src={
                                                         user?.image
                                                             ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + user.image
                                                             : "/images/ico-profile.svg"
                                                     }
                                                     alt={`${user.firstName} avatar`}
+                                                    width={40}
+                                                    height={40}
                                                     className="w-10 h-10 rounded-full object-cover border border-cian"
                                                 />
                                             ) : (

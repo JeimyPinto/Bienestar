@@ -1,13 +1,13 @@
 import { useState, useMemo } from "react";
+import { User } from "../types/user";
 
-// Puedes personalizar aquí los nombres de columnas de fecha
 const dateColumns = ["createdAt", "updatedAt"];
 
-export function useColumnSorter<T extends Record<string, unknown>>(data: T[], defaultColumn: keyof T = "firstName") {
-    const [sortColumn, setSortColumn] = useState<keyof T>(defaultColumn);
+export function useColumnSorter(data: User[], defaultColumn: keyof User = "firstName") {
+    const [sortColumn, setSortColumn] = useState<keyof User>(defaultColumn);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-    const handleSort = (column: keyof T) => {
+    const handleSort = (column: keyof User) => {
         if (sortColumn === column) {
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
         } else {
@@ -23,8 +23,8 @@ export function useColumnSorter<T extends Record<string, unknown>>(data: T[], de
 
             // Si la columna es de fecha, convierte a Date SOLO para comparar
             if (dateColumns.includes(sortColumn as string)) {
-                const aDate = new Date(aValue);
-                const bDate = new Date(bValue);
+                const aDate = new Date(aValue as string);
+                const bDate = new Date(bValue as string);
                 return sortOrder === "asc"
                     ? aDate.getTime() - bDate.getTime()
                     : bDate.getTime() - aDate.getTime();

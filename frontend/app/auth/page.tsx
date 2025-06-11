@@ -150,11 +150,6 @@ export default function LoginPage() {
                 onChange={(token) => setRecaptchaToken(token as string | null)}
               />
             </div>
-            {error && (
-              <div className="mb-2 text-center">
-                <p className="text-red-500 text-sm">{error}</p>
-              </div>
-            )}
             <button
               type="submit"
               disabled={loading || !recaptchaToken}

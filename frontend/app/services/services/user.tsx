@@ -1,4 +1,4 @@
-import { use } from "react";
+import {User} from "../../types/user"
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 
@@ -55,10 +55,10 @@ export async function getAllPaginated(page = 1, limit = 10, token?: string) {
     }
 }
 
-export async function create(user: any, file?: File, token?: string) {
+export async function create(user: User, file?: File, token?: string) {
     try {
         let body: BodyInit;
-        let headers: Record<string, string> = {};
+        const headers: Record<string, string> = {};
 
         if (file) {
             const formData = new FormData();
@@ -97,10 +97,10 @@ export async function create(user: any, file?: File, token?: string) {
     }
 }
 
-export async function update(id: string, user: any, file?: File, token?: string) {
+export async function update(id: string, user: User, file?: File, token?: string) {
     try {
         let body: BodyInit;
-        let headers: Record<string, string> = {};
+        const headers: Record<string, string> = {};
 
         if (file) {
             const formData = new FormData();

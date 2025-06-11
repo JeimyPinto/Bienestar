@@ -1,4 +1,5 @@
 
+import { Service } from "../../types/service";
 const url = `${process.env.NEXT_PUBLIC_API_URL}/services`;
 
 export async function getAllActive() {
@@ -69,11 +70,10 @@ export async function getAll(token?: string) {
     }
 }
 
-export async function create(service: Record<string, unknown>, file?: File, token?: string) {
+export async function create(service: Service, file?: File, token?: string) {
     try {
         let body: BodyInit;
-        let headers: Record<string, string> = {};
-
+        const headers: Record<string, string> = {};
         if (file) {
             const formData = new FormData();
             Object.entries(service).forEach(([key, value]) => {
@@ -113,11 +113,10 @@ export async function create(service: Record<string, unknown>, file?: File, toke
     }
 }
 
-export async function update(id: string, service: Record<string, unknown>, file?: File, token?: string) {
+export async function update(id: string, service: Service, file?: File, token?: string) {
     try {
         let body: BodyInit;
-        let headers: Record<string, string> = {};
-
+        const headers: Record<string, string> = {};
         if (file) {
             const formData = new FormData();
             Object.entries(service).forEach(([key, value]) => {

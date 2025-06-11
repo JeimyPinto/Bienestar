@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { UserFormProps, User } from "../types/user"
 import { create, update } from "../services/services/user";
 const emptyUser: User = {
@@ -57,15 +58,6 @@ export default function UserForm(props: UserFormProps) {
         }));
     }
 
-    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-        if (e.target.files && e.target.files[0]) {
-            setNewUser((prevUser) => ({
-                ...prevUser,
-                file: e.target.files![0],
-            }));
-        }
-    }
-
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
 
@@ -109,9 +101,9 @@ export default function UserForm(props: UserFormProps) {
             window.location.reload(); // Recargar la página para reflejar los cambios
         } catch (error) {
             if (mode === "create") {
-                props.setErrorMessage?.("Error al crear el usuario. / Error creating user.");
+                props.setErrorMessage?.("Error al crear el usuario. / Error creating user. " + error);
             } else if (mode === "edit") {
-                props.setErrorMessage?.("Error al actualizar el usuario. / Error updating user.");
+                props.setErrorMessage?.("Error al actualizar el usuario. / Error updating user. " + error);
             }
         }
 
@@ -280,13 +272,15 @@ export default function UserForm(props: UserFormProps) {
                     </label>
                     {mode === "edit" && newUser.image && (
                         <div className="mb-4">
-                            <img
+                            <Image
                                 src={
                                     newUser?.image
                                         ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + newUser.image
                                         : "/images/ico-profile.svg"
                                 }
                                 alt={`${newUser.firstName} avatar`}
+                                width={96}
+                                height={96}
                                 className="w-24 h-24 rounded-full object-cover"
                             />
                         </div>

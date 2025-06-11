@@ -24,13 +24,6 @@ export default function UsersPage() {
         setTimeout(() => dialogRef.current?.showModal(), 0);
     };
 
-    const openEditDialog = (user: User) => {
-        setMode("edit");
-        setUserToEdit(user);
-        setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
-    };
-
     const closeDialog = () => {
         setIsFormOpen(false);
         dialogRef.current?.close();

@@ -1,5 +1,3 @@
-import { error } from "console";
-
 const url = `${process.env.NEXT_PUBLIC_API_URL}/requests`;
 
 export async function getAllActive(token?: string) {
@@ -24,7 +22,7 @@ export async function getAllActive(token?: string) {
         } else {
             return {
                 message: null,
-                error: data.error || "Error fetching requests. / Error al obtener las solicitudes.",
+                error:"Error fetching requests. / Error al obtener las solicitudes. (" + (data.error || "Unknown error") + ")",
                 requests: null,
             };
         }
@@ -59,7 +57,7 @@ export async function getAll(token?: string) {
         } else {
             return {
                 message: null,
-                error: data.error || "Error fetching requests. / Error al obtener las solicitudes.",
+                error:"Error fetching requests. / Error al obtener las solicitudes. (" + (data.error || "Unknown error") + ")",
                 requests: null,
             };
         }
@@ -72,7 +70,7 @@ export async function getAll(token?: string) {
     }
 }
 
-export async function create(request: any, token?: string) {
+export async function create(request: Record<string, unknown>, token?: string) {
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -87,7 +85,7 @@ export async function create(request: any, token?: string) {
         if (!response.ok) {
             return {
                 message: null,
-                error: data.error || "Error creating request. / Error al crear la solicitud.",
+                error:"Error creating request. / Error al crear la solicitud. (" + (data.error || "Unknown error") + ")",
                 request: null,
             };
         }
@@ -101,7 +99,7 @@ export async function create(request: any, token?: string) {
     }
 }
 
-export async function update(id: number, request: any, token?: string) {
+export async function update(id: number, request: Record<string, unknown>, token?: string) {
     try {
         const response = await fetch(`${url}/${id}`, {
             method: "PUT",
@@ -116,7 +114,7 @@ export async function update(id: number, request: any, token?: string) {
         if (!response.ok) {
             return {
                 message: null,
-                error: data.error || "Error updating request. / Error al actualizar la solicitud.",
+                error: "Error updating request. / Error al actualizar la solicitud. (" + (data.error || "Unknown error") + ")",
                 request: null,
             };
         }
@@ -125,6 +123,34 @@ export async function update(id: number, request: any, token?: string) {
         return {
             message: null,
             error: "Server error while updating request. / Error en el servidor al actualizar la solicitud. (" + error + ")",
+            request: null,
+        };
+    }
+}
+
+export async function getById(id: number, token?: string) {
+    try {
+        const response = await fetch(`${url}/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return {
+                message: null,
+                error: "Error fetching request by ID. / Error al obtener la solicitud por ID. (" + (data.error || "Unknown error") + ")",
+                request: null,
+            };
+        }
+        return data;
+    } catch (error) {
+        return {
+            message: null,
+            error: "Server error while fetching request by ID. / Error en el servidor al obtener la solicitud por ID. (" + error + ")",
             request: null,
         };
     }

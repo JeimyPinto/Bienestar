@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { Service } from "../types/service"
 import ErrorMessage from "../ui/errorMessage";
 import ServiceForm from "./serviceForm";
@@ -12,7 +13,7 @@ export default function ServicePage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedservice, setSelectedService] = useState<Service | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const serviceEditFormRef = useRef<any>(null);
+  const serviceEditFormRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     let tokenValue: string | null = null;
@@ -112,13 +113,15 @@ export default function ServicePage() {
                       <td className="px-3 py-4 text-sm text-gray-700">{idx + 1}</td>
                       <td className="px-3 py-4">
                         {service.image ? (
-                          <img
+                          <Image
                             src={
                               service?.image
                                 ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + service.image
                                 : "/images/ico-profile.svg"
                             }
                             alt={`${service.name} avatar`}
+                            width={48}
+                            height={48}
                             className="w-12 h-12 rounded-lg object-cover border border-cian shadow"
                           />
                         ) : (
@@ -134,7 +137,7 @@ export default function ServicePage() {
                       </td>
                       <td className="px-3 py-4">
                         <span
-                          className={`inline-block px-3 py-1 text-xs font-semibold rounded-md mb-2 ${areaColors[service.area]}`}
+                          className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${areaColors[service.area]}`}
                         >
                           {service.area || "Sin área"}
                         </span>

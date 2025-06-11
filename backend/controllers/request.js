@@ -113,16 +113,21 @@ class ServiceController {
             });
             if (!request) {
                 return res.status(404).send({
-                    message: "Request not found / Solicitud no encontrada",
+                    message:null,
+                    error: "Request not found / Solicitud no encontrada ( " + req.params.id + " )",
+                    request: null,
                 });
             }
             res.status(200).send({
                 message: "Request retrieved successfully / Solicitud recuperada con éxito",
+                error: null,
                 request,
             });
         } catch (error) {
             res.status(500).send({
-                message: "Error retrieving request / Error al recuperar solicitud",
+                message: null,
+                error: "Error retrieving request / Error al recuperar solicitud ( " + error.message + " )",
+                request: null,
             });
         }
     }
