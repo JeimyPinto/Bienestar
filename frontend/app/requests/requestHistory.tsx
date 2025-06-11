@@ -3,18 +3,28 @@ import { areaColors } from "../styles/areaColors";
 import ErrorMessage from "../ui/errorMessage";
 import { RequestHistoryProps } from "../types/request";
 
+interface Props extends RequestHistoryProps {
+  onCreateRequest: () => void;
+}
+
 export default function RequestHistory({
   requests,
   loading,
   errorMessage,
-  handleRowClick,
-}: RequestHistoryProps) {
+  onCreateRequest,
+}: Props) {
   return (
     <section className="bg-white shadow-lg rounded-xl p-4 sm:p-6 mt-4 sm:mt-6 overflow-x-auto sm:max-w-[1400px] sm:mx-auto">
       <div className="flex flex-col gap-4 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
           Historial de Solicitudes de Remisión
         </h2>
+        <button
+          onClick={onCreateRequest}
+          className="bg-cian text-white px-4 py-2 rounded-md hover:bg-azul transition-all duration-200 font-semibold"
+        >
+          Nueva Solicitud
+        </button>
       </div>
       {errorMessage && (
         <div className="mb-4">
@@ -49,11 +59,7 @@ export default function RequestHistory({
               </tr>
             ) : (
               requests.map((request, idx) => (
-                <tr
-                  key={request.id}
-                  className="hover:bg-cian/10 transition cursor-pointer"
-                  onClick={() => handleRowClick(request)}
-                >
+                <tr key={request.id}>
                   <td className="px-2 py-3">{idx + 1}</td>
                   <td className="px-2 py-3">{request.service?.name || "Sin servicio"}</td>
                   <td className="px-2 py-3">

@@ -72,11 +72,6 @@ export default function DashboardPage() {
     }
   }, [isFormOpen, selectedRequest]);
 
-  function handleRowClick(request: Request) {
-    setSelectedRequest(request);
-    setIsFormOpen(true);
-  }
-
   return (
     <>
       <Header />
@@ -87,7 +82,7 @@ export default function DashboardPage() {
             requests={requests}
             loading={loading}
             errorMessage={errorMessage}
-            handleRowClick={handleRowClick}
+            onCreateRequest={openRequestForm}
           />
           <div className="mt-6">
             {user &&
@@ -106,8 +101,8 @@ export default function DashboardPage() {
               setErrorMessage={setErrorMessage}
             />
           )}
-      </div>
-    </main >
+        </div>
+      </main >
     </>
   );
 }

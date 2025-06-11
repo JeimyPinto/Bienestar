@@ -128,7 +128,10 @@ export default function RequestsForm(props: RequestsFormProps) {
             if (typeof requestData.status === "string") {
                 requestData.status = requestData.status === "activo";
             }
-
+            // Si el usuario es normal, asignar su ID real
+            if (user && user.role === "user") {
+                requestData.userId = Number(user.id);
+            }
             if (mode === "create") {
                 const { message, error } = await create(requestData, token);
                 if (error) {

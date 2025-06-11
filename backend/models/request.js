@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'serviceId',
         as: 'service'
       });
+      Request.belongsTo(models.User, {
+        foreignKey: 'createdBy',
+        as: 'creator'
+      });
     }
   }
   Request.init({
@@ -27,6 +31,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       references: {
         model: 'Service',
+        key: 'id'
+      }
+    },
+    createdBy: { // <-- Nuevo campo
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'User',
         key: 'id'
       }
     },

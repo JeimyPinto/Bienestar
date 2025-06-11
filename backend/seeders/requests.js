@@ -17,13 +17,14 @@ module.exports = {
     }
 
     const requests = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 3; i++) {
       const user = faker.helpers.arrayElement(users);
       const service = faker.helpers.arrayElement(services);
 
       requests.push({
         userId: user.id,
         serviceId: service.id,
+        createdBy: 1,
         description: faker.lorem.sentence(),
         status: faker.helpers.arrayElement([true, false]),
         createdAt: new Date(),

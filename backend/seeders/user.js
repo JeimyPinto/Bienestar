@@ -1,13 +1,27 @@
 const { faker } = require('@faker-js/faker');
 const bcrypt = require('bcrypt');
-const db = require('../models/index.js');
-const User = db.User;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const users = [];
 
-    for (let i = 0; i < 10; i++) {
+    // Usuario fijo
+    users.push({
+      firstName: "Jeimy Tatiana",
+      lastName: "Pinto Tapia",
+      documentType: "CC",
+      documentNumber: 1053872476,
+      phone: "3058122481",
+      email: "jeimytatianapinto@gmail.com",
+      password: bcrypt.hashSync("1053872476", 10),
+      role: "admin",
+      status: 'activo',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    // Usuarios aleatorios
+    for (let i = 0; i < 3; i++) {
       const password = faker.internet.password(10);
       const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -19,20 +33,18 @@ module.exports = {
         phone: faker.phone.number('+57 ### ### ####'),
         email: faker.internet.email(),
         password: hashedPassword,
-        role: faker.helpers.arrayElement(['admin', 'user']),
+        role: faker.helpers.arrayElement(['admin', 'user', 'integrante']),
         status: 'activo',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
     }
 
-    // Inserta los usuarios en la base de datos
     await queryInterface.bulkInsert('Users', users);
     console.log('Usuarios creados exitosamente.');
   },
 
   down: async (queryInterface, Sequelize) => {
-    // Elimina todos los usuarios creados por este seeder
     await queryInterface.bulkDelete('Users', null, {});
     console.log('Usuarios eliminados exitosamente.');
   },

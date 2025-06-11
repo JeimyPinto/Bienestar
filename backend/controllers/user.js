@@ -122,12 +122,7 @@ class UsuarioController {
       });
     }
   }
-
-  /**
-   * Crea un nuevo usuario. Solo usuarios con roles habilitados pueden crear usuarios.
-   * Si no se proporciona contraseña, se usa el número de documento como contraseña.
-   * Si se proporciona una imagen, se maneja la carga usando FileController.
-   */
+  
   async create(req, res) {
     try {
       const userData = await adminCreateUserSchema.parseAsync(req.body);
