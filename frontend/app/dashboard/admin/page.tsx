@@ -11,8 +11,6 @@ export default function DashboardAdmin() {
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [services, setServices] = useState<Service[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -79,7 +77,7 @@ export default function DashboardAdmin() {
             <section className="bg-white shadow-md rounded-lg p-6 mt-6">
                 <h2 className="text-2xl font-bold mb-4">Servicios Creados</h2>
                 <ServicesGallery
-                    services={user?.services}
+                    services={services}
                     message="No tienes servicios disponibles."
                 />
             </section>

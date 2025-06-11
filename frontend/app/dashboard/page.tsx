@@ -8,7 +8,7 @@ import DashboardAdmin from "./admin/page"
 import DashboardUser from "./user/page"
 import { User } from "../types/user"
 import { ENABLED_ROLES } from "../lib/enabledRoles"
-
+import isTokenExpired from "../lib/isTokenExpired"
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -31,7 +31,12 @@ export default function DashboardPage() {
           .find((row) => row.startsWith("token="))
           ?.split("=")[1] || null;
     }
-
+ // Validar expiración del token
+    if (tokenValue && isTokenExpired(tokenValue)) {
+      localStorage.removeItem("token");
+      setUser(null);
+      tokenValue = null;
+    }
     if (tokenValue) {
       try {
         setUser(JSON.parse(atob(tokenValue.split(".")[1])));
