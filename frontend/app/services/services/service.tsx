@@ -1,4 +1,3 @@
-import { error } from "console";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/services`;
 
@@ -29,7 +28,7 @@ export async function getAllActive() {
     } catch (error) {
         return {
             message: null,
-            error: "Server error while fetching services. / Error en el servidor al obtener los servicios.",
+            error: "Server error while fetching services. / Error en el servidor al obtener los servicios. (" + error + ")",
             services: null,
         };
     }
@@ -64,13 +63,13 @@ export async function getAll(token?: string) {
     } catch (error) {
         return {
             message: null,
-            error: "Server error while fetching services. / Error en el servidor al obtener los servicios.",
+            error: "Server error while fetching services. / Error en el servidor al obtener los servicios. (" + error + ")",
             services: null,
         };
     }
 }
 
-export async function create(service: any, file?: File, token?: string) {
+export async function create(service: Record<string, unknown>, file?: File, token?: string) {
     try {
         let body: BodyInit;
         let headers: Record<string, string> = {};
@@ -99,22 +98,22 @@ export async function create(service: any, file?: File, token?: string) {
         const data = await response.json();
         if (!response.ok) {
             return {
-                message: `${data.message || "Error al crear el servicio."} / Error creating service.`,
-                error: data.error,
+                message: null,
+                error: "Error al crear el servicio. / Error creating service. ( " + (data.error || "Unknown error") + " )",
                 service: null,
             };
         }
         return data;
     } catch (error) {
         return {
-            message: "Error Service / Error en el servidor.",
-            error,
+            message: null,
+            error: "Error Service / Error en el servidor. (" + error + ")",
             service: null,
         };
     }
 }
 
-export async function update(id: string, service: any, file?: File, token?: string) {
+export async function update(id: string, service: Record<string, unknown>, file?: File, token?: string) {
     try {
         let body: BodyInit;
         let headers: Record<string, string> = {};
@@ -143,16 +142,16 @@ export async function update(id: string, service: any, file?: File, token?: stri
         const data = await response.json();
         if (!response.ok) {
             return {
-                message: `${data.message || "Error al actualizar el servicio."} / Error updating service.`,
-                error: data.error,
+                message: null,
+                error: "Error al actualizar el servicio. / Error updating service. ( " + (data.error || "Unknown error") + " )",
                 service: null,
             };
         }
         return data;
     } catch (error) {
         return {
-            message: "Error Service / Error en el servidor.",
-            error,
+            message:null,
+            error: "Error Service / Error en el servidor. (" + error + ")",
             service: null,
         };
     }

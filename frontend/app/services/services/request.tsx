@@ -31,7 +31,7 @@ export async function getAllActive(token?: string) {
     } catch (error) {
         return {
             message: null,
-            error: "Server error while fetching services. / Error en el servidor al obtener los servicios.",
+            error: "Server error while fetching services. / Error en el servidor al obtener los servicios. (" + error + ")",
             requests: null,
         };
     }
@@ -66,7 +66,7 @@ export async function getAll(token?: string) {
     } catch (error) {
         return {
             message: null,
-            error: "Server error while fetching requests. / Error en el servidor al obtener las solicitudes.",
+            error: "Server error while fetching requests. / Error en el servidor al obtener las solicitudes. (" + error + ")",
             requests: null,
         };
     }

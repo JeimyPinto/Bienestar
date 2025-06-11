@@ -14,13 +14,11 @@ import ServiceForm from "./serviceForm";
 export default function ServicePage() {
     const [user, setUser] = useState<User | null>(null);
     const [services, setServices] = useState<Service[]>([]);
-    const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [serviceToEdit, setServiceToEdit] = useState<Service | undefined>(undefined);
-    const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
     const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -80,13 +78,6 @@ export default function ServicePage() {
         setTimeout(() => dialogRef.current?.showModal(), 0);
     };
 
-    const openEditDialog = (service: Service) => {
-        setMode("edit");
-        setServiceToEdit(service);
-        setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
-    };
-
     const closeDialog = () => {
         setIsFormOpen(false);
         dialogRef.current?.close();
@@ -129,7 +120,6 @@ export default function ServicePage() {
                             onClose={closeDialog}
                             mode={mode}
                             serviceToEdit={serviceToEdit}
-                            setSuccessMessage={setSuccessMessage}
                             setErrorMessage={setErrorMessage}
                         />
                     )}

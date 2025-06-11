@@ -8,15 +8,12 @@ import { Service } from "../../types/service";
 
 
 export default function DashboardAdmin() {
-    const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
     const [services, setServices] = useState<Service[]>([]);
     const router = useRouter();
 
+    // Cargar los servicios del usuario desde el token
     useEffect(() => {
         let tokenValue: string | null = null;
-
-        // Obtener el token dependiendo del entorno
         if (
             process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
             process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
@@ -31,19 +28,14 @@ export default function DashboardAdmin() {
                     ?.split("=")[1] || null;
         }
 
-        setToken(tokenValue);
-
         if (tokenValue) {
             try {
                 const parsedUser: User = JSON.parse(atob(tokenValue.split(".")[1]));
-                setUser(parsedUser);
                 setServices(parsedUser.services || []);
             } catch {
-                setUser(null);
                 setServices([]);
             }
         } else {
-            setUser(null);
             setServices([]);
         }
     }, []);

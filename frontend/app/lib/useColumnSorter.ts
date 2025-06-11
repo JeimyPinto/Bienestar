@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 // Puedes personalizar aquí los nombres de columnas de fecha
 const dateColumns = ["createdAt", "updatedAt"];
 
-export function useColumnSorter<T extends Record<string, any>>(data: T[], defaultColumn: keyof T = "firstName") {
+export function useColumnSorter<T extends Record<string, unknown>>(data: T[], defaultColumn: keyof T = "firstName") {
     const [sortColumn, setSortColumn] = useState<keyof T>(defaultColumn);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 

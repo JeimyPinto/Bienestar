@@ -22,14 +22,10 @@ export default function RequestsForm(props: RequestsFormProps) {
         onClose,
         mode,
         requestToEdit,
-        successMessage: propSuccessMessage,
         setSuccessMessage,
-        errorMessage: propErrorMessage,
         setErrorMessage,
-        isLoading,
     } = props;
     const [token, setToken] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
     const [users, setUsers] = useState<User[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [user, setUser] = useState<User | null>(null);
@@ -94,7 +90,7 @@ export default function RequestsForm(props: RequestsFormProps) {
             };
             loadUsers();
         } else {
-            setUsers([]); // Si no tiene permiso, deja la lista vacía
+            setUsers([]);
         }
         const loadServices = async () => {
             try {
@@ -114,12 +110,11 @@ export default function RequestsForm(props: RequestsFormProps) {
                 }
             }
             catch (error) {
-                props.setErrorMessage?.("Error al cargar los servicios / Error loading services.");
+                setErrorMessage?.("Error al cargar los servicios / Error loading services. (" + String(error) + ")");
             }
-        }
+        };
         loadServices();
-    }
-        , [token, props]);
+    }, [token, user, setErrorMessage, setSuccessMessage]);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -137,13 +132,13 @@ export default function RequestsForm(props: RequestsFormProps) {
 
         try {
             // Convertir el valor de status a booleano si es un string ("activo"/"inactivo")
-            let requestData = { ...newRequest };
+            const requestData = { ...newRequest };
             if (typeof requestData.status === "string") {
                 requestData.status = requestData.status === "activo";
             }
 
             if (mode === "create") {
-                const { message, error, request } = await create(requestData, token);
+                const { message, error } = await create(requestData, token);
                 if (error) {
                     props.setErrorMessage?.(
                         error || "Error al crear la solicitud. / Error creating request."

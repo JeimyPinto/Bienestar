@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Header from "../ui/header";
 import UserCard from "../users/userCard";
 import DashboardAdmin from "./admin/page";
@@ -14,7 +13,6 @@ import { ENABLED_ROLES } from "../lib/enabledRoles";
 import { areaColors } from "../styles/areaColors";
 
 export default function DashboardPage() {
-  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -43,8 +41,6 @@ export default function DashboardPage() {
       tokenValue = cookie.split("; ").find((row) =>
         row.startsWith("token="))?.split("=")[1] || null;
     }
-
-    setToken(tokenValue);
 
     if (tokenValue) {
       const userPayload = extractUserFromToken(tokenValue);

@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { ServiceFormProps, Service } from "../types/service"
 import { User } from "../types/user"
 import { create, update } from "../services/services/service"
@@ -95,7 +96,7 @@ export default function ServiceForm(props: ServiceFormProps) {
             let responseData;
 
             if (mode === "create") {
-                const { file, image, createdAt, updatedAt, ...serviceData } = newService;
+                const { file, ...serviceData } = newService;
                 serviceData.creatorId = user?.id ? Number(user.id) : 0;
 
                 responseData = await create(
@@ -132,9 +133,9 @@ export default function ServiceForm(props: ServiceFormProps) {
             window.location.reload(); // Recargar la página para reflejar los cambios
         } catch (error) {
             if (mode === "create") {
-                props.setErrorMessage?.("Error al crear el usuario. / Error creating user.");
+                props.setErrorMessage?.("Error al crear el usuario. / Error creating user. (" + error + ")");
             } else if (mode === "edit") {
-                props.setErrorMessage?.("Error al actualizar el usuario. / Error updating user.");
+                props.setErrorMessage?.("Error al actualizar el usuario. / Error updating user. (" + error + ")");
             }
         }
 
@@ -243,14 +244,15 @@ export default function ServiceForm(props: ServiceFormProps) {
                         </label>
                         {mode === "edit" && newService.image && (
                             <div className="mb-4">
-                                <img
+                                <Image
                                     src={
-                                        // Si hay un archivo seleccionado, muestra la previsualización, si no, la imagen original
                                         newService.file
                                             ? newService.image
                                             : (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + (serviceToEdit?.image || newService.image)
                                     }
                                     alt={`${newService.name} avatar`}
+                                    width={96}
+                                    height={96}
                                     className="w-24 h-24 rounded-full object-cover"
                                 />
                             </div>
