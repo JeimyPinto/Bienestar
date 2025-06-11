@@ -70,7 +70,7 @@ export default function ServicePage() {
   }
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 py-8">
+    <section className="w-full max-w-8xl mx-auto px-2 sm:px-6 py-4 sm:py-10">
       <div className="flex flex-col gap-6">
         {error && <ErrorMessage message={error} />}
         <div className="bg-white border border-cian shadow-lg rounded-xl overflow-hidden">
@@ -126,18 +126,15 @@ export default function ServicePage() {
                         )}
                       </td>
                       <td className="px-3 py-4 text-sm font-semibold text-azul truncate max-w-[10rem]">{service.name}</td>
-                      <td className="px-3 py-4 text-sm text-gray-700 truncate max-w-[16rem]">{service.description}</td>
-                      <td className="px-3 py-4 text-sm text-gray-700 truncate max-w-[8rem]">
+                      <td className="px-3 py-4 text-sm text-gray-700 truncate max-w-[22rem]">{service.description}</td>
+                      <td className="px-3 py-4 text-sm text-gray-700 truncate max-w-[16rem]">
                         {service.creator
                           ? `${service.creator.firstName} ${service.creator.lastName ?? ""}`
                           : <span className="text-gray-400">-</span>}
                       </td>
                       <td className="px-3 py-4">
                         <span
-                          className={`px-2 py-1 rounded-md text-xs font-medium ${service.area && areaColors[service.area]
-                            ? areaColors[service.area] + " text-white"
-                            : "bg-gray-300 text-gray-600"
-                            }`}
+                          className={`inline-block px-3 py-1 text-xs font-semibold rounded-md mb-2 ${areaColors[service.area]}`}
                         >
                           {service.area || "Sin área"}
                         </span>
