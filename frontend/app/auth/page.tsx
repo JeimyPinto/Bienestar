@@ -30,13 +30,14 @@ export default function LoginPage() {
 
       const { message, token, error } = await login({ email, password, recaptchaToken });
 
-      if (error || message) {
-        setError(message || "Error al iniciar sesión. / Error logging in.");
-        if (error) {
-          console.error("Error desde el backend:/ Backend error", error);
-        }
+      if (error) {
+        setError("Error al iniciar sesión. / Error logging in. ( " + error + " )");
+        setLoading(false);
+        return;
       }
-
+      if (message) {
+        setLoading(false);
+      }
       if (!token) {
         setError("No se recibió un token de autenticación. / No authentication token received.");
         setLoading(false);

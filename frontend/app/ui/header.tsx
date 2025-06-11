@@ -13,51 +13,50 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    let lastToken: string | null = null;
-
-    const checkToken = () => {
+    const fetchData = async () => {
       let tokenValue: string | null = null;
-      // Si está en desarrollo, busca el token en localStorage, si no, en la cookie
-      if (
-        process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
-        process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
-      ) {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
+      const extractUserFromToken = (token: string) => {
+        try {
+          const base64Url = token.split(".")[1];
+          let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          while (base64.length % 4 !== 0) {
+            base64 += "=";
+          }
+          return JSON.parse(atob(base64));
+        } catch {
+          return null;
+        }
+      };
+
+      if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
         tokenValue = localStorage.getItem("token");
-        setToken(tokenValue);
       } else {
         const cookie = document.cookie;
-        tokenValue =
-          cookie
-            .split("; ")
-            .find((row) => row.startsWith("token="))
-            ?.split("=")[1] || null;
+        tokenValue = cookie.split("; ").find((row) =>
+          row.startsWith("token="))?.split("=")[1] || null;
       }
-      // Si el token está expirado, elimínalo y limpia el usuario
-      if (tokenValue && isTokenExpired(tokenValue)) {
-        localStorage.removeItem("token");
+      if (tokenValue) {
+        if (isTokenExpired(tokenValue)) {
+          localStorage.removeItem("token");
+          setToken(null);
+          setUser(null);
+          router.push("/auth");
+        } else {
+          setToken(tokenValue);
+          const userPayload = extractUserFromToken(tokenValue);
+          console.log("User payload:", userPayload);
+          setUser(userPayload as User);
+        }
+      } else {
         setToken(null);
         setUser(null);
-        tokenValue = null;
       }
-      if (tokenValue !== lastToken) {
-        setToken(tokenValue);
-        if (tokenValue) {
-          try {
-            setUser(JSON.parse(atob(tokenValue.split(".")[1])));
-          } catch {
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-        }
-        lastToken = tokenValue;
-      }
-    };
-
-    const interval = setInterval(checkToken, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+    }
+    fetchData();
+  }
+    , [router]);
 
   // Cierra el menú al navegar o cambiar tamaño
   useEffect(() => {
@@ -118,7 +117,9 @@ export default function Header() {
                 priority={true}
               />
               <span className="ml-2">
-                Dashboard de {user?.firstName ? user.firstName.split(" ")[0] : "Usuario"}
+                {user
+                  ? `Dashboard de ${user.firstName ? user.firstName.split(" ")[0] : "Usuario"}`
+                  : "Cargando..."}
               </span>
             </Link>
             <button

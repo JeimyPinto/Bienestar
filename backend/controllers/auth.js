@@ -120,14 +120,10 @@ class AuthController {
       });
 
     } catch (error) {
-      console.error(
-        "Error during login / Error durante el inicio de sesión:",
-        error
-      );
       res.status(500).json({
-        message: "Error during login / Error durante el inicio de sesión",
+        message: null,
         token: null,
-        error: error.message,
+        error: "Error during login / Error durante el inicio de sesión ( " + error.message + " )",
       });
     }
   }

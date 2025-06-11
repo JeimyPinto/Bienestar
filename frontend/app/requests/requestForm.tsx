@@ -38,12 +38,17 @@ export default function RequestsForm(props: RequestsFormProps) {
 
         // Extraer el token del localStorage o de las cookies
         const extractUserFromToken = (token: string) => {
-            try {
-                return JSON.parse(atob(token.split(".")[1]));
-            } catch {
-                return null;
-            }
-        };
+        try {
+          const base64Url = token.split(".")[1];
+          let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          while (base64.length % 4 !== 0) {
+            base64 += "=";
+          }
+          return JSON.parse(atob(base64));
+        } catch {
+          return null;
+        }
+      };
 
         if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
             tokenValue = localStorage.getItem("token");
