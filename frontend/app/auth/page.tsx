@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Header from "../ui/header"
 import Footer from "../ui/footer"
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +54,7 @@ export default function LoginPage() {
           ?.split("=")[1];
         setToken(tokenValue || null);
       }
-      
+
       router.push("/dashboard");
       setLoading(false);
     } catch (err) {
@@ -142,6 +143,7 @@ export default function LoginPage() {
             </div>
             <div className="flex items center justify-center mt-4">
               <ReCAPTCHA
+                ref={recaptchaRef}
                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
                 onChange={(token) => setRecaptchaToken(token as string | null)}
               />
@@ -153,8 +155,8 @@ export default function LoginPage() {
             )}
             <button
               type="submit"
-              disabled={loading}
-              className="w-full p-3 bg-magenta text-white rounded-lg font-semibold hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta transition disabled:opacity-60"
+              disabled={loading || !recaptchaToken}
+              className="w-full bg-magenta text-white font-semibold py-3 px-4 rounded-lg hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
