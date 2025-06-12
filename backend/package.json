@@ -6,8 +6,11 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch app.js",
-    "migrate": "sequelize db:migrate"
+    "dev": "npm run migrate-seed && node --watch app.js",
+    "start": "npm run migrate-seed && node app.js",
+    "migrate": "sequelize db:migrate",
+    "seed": "sequelize db:seed:all",
+    "migrate-seed": "sequelize db:migrate && sequelize db:seed:all"
   },
   "keywords": [],
   "author": "Jeimy Pinto",
