@@ -1,4 +1,3 @@
-import { Request } from "../types/request";
 import { areaColors } from "../styles/areaColors";
 import ErrorMessage from "../ui/errorMessage";
 import { RequestHistoryProps } from "../types/request";

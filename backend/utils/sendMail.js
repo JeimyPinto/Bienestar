@@ -1,8 +1,5 @@
 const nodemailer = require('nodemailer');
-console.log("EMAIL_HOST:", process.env.EMAIL_HOST);
-console.log("EMAIL_PORT:", process.env.EMAIL_PORT);
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? '***' : 'NO PASSWORD');
+
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST ,
   port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 2525,
@@ -13,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendUserCreatedMail({ to, firstName, documentNumber, password }) {
+async function sendUserCreatedMail({ to, firstName, password }) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
@@ -24,10 +21,11 @@ async function sendUserCreatedMail({ to, firstName, documentNumber, password }) 
           <h2 style="color: #2a7ae2; margin-top: 0;">¡Bienvenido/a, ${firstName}!</h2>
           <p style="font-size: 16px; color: #333;">Tu usuario ha sido creado exitosamente en la plataforma de <b>Bienestar</b>.</p>
           <div style="background: #f0f6ff; border-radius: 6px; padding: 16px; margin: 20px 0;">
-            <p style="margin: 0 0 8px 0;"><b>Usuario:</b> <span style="color: #2a7ae2;">${documentNumber}</span></p>
+            <p style="margin: 0 0 8px 0;"><b>Usuario (correo electrónico):</b> <span style="color: #2a7ae2;">${to}</span></p>
             <p style="margin: 0;"><b>Contraseña:</b> <span style="color: #2a7ae2;">${password}</span></p>
           </div>
           <p style="font-size: 15px; color: #555;">Puedes ingresar con estos datos en la plataforma.</p>
+          <p style="font-size: 15px; color: #555;">Intenta iniciar sesión en el siguiente enlace: <a href="${process.env.PUBLIC_URL}" style="color: #2a7ae2;">${process.env.PUBLIC_URL}</a></p>
         </div>
       </div>
     `,

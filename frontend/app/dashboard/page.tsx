@@ -20,7 +20,6 @@ export default function DashboardPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const requestEditFormRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -41,8 +40,7 @@ export default function DashboardPage() {
         setUser(userPayload);
 
         // Obtener todas las requests del token y hacer getById a cada una
-        const requestIds = userPayload?.requests?.map((req: any) => req.id) || [];
-        const requestsData = await Promise.all(
+        const requestIds = userPayload?.requests?.map((req: Request) => req.id) || []; const requestsData = await Promise.all(
           requestIds.map((id: string) => getById(Number(id), tokenValue).then(res => res.request).catch(() => null))
         );
         setRequests(requestsData.filter((req): req is Request => req !== null));
@@ -67,10 +65,10 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (isFormOpen && selectedRequest && requestEditFormRef.current) {
+    if (isFormOpen && requestEditFormRef.current) {
       requestEditFormRef.current.showModal();
     }
-  }, [isFormOpen, selectedRequest]);
+  }, [isFormOpen]);
 
   return (
     <>

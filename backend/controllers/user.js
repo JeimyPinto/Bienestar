@@ -2,7 +2,7 @@ const enabledRoles = require("../utils/enabledRoles.js");
 const db = require("../models/index.js");
 const bcrypt = require("bcrypt");
 const User = db.User;
-const { sendUserCreatedMail } = require("../utils/sendMail.js.js");
+const { sendUserCreatedMail } = require("../utils/sendMail.js");
 const {
   userUpdateSelfSchema,
   adminUpdateUserSchema, adminCreateUserSchema
@@ -159,6 +159,7 @@ class UsuarioController {
       }
 
       // Enviar correo de bienvenida
+      let mailSent = false;
       try {
         await sendUserCreatedMail({
           to: user.email,
@@ -166,11 +167,12 @@ class UsuarioController {
           documentNumber: user.documentNumber,
           password: plainPassword
         });
+        mailSent = true;
       } catch (mailError) {
         console.warn("Usuario creado, pero error enviando correo:", mailError.message);
       }
       res.status(201).json({
-        message: "Usuario creado correctamente / User created successfully",
+        message: `Usuario creado correctamente / User created successfully${mailSent ? " (Se ha enviado una notificación al usuario con su cuenta creada / A notification has been sent to the user with their account details)" : ""}`,
         error: null,
         user,
       });
