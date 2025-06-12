@@ -25,7 +25,7 @@ async function sendUserCreatedMail({ to, firstName, password }) {
             <p style="margin: 0;"><b>Contraseña:</b> <span style="color: #2a7ae2;">${password}</span></p>
           </div>
           <p style="font-size: 15px; color: #555;">Puedes ingresar con estos datos en la plataforma.</p>
-          <p style="font-size: 15px; color: #555;">Intenta iniciar sesión en el siguiente enlace: <a href="${process.env.PUBLIC_URL}" style="color: #2a7ae2;">${process.env.PUBLIC_URL}</a></p>
+          <p style="font-size: 15px; color: #555;">Intenta iniciar sesión en el siguiente enlace: <a href="${process.env.PUBLIC_URL}/auth" style="color: #2a7ae2;">${process.env.PUBLIC_URL}/auth</a></p>
         </div>
       </div>
     `,

@@ -6,17 +6,18 @@ const jwt = require("jsonwebtoken");
 const { adminCreateUserSchema, loginSchema, } = require("../schemas/user");
 const { verifyRecaptcha } = require("../utils/recaptcha");
 const e = require("express");
+
 class AuthController {
+
   async login(req, res) {
     let parsedData;
     try {
-      // Validar los datos de entrada con el esquema
       parsedData = await loginSchema.parseAsync(req.body);
     } catch (validationError) {
-      console.error("Validation error / Error de validación:", validationError);
       return res.status(400).json({
-        message: "Validation error / Error de validación",
-        errors: validationError.errors,
+        message: null,
+        error: "Validation error / Error de validación (" + validationError.message + ")",
+        token: null,
       });
     }
 
@@ -27,9 +28,9 @@ class AuthController {
       const recaptchaSuccess = await verifyRecaptcha(recaptchaToken);
       if (!recaptchaSuccess) {
         return res.status(400).json({
-          message: "Invalid reCAPTCHA token / Token de reCAPTCHA inválido",
+          message:null,
           token: null,
-          error: "recaptcha"
+          error:  "Invalid reCAPTCHA token / Token de reCAPTCHA inválido" + "recaptchaToken" + recaptchaToken,
         });
       }
 
@@ -38,10 +39,10 @@ class AuthController {
       if (!user) {
         // e: "email" para distinguir internamente
         return res.status(401).json({
-          message:
-            "Incorrect email or password / Correo electrónico o contraseña incorrectos",
+          message:null,
           token: null,
-          error: "email",
+          error: "Incorrect email or password / Correo electrónico o contraseña incorrectos",
+          errorField: "email",
         });
       }
 
@@ -49,10 +50,10 @@ class AuthController {
       if (!isPasswordValid) {
         // e: "password" para distinguir internamente
         return res.status(401).json({
-          message:
-            "Incorrect email or password / Correo electrónico o contraseña incorrectos",
+          message:null,
           token: null,
-          error: "password",
+          error: "Incorrect email or password / Correo electrónico o contraseña incorrectos",
+          errorField: "password",
         });
       }
       // Obtener los servicios asociados al usuario

@@ -7,6 +7,7 @@ const {
   userUpdateSelfSchema,
   adminUpdateUserSchema, adminCreateUserSchema
 } = require("../schemas/user.js");
+const e = require("express");
 const saltRounds = 10;
 
 class UsuarioController {
@@ -20,17 +21,21 @@ class UsuarioController {
       });
       if (users.length === 0) {
         return res.status(404).json({
-          message: "No hay usuarios / No users found",
+          message: null,
+          error: "No hay usuarios registrados / No users registered",
+          users: [],
         });
       }
       res.status(200).json({
         message: "Usuarios obtenidos correctamente / Users retrieved successfully",
+        error: null,
         users,
       });
     } catch (error) {
       return res.status(500).json({
-        message: "Error al obtener los usuarios / Error retrieving users",
-        error: error.message,
+        message: null,
+        error: "Error al obtener los usuarios / Error retrieving users" + error.message,
+        users: null,
       });
     }
   }
@@ -46,7 +51,9 @@ class UsuarioController {
       });
       if (users.length === 0) {
         return res.status(404).json({
-          message: "No hay usuarios activos / No active users found",
+          message: null,
+          error: "No hay usuarios activos / No active users found",
+          users: null,
         });
       }
       res.status(200).json({
@@ -81,6 +88,7 @@ class UsuarioController {
       res.status(200).json({
         message:
           "Usuarios obtenidos correctamente / Users retrieved successfully",
+        error: null,
         users: users,
         currentPage: page,
         totalPages,
@@ -100,18 +108,24 @@ class UsuarioController {
       const user = await User.findByPk(req.params.id, {
         include: [
           {
-            association: "services",
-            attributes: { exclude: ["creatorId"] },
+            association: [
+              "services",
+              "requests",
+            ],
+            required: false, // Permite que el usuario se devuelva incluso si no tiene servicios o solicitudes
           },
         ],
       });
       if (!user) {
         return res.status(404).json({
-          message: "Usuario no encontrado / User not found",
+          message: null,
+          error: "Usuario no encontrado / User not found",
+          user: null,
         });
       }
       res.status(200).json({
         message: "Usuario obtenido correctamente / User retrieved successfully",
+        error: null,
         user,
       });
     } catch (error) {
@@ -208,8 +222,8 @@ class UsuarioController {
       const user = await User.findByPk(userId);
       if (!user) {
         return res.status(404).json({
-          message: "Usuario no encontrado / User not found",
-          role: req.user.role,
+          message: null,
+          error: "Usuario no encontrado / User not found",
         });
       }
 
@@ -252,19 +266,27 @@ class UsuarioController {
 
       res.status(200).json({
         message: `Usuario actualizado correctamente por ${req.user.role} / User updated successfully by ${req.user.role}`,
+        error: null,
         user: userWithoutPassword,
       });
     } catch (error) {
       if (error.errors) {
         res.status(400).json({
-          message: "Error de validación / Validation error",
-          error: error.errors,
+          message: null,
+          error:
+            "Error de validación / Validation error: " +
+            error.errors
+              .map((e) => `${e.path?.join(".")}: ${e.message}`)
+              .join("; "),
           user: null,
         });
       } else {
         res.status(500).json({
-          message: "Error al actualizar el usuario / Error updating user",
-          error: error.message,
+          message: null,
+          error:
+            "Error al actualizar el usuario / Error updating user (" +
+            error.message +
+            ")",
           user: null,
         });
       }

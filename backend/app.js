@@ -9,6 +9,8 @@ const cors = require("cors");
 const path = require("path");
 const PORT = process.env.PORT || 4000;
 const chalk = require("chalk");
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
 
 // Define colores para cada método
 const methodColors = {
@@ -88,6 +90,33 @@ app.use(cookieParser());
 app.use("/api", routes);
 // Servir archivos estáticos desde el directorio "uploads"
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+/**
+ * Configuración de Swagger
+ */
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Bienestar API',
+    version: '1.0.0',
+    description: 'Documentación de la API de Bienestar al Aprendiz',
+  },
+  servers: [
+    {
+      url: 'http://localhost:3000/api',
+    },
+  ],
+};
+
+const options = {
+  swaggerDefinition,
+  apis: ['./routes/*.js', './controllers/*.js'], 
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 /**
  * Rutas de los recursos de la API que no existen
  * se envía un mensaje de error
