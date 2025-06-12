@@ -2,7 +2,7 @@ const enabledRoles = require("../utils/enabledRoles.js");
 const db = require("../models/index.js");
 const bcrypt = require("bcrypt");
 const User = db.User;
-const FileController = require("./file.js");
+const { sendUserCreatedMail } = require("../utils/sendMail.js.js");
 const {
   userUpdateSelfSchema,
   adminUpdateUserSchema, adminCreateUserSchema
@@ -35,7 +35,6 @@ class UsuarioController {
     }
   }
 
-  //Obtiene todos los usuarios activos
   async getAllActive(req, res) {
     try {
       const users = await User.findAll({
@@ -64,7 +63,7 @@ class UsuarioController {
       });
     }
   }
-  //Obtiene todos los usuarios paginados
+
   async getAllPaginated(req, res) {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -117,12 +116,13 @@ class UsuarioController {
       });
     } catch (error) {
       res.status(500).json({
-        message: "Error al obtener el usuario / Error retrieving user",
-        error: error.message,
+        message: null,
+        error: "Error al obtener el usuario / Error retrieving user (" + error.message + ")",
+        user: null,
       });
     }
   }
-  
+
   async create(req, res) {
     try {
       const userData = await adminCreateUserSchema.parseAsync(req.body);
@@ -156,6 +156,18 @@ class UsuarioController {
           user.image = req.file.filename;
         }
         await user.update({ image: user.image });
+      }
+
+      // Enviar correo de bienvenida
+      try {
+        await sendUserCreatedMail({
+          to: user.email,
+          firstName: user.firstName,
+          documentNumber: user.documentNumber,
+          password: plainPassword
+        });
+      } catch (mailError) {
+        console.warn("Usuario creado, pero error enviando correo:", mailError.message);
       }
       res.status(201).json({
         message: "Usuario creado correctamente / User created successfully",

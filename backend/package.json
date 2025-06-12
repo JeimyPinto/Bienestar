@@ -6,11 +6,12 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run migrate-seed && node --watch app.js",
-    "start": "npm run migrate-seed && node app.js",
+    "dev": "node --watch app.js",
+    "start": "npm run undo:all migrate-seed && node app.js",
     "migrate": "sequelize db:migrate",
     "seed": "sequelize db:seed:all",
-    "migrate-seed": "sequelize db:migrate && sequelize db:seed:all"
+    "migrate-seed": "sequelize db:migrate && sequelize db:seed:all",
+    "undo:all": "sequelize db:migrate:undo:all && sequelize db:seed:undo:all"
   },
   "keywords": [],
   "author": "Jeimy Pinto",
@@ -25,6 +26,7 @@
     "moment": "^2.30.1",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.3",
+    "nodemailer": "^7.0.3",
     "sequelize": "^6.37.4",
     "zod": "^3.23.8"
   },
