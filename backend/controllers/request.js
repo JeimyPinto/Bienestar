@@ -4,7 +4,7 @@ const User = db.User;
 const Request = db.Request;
 const { requestSchema } = require("../schemas/request.js");
 const { DatabaseError, ValidationError } = require("sequelize");
-class ServiceController {
+class RequestController {
     async getAll(req, res) {
         try {
             const requests = await Request.findAll({
@@ -21,27 +21,34 @@ class ServiceController {
             });
             if (requests.length === 0) {
                 return res.status(404).send({
-                    message: "No requests found / No se encontraron solicitudes",
+                    message: null,
+                    error: "No requests found / No se encontraron solicitudes",
+                    requests: [],
                 });
             }
             res.status(200).send({
                 message: "Requests retrieved successfully / Solicitudes recuperadas con éxito",
+                error: null,
                 requests,
             });
         } catch (error) {
             if (error.errors) {
                 res.status(400).send({
-                    message: "Validation Error / Error de Validación",
-                    errors: error.message,
+                    message: null,
+                    error: "Validation Error / Error de Validación ( " + error.message + " )",
+                    requests: [],
                 });
             } else if (error instanceof DatabaseError) {
                 res.status(500).send({
-                    message: "Database Error / Error de Base de Datos",
-                    errors: error.message,
+                    message: null,
+                    error: "Database Error / Error de Base de Datos ( " + error.message + " )",
+                    requests: [],
                 });
             } else {
                 res.status(500).send({
-                    message: "Error retrieving requests / Error al recuperar solicitudes",
+                    message: null,
+                    error: "Error retrieving requests / Error al recuperar solicitudes ( " + error.message + " )",
+                    requests: [],
                 });
             }
         }
@@ -97,6 +104,7 @@ class ServiceController {
             }
         }
     }
+
     async getById(req, res) {
         try {
             const request = await Request.findByPk(req.params.id, {
@@ -113,7 +121,7 @@ class ServiceController {
             });
             if (!request) {
                 return res.status(404).send({
-                    message:null,
+                    message: null,
                     error: "Request not found / Solicitud no encontrada ( " + req.params.id + " )",
                     request: null,
                 });
@@ -194,35 +202,6 @@ class ServiceController {
             }
         }
     }
-
-    async delete(req, res) {
-        try {
-            const request = await Request.findByPk(req.params.id);
-            if (request) {
-                await request.update({ status: false });
-                res.status(200).send({
-                    message: "Request set to close successfully / Solicitud pasada a cerrada con éxito",
-                    request,
-                });
-            } else {
-                res
-                    .status(404)
-                    .send({ message: "Request not found / Solicitud no encontrada" });
-            }
-        } catch (error) {
-            if (error instanceof DatabaseError) {
-                res.status(500).send({
-                    message: "Database Error / Error de Base de Datos",
-                    errors: error.message,
-                });
-            } else {
-                res.status(500).send({
-                    message: "Error closing request / Error al cerrar solicitud",
-                    errors: error.message,
-                });
-            }
-        }
-    }
 }
 
-module.exports = new ServiceController();
+module.exports = new RequestController();

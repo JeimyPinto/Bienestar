@@ -292,29 +292,6 @@ class UsuarioController {
       }
     }
   }
-
-  //No se elimina el usuario, solo se cambia el estado a inactivo
-  async delete(req, res) {
-    try {
-      const userId = req.params.id;
-      const user = await User.findByPk(userId);
-      if (!user) {
-        return res.status(404).json({
-          message: "Usuario no encontrado / User not found",
-          role: req.user.role,
-        });
-      }
-      await user.update({ status: "inactivo" });
-      res.status(200).json({
-        message: "Usuario eliminado correctamente / User deleted successfully",
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: "Error al eliminar el usuario / Error deleting user",
-        error: error.message,
-      });
-    }
-  }
 }
 
 module.exports = new UsuarioController();

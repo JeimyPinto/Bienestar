@@ -16,27 +16,34 @@ class ServiceController {
       });
       if (services.length === 0) {
         return res.status(404).send({
-          message: "No services found / No se encontraron servicios",
+          message: null,
+          error: "No services found / No se encontraron servicios",
+          services: null,
         });
       }
       res.status(200).send({
         message: "Services retrieved successfully / Servicios recuperados con éxito",
+        error: null,
         services,
       });
     } catch (error) {
       if (error.errors) {
         res.status(400).send({
-          message: "Validation Error / Error de Validación",
-          errors: error.message,
+          message: null,
+          error: "Validation Error / Error de Validación: " + error.message,
+          services: null,
         });
       } else if (error instanceof DatabaseError) {
         res.status(500).send({
-          message: "Database Error / Error de Base de Datos",
-          errors: error.message,
+          message: null,
+          error: "Database Error / Error de Base de Datos: " + error.message,
+          services: null,
         });
       } else {
         res.status(500).send({
-          message: "Error retrieving services / Error al recuperar servicios",
+          message: null,
+          error: "Error retrieving services / Error al recuperar servicios " + error.message,
+          services: null,
         });
       }
     }
@@ -96,16 +103,21 @@ class ServiceController {
       });
       if (!service) {
         return res.status(404).send({
-          message: "Service not found / Servicio no encontrado",
+          message:null,
+          error: "Service not found / Servicio no encontrado",
+          service: null,
         });
       }
       res.status(200).send({
         message: "Service retrieved successfully / Servicio recuperado con éxito",
+        error: null,
         service,
       });
     } catch (error) {
       res.status(500).send({
-        message: "Error retrieving service / Error al recuperar servicio",
+        message: null,
+        error: "Error retrieving service / Error al recuperar servicio (" + error.message + ")",
+        service: null,
       });
     }
   }
@@ -167,8 +179,9 @@ class ServiceController {
       const service = await Service.findByPk(serviceId);
       if (!service) {
         return res.status(404).send({
-          message: "Service not found / Servicio no encontrado",
-          role: req.user.role,
+          message: null,
+          error: "Service not found / Servicio no encontrado",
+          service: null,
         });
       }
 
@@ -206,34 +219,6 @@ class ServiceController {
           message: "Error al actualizar el usuario / Error updating user",
           error: error.message,
           service: null,
-        });
-      }
-    }
-  }
-
-  async delete(req, res) {
-    try {
-      const service = await Service.findByPk(req.params.id);
-      if (service) {
-        await service.update({ status: "inactivo" });
-        res.status(200).send({
-          message: "Service set to inactive successfully / Servicio pasado a inactivo con éxito",
-          service,
-        });
-      } else {
-        res
-          .status(404)
-          .send({ message: "Service not found / Servicio no encontrado" });
-      }
-    } catch (error) {
-      if (error instanceof DatabaseError) {
-        res.status(500).send({
-          message: "Database Error / Error de Base de Datos",
-          errors: error.message,
-        });
-      } else {
-        res.status(500).send({
-          message: "Error setting service to inactive / Error al pasar servicio a inactivo",
         });
       }
     }
