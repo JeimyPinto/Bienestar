@@ -1,160 +1,138 @@
-const db = require("../models");
-const User = db.User;
-const Service = db.Service;
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { adminCreateUserSchema, loginSchema, } = require("../schemas/user");
-const { verifyRecaptcha } = require("../utils/recaptcha");
-const e = require("express");
+//Modelos
+const db = require("../models")
+const User = db.User
+//Librerías
+const bcrypt = require("bcrypt")
+//Esquemas
+const { loginSchema, } = require("../schemas/user")
+//Modulos de Herramientas
+const { verifyRecaptcha } = require("../utils/verifyRecaptcha")
+const createToken = require("../utils/createToken")
+//Controlladores
+const ErrorController = require("./error")
 
+/**
+ * AuthController
+ * 
+ * Controlador encargado de manejar la autenticación de usuarios.
+ */
 class AuthController {
 
+  /**
+   * Inicia sesión de un usuario.
+   * 
+   * - Valida los datos de entrada usando Zod.
+   * - Verifica el token de reCAPTCHA.
+   * - Busca el usuario por correo electrónico.
+   * - Verifica la contraseña usando bcrypt.
+   * - Genera un token JWT si la autenticación es exitosa.
+   * - Devuelve el token en una cookie segura en producción o en la respuesta en desarrollo.
+   * 
+   * @async
+   * @param {import('express').Request} req - Objeto de solicitud HTTP.
+   * @param {import('express').Response} res - Objeto de respuesta HTTP.
+   * @returns {Promise<void>}
+   * 
+   * @throws {ErrorController} Si hay errores de validación, autenticación o reCAPTCHA.
+   * @throws {SequelizeDatabaseError} Si ocurre un error de base de datos.
+   * @throws {Error} Para otros errores internos del servidor.
+   */
   async login(req, res) {
-    let parsedData;
-    try {
-      parsedData = await loginSchema.parseAsync(req.body);
-    } catch (validationError) {
-      return res.status(400).json({
-        message: null,
-        error: "Validation error / Error de validación (" + validationError.message + ")",
-        token: null,
+    // Validación Zod
+    const parsedData = await loginSchema.parseAsync(req.body)
+      .catch(validationError => {
+        // Extrae toda la información relevante del ZodError
+        const details = validationError.errors.map(error => ({
+          message: error.message,
+          field: error.path.join('.'),
+          code: error.code,
+          received: error.received,
+          expected: error.expected,
+        }));
+
+        throw new ErrorController(
+          400,
+          "Validation Error / Error de Validación",
+          details
+        );
       });
-    }
 
     const { email, password, recaptchaToken } = parsedData;
 
-    try {
-      // Validar el token de reCAPTCHA usando el módulo externo
-      const recaptchaSuccess = await verifyRecaptcha(recaptchaToken);
-      if (!recaptchaSuccess) {
-        return res.status(400).json({
-          message:null,
-          token: null,
-          error:  "Invalid reCAPTCHA token / Token de reCAPTCHA inválido" + "recaptchaToken" + recaptchaToken,
-        });
-      }
-
-      // Continuar con la lógica de inicio de sesión
-      const user = await User.findOne({ where: { email } });
-      if (!user) {
-        // e: "email" para distinguir internamente
-        return res.status(401).json({
-          message:null,
-          token: null,
-          error: "Incorrect email or password / Correo electrónico o contraseña incorrectos",
-          errorField: "email",
-        });
-      }
-
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        // e: "password" para distinguir internamente
-        return res.status(401).json({
-          message:null,
-          token: null,
-          error: "Incorrect email or password / Correo electrónico o contraseña incorrectos",
-          errorField: "password",
-        });
-      }
-      // Obtener los servicios asociados al usuario
-      const services = await Service.findAll({
-        where: { creatorId: user.id },
-        attributes: [
-          "id",
-          "name",
-          "description",
-          "area",
-          "image",
-          "status",
-          "createdAt",
-          "updatedAt"
-        ],
-      });
-
-      // Obtener las requests asociadas al usuario
-      const requests = await db.Request.findAll({
-        where: { userId: user.id },
-        attributes: [
-          "id",
-          "serviceId",
-          "description",
-          "status",
-          "createdAt",
-          "updatedAt"
-        ],
-      });
-
-      const token = jwt.sign(
-        {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          documentType: user.documentType,
-          documentNumber: user.documentNumber,
-          phone: user.phone,
-          email: user.email,
-          status: user.status,
-          role: user.role,
-          image: user.image,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-          services: services || [],
-          requests: requests || [],
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+    // Validación de reCAPTCHA
+    const responseRecaptcha = await verifyRecaptcha(recaptchaToken);
+    if (!responseRecaptcha) {
+      throw new ErrorController(
+        400,
+        "Token de reCAPTCHA inválido",
+        { field: "recaptchaToken" }
       );
-
-      if (process.NODE_ENV == "produccion") {
-        res.cookie("token", token, {
-          httpOnly: true, // XSS
-          secure: true, // HTTPS
-          sameSite: "Strict",// CSRF
-          maxAge: 3 * 60 * 60 * 1000,
-        });
-      }
-
-      res.status(200).json({
-        message: "Login successful / Inicio de sesión exitoso",
-        token,
-        error: null,
-      });
-
-    } catch (error) {
-      res.status(500).json({
-        message: null,
-        token: null,
-        error: "Error during login / Error durante el inicio de sesión ( " + error.message + " )",
-      });
-    }
-  }
-
-  async logout(req, res) {
-    const authHeader = req.headers["authorization"];
-    if (!authHeader) {
-      return res.status(401).json({
-        message:
-          "Unauthorized, header required / No autorizado, encabezado requerido",
-      });
     }
 
-    const token = authHeader.split(" ")[1];
-    const secret = process.env.JWT_SECRET;
+    //Lógica de inicio de sesión
+    const user = await User.findOne({
+      where: { email },
+      include: [
+        { association: "services", required: false },
+        { association: "requests", required: false },
+      ],
+    });
 
-    try {
-      const decoded = jwt.verify(token, secret);
-      res.clearCookie("token");
-      res.json({ message: "Logout successful / Cierre de sesión exitoso" });
-    } catch (error) {
-      console.error(
-        "Error during logout / Error durante el cierre de sesión:",
-        error
+    if (!user) {
+      throw new ErrorController(
+        401,
+        "Correo electrónico o contraseña incorrectos",
+        { field: "email" }
       );
-      res.status(500).json({
-        message: "Error during logout / Error durante el cierre de sesión",
-        error: error.message,
+    }
+    if (!await bcrypt.compare(password, user.password)) {
+      throw new ErrorController(
+        401,
+        "Correo electrónico o contraseña incorrectos",
+        { field: "password" }
+      );
+    }
+    const token = createToken(user);
+
+    let response = {
+      message: `Inicio de sesión exitoso para el usuario ${user.firstName}.
+              Hora de inicio de sesión: ${new Date().toLocaleTimeString()}`
+    };
+
+    if (process.env.NODE_ENV === "production") {
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+        maxAge: 60 * 60 * 1000,
+      });
+    } else {
+      response.token = token;
+    }
+
+    res.status(200).json(response);
+  } catch(error) {
+    if (error instanceof ErrorController) {
+      console.error("Error Customizado:", error);
+      return res.status(error.status).json({
+        message: error.message,
+        details: error.details,
       });
     }
+    // Error de base de datos de Sequelize
+    if (error.name === "SequelizeDatabaseError") {
+      console.error("Error de base de datos:", error);
+      return res.status(500).json({
+        message: "Error de base de datos",
+        details: error.message,
+      });
+    }
+    // Otros errores
+    console.error(error);
+    return res.status(500).json({
+      message: "Error interno del servidor",
+      details: null,
+    });
   }
 }
 

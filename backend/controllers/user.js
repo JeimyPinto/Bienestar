@@ -1,15 +1,25 @@
-const enabledRoles = require("../utils/enabledRoles.js");
-const db = require("../models/index.js");
+// ==================== LIBRERÍAS ====================
 const bcrypt = require("bcrypt");
+
+// ==================== CONSTANTES ====================
+const enabledRoles = require("../constants/roles.js");
+const saltRounds = 10;
+
+// ==================== MODELOS ====================
+const db = require("../models/index.js");
 const User = db.User;
+
+// ==================== HERRAMIENTAS / UTILIDADES ====================
 const { sendUserCreatedMail, sendUserUpdatedMail } = require("../utils/sendMail.js");
+
+// ==================== ESQUEMAS DE VALIDACIÓN ====================
 const {
   userUpdateSelfSchema,
   adminUpdateUserSchema,
   adminCreateUserSchema
 } = require("../schemas/user.js");
-const saltRounds = 10;
-const { ZodError } = require("zod");
+
+// ==================== CONTROLADORES DE ERROR ====================
 const ErrorController = require("./error.js");
 
 class UsuarioController {
@@ -42,15 +52,8 @@ class UsuarioController {
           details: error.details,
         });
       }
-      // Error de validación de Sequelize
-      if (error instanceof ValidationError) {
-        return res.status(400).json({
-          message: "Error de validación en los datos enviados",
-          details: error.errors.map(e => e.message),
-        });
-      }
       // Error de base de datos de Sequelize
-      if (error instanceof DatabaseError) {
+      if (error.name === "SequelizeDatabaseError") {
         return res.status(500).json({
           message: "Error de base de datos",
           details: error.message,
@@ -98,15 +101,8 @@ class UsuarioController {
           details: error.details,
         });
       }
-      // Error de validación de Sequelize
-      if (error instanceof ValidationError) {
-        return res.status(400).json({
-          message: "Error de validación en los datos enviados",
-          details: error.errors.map(e => e.message),
-        });
-      }
       // Error de base de datos de Sequelize
-      if (error instanceof DatabaseError) {
+    if (error.name === "SequelizeDatabaseError") {
         return res.status(500).json({
           message: "Error de base de datos",
           details: error.message,
@@ -145,13 +141,27 @@ class UsuarioController {
           totalUsers,
         });
       } catch (error) {
-        res.status(500).json({
-          message: null,
-          error: "Error al obtener los usuarios / Error retrieving users (" + error.message + ")",
-          users: null,
+        if (error instanceof ErrorController) {
+        return res.status(error.status).json({
+          message: error.message,
+          details: error.details,
         });
       }
+      // Error de base de datos de Sequelize
+    if (error.name === "SequelizeDatabaseError") {
+        return res.status(500).json({
+          message: "Error de base de datos",
+          details: error.message,
+        });
+      }
+      // Otros errores
+      console.error(error);
+      return res.status(500).json({
+        message: "Error interno del servidor",
+        details: null,
+      });
     }
+  }
 
   async getById(req, res) {
       try {
@@ -179,10 +189,24 @@ class UsuarioController {
           user,
         });
       } catch (error) {
-        res.status(500).json({
-          message: null,
-          error: "Error al obtener el usuario / Error retrieving user (" + error.message + ")",
-          user: null,
+        if (error instanceof ErrorController) {
+          return res.status(error.status).json({
+            message: error.message,
+            details: error.details,
+          });
+        }
+        // Error de base de datos de Sequelize
+        if (error.name === "SequelizeDatabaseError") {
+          return res.status(500).json({
+            message: "Error de base de datos",
+            details: error.message,
+          });
+        }
+        // Otros errores
+        console.error(error);
+        return res.status(500).json({
+          message: "Error interno del servidor",
+          details: null,
         });
       }
     }
@@ -241,6 +265,19 @@ class UsuarioController {
           user,
         });
       } catch (error) {
+        if (error instanceof ErrorController) {
+          return res.status(error.status).json({
+            message: error.message,
+            details: error.details,
+          });
+        }
+        // Error de base de datos de Sequelize
+        if (error.name === "SequelizeDatabaseError") {
+          return res.status(500).json({
+            message: "Error de base de datos",
+            details: error.message,
+          });
+        }
         // Errores de validación de Zod
         if (error.errors) {
           return res.status(400).json({
@@ -254,6 +291,7 @@ class UsuarioController {
           });
         }
         // Otros errores
+        console.error(error);
         res.status(500).json({
           message: null,
           error:
@@ -324,6 +362,20 @@ class UsuarioController {
           user: userWithoutPassword,
         });
       } catch (error) {
+        if (error instanceof ErrorController) {
+          return res.status(error.status).json({
+            message: error.message,
+            details: error.details,
+          });
+        }
+        // Error de base de datos de Sequelize
+        if (error.name === "SequelizeDatabaseError") {
+          return res.status(500).json({
+            message: "Error de base de datos",
+            details: error.message,
+          });
+        }
+        // Errores de validación de Zod
         if (error.errors) {
           res.status(400).json({
             message: null,
@@ -335,6 +387,8 @@ class UsuarioController {
             user: null,
           });
         } else {
+          // Otros errores
+          console.error(error);
           res.status(500).json({
             message: null,
             error:

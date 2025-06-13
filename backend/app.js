@@ -1,16 +1,52 @@
+// =======================
+// Librerías principales
+// =======================
 const express = require("express");
-const { connectDB } = require("./config/database.js");
+const path = require("path");
+
+// =======================
+// Variables de entorno
+// =======================
+// Carga las variables de entorno desde .env
 require("dotenv").config();
+const PORT = process.env.PORT || 4000;
+
+// =======================
+// Base de datos
+// =======================
+// Importa la función para conectar a la base de datos
+const { connectDB } = require("./config/database.js");
+
+// =======================
+// Middlewares
+// =======================
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const routes = require("./routes/index.js");
-const morgan = require("morgan");
 const cors = require("cors");
-const path = require("path");
-const PORT = process.env.PORT || 4000;
+
+// =======================
+// Ruteo
+// =======================
+// Importa las rutas principales de la API
+const routes = require("./routes/index.js");
+
+// =======================
+// Herramientas de desarrollo
+// =======================
+const morgan = require("morgan");
 const chalk = require("chalk");
+
+// =======================
+// Documentación API
+// =======================
+// Swagger UI para documentación interactiva
 const swaggerUi = require('swagger-ui-express');
-const swaggerJSDoc = require('swagger-jsdoc');
+const YAML = require('yamljs');
+
+// =======================
+// Controladores
+// =======================
+const ErrorController = require("./controllers/error.js");
 
 // Define colores para cada método
 const methodColors = {
@@ -28,14 +64,10 @@ const statusColors = {
 };
 const app = express();
 
-// Validamos que no estemos en ambiente de production
-if (process.env.NODE_ENV != "development") {
-  // Se carga la configuración archivo .env al process.env
-  require("dotenv").config();
-}
-/**
- * Valida que solo se pueda acceder a la API desde los dominios permitidos
-*/
+// =======================
+// Configuración de CORS
+// =======================
+// Solo permite solicitudes desde los orígenes definidos
 const allowedOrigins = [
   "http://localhost:3001",
   , "http://127.0.0.1:3000 ",
@@ -47,26 +79,30 @@ app.use(
       // Permitir solicitudes sin origen (como las de herramientas de desarrollo)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = "El dominio no está permitido por la política CORS";
-        return callback(new Error(msg), false);
+        const message = "El dominio no está permitido por la política CORS";
+        return callback(new Error(message), false);
       }
       return callback(null, true);
     },
     credentials: true,
   })
 );
-/**
- * Inhabilitar la cabecera X-Powered-By
-*/
+
+// =======================
+// Seguridad y utilidades
+// =======================
+// Oculta la cabecera X-Powered-By
 app.disable("x-powered-by");
-/**
- * Middleware para parsear el body de las peticiones
- * en formato JSON
-*/
+
+// Middleware para parsear el body de las peticiones en formato JSON
 app.use(bodyParser.json());
-/**
- * Middleware para registrar las solicitudes HTTP
-*/
+
+// Middleware para parsear cookies
+app.use(cookieParser());
+
+// =======================
+// Logger HTTP personalizado
+// =======================
 morgan.token("colored-method", (req) => {
   const color = methodColors[req.method] || ((txt) => txt);
   return color(req.method);
@@ -79,53 +115,40 @@ morgan.token("colored-status", (req, res) => {
 // Formato personalizado
 const customFormat = ':colored-method :url :colored-status :response-time ms - :res[content-length]';
 app.use(morgan(customFormat));
-/**
- * Middleware para parsear cookies
-*/
-app.use(cookieParser());
 
-/**
- * Ruta principal de la API
- */
+// =======================
+// Rutas principales y archivos estáticos
+// =======================
+// Rutas de la API
 app.use("/api", routes);
 // Servir archivos estáticos desde el directorio "uploads"
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-/**
- * Configuración de Swagger
- */
-const swaggerDefinition = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Bienestar API',
-    version: '1.0.0',
-    description: 'Documentación de la API de Bienestar al Aprendiz',
-  },
-  servers: [
-    {
-      url: 'http://localhost:3000/api',
-    },
-  ],
-};
+// =======================
+// Documentación Swagger
+// =======================
+// Carga y sirve la documentación Swagger desde swagger.yaml
+const swaggerDocument = YAML.load(
+  path.join(__dirname, '../swagger.yaml')
+);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-const options = {
-  swaggerDefinition,
-  apis: ['./routes/*.js', './controllers/*.js'], 
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-/**
- * Rutas de los recursos de la API que no existen
- * se envía un mensaje de error
- */
+// =======================
+// Manejo de rutas no encontradas
+// =======================
+// Lanza un error personalizado si la ruta no existe
 app.use((req, res) => {
-  res.status(404).send({ message: "Ruta no encontrada" });
+  throw new ErrorController(
+    404,
+    "Ruta no encontrada / Route not found",
+    { path: req.originalUrl }
+  )
 });
 
-// Intentamos conectar a la base de datos
+// =======================
+// Conexión a la base de datos y arranque del servidor
+// =======================
+// Intenta conectar a la base de datos y, si tiene éxito, inicia el servidor
 connectDB()
   .catch((error) => {
     console.error("Error al conectar a la base de datos:", error.message);

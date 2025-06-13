@@ -3,7 +3,7 @@ const Service = db.Service;
 const User = db.User;
 const { ValidationError, DatabaseError } = require("sequelize");
 const { serviceSchema } = require("../schemas/service.js");
-const { enabledRoles } = require("../utils/enabledRoles.js");
+const { enabledRoles } = require("../constants/roles.js");
 
 class ServiceController {
   async getAll(req, res) {
