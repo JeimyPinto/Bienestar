@@ -2,6 +2,7 @@ import { User } from "../../types/user"
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 
+// Obtener todos los usuarios (ADMIN, SUPERADMIN, INSTRUCTOR)
 export async function getAll(token?: string) {
     try {
         const response = await fetch(url, {
@@ -14,17 +15,18 @@ export async function getAll(token?: string) {
         });
         const data = await response.json();
         if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error getAll users:", data.details);
+            }
             return {
                 message: data.message ?? null,
                 error: data.error ?? "Error al obtener los usuarios.",
                 users: null,
-                details: data.details ?? null,
             };
         }
         return {
             message: data.message ?? null,
             users: data.users ?? null,
-            details: data.details ?? null,
             error: null,
         };
     } catch (error) {
@@ -32,74 +34,46 @@ export async function getAll(token?: string) {
             message: null,
             error: "Error interno del servidor",
             users: null,
-            details: null,
         };
     }
 }
 
-export async function getAllActive(token?: string) {
+// Obtener todos los usuarios activos (público)
+export async function getAllActive() {
     try {
         const response = await fetch(`${url}/active`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                ...(token && { Authorization: `Bearer ${token}` }),
             },
             credentials: "include",
         });
         const data = await response.json();
         if (!response.ok) {
-            // 404: No hay usuarios activos registrados
-            if (response.status === 404) {
-                return {
-                    message: data.message ?? null,
-                    users: data.details?.users ?? [],
-                    details: data.details ?? null,
-                    error: null,
-                };
+            if (data.details) {
+                console.error("Detalles del error getAllActive users:", data.details);
             }
-            // 400: Error de validación en los datos enviados
-            if (response.status === 400) {
-                return {
-                    message: data.message ?? "Error de validación en los datos enviados",
-                    users: null,
-                    details: data.details ?? null,
-                    error: null,
-                };
-            }
-            // 500: Error interno del servidor o de base de datos
-            if (response.status === 500) {
-                return {
-                    message: data.message ?? "Error interno del servidor",
-                    users: null,
-                    details: data.details ?? null,
-                    error: null,
-                };
-            }
-            // Otros errores
             return {
                 message: data.message ?? null,
-                users: null,
-                details: data.details ?? null,
+                users: [],
                 error: data.error ?? "Error al obtener los usuarios activos.",
             };
         }
-        // 200: Usuarios activos obtenidos correctamente
         return {
             message: data.message ?? null,
             users: data.users ?? [],
-            details: data.details ?? null,
             error: null,
         };
     } catch (error) {
         return {
             message: "Error interno del servidor",
-            users: null,
-            details: null,
+            users: [],
             error: String(error),
         };
     }
 }
+
+// Obtener usuarios paginados
 export async function getAllPaginated(page = 1, limit = 10, token?: string) {
     try {
         const response = await fetch(`${url}/paginated?page=${page}&limit=${limit}`, {
@@ -111,20 +85,33 @@ export async function getAllPaginated(page = 1, limit = 10, token?: string) {
         });
         const data = await response.json();
         if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error getAllPaginated users:", data.details);
+            }
             return {
                 message: data.message || "Error al obtener los usuarios.",
                 error: data.error,
+                users: null,
             };
         }
-        return data;
+        return {
+            message: data.message ?? null,
+            users: data.users ?? [],
+            currentPage: data.currentPage,
+            totalPages: data.totalPages,
+            totalUsers: data.totalUsers,
+            error: null,
+        };
     } catch (error) {
         return {
             message: "Error Service /Error en el servidor.",
             error,
+            users: null,
         };
     }
 }
 
+// Crear usuario (ADMIN, SUPERADMIN)
 export async function create(user: User, file?: File, token?: string) {
     try {
         let body: BodyInit;
@@ -153,6 +140,9 @@ export async function create(user: User, file?: File, token?: string) {
         });
         const data = await response.json();
         if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error create user:", data.details);
+            }
             return {
                 message: `${data.message || "Error al crear el usuario."} / Error creating user.`,
                 error: data.error,
@@ -167,6 +157,7 @@ export async function create(user: User, file?: File, token?: string) {
     }
 }
 
+// Actualizar usuario (ADMIN, SUPERADMIN)
 export async function update(id: string, user: User, file?: File, token?: string) {
     try {
         let body: BodyInit;
@@ -195,6 +186,9 @@ export async function update(id: string, user: User, file?: File, token?: string
         });
         const data = await response.json();
         if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error update user:", data.details);
+            }
             return {
                 message: `${data.message || "Error al actualizar el usuario."} / Error updating user.`,
                 error: data.error,

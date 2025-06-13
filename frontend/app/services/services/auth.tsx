@@ -3,13 +3,12 @@ import { LoginParams } from "../../types/login"
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/auth`
 
-
 export async function login({ email, password, recaptchaToken }: LoginParams) {
     if (!email || !password || !recaptchaToken) {
-        throw new Error("All fields are required. / Todos los campos son obligatorios.");
+        throw new Error("Todos los campos son obligatorios.");
     }
     if (!isValidEmail(email)) {
-        throw new Error("Invalid email format. / Formato de correo electrónico inválido.");
+        throw new Error("Formato de correo electrónico inválido.");
     }
 
     try {
@@ -21,16 +20,22 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
                 credentials: "include",
             });
 
-        const { message, token, error } = await response.json();
+        const responseData = await response.json();
+        const { message, token, error, details } = responseData;
 
         if (!response.ok) {
+            if (details) {
+                console.error("Detalles del error de login:", details);
+            }
             return {
-                message: message || "Login failed. Please try again. / Error de inicio de sesión. Por favor, inténtalo de nuevo.", token: null, error: error || null
+                message: message || "Error de inicio de sesión. Por favor, inténtalo de nuevo.",
+                token: null,
+                error: error || null
             };
         }
         return { message, token, error: null };
     } catch (error) {
-        console.error("Error logging in: / Error iniciando sesión en: ", error);
-        throw new Error("Login failed. Please try again. / Error de inicio de sesión. Por favor, inténtalo de nuevo.");
+        console.error("Error iniciando sesión en: ", error);
+        throw new Error("Error de inicio de sesión. Por favor, inténtalo de nuevo.");
     }
 }

@@ -1,7 +1,7 @@
-
 import { Service } from "../../types/service";
 const url = `${process.env.NEXT_PUBLIC_API_URL}/services`;
 
+// Obtener todos los servicios activos (público)
 export async function getAllActive() {
     try {
         const response = await fetch(`${url}/active`, {
@@ -9,32 +9,32 @@ export async function getAllActive() {
             headers: { "Content-Type": "application/json" },
             credentials: "include",
         });
-
         const data = await response.json();
-
-        if (response.ok) {
+        if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error getAllActive services:", data.details);
+            }
             return {
-                message: data.message,
-                error: null,
-                services: data.services,
-            };
-        } else {
-            return {
-                message: null,
+                message: data.message ?? null,
                 error: data.error || "Error al obtener los servicios.",
-                services: null,
-
+                services: [],
             };
         }
+        return {
+            message: data.message ?? null,
+            error: null,
+            services: data.services ?? [],
+        };
     } catch (error) {
         return {
             message: null,
             error: "Server error while fetching services. / Error en el servidor al obtener los servicios. (" + error + ")",
-            services: null,
+            services: [],
         };
     }
 }
 
+// Obtener todos los servicios (ADMIN, SUPERADMIN)
 export async function getAll(token?: string) {
     try {
         const response = await fetch(url, {
@@ -45,31 +45,32 @@ export async function getAll(token?: string) {
             },
             credentials: "include",
         });
-
         const data = await response.json();
-
-        if (response.ok) {
+        if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error getAll services:", data.details);
+            }
             return {
-                message: data.message,
-                error: null,
-                services: data.services,
-            };
-        } else {
-            return {
-                message: null,
-                error: data.error || "Error fetching services. / Error al obtener los servicios.",
-                services: null,
+                message: data.message ?? null,
+                error: data.error || "Error al obtener los servicios.",
+                services: [],
             };
         }
+        return {
+            message: data.message ?? null,
+            error: null,
+            services: data.services ?? [],
+        };
     } catch (error) {
         return {
             message: null,
             error: "Server error while fetching services. / Error en el servidor al obtener los servicios. (" + error + ")",
-            services: null,
+            services: [],
         };
     }
 }
 
+// Crear un nuevo servicio (ADMIN, SUPERADMIN)
 export async function create(service: Service, file?: File, token?: string) {
     try {
         let body: BodyInit;
@@ -85,7 +86,6 @@ export async function create(service: Service, file?: File, token?: string) {
             body = JSON.stringify(service);
             headers["Content-Type"] = "application/json";
         }
-
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
         }
@@ -97,9 +97,12 @@ export async function create(service: Service, file?: File, token?: string) {
         });
         const data = await response.json();
         if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error create service:", data.details);
+            }
             return {
-                message: null,
-                error: "Error al crear el servicio. / Error creating service. ( " + (data.error || "Unknown error") + " )",
+                message: data.message ?? null,
+                error: data.error || "Error al crear el servicio.",
                 service: null,
             };
         }
@@ -113,6 +116,7 @@ export async function create(service: Service, file?: File, token?: string) {
     }
 }
 
+// Actualizar un servicio existente (ADMIN, SUPERADMIN)
 export async function update(id: string, service: Service, file?: File, token?: string) {
     try {
         let body: BodyInit;
@@ -128,7 +132,6 @@ export async function update(id: string, service: Service, file?: File, token?: 
             body = JSON.stringify(service);
             headers["Content-Type"] = "application/json";
         }
-
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
         }
@@ -140,16 +143,19 @@ export async function update(id: string, service: Service, file?: File, token?: 
         });
         const data = await response.json();
         if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error update service:", data.details);
+            }
             return {
-                message: null,
-                error: "Error al actualizar el servicio. / Error updating service. ( " + (data.error || "Unknown error") + " )",
+                message: data.message ?? null,
+                error: data.error || "Error al actualizar el servicio.",
                 service: null,
             };
         }
         return data;
     } catch (error) {
         return {
-            message:null,
+            message: null,
             error: "Error Service / Error en el servidor. (" + error + ")",
             service: null,
         };

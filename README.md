@@ -104,7 +104,3 @@ npm run dev
 ## 🤝 Contribución
 
 ¿Quieres contribuir? Abre un issue o pull request.
-
----
-
-Este README proporciona una visión general actualizada de la estructura y funcionamiento del proyecto Bienestar App.
