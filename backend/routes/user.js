@@ -17,28 +17,28 @@ const ROLES = require("../constants/roles");
 // Obtener todos los usuarios
 router.get(
     "/",
-    authorizeRoles(ROLES.INSTRUCTOR),
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
     userController.getAll
 );
 
 // Obtener todos los usuarios activos
 router.get(
     "/active",
-    authorizeRoles(ROLES.INSTRUCTOR),
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
     userController.getAllActive
 );
 
 // Obtener usuarios paginados
 router.get(
     "/paginated",
-    authorizeRoles(ROLES.INSTRUCTOR),
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
     userController.getAllPaginated
 );
 
 // Obtener usuario por ID
 router.get(
     "/:id",
-    authorizeRoles(ROLES.INSTRUCTOR),
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
     userController.getById
 );
 
@@ -46,12 +46,14 @@ router.get(
 router.post(
     "/",
     uploadUser.single("file"),
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     userController.create
 );
 
 // Actualizar usuario
 router.put(
     "/:id",
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     uploadUser.single("file"),
     userController.update
 );

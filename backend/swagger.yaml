@@ -1,4 +1,3 @@
-```yaml
 openapi: 3.0.0
 info:
   title: Bienestar API
@@ -24,7 +23,7 @@ paths:
       summary: Obtener archivos estáticos subidos
       description: Devuelve un archivo estático previamente subido (por ejemplo, imágenes de usuario).
       tags:
-        - Archivos
+        - Files
       parameters:
         - in: path
           name: filename
@@ -39,7 +38,7 @@ paths:
           description: Archivo no encontrado
   /users:
     get:
-      summary: Obtiene todos los usuarios (solo ADMIN, SUPERADMIN o INSTRUCTOR)
+      summary: Obtiene todos los usuarios
       tags:
         - Users
       security:
@@ -457,6 +456,808 @@ paths:
                   error:
                     type: string
                     example: Error al actualizar el usuario / Error updating user
+  /services:
+    get:
+      summary: Obtiene todos los servicios, incluyendo el usuario creador
+      tags: [Service]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      responses:
+        '200':
+          description: Servicios recuperados con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Services retrieved successfully / Servicios recuperados con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  services:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+        '404':
+          description: No se encontraron servicios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: No services found / No se encontraron servicios
+                  services:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          description: Error de validación en la consulta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: "Validation Error / Error de Validación ( ... )"
+                  services:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno o de base de datos al recuperar servicios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: Error retrieving services / Error al recuperar servicios ...
+                  services:
+                    type: string
+                    nullable: true
+                    example: null
+    post:
+      summary: Crea un nuevo servicio
+      tags: [Service]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+                - creatorId
+                - area
+                - status
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Imagen del servicio (opcional)
+                name:
+                  type: string
+                  example: "Taller de Yoga"
+                description:
+                  type: string
+                  example: "Sesiones semanales de yoga para estudiantes"
+                creatorId:
+                  type: integer
+                  example: 2
+                area:
+                  type: string
+                  example: "Salud"
+                status:
+                  type: string
+                  example: "activo"
+      responses:
+        '201':
+          description: Servicio creado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Service created successfully / Servicio creado con éxito
+                  errors:
+                    type: string
+                    nullable: true
+                    example: null
+                  service:
+                    $ref: '#/components/schemas/Service'
+        '400':
+          description: Error de validación en los datos enviados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: "Validation Error / Error de Validación ( ... )"
+                  service:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno al crear el servicio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: Error al crear el usuario / Error creating user ( ... )
+                  service:
+                    type: string
+                    nullable: true
+                    example: null
+  /services/active:
+    get:
+      summary: Obtiene todos los servicios activos, incluyendo el usuario creador
+      tags: [Service]
+      description: Público, no requiere autenticación.
+      responses:
+        '200':
+          description: Servicios activos recuperados con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Active services retrieved successfully / Servicios activos recuperados con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  services:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+        '404':
+          description: No se encontraron servicios activos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: No se encontraron servicios activos / No active services found
+                  services:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          description: Error de validación en la consulta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: Validation Error / Error de Validación...
+                  services:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno o de base de datos al recuperar servicios activos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: Error retrieving active services / Error al recuperar servicios activos
+                  services:
+                    type: string
+                    nullable: true
+                    example: null
+  /services/{id}:
+    get:
+      summary: Obtiene un servicio por ID, incluyendo el usuario creador
+      tags: [Service]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN, SUPERADMIN o INSTRUCTOR.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del servicio a consultar
+      responses:
+        '200':
+          description: Servicio recuperado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Service retrieved successfully / Servicio recuperado con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  service:
+                    $ref: '#/components/schemas/Service'
+        '404':
+          description: Servicio no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: Service not found / Servicio no encontrado
+                  service:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno al recuperar el servicio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: Error retrieving service / Error al recuperar servicio (...)
+                  service:
+                    type: string
+                    nullable: true
+                    example: null
+    put:
+      summary: Actualiza un servicio existente
+      tags: [Service]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del servicio a actualizar
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Imagen del servicio (opcional)
+                name:
+                  type: string
+                  example: "Taller de Yoga"
+                description:
+                  type: string
+                  example: "Sesiones semanales de yoga para estudiantes"
+                creatorId:
+                  type: integer
+                  example: 2
+                area:
+                  type: string
+                  example: "Salud"
+                status:
+                  type: string
+                  example: "activo"
+      responses:
+        '200':
+          description: Servicio actualizado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Service updated successfully / Servicio actualizado con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  service:
+                    $ref: '#/components/schemas/Service'
+        '400':
+          description: Error de validación en los datos enviados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error de validación / Validation error
+                  error:
+                    type: array
+                    items:
+                      type: object
+                    example: [{ path: ["name"], message: "Campo requerido" }]
+                  service:
+                    type: string
+                    nullable: true
+                    example: null
+        '404':
+          description: Servicio no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    nullable: true
+                    example: null
+                  error:
+                    type: string
+                    example: Service not found / Servicio no encontrado
+                  service:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno al actualizar el servicio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error al actualizar el usuario / Error updating user
+                  error:
+                    type: string
+                    example: Error inesperado
+                  service:
+                    type: string
+                    nullable: true
+                    example: null
+  /requests:
+    get:
+      summary: Obtiene todas las solicitudes, incluyendo el usuario solicitante y el servicio asociado
+      tags: [Request]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      responses:
+        '200':
+          description: Solicitudes recuperadas con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Requests retrieved successfully / Solicitudes recuperadas con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  requests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Request'
+        '404':
+          description: No se encontraron solicitudes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No se encontraron solicitudes
+                  requests:
+                    type: array
+                    items: {}
+                    example: []
+        '400':
+          description: Error de validación en la consulta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error de validación / Validation error
+                  error:
+                    type: string
+                    example: Validation Error / Error de Validación ( ... )
+                  requests:
+                    type: array
+                    items: {}
+                    example: []
+        '500':
+          description: Error interno o de base de datos al recuperar solicitudes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error interno del servidor
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+    post:
+      summary: Crea una nueva solicitud
+      tags: [Request]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - serviceId
+                - description
+              properties:
+                userId:
+                  type: integer
+                  example: 2
+                serviceId:
+                  type: integer
+                  example: 3
+                description:
+                  type: string
+                  example: Solicito asesoría psicológica
+                status:
+                  type: boolean
+                  example: true
+      responses:
+        '201':
+          description: Solicitud creada con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Request created successfully / Solicitud creada con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  request:
+                    $ref: '#/components/schemas/Request'
+        '400':
+          description: Error de validación en los datos enviados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error de validación / Validation error
+                  error:
+                    type: string
+                    example: Validation Error / Error de Validación ( ... )
+                  request:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno al crear la solicitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error interno del servidor
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+  /requests/active:
+    get:
+      summary: Obtiene todas las solicitudes activas, incluyendo el usuario solicitante y el servicio asociado
+      tags: [Request]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      responses:
+        '200':
+          description: Solicitudes activas recuperadas con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Active requests retrieved successfully / Solicitudes activas recuperadas con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  requests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Request'
+        '404':
+          description: No se encontraron solicitudes activas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No se encontraron solicitudes activas
+                  requests:
+                    type: array
+                    items: {}
+                    example: []
+        '400':
+          description: Error de validación en la consulta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error de validación / Validation error
+                  error:
+                    type: string
+                    example: Validation Error / Error de Validación ( ... )
+                  requests:
+                    type: array
+                    items: {}
+                    example: []
+        '500':
+          description: Error interno o de base de datos al recuperar solicitudes activas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error interno del servidor
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+  /requests/{id}:
+    get:
+      summary: Obtiene una solicitud por ID, incluyendo el usuario solicitante y el servicio asociado
+      tags: [Request]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la solicitud a consultar
+      responses:
+        '200':
+          description: Solicitud recuperada con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Request retrieved successfully / Solicitud recuperada con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  request:
+                    $ref: '#/components/schemas/Request'
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Solicitud no encontrada
+                  request:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno al recuperar la solicitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error interno del servidor
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+    put:
+      summary: Actualiza una solicitud existente
+      tags: [Request]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la solicitud a actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - serviceId
+                - description
+              properties:
+                userId:
+                  type: integer
+                  example: 2
+                serviceId:
+                  type: integer
+                  example: 3
+                description:
+                  type: string
+                  example: Solicito asesoría psicológica
+                status:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Solicitud actualizada con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Request updated successfully / Solicitud actualizada con éxito
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                  request:
+                    $ref: '#/components/schemas/Request'
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Solicitud no encontrada
+                  request:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          description: Error de validación en los datos enviados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error de validación / Validation error
+                  error:
+                    type: string
+                    example: Validation Error / Error de Validación ( ... )
+                  request:
+                    type: string
+                    nullable: true
+                    example: null
+        '500':
+          description: Error interno al actualizar la solicitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error interno del servidor
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
 components:
   securitySchemes:
     bearerAuth:
@@ -545,11 +1346,99 @@ components:
         recaptchaToken:
           type: string
           example: "recaptcha-token-ejemplo"
-    # Puedes definir Service y Request aquí si lo necesitas
-    # Service:
-    #   type: object
-    #   properties: {}
-    # Request:
-    #   type: object
-    #   properties: {}
-```
+    Service:
+      type: object
+      required:
+        - name
+        - description
+        - creatorId
+        - area
+        - status
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the service
+          example: 1
+        name:
+          type: string
+          description: Name of the service
+          example: "Taller de Yoga"
+        description:
+          type: string
+          description: Description of the service
+          example: "Sesiones semanales de yoga para estudiantes"
+        creatorId:
+          type: integer
+          description: ID of the user who created the service
+          example: 2
+        area:
+          type: string
+          enum:
+            - Salud
+            - Arte y Cultura
+            - Deporte y Recreación
+            - Apoyo Socioeconomico y Reconocimiento a la Excelencia
+            - Apoyo Psicosocial
+          description: Area to which the service belongs
+          example: "Salud"
+        image:
+          type: string
+          description: URL or path to the service image
+          example: "/uploads/services/yoga.png"
+        status:
+          type: string
+          enum:
+            - activo
+            - inactivo
+          description: Current status of the service
+          example: "activo"
+        createdAt:
+          type: string
+          format: date-time
+          description: Date and time when the service was created
+          example: "2024-06-01T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date and time when the service was last updated
+          example: "2024-06-02T15:30:00Z"
+    Request:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          description: ID del usuario solicitante
+          example: 2
+        serviceId:
+          type: integer
+          description: ID del servicio solicitado
+          example: 3
+        createdBy:
+          type: integer
+          description: ID del usuario que creó la solicitud
+          example: 1
+        description:
+          type: string
+          description: Descripción de la solicitud
+          example: Solicito asesoría psicológica
+        status:
+          type: boolean
+          description: Estado de la solicitud (activa/inactiva)
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-06-01T12:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-06-01T12:00:00.000Z"
+        applicant:
+          $ref: '#/components/schemas/User'
+        service:
+          $ref: '#/components/schemas/Service'
+        creator:
+          $ref: '#/components/schemas/User'

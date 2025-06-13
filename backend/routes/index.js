@@ -41,7 +41,6 @@ router.use("/auth", authRouter);
 router.use(
   "/users",
   authenticateToken,
-  authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
   userRoutes
 );
 
@@ -49,7 +48,7 @@ router.use(
 router.use("/services", serviceRoutes);
 
 // Rutas de solicitudes (requiere autenticación)
-router.use("/requests", authenticateToken, requestRoutes);
+router.use("/requests", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), requestRoutes);
 
 // =======================
 // Exportación del router
