@@ -59,23 +59,29 @@ export default function RequestsForm(props: RequestsFormProps) {
         if (user && ENABLED_ROLES.includes(user.role)) {
             const loadUsers = async () => {
                 try {
-                    const { message, error, users } = await getAllUsers(token);
+                    const { message, users, details, error } = await getAllUsers(token);
                     if (error) {
+                        if (details) {
+                            console.error("Detalles del error al cargar usuarios:", details);
+                        }
                         setUsers([]);
                         setErrorMessage?.(
                             typeof error === "string" ? error : error?.message || String(error)
                         );
                         return;
-                    } else {
+                    }
+                    // Si no hay usuarios activos registrados (404), users será []
+                    if (Array.isArray(users)) {
                         if (message) {
-                            setSuccessMessage?.(message || "Usuarios cargados exitosamente. / Users loaded successfully.");
+                            setSuccessMessage?.(message || "Usuarios cargados exitosamente");
                         }
-                        if (users) {
-                            setUsers(users);
-                        }
+                        setUsers(users);
+                    } else {
+                        setUsers([]);
+                        setErrorMessage?.(message || "No hay usuarios activos registrados.");
                     }
                 } catch (error) {
-                    setErrorMessage?.("Error al cargar los usuarios / Error loading users (" + String(error) + ")");
+                    setErrorMessage?.("Error al cargar los usuarios (" + String(error) + ")");
                     setUsers([]);
                 }
             };

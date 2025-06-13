@@ -75,7 +75,7 @@ const { uploadUser } = require("../config/multer.js");
  *   get:
  *     summary: Obtener todos los usuarios
  *     tags:
- *       - Users
+ *       - User
  *     responses:
  *       '200':
  *         description: Usuarios obtenidos correctamente
@@ -148,16 +148,15 @@ const { uploadUser } = require("../config/multer.js");
  *                   example: null
  */
 router.get("/", userController.getAll);
-
 /**
  * @swagger
  * /users/active:
  *   get:
- *     summary: Obtiene todos los usuarios activos junto con sus servicios y solicitudes
+ *     summary: Obtener todos los usuarios activos
  *     tags:
- *       - Users
+ *       - User
  *     responses:
- *       200:
+ *       '200':
  *         description: Usuarios activos obtenidos correctamente
  *         content:
  *           application/json:
@@ -166,17 +165,13 @@ router.get("/", userController.getAll);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Usuarios activos obtenidos correctamente / Active users retrieved successfully
+ *                   example: Usuarios activos obtenidos correctamente
  *                 users:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/User'
- *                 error:
- *                   type: string
- *                   nullable: true
- *                   example: null
- *       404:
- *         description: No hay usuarios activos
+ *                     $ref: '#/components/schemas/UserWithoutPassword'
+ *       '404':
+ *         description: No hay usuarios activos registrados
  *         content:
  *           application/json:
  *             schema:
@@ -184,16 +179,17 @@ router.get("/", userController.getAll);
  *               properties:
  *                 message:
  *                   type: string
- *                   nullable: true
  *                   example: null
- *                 error:
- *                   type: string
- *                   example: No hay usuarios activos / No active users found
- *                 users:
- *                   type: string
- *                   nullable: true
- *       500:
- *         description: Error del servidor al recuperar los usuarios activos
+ *                 details:
+ *                   type: object
+ *                   properties:
+ *                     users:
+ *                       type: array
+ *                       items: {}
+ *                   example:
+ *                     users: []
+ *       '400':
+ *         description: Error de validación en los datos enviados
  *         content:
  *           application/json:
  *             schema:
@@ -201,15 +197,51 @@ router.get("/", userController.getAll);
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: Error de validación en los datos enviados
+ *                 details:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["El campo email es requerido"]
+ *       '500':
+ *         description: Error interno del servidor o de base de datos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error interno del servidor
+ *                 details:
+ *                   type: string
  *                   nullable: true
  *                   example: null
- *                 error:
- *                   type: string
- *                   example: Error al obtener los usuarios / Error retrieving users
- *                 users:
- *                   type: string
- *                   nullable: true
- *                   example: null
+ *
+ * components:
+ *   schemas:
+ *     UserWithoutPassword:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         firstName:
+ *           type: string
+ *         lastName:
+ *           type: string
+ *         email:
+ *           type: string
+ *         phone:
+ *           type: string
+ *         documentType:
+ *           type: string
+ *         documentNumber:
+ *           type: string
+ *         role:
+ *           type: string
+ *         status:
+ *           type: string
+ *         # ...otros campos que devuelvas, pero sin password
  */
 router.get("/active", userController.getAllActive);
 

@@ -49,19 +49,54 @@ export async function getAllActive(token?: string) {
         });
         const data = await response.json();
         if (!response.ok) {
+            // 404: No hay usuarios activos registrados
+            if (response.status === 404) {
+                return {
+                    message: data.message ?? null,
+                    users: data.details?.users ?? [],
+                    details: data.details ?? null,
+                    error: null,
+                };
+            }
+            // 400: Error de validación en los datos enviados
+            if (response.status === 400) {
+                return {
+                    message: data.message ?? "Error de validación en los datos enviados",
+                    users: null,
+                    details: data.details ?? null,
+                    error: null,
+                };
+            }
+            // 500: Error interno del servidor o de base de datos
+            if (response.status === 500) {
+                return {
+                    message: data.message ?? "Error interno del servidor",
+                    users: null,
+                    details: data.details ?? null,
+                    error: null,
+                };
+            }
+            // Otros errores
             return {
-                message: null,
-                error: data.error || "Error fetching users. / Error al obtener los usuarios.",
+                message: data.message ?? null,
                 users: null,
+                details: data.details ?? null,
+                error: data.error ?? "Error al obtener los usuarios activos.",
             };
         }
-        return data;
-    }
-    catch (error) {
+        // 200: Usuarios activos obtenidos correctamente
         return {
-            message: null,
-            error: "Server error while fetching users. / Error en el servidor al obtener los usuarios. (" + error + ")",
+            message: data.message ?? null,
+            users: data.users ?? [],
+            details: data.details ?? null,
+            error: null,
+        };
+    } catch (error) {
+        return {
+            message: "Error interno del servidor",
             users: null,
+            details: null,
+            error: String(error),
         };
     }
 }
