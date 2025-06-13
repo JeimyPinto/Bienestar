@@ -2,7 +2,6 @@ import { User } from "../../types/user"
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 
-// Obtener todos los usuarios (ADMIN, SUPERADMIN, INSTRUCTOR)
 export async function getAll(token?: string) {
     try {
         const response = await fetch(url, {
@@ -38,7 +37,6 @@ export async function getAll(token?: string) {
     }
 }
 
-// Obtener todos los usuarios activos (público)
 export async function getAllActive() {
     try {
         const response = await fetch(`${url}/active`, {

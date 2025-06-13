@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { RequestsFormProps, Request } from "../types/request"
-import { User } from "../types/user"
+import { User } from "../types"
 import { Service } from "../types/service"
 import { create, update } from "../services/services/request"
 import { getAllActive as getAllServices } from "../services/services/service"
 import { getAllActive as getAllUsers } from "../services/services/user"
 import { ENABLED_ROLES } from "../lib/enabledRoles"
-import extractUserFromToken from "../lib/extractUserFromToken"
+import getUserToken from "../lib/getUserToken"
 const emptyRequest: Request = {
     id: 0,
     userId: 0,
@@ -48,7 +48,7 @@ export default function RequestsForm(props: RequestsFormProps) {
         setToken(tokenValue);
 
         if (tokenValue) {
-            setUser(extractUserFromToken(tokenValue));
+            setUser(getUserToken());
         } else {
             setUser(null);
         }

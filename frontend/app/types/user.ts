@@ -19,7 +19,6 @@ export interface User {
     requests?: Request[];
     file?: File | null;
 }
-
 export interface UserTableProps {
     users: User[];
     currentPage: number;

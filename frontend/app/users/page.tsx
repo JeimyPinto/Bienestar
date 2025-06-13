@@ -7,7 +7,7 @@ import UserForm from "./userForm"
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import SectionHeader from "../ui/sectionHeader"
-import { User } from "../types/user"
+import { User } from "../types"
 
 export default function UsersPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);

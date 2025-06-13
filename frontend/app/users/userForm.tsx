@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { UserFormProps, User } from "../types/user"
+import { UserFormProps, User } from "../types"
 import { create, update } from "../services/services/user";
 const emptyUser: User = {
     id: "",

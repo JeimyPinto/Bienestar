@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { Service } from "../types/service";
-import { User } from "../types/user";
+import { User } from "../types";
 import Header from "../ui/header";
 import ErrorMessage from "../ui/errorMessage";
 import ServicesGallery from "./servicesGallery";

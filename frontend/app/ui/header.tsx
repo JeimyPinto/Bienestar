@@ -1,11 +1,20 @@
 "use client"
+
+// React core
 import React, { useEffect, useState } from "react"
+
+// Next.js navigation and components
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { User } from "../types/user"
+
+// Interfaces / Types
+import { User } from "../types"
+
+// Utilities / Helpers
 import isTokenExpired from "../lib/isTokenExpired"
-import extractUserFromToken from "../lib/extractUserFromToken"
+import getUserToken from "../lib/getUserToken"
+import getToken from "../lib/getToken"
 
 export default function Header() {
   const [token, setToken] = useState<string | null>(null);
@@ -15,16 +24,8 @@ export default function Header() {
 
   useEffect(() => {
     const fetchData = async () => {
-      let tokenValue: string | null = null;
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-      if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
-        tokenValue = localStorage.getItem("token");
-      } else {
-        const cookie = document.cookie;
-        tokenValue = cookie.split("; ").find((row) =>
-          row.startsWith("token="))?.split("=")[1] || null;
-      }
+      const tokenValue = getToken();
+      const userValue = getUserToken();
       if (tokenValue) {
         if (isTokenExpired(tokenValue)) {
           localStorage.removeItem("token");
@@ -33,8 +34,7 @@ export default function Header() {
           router.push("/auth");
         } else {
           setToken(tokenValue);
-          const userPayload = extractUserFromToken(tokenValue);
-          setUser(userPayload as User);
+          setUser(userValue as User);
         }
       } else {
         setToken(null);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useColumnSorter } from "../lib/useColumnSorter";
-import { User } from "../types/user"
+import { User } from "../types"
 import ErrorMessage from "../ui/errorMessage";
 import UserForm from "./userForm";
 import UserCard from "./userCard";

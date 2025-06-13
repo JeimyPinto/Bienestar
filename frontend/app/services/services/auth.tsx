@@ -20,7 +20,9 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
                 credentials: "include",
             });
 
+        console.log("Login response:", response);
         const responseData = await response.json();
+        console.log("Login responseData:", responseData);
         const { message, token, error, details } = responseData;
 
         if (!response.ok) {

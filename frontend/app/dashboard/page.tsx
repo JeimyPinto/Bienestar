@@ -7,11 +7,11 @@ import DashboardAdmin from "./admin/page";
 import DashboardUser from "./user/page";
 import RequestForm from "../requests/requestForm";
 import RequestHistory from "../requests/requestHistory"
-import { User } from "../types/user";
+import { User } from "../types";
 import { Request } from "../types/request";
 import { ENABLED_ROLES } from "../lib/enabledRoles";
 import { getById } from "../services/services/request"
-import extractUserFromToken from "../lib/extractUserFromToken";
+import getUserToken from "../lib/getUserToken";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -36,7 +36,7 @@ export default function DashboardPage() {
       }
 
       if (tokenValue) {
-        const userPayload = extractUserFromToken(tokenValue);
+        const userPayload = getUserToken();
         setUser(userPayload);
 
         // Obtener todas las requests del token y hacer getById a cada una

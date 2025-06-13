@@ -1,11 +1,10 @@
-
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { ServiceFormProps, Service } from "../types/service"
-import { User } from "../types/user"
+import { User } from "../types";
 import { create, update } from "../services/services/service"
 import { Area } from "../types/service";
-import extractUserFromToken from "../lib/extractUserFromToken"
+import getUserToken from "../lib/getUserToken"
 
 const emptyService: Service = {
     id: "",
@@ -42,7 +41,7 @@ export default function ServiceForm(props: ServiceFormProps) {
         setToken(tokenValue);
 
         if (tokenValue) {
-            setUser(extractUserFromToken(tokenValue));
+            setUser(getUserToken());
         } else {
             setUser(null);
         }
