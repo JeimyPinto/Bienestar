@@ -1,118 +1,110 @@
 # 🌟 Bienestar App
 
-Este proyecto es una aplicación simple de Express que utiliza Sequelize como ORM para la gestión de bases de datos. Incluye la configuración para migraciones, seeders y esquemas.
+Aplicación web para la gestión de servicios, usuarios y solicitudes, con backend en Express y frontend en Next.js. Incluye autenticación JWT, control de roles, documentación Swagger y manejo de archivos.
 
 ## 📁 Estructura del Proyecto
 
 ```plaintext
-backend/
-├── .env
-├── api.rest
-├── app.js
-├── config/
-│   ├── config.json
-│   ├── database.js
-│   └── multerConfig.js
-├── controllers/
-│   ├── auth.js
-│   ├── service.js
-│   └── user.js
-├── middlewares/
-│   └── auth.js
-├── migrations/
-│   ├── 20250306224443-create-user.js
-│   └── 20250318210133-create-service.js
-├── models/
-│   ├── index.js
-│   └── user.js
-├── routes/
-│   ├── auth.js
-│   ├── service.js
-│   └── user.js
-├── schemas/
-│   ├── user.js
-├── seeders/
-│   └── 20250306224443-user-seeder.js
-├── package.json
-├── README.md
+Bienestar/
+├── backend/
+│   ├── app.js
+│   ├── swagger.yaml
+│   ├── .env
+│   ├── api.rest
+│   ├── config/
+│   │   ├── config.json
+│   │   ├── database.js
+│   │   └── multer.js
+│   ├── constants/
+│   │   └── roles.js
+│   ├── controllers/
+│   │   ├── auth.js
+│   │   ├── error.js
+│   │   ├── file.js
+│   │   ├── request.js
+│   │   ├── service.js
+│   │   └── user.js
+│   ├── middlewares/
+│   │   └── auth.js
+│   ├── migrations/
+│   ├── models/
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── index.js
+│   │   ├── request.js
+│   │   ├── service.js
+│   │   └── user.js
+│   ├── schemas/
+│   ├── seeders/
+│   ├── uploads/
+│   └── utils/
+├── frontend/
+│   ├── app/
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── ...
+```
 
-frontend/
-├── .env
-├── .eslintrc.json
-├── .gitignore
-├── next-env.d.ts
-├── next.config.ts
-├── package.json
-├── postcss.config.js
-├── README.md
-├── tailwind.config.js
-├── tsconfig.json
-├── .next/
-│   ├── static/
-│   └── ...
-├── app/
-│   ├── layout.tsx
-│   └── ...
-├── public/
-│   ├── index.html
-│   ├── images/
-│   │   ├── favicon.png
-│   │   └── ...
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── lib/
-│   └── pages/
+## 📦 Instalación
+
+1. Clona el repositorio y entra a la carpeta del proyecto.
+2. Instala dependencias en backend y frontend:
+
+```sh
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
 ## ⚙️ Configuración
 
-### Archivo `.env`
+- Crea un archivo `.env` en `backend/` con las variables necesarias (puerto, JWT_SECRET, datos de BD, etc).
+- Configura la base de datos en `backend/config/config.json`.
 
-Asegúrate de tener un archivo `.env` en la raíz del directorio `backend/` con las variables de entorno necesarias para la configuración de la base de datos y otros parámetros.
+## 📜 Migraciones y Seeders
 
-### Archivo `config.json`
-
-El archivo `config/config.json` contiene la configuración de la base de datos para diferentes entornos (desarrollo, prueba, producción).
-
-## 📜 Migraciones
-
-Las migraciones se encuentran en el directorio `migrations/`. Puedes crear nuevas migraciones usando el comando:
+Para ejecutar migraciones y seeders:
 
 ```sh
-npx sequelize-cli migration:generate --name <nombre-de-la-migracion>
-```
-
-## 📂 Esquemas
-
-Los esquemas se encuentran en el directorio `schemas/`. Estos se utilizan para la validación de datos de entrada.
-
-## 📬 Requests
-
-El archivo `api.rest` contiene ejemplos de solicitudes HTTP que puedes usar para probar tu API.
-
-## 📦 Instalación
-
-Para instalar las dependencias del proyecto, ejecuta:
-
-```sh
-npm install
+npx sequelize-cli db:migrate
+npx sequelize-cli db:seed:all
 ```
 
 ## 🚀 Ejecución
 
-Para iniciar el servidor, ejecuta:
+Para iniciar el backend:
 
 ```sh
+cd backend
 npm run dev
 ```
 
-Esto iniciará el servidor en el puerto definido en tu archivo `.env`.
+Para iniciar el frontend:
+
+```sh
+cd frontend
+npm run dev
+```
+
+## 📚 Documentación de la API
+
+- La documentación interactiva está disponible en: [http://localhost:4000/api-docs](http://localhost:4000/api-docs)
+- El archivo fuente es `backend/swagger.yaml`.
+
+## 🔒 Seguridad y Roles
+
+- Muchas rutas requieren autenticación JWT y roles específicos (ADMIN, SUPERADMIN, INSTRUCTOR, USER).
+- Consulta la documentación Swagger para saber qué rutas requieren token y qué roles pueden acceder.
+
+## 📂 Otros recursos
+
+- `api.rest`: Ejemplos de peticiones HTTP para probar la API.
+- `uploads/`: Carpeta donde se almacenan imágenes y archivos subidos.
 
 ## 🤝 Contribución
 
-Si deseas contribuir a este proyecto, por favor abre un issue o envía un pull request.
+¿Quieres contribuir? Abre un issue o pull request.
 
 ---
 
-Este [README.md](http://_vscodecontentref_/#%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22fsPath%22%3A%22c%3A%5C%5CUsers%5C%5Cjeimy%5C%5CDesktop%5C%5CProjects%5C%5CSemillero%5C%5CBienestar%5C%5Cbackend%5C%5CREADME.md%22%2C%22_sep%22%3A1%2C%22external%22%3A%22file%3A%2F%2F%2Fc%253A%2FUsers%2Fjeimy%2FDesktop%2FProjects%2FSemillero%2FBienestar%2Fbackend%2FREADME.md%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fjeimy%2FDesktop%2FProjects%2FSemillero%2FBienestar%2Fbackend%2FREADME.md%22%2C%22scheme%22%3A%22file%22%7D%7D) proporciona una visión general clara de la estructura del proyecto y cómo trabajar con él.
+Este README proporciona una visión general actualizada de la estructura y funcionamiento del proyecto Bienestar App.
