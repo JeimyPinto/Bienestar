@@ -74,20 +74,22 @@ export default function ServicePage() {
     <section className="w-full max-w-8xl mx-auto px-2 sm:px-6 py-4 sm:py-10">
       <div className="flex flex-col gap-6">
         {error && <ErrorMessage message={error} />}
-        <div className="bg-white border border-cian shadow-lg rounded-xl overflow-hidden">
+
+        {/* Tabla para pantallas sm y mayores */}
+        <div className="bg-white border border-cian shadow-lg rounded-xl overflow-hidden hidden sm:block">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-cian">
               <thead className="bg-cian text-white sticky top-0 z-10">
                 <tr>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">#</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Imagen</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Nombre</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Descripción</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Creador</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Área</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Estado</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Creado</th>
-                  <th className="px-3 py-3 text-xs font-semibold text-left">Actualizado</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">#</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Imagen</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Nombre</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Descripción</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Creador</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Área</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Estado</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Creado</th>
+                  <th scope="col" className="px-3 py-3 text-xs font-semibold text-left">Actualizado</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-cian bg-white">
@@ -159,6 +161,79 @@ export default function ServicePage() {
               </tbody>
             </table>
           </div>
+          {isFormOpen && selectedservice && (
+            <ServiceForm
+              dialogRef={serviceEditFormRef}
+              closeDialog={() => setIsFormOpen(false)}
+              onClose={() => setIsFormOpen(false)}
+              mode="edit"
+              serviceToEdit={selectedservice}
+            />
+          )}
+        </div>
+
+        {/* Cards para móvil */}
+        <div className="sm:hidden flex flex-col gap-4">
+          {loading ? (
+            <div className="text-center text-azul font-medium py-10">Cargando servicios...</div>
+          ) : services.length === 0 ? (
+            <div className="text-center text-azul font-medium py-10">No se encontraron servicios / No services found.</div>
+          ) : (
+            services.map((service) => (
+              <div
+                key={service.id}
+                className="bg-white border border-cian shadow-lg rounded-xl p-4 flex flex-col gap-2 cursor-pointer hover:bg-cian/10 transition-colors"
+                onClick={() => handleRowClick(service)}
+                tabIndex={0}
+                aria-label={`Editar servicio ${service.name}`}
+              >
+                <div className="flex items-center gap-3">
+                  {service.image ? (
+                    <Image
+                      src={
+                        service?.image
+                          ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + service.image
+                          : "/images/ico-profile.svg"
+                      }
+                      alt={`${service.name} avatar`}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 rounded-lg object-cover border border-cian shadow"
+                    />
+                  ) : (
+                    <span className="text-gray-400 italic">Sin imagen</span>
+                  )}
+                  <div>
+                    <div className="font-bold text-azul">{service.name}</div>
+                    <div className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${areaColors[service.area]}`}>
+                      {service.area || "Sin área"}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-gray-700 text-sm">{service.description}</div>
+                <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                  <span>
+                    <b>Estado:</b>{" "}
+                    <span className={service.status === "activo" ? "text-green-700" : "text-red-700"}>
+                      {service.status}
+                    </span>
+                  </span>
+                  <span>
+                    <b>Creado:</b> {new Date(service.createdAt).toLocaleDateString()}
+                  </span>
+                  <span>
+                    <b>Actualizado:</b> {new Date(service.updatedAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <b>Creador:</b>{" "}
+                  {service.creator
+                    ? `${service.creator.firstName} ${service.creator.lastName ?? ""}`
+                    : <span className="text-gray-400">-</span>}
+                </div>
+              </div>
+            ))
+          )}
           {isFormOpen && selectedservice && (
             <ServiceForm
               dialogRef={serviceEditFormRef}

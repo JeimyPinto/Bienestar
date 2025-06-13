@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react"
 import { RequestsFormProps, Request } from "../types/request"
 import { User } from "../types/user"
@@ -188,6 +187,8 @@ export default function RequestsForm(props: RequestsFormProps) {
     return (
         <dialog
             ref={dialogRef}
+            aria-modal="true"
+            aria-label={mode === "create" ? "Crear Solicitud" : "Editar Solicitud"}
             className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-lg mx-auto"
         >
             <div className="flex justify-between items-center mb-6">
@@ -196,6 +197,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                 </h2>
                 <button
                     onClick={closeDialog}
+                    aria-label="Cerrar formulario"
                     className="text-cian hover:text-azul transition-colors"
                 >
                     ✕

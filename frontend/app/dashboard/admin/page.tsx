@@ -48,18 +48,21 @@ export default function DashboardAdmin() {
                 <h2 className="text-2xl font-bold mb-4">Opciones de Administrador</h2>
                 <div className="flex flex-col sm:flex-row gap-4">
                     <button
+                        aria-label="Ir al panel de usuarios"
                         className="flex-1 min-w-[150px] bg-azul text-white py-2 px-4 rounded-lg hover:bg-cian transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-cian"
                         onClick={() => router.push("/users")}
                     >
                         Panel de usuarios
                     </button>
                     <button
+                        aria-label="Ir al panel de servicios"
                         className="flex-1 min-w-[150px] bg-azul text-white py-2 px-4 rounded-lg hover:bg-cian transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-cian"
                         onClick={() => router.push("/services")}
                     >
                         Panel de servicios
                     </button>
                     <button
+                        aria-label="Ir al panel de solicitudes"
                         className="flex-1 min-w-[150px] bg-azul text-white py-2 px-4 rounded-lg hover:bg-cian transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-cian"
                         onClick={() => router.push("/requests")}
                     >

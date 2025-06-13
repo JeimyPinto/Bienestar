@@ -34,13 +34,13 @@ export default function RequestHistory({
         <table className="min-w-full text-sm">
           <thead className="bg-cian text-white">
             <tr>
-              <th className="px-2 py-3 font-semibold text-left">#</th>
-              <th className="px-2 py-3 font-semibold text-left">Servicio</th>
-              <th className="px-2 py-3 font-semibold text-left">Área</th>
-              <th className="px-2 py-3 font-semibold text-left">Descripción</th>
-              <th className="px-2 py-3 font-semibold text-left">Estado</th>
-              <th className="px-2 py-3 font-semibold text-left">Creación</th>
-              <th className="px-2 py-3 font-semibold text-left">Actualización</th>
+              <th scope="col" className="px-2 py-3 font-semibold text-left">#</th>
+              <th scope="col" className="px-2 py-3 font-semibold text-left">Servicio</th>
+              <th scope="col" className="px-2 py-3 font-semibold text-left">Área</th>
+              <th scope="col" className="px-2 py-3 font-semibold text-left">Descripción</th>
+              <th scope="col" className="px-2 py-3 font-semibold text-left">Estado</th>
+              <th scope="col" className="px-2 py-3 font-semibold text-left">Creación</th>
+              <th scope="col" className="px-2 py-3 font-semibold text-left">Actualización</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-cian/10 bg-white">

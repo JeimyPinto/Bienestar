@@ -14,7 +14,7 @@ export default function ServicesGallery({ services, message }: { services?: Serv
   }
 
   return (
-    <section className="w-full flex flex-col items-center justify-center p-4 bg-gray-50">
+    <section aria-label="Galería de servicios" className="w-full flex flex-col items-center justify-center p-4 bg-gray-50">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full max-w-7xl">
         {services.map((service) => (
           <div
