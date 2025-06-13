@@ -2,7 +2,7 @@ const enabledRoles = require("../utils/enabledRoles.js");
 const db = require("../models/index.js");
 const bcrypt = require("bcrypt");
 const User = db.User;
-const { sendUserCreatedMail } = require("../utils/sendMail.js");
+const { sendUserCreatedMail, sendUserUpdatedMail } = require("../utils/sendMail.js");
 const {
   userUpdateSelfSchema,
   adminUpdateUserSchema, adminCreateUserSchema
@@ -231,6 +231,7 @@ class UsuarioController {
       let updateFields = {};
       let isAdmin = enabledRoles.includes(req.user.role);
 
+      //Si es admin permite actualizar todos los campos, si no, solo permite actualizar algunos
       if (isAdmin) {
         userData = await adminUpdateUserSchema.parseAsync(req.body);
         updateFields = {
@@ -245,9 +246,6 @@ class UsuarioController {
         if (userData.phone !== undefined) updateFields.phone = userData.phone;
         if (userData.email !== undefined) updateFields.email = userData.email;
         if (userData.image !== undefined) updateFields.image = userData.image;
-        if (userData.password) {
-          updateFields.password = await bcrypt.hash(userData.password, saltRounds);
-        }
       }
 
       // Manejo de archivo si se subió uno nuevo
@@ -260,12 +258,16 @@ class UsuarioController {
       }
 
       await user.update(updateFields);
+      await sendUserUpdatedMail({
+        to: user.email,
+        firstName: user.firstName,
+      });
 
       // Excluir la contraseña del usuario al devolver los datos
       const { password, ...userWithoutPassword } = user.get({ plain: true });
 
       res.status(200).json({
-        message: `Usuario actualizado correctamente por ${req.user.role} / User updated successfully by ${req.user.role}`,
+        message: `Usuario actualizado correctamente por ${req.user.firstName} ${req.user.lastName} / User updated successfully by ${req.user.firstName} ${req.user.lastName} `,
         error: null,
         user: userWithoutPassword,
       });
