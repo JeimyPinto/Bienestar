@@ -5,10 +5,12 @@ const User = db.User;
 const { sendUserCreatedMail, sendUserUpdatedMail } = require("../utils/sendMail.js");
 const {
   userUpdateSelfSchema,
-  adminUpdateUserSchema, adminCreateUserSchema
+  adminUpdateUserSchema,
+  adminCreateUserSchema
 } = require("../schemas/user.js");
-const e = require("express");
 const saltRounds = 10;
+const { ZodError } = require("zod");
+const ErrorController = require("./error.js");
 
 class UsuarioController {
   async getAll(req, res) {
@@ -19,23 +21,47 @@ class UsuarioController {
           { association: "requests" },
         ]
       });
+
       if (users.length === 0) {
-        return res.status(404).json({
-          message: null,
-          error: "No hay usuarios registrados / No users registered",
-          users: [],
-        });
+        throw new ErrorController(
+          404,
+          "No hay usuarios registrados",
+          { users: [] }
+        );
       }
+
       res.status(200).json({
-        message: "Usuarios obtenidos correctamente / Users retrieved successfully",
+        message: "Usuarios obtenidos correctamente",
         error: null,
         users,
       });
+
     } catch (error) {
+      if (error instanceof ErrorController) {
+        return res.status(error.status).json({
+          message: error.message,
+          details: error.details,
+        });
+      }
+      // Error de validación de Sequelize
+      if (error instanceof ValidationError) {
+        return res.status(400).json({
+          message: "Error de validación en los datos enviados",
+          details: error.errors.map(e => e.message),
+        });
+      }
+      // Error de base de datos de Sequelize
+      if (error instanceof DatabaseError) {
+        return res.status(500).json({
+          message: "Error de base de datos",
+          details: error.message,
+        });
+      }
+      // Otros errores
+      console.error(error);
       return res.status(500).json({
-        message: null,
-        error: "Error al obtener los usuarios / Error retrieving users" + error.message,
-        users: null,
+        message: "Error interno del servidor",
+        details: null,
       });
     }
   }
@@ -239,7 +265,7 @@ class UsuarioController {
         //Si el usuario no proporciona una contraseña, se usa el número de documento como contraseña sino se deja la anterior encontrada
         if (userData.password) {
           updateFields.password = await bcrypt.hash(userData.password, saltRounds);
-        }else {
+        } else {
           updateFields.password = user.password; // Mantiene la contraseña anterior 
         }
         if (userData.image !== undefined) updateFields.image = userData.image;

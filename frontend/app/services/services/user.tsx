@@ -1,6 +1,41 @@
-import {User} from "../../types/user"
+import { User } from "../../types/user"
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/users`;
+
+export async function getAll(token?: string) {
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return {
+                message: data.message ?? null,
+                error: data.error ?? "Error al obtener los usuarios.",
+                users: null,
+                details: data.details ?? null,
+            };
+        }
+        return {
+            message: data.message ?? null,
+            users: data.users ?? null,
+            details: data.details ?? null,
+            error: null,
+        };
+    } catch (error) {
+        return {
+            message: null,
+            error: "Error interno del servidor",
+            users: null,
+            details: null,
+        };
+    }
+}
 
 export async function getAllActive(token?: string) {
     try {

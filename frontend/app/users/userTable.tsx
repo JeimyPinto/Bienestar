@@ -44,7 +44,7 @@ export default function UserTable() {
 
     useEffect(() => {
         if (!token) {
-            setError("No authentication token found / No se ha encontrado el token de autenticación.");
+            setError("No se ha encontrado el token de autenticación.");
             setLoading(false);
             return;
         }
@@ -64,7 +64,7 @@ export default function UserTable() {
                     setTotalPages(data.totalPages);
                 }
             } catch {
-                if (isMounted) setError("Error al cargar los usuarios. / Error loading users.");
+                if (isMounted) setError("Error al cargar los usuarios");
             } finally {
                 if (isMounted) setLoading(false);
             }

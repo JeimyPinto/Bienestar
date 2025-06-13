@@ -73,11 +73,11 @@ const { uploadUser } = require("../config/multer.js");
  * @swagger
  * /users:
  *   get:
- *     summary: Obtiene todos los usuarios junto con sus servicios y solicitudes
+ *     summary: Obtener todos los usuarios
  *     tags:
  *       - Users
  *     responses:
- *       200:
+ *       '200':
  *         description: Usuarios obtenidos correctamente
  *         content:
  *           application/json:
@@ -86,7 +86,7 @@ const { uploadUser } = require("../config/multer.js");
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Usuarios obtenidos correctamente / Users retrieved successfully
+ *                   example: Usuarios obtenidos correctamente
  *                 error:
  *                   type: string
  *                   nullable: true
@@ -95,7 +95,7 @@ const { uploadUser } = require("../config/multer.js");
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/User'
- *       404:
+ *       '404':
  *         description: No hay usuarios registrados
  *         content:
  *           application/json:
@@ -108,13 +108,17 @@ const { uploadUser } = require("../config/multer.js");
  *                   example: null
  *                 error:
  *                   type: string
- *                   example: No hay usuarios registrados / No users registered
- *                 users:
- *                   type: array
- *                   items: {}
- *                   example: []
- *       500:
- *         description: Error del servidor al recuperar los usuarios
+ *                   example: No hay usuarios registrados
+ *                 details:
+ *                   type: object
+ *                   properties:
+ *                     users:
+ *                       type: array
+ *                       items: {}
+ *                   example:
+ *                     users: []
+ *       '400':
+ *         description: Error de validación en los datos enviados
  *         content:
  *           application/json:
  *             schema:
@@ -122,12 +126,23 @@ const { uploadUser } = require("../config/multer.js");
  *               properties:
  *                 message:
  *                   type: string
- *                   nullable: true
- *                   example: null
- *                 error:
+ *                   example: Error de validación en los datos enviados
+ *                 details:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["El campo email es requerido"]
+ *       '500':
+ *         description: Error interno del servidor o de base de datos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
  *                   type: string
- *                   example: Error al obtener los usuarios / Error retrieving users
- *                 users:
+ *                   example: Error interno del servidor
+ *                 details:
  *                   type: string
  *                   nullable: true
  *                   example: null
