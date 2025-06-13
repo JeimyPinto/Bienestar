@@ -226,7 +226,6 @@ class UsuarioController {
           error: "Usuario no encontrado / User not found",
         });
       }
-
       let userData;
       let updateFields = {};
       let isAdmin = enabledRoles.includes(req.user.role);
@@ -237,8 +236,11 @@ class UsuarioController {
         updateFields = {
           ...userData,
         };
+        //Si el usuario no proporciona una contraseña, se usa el número de documento como contraseña sino se deja la anterior encontrada
         if (userData.password) {
           updateFields.password = await bcrypt.hash(userData.password, saltRounds);
+        }else {
+          updateFields.password = user.password; // Mantiene la contraseña anterior 
         }
         if (userData.image !== undefined) updateFields.image = userData.image;
       } else {

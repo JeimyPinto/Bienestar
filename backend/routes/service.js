@@ -120,7 +120,7 @@ const { uploadService } = require("../config/multer.js");
  *                   example: null
  *                 error:
  *                   type: string
- *                   example: Validation Error / Error de Validación: ...
+ *                   example: "Validation Error / Error de Validación ( ... )"
  *                 services:
  *                   type: string
  *                   nullable: true
@@ -362,7 +362,7 @@ router.get("/:id", authMiddleware.authorizeRole(), serviceController.getById);
  *                   example: null
  *                 error:
  *                   type: string
- *                   example: Validation Error / Error de Validación ( ... )
+ *                   example: "Validation Error / Error de Validación ( ... )"
  *                 service:
  *                   type: string
  *                   nullable: true

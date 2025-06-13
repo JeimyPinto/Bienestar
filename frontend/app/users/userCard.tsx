@@ -4,7 +4,7 @@
 import Image from "next/image"
 import { User } from "../types/user"
 
-export default function UserCard({ user }: { user: User | null }) {
+export default function UserCard({ user, onClick }: { user: User | null, onClick?: () => void }) {
     if (!user) {
         return (
             <div className="bg-white shadow-md rounded-lg p-6 mt-6">
@@ -14,7 +14,13 @@ export default function UserCard({ user }: { user: User | null }) {
     }
 
     return (
-        <div className="bg-white shadow-md rounded-lg p-6 mt-6 max-w-md mx-auto w-full">
+        <section
+            className="bg-white shadow-md rounded-lg p-6 mt-6 max-w-md mx-auto w-full"
+            onClick={onClick}
+            tabIndex={0}
+            aria-label={`Editar usuario ${user.firstName} ${user.lastName}`}
+            onKeyDown={e => { if (e.key === "Enter" && onClick) onClick(); }}
+        >
             <div className="flex flex-col sm:flex-row items-center gap-4">
                 <Image
                     src={
@@ -47,6 +53,6 @@ export default function UserCard({ user }: { user: User | null }) {
                 <p>Creado: {new Date(user.createdAt).toLocaleDateString("es-CO")}</p>
                 <p>Actualizado: {new Date(user.updatedAt).toLocaleDateString("es-CO")}</p>
             </div>
-        </div>
+        </section>
     );
 }

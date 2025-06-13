@@ -4,8 +4,8 @@ import { useColumnSorter } from "../lib/useColumnSorter";
 import { User } from "../types/user"
 import ErrorMessage from "../ui/errorMessage";
 import UserForm from "./userForm";
+import UserCard from "./userCard";
 import { getAllPaginated } from "../services/services/user";
-
 export default function UserTable() {
     const [token, setToken] = useState<string | null>(null);
     const [users, setUsers] = useState<User[]>([]);
@@ -107,8 +107,8 @@ export default function UserTable() {
                     <ErrorMessage message={error} />
                 )}
 
-                <div className="overflow-x-auto rounded-lg shadow-md border border-azul bg-blanco">
-                    <table className="min-w-full divide-y divide-cian">
+                <div className="hidden sm:block">
+                    <div className="overflow-x-auto rounded-lg shadow-md border border-azul bg-blanco">               <table className="min-w-full divide-y divide-cian">
                         <thead className="bg-cian text-azul">
                             <tr>
                                 <th className="px-2 py-3 text-xs font-semibold"
@@ -247,34 +247,45 @@ export default function UserTable() {
                             )}
                         </tbody>
                     </table>
+                    </div>
+                    {/* Pagination */}
+                    <nav className="flex flex-col md:flex-row justify-between items-center gap-2 mt-4">
+                        <button
+                            onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+                            disabled={currentPage === 1}
+                            className={`px-4 py-2 rounded-md font-semibold transition ${currentPage === 1
+                                ? "bg-cian text-azul cursor-not-allowed"
+                                : "bg-amarillo text-azul hover:bg-azul hover:text-blanco"
+                                }`}
+                        >
+                            Anterior
+                        </button>
+                        <span className="text-azul text-sm">
+                            Página <span className="font-bold">{currentPage}</span> de <span className="font-bold">{totalPages}</span> &mdash; Total: <span className="font-bold">{totalUsers}</span> usuarios
+                        </span>
+                        <button
+                            onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className={`px-4 py-2 rounded-md font-semibold transition ${currentPage === totalPages
+                                ? "bg-cian text-azul cursor-not-allowed"
+                                : "bg-amarillo text-azul hover:bg-azul hover:text-blanco"
+                                }`}
+                        >
+                            Siguiente
+                        </button>
+                    </nav>
+                </div>
+                {/* Mobile view */}
+                <div className="sm:hidden flex flex-col gap-4">
+                    {users.map((user) => (
+                        <UserCard
+                            key={user.id}
+                            user={user}
+                            onClick={() => handleRowClick(user)}
+                        />
+                    ))}
                 </div>
 
-                {/* Pagination */}
-                <nav className="flex flex-col md:flex-row justify-between items-center gap-2 mt-4">
-                    <button
-                        onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
-                        disabled={currentPage === 1}
-                        className={`px-4 py-2 rounded-md font-semibold transition ${currentPage === 1
-                            ? "bg-cian text-azul cursor-not-allowed"
-                            : "bg-amarillo text-azul hover:bg-azul hover:text-blanco"
-                            }`}
-                    >
-                        Anterior
-                    </button>
-                    <span className="text-azul text-sm">
-                        Página <span className="font-bold">{currentPage}</span> de <span className="font-bold">{totalPages}</span> &mdash; Total: <span className="font-bold">{totalUsers}</span> usuarios
-                    </span>
-                    <button
-                        onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                        className={`px-4 py-2 rounded-md font-semibold transition ${currentPage === totalPages
-                            ? "bg-cian text-azul cursor-not-allowed"
-                            : "bg-amarillo text-azul hover:bg-azul hover:text-blanco"
-                            }`}
-                    >
-                        Siguiente
-                    </button>
-                </nav>
 
                 {isFormOpen && selectedUser && (
                     <UserForm
