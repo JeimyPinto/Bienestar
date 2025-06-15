@@ -8,6 +8,7 @@ const saltRounds = 10;
 // ==================== MODELOS ====================
 const db = require("../models/index.js");
 const User = db.User;
+const UserAudit = db.user_audit;
 
 // ==================== HERRAMIENTAS / UTILIDADES ====================
 const { sendUserCreatedMail, sendUserUpdatedMail } = require("../utils/sendMail.js");
@@ -259,6 +260,17 @@ class UsuarioController {
         } catch (mailError) {
           console.warn("Usuario creado, pero error enviando correo:", mailError.message);
         }
+        // Auditoría: registrar creación desde backend
+        try {
+          await UserAudit.create({
+            user_id: user.id,
+            action: 'INSERT',
+            new_data: user.toJSON(),
+            changed_by: req.user ? req.user.email : null
+          });
+        } catch (auditError) {
+          console.warn('No se pudo registrar auditoría de creación:', auditError.message);
+        }
         res.status(201).json({
           message: `Usuario creado correctamente / User created successfully${mailSent ? " (Se ha enviado una notificación al usuario con su cuenta creada / A notification has been sent to the user with their account details)" : ""}`,
           error: null,
@@ -347,12 +359,24 @@ class UsuarioController {
             : req.file.filename;
         }
 
+        const oldUserData = user.get({ plain: true });
         await user.update(updateFields);
         await sendUserUpdatedMail({
           to: user.email,
           firstName: user.firstName,
         });
-
+        // Auditoría: registrar actualización desde backend
+        try {
+          await UserAudit.create({
+            user_id: user.id,
+            action: 'UPDATE',
+            old_data: oldUserData,
+            new_data: user.get({ plain: true }),
+            changed_by: req.user ? req.user.email : null
+          });
+        } catch (auditError) {
+          console.warn('No se pudo registrar auditoría de actualización:', auditError.message);
+        }
         // Excluir la contraseña del usuario al devolver los datos
         const { password, ...userWithoutPassword } = user.get({ plain: true });
 

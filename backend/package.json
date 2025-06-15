@@ -8,10 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch app.js",
     "start": "npm run undo:all migrate-seed && node app.js",
-    "migrate": "dotenv -e .env sequelize db:migrate --config config/database.js",
-    "seed": "dotenv -e .env sequelize db:seed:all --config config/database.js",
+    "migrate": "npx sequelize db:migrate --config config/sequelize.js",
+    "seed": "npx sequelize-cli db:seed:all --config config/sequelize.js",
     "migrate-seed": "npm run migrate && npm run seed",
-    "undo:all": "dotenv -e .env sequelize db:migrate:undo:all --config config/database.js && dotenv -e .env sequelize db:seed:undo:all --config config/database.js"
+    "undo:all": "dotenv -e .env sequelize db:migrate:undo:all --config config/sequelize.js && dotenv -e .env sequelize db:seed:undo:all --config config/sequelize.js"
   },
   "keywords": [],
   "author": "Jeimy Pinto",
