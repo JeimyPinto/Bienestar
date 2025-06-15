@@ -10,6 +10,7 @@ import ReCAPTCHA from "react-google-recaptcha"
 import { login } from "../services/services/auth"
 
 export default function LoginPage() {
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
@@ -26,14 +27,14 @@ export default function LoginPage() {
     setError("");
     try {
       if (!recaptchaToken) {
-        setError("Please complete the reCAPTCHA. / Por favor completa el reCAPTCHA.");
+        setError("Por favor completa el reCAPTCHA.");
         return setLoading(false);
       }
 
       const { message, token, error } = await login({ email, password, recaptchaToken });
 
       if (error) {
-        setError("Error al iniciar sesión. / Error logging in. ( " + error + " )");
+        setError("Error al iniciar sesión.( " + error + " )");
         setLoading(false);
         return;
       }
@@ -41,7 +42,7 @@ export default function LoginPage() {
         setLoading(false);
       }
       if (!token) {
-        setError("No se recibió un token de autenticación. / No authentication token received.");
+        setError("No se recibió un token de autenticación");
         setLoading(false);
         return;
       }
@@ -61,8 +62,9 @@ export default function LoginPage() {
 
       router.push("/dashboard");
       setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message || "Error al iniciar sesión. / Error logging in." : "Error al iniciar sesión. / Error logging in.");
+    } catch (error) {
+      setError("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
+      console.error("Error iniciando sesión:", error);
     } finally {
       setLoading(false);
     }

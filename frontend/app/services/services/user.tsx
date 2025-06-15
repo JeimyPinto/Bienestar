@@ -37,12 +37,13 @@ export async function getAll(token?: string) {
     }
 }
 
-export async function getAllActive() {
+export async function getAllActive(token?: string) {
     try {
         const response = await fetch(`${url}/active`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
             },
             credentials: "include",
         });

@@ -3,44 +3,34 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import ServicesGallery from "../../services/servicesGallery"
-import { User } from "../../types/user"
 import { Service } from "../../types/service"
-import extractUserFromToken from "../../lib/extractUserFromToken"
+import isTokenExpired from "../../lib/isTokenExpired"
+import getUserToken from "../../lib/getUserToken"
+import getToken from "../../lib/getToken"
 
 
 export default function DashboardAdmin() {
     const [services, setServices] = useState<Service[]>([]);
     const router = useRouter();
 
-    // Cargar los servicios del usuario desde el token
     useEffect(() => {
-        let tokenValue: string | null = null;
-        if (
-            process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
-            process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
-        ) {
-            tokenValue = localStorage.getItem("token");
-        } else {
-            const cookie = document.cookie;
-            tokenValue =
-                cookie
-                    .split("; ")
-                    .find((row) => row.startsWith("token="))
-                    ?.split("=")[1] || null;
-        }
-
-        if (tokenValue) {
-            try {
-                const parsedUser = extractUserFromToken(tokenValue) as User;
-                setServices(parsedUser.services || []);
-            } catch {
+        const fetchData = async () => {
+            const tokenValue = getToken();
+            const userValue = getUserToken();
+            if (tokenValue) {
+                if (isTokenExpired(tokenValue)) {
+                    localStorage.removeItem("token");
+                    setServices([]);
+                } else {
+                    setServices(userValue?.services || []);
+                }
+            }
+            else {
                 setServices([]);
             }
-        } else {
-            setServices([]);
         }
+        fetchData();
     }, []);
-
 
     return (
         <>

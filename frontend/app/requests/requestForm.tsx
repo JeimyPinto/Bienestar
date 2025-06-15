@@ -6,7 +6,10 @@ import { create, update } from "../services/services/request"
 import { getAllActive as getAllServices } from "../services/services/service"
 import { getAllActive as getAllUsers } from "../services/services/user"
 import { ENABLED_ROLES } from "../lib/enabledRoles"
+import isTokenExpired from "../lib/isTokenExpired"
 import getUserToken from "../lib/getUserToken"
+import getToken from "../lib/getToken"
+import Spinner from "../ui/spinner"
 const emptyRequest: Request = {
     id: 0,
     userId: 0,
@@ -26,63 +29,61 @@ export default function RequestsForm(props: RequestsFormProps) {
         setErrorMessage,
     } = props;
     const [token, setToken] = useState<string | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [services, setServices] = useState<Service[]>([]);
-    const [user, setUser] = useState<User | null>(null);
     const [newRequest, setNewRequest] = useState<Request>(emptyRequest);
+    const [loadingUsers, setLoadingUsers] = useState(false);
+    const [loadingServices, setLoadingServices] = useState(false);
 
     // Obtener token y usuario autenticado
     useEffect(() => {
-        let tokenValue: string | null = null;
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-        if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
-            tokenValue = localStorage.getItem("token");
-        } else {
-            // Buscar token en cookies
-            const cookie = document.cookie;
-            tokenValue = cookie.split("; ").find((row) =>
-                row.startsWith("token="))?.split("=")[1] || null;
+        const fetchData = async () => {
+            const tokenValue = getToken();
+            const userValue = getUserToken();
+            if (tokenValue) {
+                if (isTokenExpired(tokenValue)) {
+                    localStorage.removeItem("token");
+                    setUser(null);
+                } else {
+                    setUser(userValue as User);
+                }
+            } else {
+                setUser(null);
+            }
+            setToken(tokenValue);
         }
+        fetchData();
+    }
+        , []);
 
-        setToken(tokenValue);
-
-        if (tokenValue) {
-            setUser(getUserToken());
-        } else {
-            setUser(null);
-        }
-    }, []);
-
+    //Cargar usuarios y servicios activos en el formulario
     useEffect(() => {
         if (!token) return;
         if (user && ENABLED_ROLES.includes(user.role)) {
             const loadUsers = async () => {
+                setLoadingUsers(true);
                 try {
-                    const { message, users, details, error } = await getAllUsers(token);
+                    const { message, users, error } = await getAllUsers(token);
                     if (error) {
-                        if (details) {
-                            console.error("Detalles del error al cargar usuarios:", details);
-                        }
                         setUsers([]);
-                        setErrorMessage?.(
-                            typeof error === "string" ? error : error?.message || String(error)
-                        );
+                        setErrorMessage?.(error)
                         return;
                     }
-                    // Si no hay usuarios activos registrados (404), users será []
                     if (Array.isArray(users)) {
                         if (message) {
-                            setSuccessMessage?.(message || "Usuarios cargados exitosamente");
+                            setSuccessMessage?.(message);
                         }
                         setUsers(users);
                     } else {
                         setUsers([]);
-                        setErrorMessage?.(message || "No hay usuarios activos registrados.");
+                        setErrorMessage?.(String(message));
                     }
                 } catch (error) {
-                    setErrorMessage?.("Error al cargar los usuarios (" + String(error) + ")");
+                    setErrorMessage?.(String(error));
                     setUsers([]);
+                } finally {
+                    setLoadingUsers(false);
                 }
             };
             loadUsers();
@@ -90,6 +91,7 @@ export default function RequestsForm(props: RequestsFormProps) {
             setUsers([]);
         }
         const loadServices = async () => {
+            setLoadingServices(true);
             try {
                 const { message, error, services } = await getAllServices();
                 if (error) {
@@ -99,7 +101,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                     );
                 } else {
                     if (message) {
-                        setSuccessMessage?.(message || "Servicios cargados exitosamente. / Services loaded successfully.");
+                        setSuccessMessage?.(message);
                     }
                     if (services) {
                         setServices(services);
@@ -107,7 +109,9 @@ export default function RequestsForm(props: RequestsFormProps) {
                 }
             }
             catch (error) {
-                setErrorMessage?.("Error al cargar los servicios / Error loading services. (" + String(error) + ")");
+                setErrorMessage?.(String(error));
+            } finally {
+                setLoadingServices(false);
             }
         };
         loadServices();
@@ -140,23 +144,19 @@ export default function RequestsForm(props: RequestsFormProps) {
             if (mode === "create") {
                 const { message, error } = await create(requestData, token);
                 if (error) {
-                    props.setErrorMessage?.(
-                        error || "Error al crear la solicitud. / Error creating request."
-                    );
+                    props.setErrorMessage?.(error);
                     props.setSuccessMessage?.("");
-                    return; // Detener si hay error
+                    return;
                 } else {
                     if (message) {
-                        props.setSuccessMessage?.(
-                            message || "Solicitud creada exitosamente. / Request created successfully."
-                        );
+                        props.setSuccessMessage?.(message);
                         props.setErrorMessage?.("");
                     }
                     setNewRequest(emptyRequest); // Limpiar el formulario después de crear
                 }
             } else if (mode === "edit") {
                 if (!requestToEdit) {
-                    props.setErrorMessage?.("No hay solicitud para editar. / No request to edit.");
+                    props.setErrorMessage?.("No hay solicitud para editar");
                     return;
                 }
                 const { message, error } = await update(
@@ -165,25 +165,18 @@ export default function RequestsForm(props: RequestsFormProps) {
                     token
                 );
                 if (error) {
-                    props.setErrorMessage?.(
-                        error || "Error al actualizar la solicitud. / Error updating request."
-                    );
+                    props.setErrorMessage?.(error);
                     closeDialog();
-                    return; // Detener si hay error
+                    return;
                 } else {
-                    props.setSuccessMessage?.(
-                        message || "Solicitud actualizada exitosamente. / Request updated successfully."
-                    );
+                    props.setSuccessMessage?.(message);
                     props.setErrorMessage?.("");
                     setNewRequest(emptyRequest);
                 }
             }
-            window.location.reload(); // Recargar la página para reflejar los cambios
+            window.location.reload();
         } catch (error) {
-            props.setErrorMessage?.(
-                `Error al crear/actualizar la solicitud. (${String(error)})`
-            );
-            closeDialog(); // Cierra el modal
+            props.setErrorMessage?.(String(error)); closeDialog();
             return;
         }
 
@@ -217,22 +210,26 @@ export default function RequestsForm(props: RequestsFormProps) {
                             <label className="block text-sm font-medium text-azul">
                                 Usuario
                             </label>
-                            <select
-                                name="userId"
-                                value={newRequest.userId}
-                                onChange={e =>
-                                    setNewRequest({ ...newRequest, userId: Number(e.target.value) })
-                                }
-                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                                required
-                            >
-                                <option value="">Seleccione un usuario</option>
-                                {users.map(u => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.firstName} {u.lastName}
-                                    </option>
-                                ))}
-                            </select>
+                            {loadingUsers ? (
+                                <Spinner className="my-2" />
+                            ) : (
+                                <select
+                                    name="userId"
+                                    value={newRequest.userId}
+                                    onChange={e =>
+                                        setNewRequest({ ...newRequest, userId: Number(e.target.value) })
+                                    }
+                                    className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
+                                    required
+                                >
+                                    <option value="">Seleccione un usuario</option>
+                                    {users.map(u => (
+                                        <option key={u.id} value={u.id}>
+                                            {u.firstName} {u.lastName}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
                     ) : (
                         <div>
@@ -253,22 +250,26 @@ export default function RequestsForm(props: RequestsFormProps) {
                         <label className="block text-sm font-medium text-azul">
                             Servicio
                         </label>
-                        <select
-                            name="serviceId"
-                            value={newRequest.serviceId}
-                            onChange={e =>
-                                setNewRequest({ ...newRequest, serviceId: Number(e.target.value) })
-                            }
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                            required
-                        >
-                            <option value="">Seleccione un servicio</option>
-                            {services.map(s => (
-                                <option key={s.id} value={s.id}>
-                                    {s.name}
-                                </option>
-                            ))}
-                        </select>
+                        {loadingServices ? (
+                            <Spinner className="my-2" />
+                        ) : (
+                            <select
+                                name="serviceId"
+                                value={newRequest.serviceId}
+                                onChange={e =>
+                                    setNewRequest({ ...newRequest, serviceId: Number(e.target.value) })
+                                }
+                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
+                                required
+                            >
+                                <option value="">Seleccione un servicio</option>
+                                {services.map(s => (
+                                    <option key={s.id} value={s.id}>
+                                        {s.name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
                     </div>
                     <div className="sm:col-span-2">
                         <label className="block text-sm font-medium text-azul">

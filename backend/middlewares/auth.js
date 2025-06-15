@@ -4,11 +4,13 @@ const jwt = require("jsonwebtoken");
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  if (!token)
+  if (!token) {
+    console.error("Token no proporcionado");
     return res.status(401).json({
       message: "No autorizado",
       details: "No se proporcionó un token de autenticación"
     });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

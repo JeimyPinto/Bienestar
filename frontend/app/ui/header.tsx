@@ -1,27 +1,22 @@
 "use client"
 
-// React core
 import React, { useEffect, useState } from "react"
-
-// Next.js navigation and components
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-
-// Interfaces / Types
 import { User } from "../types"
-
-// Utilities / Helpers
 import isTokenExpired from "../lib/isTokenExpired"
 import getUserToken from "../lib/getUserToken"
 import getToken from "../lib/getToken"
 
 export default function Header() {
+
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
+  // Verifica el token al cargar el componente
   useEffect(() => {
     const fetchData = async () => {
       const tokenValue = getToken();

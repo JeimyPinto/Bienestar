@@ -1,5 +1,6 @@
 import { areaColors } from "../styles/areaColors";
 import ErrorMessage from "../ui/errorMessage";
+import Spinner from "../ui/spinner";
 import { RequestHistoryProps } from "../types/request";
 
 interface Props extends RequestHistoryProps {
@@ -47,6 +48,7 @@ export default function RequestHistory({
             {loading ? (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-azul font-medium">
+                  <Spinner className="mx-auto mb-2" />
                   Cargando solicitudes...
                 </td>
               </tr>

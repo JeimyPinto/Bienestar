@@ -10,8 +10,9 @@ import RequestHistory from "../requests/requestHistory"
 import { User } from "../types";
 import { Request } from "../types/request";
 import { ENABLED_ROLES } from "../lib/enabledRoles";
-import { getById } from "../services/services/request"
-import getUserToken from "../lib/getUserToken";
+import isTokenExpired from "../lib/isTokenExpired"
+import getUserToken from "../lib/getUserToken"
+import getToken from "../lib/getToken"
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -24,33 +25,24 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      let tokenValue: string | null = null;
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-      if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
-        tokenValue = localStorage.getItem("token");
-      } else {
-        const cookie = document.cookie;
-        tokenValue = cookie.split("; ").find((row) =>
-          row.startsWith("token="))?.split("=")[1] || null;
-      }
-
+      setLoading(true);
+      const tokenValue = getToken();
+      const userValue = getUserToken();
       if (tokenValue) {
-        const userPayload = getUserToken();
-        setUser(userPayload);
-
-        // Obtener todas las requests del token y hacer getById a cada una
-        const requestIds = userPayload?.requests?.map((req: Request) => req.id) || []; const requestsData = await Promise.all(
-          requestIds.map((id: string) => getById(Number(id), tokenValue).then(res => res.request).catch(() => null))
-        );
-        setRequests(requestsData.filter((req): req is Request => req !== null));
+        if (isTokenExpired(tokenValue)) {
+          localStorage.removeItem("token");
+          setUser(null);
+          setRequests([]);
+        } else {
+          setUser(userValue as User);
+          setRequests(userValue?.requests || []);
+        }
       } else {
         setUser(null);
         setRequests([]);
       }
       setLoading(false);
-    };
-
+    }
     fetchData();
   }, []);
 
