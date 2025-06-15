@@ -31,7 +31,7 @@ export async function getAll(token?: string) {
     } catch (error) {
         return {
             message: null,
-            error: "Error interno del servidor",
+            error: error,
             users: null,
         };
     }
