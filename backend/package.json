@@ -8,10 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch app.js",
     "start": "npm run undo:all migrate-seed && node app.js",
-    "migrate": "sequelize db:migrate",
-    "seed": "sequelize db:seed:all",
-    "migrate-seed": "sequelize db:migrate && sequelize db:seed:all",
-    "undo:all": "sequelize db:migrate:undo:all && sequelize db:seed:undo:all"
+    "migrate": "dotenv -e .env sequelize db:migrate --config config/database.js",
+    "seed": "dotenv -e .env sequelize db:seed:all --config config/database.js",
+    "migrate-seed": "npm run migrate && npm run seed",
+    "undo:all": "dotenv -e .env sequelize db:migrate:undo:all --config config/database.js && dotenv -e .env sequelize db:seed:undo:all --config config/database.js"
   },
   "keywords": [],
   "author": "Jeimy Pinto",
@@ -36,8 +36,9 @@
     "@faker-js/faker": "^9.8.0",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.5",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.27.0",
     "morgan": "^1.10.0",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.3"
   }
 }

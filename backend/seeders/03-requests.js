@@ -17,7 +17,7 @@ module.exports = {
     }
 
     const requests = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       const user = faker.helpers.arrayElement(users);
       const service = faker.helpers.arrayElement(services);
 

@@ -15,7 +15,8 @@ const PORT = process.env.PORT || 4000;
 // Base de datos
 // =======================
 // Importa la función para conectar a la base de datos
-const { connectDB } = require("./config/database.js");
+const { config, connectDB } = require('./config/database.js');
+const db = require('./models');
 
 // =======================
 // Middlewares
@@ -149,7 +150,7 @@ app.use((req, res) => {
 // Conexión a la base de datos y arranque del servidor
 // =======================
 // Intenta conectar a la base de datos y, si tiene éxito, inicia el servidor
-connectDB()
+connectDB(db.sequelize)
   .catch((error) => {
     console.error("Error al conectar a la base de datos:", error.message);
   })

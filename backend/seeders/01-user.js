@@ -20,26 +20,6 @@ module.exports = {
       updatedAt: new Date(),
     });
 
-    // Usuarios aleatorios
-    for (let i = 0; i < 3; i++) {
-      const password = faker.internet.password(10);
-      const hashedPassword = bcrypt.hashSync(password, 10);
-
-      users.push({
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        documentType: faker.helpers.arrayElement(['CC', 'TI', 'CE', 'RC', 'PA', 'PEP']),
-        documentNumber: faker.number.int({ min: 10000000, max: 99999999 }),
-        phone: faker.phone.number('+57 ### ### ####'),
-        email: faker.internet.email(),
-        password: hashedPassword,
-        role: faker.helpers.arrayElement(['admin', 'user', 'integrante']),
-        status: 'activo',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    }
-
     await queryInterface.bulkInsert('Users', users);
     console.log('Usuarios creados exitosamente.');
   },
