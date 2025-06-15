@@ -4,7 +4,7 @@ const config = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT || 'mysql',
+    dialect: 'mysql',
     port: process.env.DB_PORT || 3306
   },
   test: {
@@ -12,7 +12,7 @@ const config = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT || 'mysql',
+    dialect: 'mysql',
     port: process.env.DB_PORT || 3306
   },
   production: {
@@ -20,10 +20,12 @@ const config = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT || 'mysql',
-    port: process.env.DB_PORT || 3306
+    dialect: 'postgres',
+    port: process.env.DB_PORT || 5432
   }
 };
+
+console.log('CONFIG EXPORT:', config);
 
 async function connectDB(sequelize) {
   try {

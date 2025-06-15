@@ -92,7 +92,7 @@ class UsuarioController {
       });
         res.status(200).json({
           message:
-            "Usuarios activos obtenidos correctamente / Active users retrieved successfully",
+            "Usuarios activos obtenidos correctamente",
           users: usersWithoutPassword,
         });
       } catch (error) {
@@ -134,7 +134,7 @@ class UsuarioController {
         const totalPages = Math.ceil(totalUsers / limit);
         res.status(200).json({
           message:
-            "Usuarios obtenidos correctamente / Users retrieved successfully",
+            "Usuarios obtenidos correctamente",
           error: null,
           users: users,
           currentPage: page,
@@ -180,12 +180,12 @@ class UsuarioController {
         if (!user) {
           return res.status(404).json({
             message: null,
-            error: "Usuario no encontrado / User not found",
+            error: "Usuario no encontrado",
             user: null,
           });
         }
         res.status(200).json({
-          message: "Usuario obtenido correctamente / User retrieved successfully",
+          message: "Usuario obtenido correctamente",
           error: null,
           user,
         });
@@ -323,7 +323,7 @@ class UsuarioController {
         if (!user) {
           return res.status(404).json({
             message: null,
-            error: "Usuario no encontrado / User not found",
+            error: "Usuario no encontrado",
           });
         }
         let userData;

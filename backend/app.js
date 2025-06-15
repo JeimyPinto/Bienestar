@@ -7,8 +7,12 @@ const path = require("path");
 // =======================
 // Variables de entorno
 // =======================
-// Carga las variables de entorno desde .env
-require("dotenv").config();
+// Carga las variables de entorno desde el archivo adecuado
+if (process.env.NODE_ENV === 'development') {
+  require('dotenv').config({ path: '.env_local' });
+} else {
+  require('dotenv').config(); 
+}
 const PORT = process.env.PORT || 4000;
 
 // =======================

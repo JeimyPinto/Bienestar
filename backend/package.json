@@ -5,13 +5,16 @@
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch app.js",
-    "start": "npm run undo:all migrate-seed && node app.js",
-    "migrate": "npx sequelize db:migrate --config config/sequelize.js",
-    "seed": "npx sequelize-cli db:seed:all --config config/sequelize.js",
+    "dev": "export NODE_ENV=development && node --watch app.js",
+    "start": "set NODE_ENV=production && node app.js",
+    "migrate": "dotenv -e .env sequelize-cli db:migrate --config config/sequelize.js",
+    "seed": "dotenv -e .env sequelize-cli db:seed:all --config config/sequelize.js",
     "migrate-seed": "npm run migrate && npm run seed",
-    "undo:all": "dotenv -e .env sequelize db:migrate:undo:all --config config/sequelize.js && dotenv -e .env sequelize db:seed:undo:all --config config/sequelize.js"
+    "undo:all": "dotenv -e .env sequelize db:migrate:undo:all --config config/sequelize.js && dotenv -e .env sequelize db:seed:undo:all --config config/sequelize.js",
+    "migrate:dev": "dotenv -e .env_local sequelize db:migrate --config config/sequelize.js",
+    "seed:dev": "dotenv -e .env_local sequelize db:seed:all --config config/sequelize.js",
+    "migrate-seed:dev": "npm run migrate:dev && npm run seed:dev",
+    "undo:all:dev": "dotenv -e .env_local sequelize db:migrate:undo:all --config config/sequelize.js && dotenv -e .env_local sequelize db:seed:undo:all --config config/sequelize.js"
   },
   "keywords": [],
   "author": "Jeimy Pinto",
