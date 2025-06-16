@@ -251,6 +251,45 @@ class ServiceController {
       });
     }
   }
+  async getByUserId(req, res) {
+    try {
+      const userId = req.params.userId;
+      const services = await Service.findAll({
+        where: { creatorId: userId },
+        include: {
+          association: "creator",
+          model: User,
+        },
+      });
+      if (services.length === 0) {
+        throw new ErrorController(404, "No se encontraron servicios para este usuario", { services: [] });
+      }
+      res.status(200).json({
+        message: "Servicios recuperados con éxito para el usuario",
+        services,
+      });
+    } catch (error) {
+      if (error instanceof ErrorController) {
+        return res.status(error.status).json({
+          message: null,
+          error: error.message,
+          details: error.details || null,
+          services: null,
+        });
+      }
+      if (error.name === "SequelizeDatabaseError") {
+        return res.status(500).json({
+          message: "Error de base de datos",
+          details: error.message,
+        });
+      }
+      console.error(error);
+      return res.status(500).json({
+        message: "Internal server error / Error interno del servidor",
+        details: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new ServiceController();

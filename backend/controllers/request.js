@@ -224,6 +224,50 @@ class RequestController {
             });
         }
     }
+
+    async getByUserId(req, res) {
+        try {
+            const userId = req.params.id;
+            const requests = await Request.findAll({
+                where: { userId },
+                include: [
+                    {
+                        association: "applicant",
+                        model: User,
+                    },
+                    {
+                        association: "service",
+                        model: Service,
+                    }
+                ],
+            });
+            if (!requests || requests.length === 0) {
+                throw new ErrorController(404, "No se encontraron solicitudes para este usuario", { requests: [] });
+            }
+            res.status(200).json({
+                message: "Solicitudes del usuario recuperadas con éxito",
+                details: { requests },
+            });
+        } catch (error) {
+            if (error instanceof ErrorController) {
+                return res.status(error.status).json({
+                    message: error.message,
+                    details: error.details || null,
+                });
+            }
+            if (error.name === "SequelizeDatabaseError") {
+                return res.status(500).json({
+                    message: "Error de base de datos",
+                    details: error.message,
+                });
+            }
+            console.error(error);
+            res.status(500).json({
+                message: "Error interno del servidor",
+                details: error.message,
+            });
+        }
+    }
 }
 
 module.exports = new RequestController();

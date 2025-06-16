@@ -31,6 +31,9 @@ router.post("/", requestController.create);
 // Actualizar una solicitud existente
 router.put("/:id", requestController.update);
 
+// Obtener todas las solicitudes de un usuario específico
+router.get("/user/:id", requestController.getByUserId);
+
 // =======================
 // Exportación del router
 // =======================

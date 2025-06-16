@@ -1258,6 +1258,102 @@ paths:
                     type: string
                     nullable: true
                     example: null
+  /services/user/{id}:
+    get:
+      summary: Obtiene todos los servicios creados por un usuario específico
+      tags: [Service]
+      security:
+        - bearerAuth: []
+      description: Solo accesible para usuarios con rol ADMIN o SUPERADMIN. Devuelve todos los servicios cuyo campo creatorId coincide con el id proporcionado.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del usuario creador de los servicios
+      responses:
+        '200':
+          description: Servicios del usuario recuperados con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  services:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+        '404':
+          description: No se encontraron servicios para este usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  services:
+                    type: array
+                    items: {}
+        '401':
+          description: No autorizado
+        '403':
+          description: Prohibido (rol insuficiente)
+        '500':
+          description: Error interno del servidor
+  /requests/user/{id}:
+    get:
+      summary: Obtiene todas las solicitudes realizadas por un usuario específico
+      tags: [Request]
+      security:
+        - bearerAuth: []
+      description: Devuelve todas las solicitudes cuyo campo userId coincide con el id proporcionado. Solo accesible para usuarios autenticados.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del usuario solicitante
+      responses:
+        '200':
+          description: Solicitudes del usuario recuperadas con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    properties:
+                      requests:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Request'
+        '404':
+          description: No se encontraron solicitudes para este usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    properties:
+                      requests:
+                        type: array
+                        items: {}
+        '401':
+          description: No autorizado
+        '500':
+          description: Error interno del servidor
 components:
   securitySchemes:
     bearerAuth:

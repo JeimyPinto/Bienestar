@@ -134,9 +134,8 @@ export async function create(request: Record<string, unknown>, token?: string) {
         return data;
     } catch (error) {
         return {
-            message: null,
-            error: "Server error while creating request. / Error en el servidor al crear la solicitud. (" + error + ")",
-            request: null,
+            message: "Error en el servidor al crear la solicitud",
+           details:error.message
         };
     }
 }
@@ -159,17 +158,43 @@ export async function update(id: number, request: Record<string, unknown>, token
                 console.error("Detalles del error update request:", data.details);
             }
             return {
-                message: data.message ?? null,
-                error: data.error || "Error al actualizar la solicitud.",
-                request: null,
+                message: data.message,
             };
         }
         return data;
     } catch (error) {
         return {
-            message: null,
-            error: "Server error while updating request. / Error en el servidor al actualizar la solicitud. (" + error + ")",
-            request: null,
+            message: "Error en el servidor al actualizar la solicitud",
+            details: error.message,
+        };
+    }
+}
+
+// Obtener todas las solicitudes de un usuario específico
+export async function getByUserId(userId: string, token?: string) {
+    try {
+        const response = await fetch(`${url}/user/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error getByUserId requests:", data.details);
+            }
+            return {
+                message: data.message,
+            };
+        }
+        return data;
+    } catch (error) {
+        return {
+            message: "Error en el servidor al obtener las solicitudes del usuario",
+            details:error.message
         };
     }
 }

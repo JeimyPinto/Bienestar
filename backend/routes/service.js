@@ -32,7 +32,8 @@ router.get("/", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN)
 
 // Obtener todos los servicios activos (público)
 router.get("/active", serviceController.getAllActive);
-
+//Obtener todos los servicios creados por un usuario
+router.get("/user/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), serviceController.getByUserId);
 // Obtener un servicio por ID (requiere rol)
 router.get("/:id", authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR), serviceController.getById);
 

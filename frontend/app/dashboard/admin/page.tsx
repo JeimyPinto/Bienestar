@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation"
 import ServicesGallery from "../../services/servicesGallery"
 import { Service } from "../../types/service"
 import isTokenExpired from "../../lib/isTokenExpired"
-import getUserToken from "../../lib/getUserToken"
 import getToken from "../../lib/getToken"
+import getUserToken from "../../lib/getUserToken"
 import { ROLES } from "../../lib/roles"
-
+import { getByUserId } from "../../services/services/service"
 
 export default function DashboardAdmin({ role }: { role: string }) {
     const [services, setServices] = useState<Service[]>([]);
@@ -18,18 +18,27 @@ export default function DashboardAdmin({ role }: { role: string }) {
         const fetchData = async () => {
             const tokenValue = getToken();
             const userValue = getUserToken();
-            if (tokenValue) {
+            if (tokenValue && userValue?.id) {
                 if (isTokenExpired(tokenValue)) {
                     localStorage.removeItem("token");
                     setServices([]);
                 } else {
-                    setServices(userValue?.services || []);
+                    // Obtener servicios creados por el usuario desde la API
+                    try {
+                        const data = await getByUserId(userValue.id, tokenValue);
+                        if (data && data.services) {
+                            setServices(data.services);
+                        } else {
+                            setServices([]);
+                        }
+                    } catch {
+                        setServices([]);
+                    }
                 }
-            }
-            else {
+            } else {
                 setServices([]);
             }
-        }
+        };
         fetchData();
     }, []);
 
@@ -67,13 +76,15 @@ export default function DashboardAdmin({ role }: { role: string }) {
                     )}
                 </div>
             </section>
-            <section className="bg-white shadow-md rounded-lg p-6 mt-6">
-                <h2 className="text-2xl font-bold mb-4">Servicios Creados</h2>
-                <ServicesGallery
-                    services={services}
-                    message="No tienes servicios disponibles."
-                />
-            </section>
+            {(role === ROLES.ADMIN || role === ROLES.SUPERADMIN) && (
+                <section className="bg-white shadow-md rounded-lg p-6 mt-6">
+                    <h2 className="text-2xl font-bold mb-4">Servicios Creados</h2>
+                    <ServicesGallery
+                        services={services}
+                        message="No tienes servicios creados."
+                    />
+                </section>
+            )}
         </>
     );
 }

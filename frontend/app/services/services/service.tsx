@@ -155,9 +155,41 @@ export async function update(id: string, service: Service, file?: File, token?: 
         return data;
     } catch (error) {
         return {
-            message: null,
-            error: "Error Service / Error en el servidor. (" + error + ")",
-            service: null,
+            message: "Error en el servidor",
+            details: error.message,
+        };
+    }
+}
+
+// Obtener servicios creados por un usuario específico (ADMIN, SUPERADMIN)
+export async function getByUserId(userId: string, token?: string) {
+    try {
+        const response = await fetch(`${url}/user/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            if (data.details) {
+                console.error("Detalles del error getByUserId services:", data.details);
+            }
+            return {
+                message: data.message,
+                services: [],
+            };
+        }
+        return {
+            message: data.message,
+            services: data.services ?? [],
+        };
+    } catch (error) {
+        return {
+            message: "Server error while fetching user services. / Error en el servidor al obtener los servicios del usuario",
+            details: error.message
         };
     }
 }
