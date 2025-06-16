@@ -1,8 +1,11 @@
 // ==================== LIBRERÍAS ====================
 const bcrypt = require("bcrypt");
+const fs = require("fs");
+const path = require("path");
 
 // ==================== CONSTANTES ====================
 const enabledRoles = require("../constants/roles.js");
+const enabledRolesArr = Object.values(enabledRoles);
 const saltRounds = 10;
 
 // ==================== MODELOS ====================
@@ -267,6 +270,14 @@ class UsuarioController {
           user,
         });
       } catch (error) {
+        // Eliminar archivo subido si existe y hubo error
+        if (req.file) {
+          try {
+            fs.unlinkSync(req.file.path);
+          } catch (err) {
+            console.warn("No se pudo eliminar el archivo subido tras error:", err.message);
+          }
+        }
         if (error instanceof ErrorController) {
           return res.status(error.status).json({
             message: error.message,
@@ -318,7 +329,7 @@ class UsuarioController {
         }
         let userData;
         let updateFields = {};
-        let isAdmin = enabledRoles.includes(req.user.role);
+        let isAdmin = enabledRolesArr.includes(req.user.role);
 
         //Si es admin permite actualizar todos los campos, si no, solo permite actualizar algunos
         if (isAdmin) {
@@ -378,6 +389,14 @@ class UsuarioController {
           user: userWithoutPassword,
         });
       } catch (error) {
+        // Eliminar archivo subido si existe y hubo error
+        if (req.file) {
+          try {
+            fs.unlinkSync(req.file.path);
+          } catch (err) {
+            console.warn("No se pudo eliminar el archivo subido tras error:", err.message);
+          }
+        }
         if (error instanceof ErrorController) {
           return res.status(error.status).json({
             message: error.message,

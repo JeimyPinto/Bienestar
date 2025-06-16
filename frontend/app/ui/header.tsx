@@ -123,21 +123,21 @@ export default function Header() {
                   onClick={() => setMenuOpen(false)}
                 >
                   <Image
-                    src={
-                      user?.image
-                        ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + user.image
-                        : "/images/ico-profile.svg"
-                    }
-                    alt={`${user?.firstName ?? ""}`.trim() || "Icono de usuario"}
-                    width={32}
-                    height={32}
-                    priority={true}
-                    className="mr-2"
+                  src={
+                    user?.image
+                    ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + "/users/" + user.image
+                    : "/images/ico-profile.svg"
+                  }
+                  alt={`${user?.firstName ?? ""}`.trim() || "Icono de usuario"}
+                  width={32}
+                  height={32}
+                  priority={true}
+                  className="object-cover mr-2 w-8 h-8"
                   />
                   <span className="relative z-10">
-                    {user
-                      ? `Dashboard de ${user.firstName ? user.firstName.split(" ")[0] : "Usuario"}`
-                      : "Cargando..."}
+                  {user
+                    ? `Dashboard de ${user.firstName ? user.firstName.split(" ")[0] : "Usuario"}`
+                    : "Cargando..."}
                   </span>
                   <span className="absolute left-0 bottom-0 w-0 h-1 bg-cian transition-all duration-300 group-hover:w-full group-focus:w-full rounded"></span>
                 </Link>
