@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { ServiceFormProps, Service } from "../types/service"
-import { User } from "../types";
+import { User } from "../types/user"
 import { create, update } from "../services/services/service"
 import { Area } from "../types/service";
+import isTokenExpired from "../lib/isTokenExpired"
+import getToken from "../lib/getToken"
 import getUserToken from "../lib/getUserToken"
 
 const emptyService: Service = {
@@ -23,29 +25,37 @@ export default function ServiceForm(props: ServiceFormProps) {
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [newService, setNewService] = useState<Service>(emptyService);
+    const [previewImage, setPreviewImage] = useState<string>("");
+    const firstRender = useRef(true);
 
-    // Obtener token y usuario autenticado
+    // Mostrar modal automáticamente al montar
     useEffect(() => {
-        let tokenValue: string | null = null;
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-        if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
-            tokenValue = localStorage.getItem("token");
-        } else {
-            // Buscar token en cookies
-            const cookie = document.cookie;
-            tokenValue = cookie.split("; ").find((row) =>
-                row.startsWith("token="))?.split("=")[1] || null;
+        if (dialogRef && typeof dialogRef !== "function" && dialogRef.current) {
+            dialogRef.current.showModal?.();
         }
+    }, [dialogRef]);
 
-        setToken(tokenValue);
-
-        if (tokenValue) {
-            setUser(getUserToken());
-        } else {
-            setUser(null);
-        }
-    }, []);
+     // Obtener token
+        useEffect(() => {
+            const fetchData = async () => {
+              const tokenValue = getToken();
+              const userValue = getUserToken();
+              if (tokenValue) {
+                if (isTokenExpired(tokenValue)) {
+                  localStorage.removeItem("token");
+                  setToken(null);
+                  setUser(null);
+                } else {
+                  setToken(tokenValue);
+                    setUser(userValue as User);
+                }
+              } else {
+                setToken(null);
+                setUser(null);
+              }
+            }
+            fetchData();
+        }, []);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -54,8 +64,10 @@ export default function ServiceForm(props: ServiceFormProps) {
                 ...serviceToEdit,
                 file: null, // Limpiar el archivo anterior si es edición
             });
+            setPreviewImage((process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + (serviceToEdit.image || ""));
         } else if (mode === "create") {
             setNewService(emptyService);
+            setPreviewImage("");
         }
     }, [mode, serviceToEdit]);
 
@@ -73,8 +85,8 @@ export default function ServiceForm(props: ServiceFormProps) {
             setNewService((prevService) => ({
                 ...prevService,
                 file: file,
-                image: URL.createObjectURL(file), // Previsualizar la imagen nueva
             }));
+            setPreviewImage(URL.createObjectURL(file));
         }
     }
 
@@ -233,14 +245,10 @@ export default function ServiceForm(props: ServiceFormProps) {
                         <label className="block text-sm font-medium text-azul">
                             Imagen de Perfil
                         </label>
-                        {mode === "edit" && newService.image && (
+                        {previewImage && (
                             <div className="mb-4">
                                 <Image
-                                    src={
-                                        newService.file
-                                            ? newService.image
-                                            : (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + (serviceToEdit?.image || newService.image)
-                                    }
+                                    src={previewImage}
                                     alt={`${newService.name} avatar`}
                                     width={96}
                                     height={96}

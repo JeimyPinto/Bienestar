@@ -3,7 +3,8 @@ const Service = db.Service;
 const User = db.User;
 const Request = db.Request;
 const { requestSchema } = require("../schemas/request.js");
-const { DatabaseError, ValidationError } = require("sequelize");
+const ErrorController = require("../controllers/error.js");
+
 class RequestController {
     async getAll(req, res) {
         try {
@@ -20,37 +21,36 @@ class RequestController {
                 ],
             });
             if (requests.length === 0) {
-                return res.status(404).send({
-                    message: null,
-                    error: "No requests found / No se encontraron solicitudes",
-                    requests: [],
-                });
+                throw new ErrorController(404, "No se encontraron solicitudes", { requests: [] });
             }
-            res.status(200).send({
-                message: "Requests retrieved successfully / Solicitudes recuperadas con éxito",
-                error: null,
-                requests,
+            res.status(200).json({
+                message: "Solicitudes recuperadas con éxito",
+                details: { requests },
             });
         } catch (error) {
-            if (error.errors) {
-                res.status(400).send({
-                    message: null,
-                    error: "Validation Error / Error de Validación ( " + error.message + " )",
-                    requests: [],
-                });
-            } else if (error instanceof DatabaseError) {
-                res.status(500).send({
-                    message: null,
-                    error: "Database Error / Error de Base de Datos ( " + error.message + " )",
-                    requests: [],
-                });
-            } else {
-                res.status(500).send({
-                    message: null,
-                    error: "Error retrieving requests / Error al recuperar solicitudes ( " + error.message + " )",
-                    requests: [],
+            if (error instanceof ErrorController) {
+                return res.status(error.status).json({
+                    message: error.message,
+                    details: error.details || null,
                 });
             }
+            if (error.errors) {
+                return res.status(400).json({
+                    message: "Error de Validación",
+                    details: error.errors,
+                });
+            }
+            if (error.name === "SequelizeDatabaseError") {
+                return res.status(500).json({
+                    message: "Error de Base de Datos",
+                    details: error.message,
+                });
+            }
+            console.error(error);
+            res.status(500).json({
+                message: "Error interno del servidor",
+                details: error.message,
+            });
         }
     }
 
@@ -70,38 +70,36 @@ class RequestController {
                 ],
             });
             if (requests.length === 0) {
-                return res.status(404).send({
-                    message: null,
-                    error: "No active requests found / No se encontraron solicitudes activas",
-                    requests: [],
-
-                });
+                throw new ErrorController(404, "No se encontraron solicitudes activas", { requests: [] });
             }
-            res.status(200).send({
-                message: "Active requests retrieved successfully / Solicitudes activas recuperadas con éxito",
-                error: null,
-                requests,
+            res.status(200).json({
+                message: "Solicitudes activas recuperadas con éxito",
+                details: { requests },
             });
         } catch (error) {
-            if (error instanceof ValidationError) {
-                res.status(400).send({
-                    message: null,
-                    error: "Validation Error / Error de Validación ( " + error.message + " )",
-                    requests: [],
-                });
-            } else if (error instanceof DatabaseError) {
-                res.status(500).send({
-                    message: "Database Error / Error de Base de Datos",
-                    error: error.message,
-                    requests: [],
-                });
-            } else {
-                res.status(500).send({
-                    message: null,
-                    error: "Error retrieving active requests / Error al recuperar solicitudes activas",
-                    requests: [],
+            if (error instanceof ErrorController) {
+                return res.status(error.status).json({
+                    message: error.message,
+                    details: error.details || null,
                 });
             }
+            if (error.errors) {
+                return res.status(400).json({
+                    message: "Error de Validación",
+                    details: error.errors,
+                });
+            }
+            if (error.name === "SequelizeDatabaseError") {
+                return res.status(500).json({
+                    message: "Error de Base de Datos",
+                    details: error.message,
+                });
+            }
+            console.error(error);
+            res.status(500).json({
+                message: "Error interno del servidor",
+                details: error.message,
+            });
         }
     }
 
@@ -120,50 +118,71 @@ class RequestController {
                 ],
             });
             if (!request) {
-                return res.status(404).send({
-                    message: null,
-                    error: "Request not found / Solicitud no encontrada ( " + req.params.id + " )",
-                    request: null,
-                });
+                throw new ErrorController(404, "Solicitud no encontrada", { request: null });
             }
-            res.status(200).send({
-                message: "Request retrieved successfully / Solicitud recuperada con éxito",
-                error: null,
-                request,
+            res.status(200).json({
+                message: "Solicitud recuperada con éxito",
+                details: { request },
             });
         } catch (error) {
-            res.status(500).send({
-                message: null,
-                error: "Error retrieving request / Error al recuperar solicitud ( " + error.message + " )",
-                request: null,
+            if (error instanceof ErrorController) {
+                return res.status(error.status).json({
+                    message: error.message,
+                    details: error.details || null,
+                });
+            }
+            if (error.errors) {
+                return res.status(400).json({
+                    message: "Error de Validación",
+                    details: error.errors,
+                });
+            }
+            if (error.name === "SequelizeDatabaseError") {
+                return res.status(500).json({
+                    message: "Error de Base de Datos",
+                    details: error.message,
+                });
+            }
+            console.error(error);
+            res.status(500).json({
+                message: "Error interno del servidor",
+                details: error.message,
             });
         }
     }
 
     async create(req, res) {
         try {
-            const requestData = requestSchema.parse(req.body)
-            const request = await Request.create(requestData)
-            res.status(201).send({
-                message: "Request created successfully / Solicitud creada con éxito",
-                error: null,
-                request,
+            const requestData = requestSchema.parse(req.body);
+            const request = await Request.create(requestData);
+            res.status(201).json({
+                message: "Solicitud creada con éxito",
+                details: { request },
             });
         } catch (error) {
             if (error.errors) {
-                res.status(400).send({
-                    message: null,
-                    error: "Validation Error / Error de Validación ( " + error.message + " )",
-                    request: null,
+                return res.status(400).json({
+                    message: "Error de Validación",
+                    details: error.errors,
                 });
             }
-            else {
-                res.status(500).send({
-                    message: null,
-                    error: "Error creating request / Error al crear solicitud ( " + error.message + " )",
-                    request: null,
+            if (error instanceof ErrorController) {
+                return res.status(error.status).json({
+                    message: error.message,
+                    details: error.details || null,
                 });
             }
+            if (error.name === "SequelizeDatabaseError") {
+                return res.status(500).json({
+                    message: "Error de Base de Datos",
+                    details: error.message,
+                });
+            }
+            console.error(error);
+            res.status(500).json({
+                message: "Error interno del servidor",
+                details: error.message,
+            });
         }
     }
 
@@ -171,35 +190,38 @@ class RequestController {
         try {
             const requestData = requestSchema.parse(req.body);
             const request = await Request.findByPk(req.params.id);
-            if (request) {
-                await request.update(requestData);
-                res.status(200).send({
-                    message: "Request updated successfully / Solicitud actualizada con éxito",
-                    error: null,
-                    request,
-                });
-            } else {
-                res.status(404).send({
-                    message: null,
-                    error: "Request not found / Solicitud no encontrada ( " + req.params.id + " )",
-                    request
-                });
+            if (!request) {
+                throw new ErrorController(404, "Solicitud no encontrada", { request: null });
             }
+            await request.update(requestData);
+            res.status(200).json({
+                message: "Solicitud actualizada con éxito",
+                details: { request },
+            });
         } catch (error) {
             if (error.errors) {
-                res.status(400).send({
-                    message: null,
-                    error: "Validation Error / Error de Validación ( " + error.message + " )",
-                    request: null,
+                return res.status(400).json({
+                    message: "Error de Validación",
+                    details: error.errors,
                 });
             }
-            else {
-                res.status(500).send({
-                    message: null,
-                    error: "Error updating request / Error al actualizar solicitud ( " + error.message + " )",
-                    request: null,
+            if (error instanceof ErrorController) {
+                return res.status(error.status).json({
+                    message: error.message,
+                    details: error.details || null,
                 });
             }
+            if (error.name === "SequelizeDatabaseError") {
+                return res.status(500).json({
+                    message: "Error de Base de Datos",
+                    details: error.message,
+                });
+            }
+            console.error(error);
+            res.status(500).json({
+                message: "Error interno del servidor",
+                details: error.message,
+            });
         }
     }
 }

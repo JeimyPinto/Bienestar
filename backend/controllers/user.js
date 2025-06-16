@@ -244,18 +244,20 @@ class UsuarioController {
           await saveUserImage(user, req.file);
         }
 
-        // Enviar correo de bienvenida
+        // Enviar correo de bienvenida solo en producción
         let mailSent = false;
-        try {
-          await sendUserCreatedMail({
-            to: user.email,
-            firstName: user.firstName,
-            documentNumber: user.documentNumber,
-            password: plainPassword
-          });
-          mailSent = true;
-        } catch (mailError) {
-          console.warn("Usuario creado, pero error enviando correo:", mailError.message);
+        if (process.env.NODE_ENV === 'production') {
+          try {
+            await sendUserCreatedMail({
+              to: user.email,
+              firstName: user.firstName,
+              documentNumber: user.documentNumber,
+              password: plainPassword
+            });
+            mailSent = true;
+          } catch (mailError) {
+            console.warn("Usuario creado, pero error enviando correo:", mailError.message);
+          }
         }
         // Auditoría: registrar creación desde backend
         await auditUserAction(db, {
@@ -369,10 +371,13 @@ class UsuarioController {
 
         const oldUserData = user.get({ plain: true });
         await user.update(updateFields);
-        await sendUserUpdatedMail({
-          to: user.email,
-          firstName: user.firstName,
-        });
+        // Enviar correo de actualización solo en producción
+        if (process.env.NODE_ENV === 'production') {
+          await sendUserUpdatedMail({
+            to: user.email,
+            firstName: user.firstName,
+          });
+        }
         // Auditoría: registrar actualización desde backend
         await auditUserAction(db, {
           user_id: user.id,

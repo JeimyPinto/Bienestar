@@ -29,7 +29,7 @@ export default function UserForm(props: UserFormProps) {
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-    // Obtener token y usuario autenticado
+    // Obtener token
     useEffect(() => {
         const fetchData = async () => {
           const tokenValue = getToken();
@@ -37,7 +37,6 @@ export default function UserForm(props: UserFormProps) {
             if (isTokenExpired(tokenValue)) {
               localStorage.removeItem("token");
               setToken(null);
-              router.push("/auth");
             } else {
               setToken(tokenValue);
             }
@@ -54,7 +53,7 @@ export default function UserForm(props: UserFormProps) {
             setNewUser({ ...userToEdit, password: "" });
             setPreviewImage(null); // Limpiar preview al abrir modal de edición
         } else if (mode === "create") {
-            setNewUser(emptyUser);
+            setNewUser({ ...emptyUser }); // Asegura que todos los campos estén vacíos
             setPreviewImage(null);
         }
     }, [mode, userToEdit]);
