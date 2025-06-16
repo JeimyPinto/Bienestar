@@ -30,7 +30,7 @@ console.log('CONFIG EXPORT:', config);
 async function connectDB(sequelize) {
   try {
     await sequelize.authenticate();
-    console.log('Conexión a la base de datos exitosa.');
+    console.log(`Conexión a la base de datos exitosa: ${process.env.DB_NAME}`);
   } catch (error) {
     console.error('No se pudo conectar a la base de datos:', error);
     throw error;

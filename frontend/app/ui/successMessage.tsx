@@ -2,11 +2,11 @@ import React from "react";
 
 interface SuccessMessageProps {
   message: string;
-  duration?: number; // Duración opcional para ocultar automáticamente el mensaje
-  onClose?: () => void; // Función opcional para cerrar el mensaje manualmente
+  duration?: number;
+  onClose?: () => void; 
 }
 
-const SuccessMessage: React.FC<SuccessMessageProps> = ({ message, duration = 5000, onClose }) => {
+const SuccessMessage: React.FC<SuccessMessageProps> = ({ message, duration = 10000, onClose }) => {
   React.useEffect(() => {
     if (duration && onClose) {
       const timer = setTimeout(onClose, duration);

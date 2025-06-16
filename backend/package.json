@@ -5,8 +5,8 @@
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "export NODE_ENV=development && node --watch app.js",
-    "start": "set NODE_ENV=production && node app.js",
+    "dev": "cross-env NODE_ENV=development node --watch app.js",
+    "start": "cross-env NODE_ENV=production node app.js",
     "migrate": "dotenv -e .env sequelize-cli db:migrate --config config/sequelize.js",
     "seed": "dotenv -e .env sequelize-cli db:seed:all --config config/sequelize.js",
     "migrate-seed": "npm run migrate && npm run seed",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
     "chalk": "^4.1.2",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "dotenv-cli": "^8.0.0",
     "eslint": "^9.27.0",

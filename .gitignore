@@ -2,6 +2,7 @@
 
 backend/node_modules/*
 backend/.env
+backend/.env_local
 backend/package-lock.json
 procedimientos.txt
 

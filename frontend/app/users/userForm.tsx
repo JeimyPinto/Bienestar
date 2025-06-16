@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { UserFormProps, User } from "../types"
 import { create, update } from "../services/services/user";
+import { ROLES } from "../lib/enabledRoles";
 const emptyUser: User = {
     id: "",
     firstName: "",
@@ -246,8 +247,11 @@ export default function UserForm(props: UserFormProps) {
                             className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
                             required
                         >
-                            <option value="user">Usuario</option>
-                            <option value="admin">Administrador</option>
+                            {Object.entries(ROLES).map(([key, value]) => (
+                                <option key={value} value={value}>
+                                    {key.charAt(0) + key.slice(1).toLowerCase()}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div>

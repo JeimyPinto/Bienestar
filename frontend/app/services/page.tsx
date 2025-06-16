@@ -10,6 +10,9 @@ import ServiceTable from "./serviceTable";
 import SectionHeader from "../ui/sectionHeader";
 import { getAllActive } from "../services/services/service";
 import ServiceForm from "./serviceForm";
+import isTokenExpired from "../lib/isTokenExpired"
+import getUserToken from "../lib/getUserToken"
+import getToken from "../lib/getToken"
 
 export default function ServicePage() {
     const [user, setUser] = useState<User | null>(null);
@@ -23,30 +26,26 @@ export default function ServicePage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
-        let tokenValue: string | null = null;
-        if (
-            process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
-            process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
-        ) {
-            tokenValue = localStorage.getItem("token");
-        } else {
-            const cookie = document.cookie;
-            tokenValue =
-                cookie
-                    .split("; ")
-                    .find((row) => row.startsWith("token="))
-                    ?.split("=")[1] || null;
-        }
-        if (tokenValue) {
-            try {
-                setUser(JSON.parse(atob(tokenValue.split(".")[1])));
-            } catch {
-                setUser(null);
+        const fetchData = async () => {
+          const tokenValue = getToken();
+          const userValue = getUserToken();
+          if (tokenValue) {
+            if (isTokenExpired(tokenValue)) {
+              localStorage.removeItem("token");
+              setToken(null);
+              setUser(null);
+            } else {
+              setToken(tokenValue);
+              setUser(userValue as User);
             }
-        } else {
+          } else {
+            setToken(null);
             setUser(null);
+          }
         }
-    }, []);
+        fetchData();
+      }
+    , []);
 
     useEffect(() => {
         async function fetchServices() {
@@ -85,7 +84,7 @@ export default function ServicePage() {
     return (
         <>
             <Header />
-            {user?.role === "user" ? (
+            {(!user || user?.role === "user") ? (
                 <main className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-8 sm:px-6 sm:py-12 md:px-10 md:py-16 shadow-xl mx-auto w-full max-w-full transition-all">
                     <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-azul">Servicios Disponibles</h1>
                     <p className="mb-6 text-center text-gray-700 max-w-5xl">
@@ -99,7 +98,7 @@ export default function ServicePage() {
                     ) : services.length > 0 ? (
                         <ServicesGallery services={services} />
                     ) : (
-                        <ErrorMessage message={message || "No se encontraron servicios activos."} />
+                        <ErrorMessage message={message} />
                     )}
                 </main>
             ) : (

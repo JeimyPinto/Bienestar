@@ -74,7 +74,7 @@ const app = express();
 // =======================
 // Solo permite solicitudes desde los orígenes definidos
 const allowedOrigins = [
-  "http://localhost:3001",
+  "http://localhost:3001","http://localhost:3000"
   , "http://127.0.0.1:3000 ",
   "https://bienestar-frontend.onrender.com",
 ];
@@ -160,7 +160,7 @@ connectDB(db.sequelize)
   })
   .finally(() => {
     app.listen(PORT, () => {
-      console.log(`Servidor corriendo en: http://localhost:${PORT}`);
+      console.log(`Servidor corriendo en: http://127.0.0.1:${PORT}`);
     });
   });
 
