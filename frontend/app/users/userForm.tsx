@@ -3,6 +3,9 @@ import Image from "next/image";
 import { UserFormProps, User } from "../types"
 import { create, update } from "../services/services/user";
 import { ROLES } from "../lib/enabledRoles";
+import isTokenExpired from "../lib/isTokenExpired"
+import getToken from "../lib/getToken"
+
 const emptyUser: User = {
     id: "",
     firstName: "",
@@ -24,30 +27,35 @@ export default function UserForm(props: UserFormProps) {
     const { dialogRef, closeDialog, onClose, mode, userToEdit } = props;
     const [token, setToken] = useState<string | null>(null);
     const [newUser, setNewUser] = useState<User>(emptyUser);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     // Obtener token y usuario autenticado
     useEffect(() => {
-        let tokenValue: string | null = null;
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-        if (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1")) {
-            tokenValue = localStorage.getItem("token");
-        } else {
-            const cookie = document.cookie;
-            tokenValue =
-                cookie
-                    .split("; ")
-                    .find((row) => row.startsWith("token="))
-                    ?.split("=")[1] || null;
+        const fetchData = async () => {
+          const tokenValue = getToken();
+          if (tokenValue) {
+            if (isTokenExpired(tokenValue)) {
+              localStorage.removeItem("token");
+              setToken(null);
+              router.push("/auth");
+            } else {
+              setToken(tokenValue);
+            }
+          } else {
+            setToken(null);
+          }
         }
-        setToken(tokenValue);
+        fetchData();
     }, []);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
         if (mode === "edit" && userToEdit) {
             setNewUser({ ...userToEdit, password: "" });
+            setPreviewImage(null); // Limpiar preview al abrir modal de edición
         } else if (mode === "create") {
             setNewUser(emptyUser);
+            setPreviewImage(null);
         }
     }, [mode, userToEdit]);
 
@@ -274,13 +282,13 @@ export default function UserForm(props: UserFormProps) {
                     <label className="block text-sm font-medium text-azul">
                         Imagen de Perfil
                     </label>
-                    {mode === "edit" && newUser.image && (
+                    {mode === "edit" && (previewImage || newUser.image) && (
                         <div className="mb-4">
                             <Image
                                 src={
-                                    newUser?.image
-                                        ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${newUser.image}`
-                                        : "/images/ico-profile.svg"
+                                    previewImage
+                                        ? previewImage
+                                        : `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${newUser.image}`
                                 }
                                 alt={`${newUser.firstName} avatar`}
                                 width={96}
@@ -301,6 +309,7 @@ export default function UserForm(props: UserFormProps) {
                                     file: file, // el archivo real
                                     image: file.name, // el nombre del archivo
                                 }));
+                                setPreviewImage(URL.createObjectURL(file));
                             }
                         }}
                         className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
