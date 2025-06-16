@@ -25,7 +25,7 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
                 <Image
                     src={
                         user.image
-                            ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + "/images/users" + user.image
+                            ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + user.image
                             : "/images/logo-sena.png"
                     }
                     alt={`${user.firstName} ${user.lastName}`}

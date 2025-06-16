@@ -32,14 +32,11 @@ export default function ServicePage() {
           if (tokenValue) {
             if (isTokenExpired(tokenValue)) {
               localStorage.removeItem("token");
-              setToken(null);
               setUser(null);
             } else {
-              setToken(tokenValue);
               setUser(userValue as User);
             }
           } else {
-            setToken(null);
             setUser(null);
           }
         }

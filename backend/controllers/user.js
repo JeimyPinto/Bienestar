@@ -12,6 +12,8 @@ const UserAudit = db.user_audit;
 
 // ==================== HERRAMIENTAS / UTILIDADES ====================
 const { sendUserCreatedMail, sendUserUpdatedMail } = require("../utils/sendMail.js");
+const saveUserImage = require("../utils/saveUserImage.js");
+const auditUserAction = require("../utils/auditUserAction.js");
 
 // ==================== ESQUEMAS DE VALIDACIÓN ====================
 const {
@@ -231,20 +233,12 @@ class UsuarioController {
           password: hashedPassword,
           status: "activo",
           role: userData.role,
-          image: null // temporalmente null, para manejar la imagen después
+          image: null // nunca tomar del body
         });
 
-        // Si se proporciona una imagen, usar FileController para manejar la carga
+        // Si se proporciona una imagen, usar utilidad para manejar la carga
         if (req.file) {
-          // Normaliza la ruta para que funcione en Windows y Linux
-          const fullPath = req.file.path.replace(/\\/g, "/");
-          const uploadIndex = fullPath.indexOf("uploads");
-          if (uploadIndex !== -1) {
-            user.image = fullPath.substring(uploadIndex);
-          } else {
-            user.image = req.file.filename;
-          }
-          await user.update({ image: user.image });
+          await saveUserImage(user, req.file);
         }
 
         // Enviar correo de bienvenida
@@ -261,16 +255,12 @@ class UsuarioController {
           console.warn("Usuario creado, pero error enviando correo:", mailError.message);
         }
         // Auditoría: registrar creación desde backend
-        try {
-          await UserAudit.create({
-            user_id: user.id,
-            action: 'INSERT',
-            new_data: user.toJSON(),
-            changed_by: req.user ? req.user.email : null
-          });
-        } catch (auditError) {
-          console.warn('No se pudo registrar auditoría de creación:', auditError.message);
-        }
+        await auditUserAction(db, {
+          user_id: user.id,
+          action: 'INSERT',
+          new_data: user.toJSON(),
+          changed_by: req.user ? req.user.email : null
+        });
         res.status(201).json({
           message: `Usuario creado correctamente / User created successfully${mailSent ? " (Se ha enviado una notificación al usuario con su cuenta creada / A notification has been sent to the user with their account details)" : ""}`,
           error: null,
@@ -342,21 +332,28 @@ class UsuarioController {
           } else {
             updateFields.password = user.password; // Mantiene la contraseña anterior 
           }
-          if (userData.image !== undefined) updateFields.image = userData.image;
+          // Nunca tomar image del body si hay archivo
+          if (req.file) {
+            updateFields.image = req.file.filename;
+          } else if (userData.image !== undefined) {
+            updateFields.image = userData.image;
+          }
         } else {
           userData = await userUpdateSelfSchema.parseAsync(req.body);
           if (userData.phone !== undefined) updateFields.phone = userData.phone;
           if (userData.email !== undefined) updateFields.email = userData.email;
-          if (userData.image !== undefined) updateFields.image = userData.image;
+          // Nunca tomar image del body si hay archivo
+          if (req.file) {
+            updateFields.image = req.file.filename;
+          } else if (userData.image !== undefined) {
+            updateFields.image = userData.image;
+          }
         }
 
         // Manejo de archivo si se subió uno nuevo
         if (req.file) {
-          const fullPath = req.file.path.replace(/\\/g, "/");
-          const uploadIndex = fullPath.indexOf("uploads");
-          updateFields.image = uploadIndex !== -1
-            ? fullPath.substring(uploadIndex)
-            : req.file.filename;
+          await saveUserImage(user, req.file);
+          updateFields.image = req.file.filename;
         }
 
         const oldUserData = user.get({ plain: true });
@@ -366,23 +363,18 @@ class UsuarioController {
           firstName: user.firstName,
         });
         // Auditoría: registrar actualización desde backend
-        try {
-          await UserAudit.create({
-            user_id: user.id,
-            action: 'UPDATE',
-            old_data: oldUserData,
-            new_data: user.get({ plain: true }),
-            changed_by: req.user ? req.user.email : null
-          });
-        } catch (auditError) {
-          console.warn('No se pudo registrar auditoría de actualización:', auditError.message);
-        }
+        await auditUserAction(db, {
+          user_id: user.id,
+          action: 'UPDATE',
+          old_data: oldUserData,
+          new_data: user.get({ plain: true }),
+          changed_by: req.user ? req.user.email : null
+        });
         // Excluir la contraseña del usuario al devolver los datos
         const { password, ...userWithoutPassword } = user.get({ plain: true });
 
         res.status(200).json({
           message: `Usuario actualizado correctamente por ${req.user.firstName} ${req.user.lastName} / User updated successfully by ${req.user.firstName} ${req.user.lastName} `,
-          error: null,
           user: userWithoutPassword,
         });
       } catch (error) {

@@ -187,6 +187,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 aria-disabled={loading || !recaptchaToken}
+                disabled={loading || !recaptchaToken}
                 className="w-full bg-magenta text-white font-semibold py-3 px-4 rounded-lg hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta transition disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
                 {loading ? "Iniciando sesión..." : "Iniciar sesión"}

@@ -279,7 +279,7 @@ export default function UserForm(props: UserFormProps) {
                             <Image
                                 src={
                                     newUser?.image
-                                        ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + newUser.image
+                                        ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${newUser.image}`
                                         : "/images/ico-profile.svg"
                                 }
                                 alt={`${newUser.firstName} avatar`}

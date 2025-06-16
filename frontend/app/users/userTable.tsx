@@ -198,7 +198,7 @@ export default function UserTable() {
                                                 <Image
                                                     src={
                                                         user?.image
-                                                            ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + user.image
+                                                            ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${user.image}`
                                                             : "/images/ico-profile.svg"
                                                     }
                                                     alt={`${user.firstName} avatar`}
