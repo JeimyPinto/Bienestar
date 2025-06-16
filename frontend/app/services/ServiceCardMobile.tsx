@@ -1,7 +1,7 @@
-import React from "react";
-import Image from "next/image";
-import { Service } from "../../types/service";
-import { areaColors } from "../../styles/areaColors";
+import React from "react"
+import Image from "next/image"
+import { Service } from "../types/service"
+import { areaColors } from "../styles/areaColors"
 
 interface Props {
   services: Service[];

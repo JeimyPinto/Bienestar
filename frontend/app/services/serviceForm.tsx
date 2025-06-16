@@ -64,7 +64,12 @@ export default function ServiceForm(props: ServiceFormProps) {
                 ...serviceToEdit,
                 file: null, // Limpiar el archivo anterior si es edición
             });
-            setPreviewImage((process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + (serviceToEdit.image || ""));
+            // Mostrar imagen actual si existe
+            if (serviceToEdit.image) {
+                setPreviewImage(`${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/services/${serviceToEdit.image}`);
+            } else {
+                setPreviewImage("");
+            }
         } else if (mode === "create") {
             setNewService(emptyService);
             setPreviewImage("");
