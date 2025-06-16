@@ -2,9 +2,8 @@
 
 backend/node_modules/*
 backend/.env
-backend/.env_local
+backend/config/config.json
 backend/package-lock.json
-procedimientos.txt
 
 
 frontend/node_modules/*
