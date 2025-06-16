@@ -1,7 +1,6 @@
 // ==================== LIBRERÍAS ====================
 const bcrypt = require("bcrypt");
 const fs = require("fs");
-const path = require("path");
 
 // ==================== CONSTANTES ====================
 const enabledRoles = require("../constants/roles.js");
@@ -11,7 +10,6 @@ const saltRounds = 10;
 // ==================== MODELOS ====================
 const db = require("../models/index.js");
 const User = db.User;
-const UserAudit = db.user_audit;
 
 // ==================== HERRAMIENTAS / UTILIDADES ====================
 const { sendUserCreatedMail, sendUserUpdatedMail } = require("../utils/sendMail.js");
@@ -331,31 +329,45 @@ class UsuarioController {
         }
         let userData;
         let updateFields = {};
-        let isAdmin = enabledRolesArr.includes(req.user.role);
+        // Solo SUPERADMIN puede cambiar el campo 'role'
+        const isSuperAdmin = req.user && req.user.role === "superadmin";
+        const isAdmin = req.user && req.user.role === "admin";
 
-        //Si es admin permite actualizar todos los campos, si no, solo permite actualizar algunos
-        if (isAdmin) {
+        if (isSuperAdmin) {
+          // SUPERADMIN puede actualizar todos los campos, incluido 'role'
           userData = await adminUpdateUserSchema.parseAsync(req.body);
-          updateFields = {
-            ...userData,
-          };
-          //Si el usuario no proporciona una contraseña, se usa el número de documento como contraseña sino se deja la anterior encontrada
+          updateFields = { ...userData };
           if (userData.password) {
             updateFields.password = await bcrypt.hash(userData.password, saltRounds);
           } else {
-            updateFields.password = user.password; // Mantiene la contraseña anterior 
+            updateFields.password = user.password;
           }
-          // Nunca tomar image del body si hay archivo
+          if (req.file) {
+            updateFields.image = req.file.filename;
+          } else if (userData.image !== undefined) {
+            updateFields.image = userData.image;
+          }
+        } else if (isAdmin) {
+          // ADMIN puede actualizar todos los campos excepto 'role'
+          userData = await adminUpdateUserSchema.parseAsync(req.body);
+          // Eliminar 'role' si viene en el body
+          const { role, ...fieldsWithoutRole } = userData;
+          updateFields = { ...fieldsWithoutRole };
+          if (userData.password) {
+            updateFields.password = await bcrypt.hash(userData.password, saltRounds);
+          } else {
+            updateFields.password = user.password;
+          }
           if (req.file) {
             updateFields.image = req.file.filename;
           } else if (userData.image !== undefined) {
             updateFields.image = userData.image;
           }
         } else {
+          // Otros roles solo pueden actualizar teléfono, email o imagen
           userData = await userUpdateSelfSchema.parseAsync(req.body);
           if (userData.phone !== undefined) updateFields.phone = userData.phone;
           if (userData.email !== undefined) updateFields.email = userData.email;
-          // Nunca tomar image del body si hay archivo
           if (req.file) {
             updateFields.image = req.file.filename;
           } else if (userData.image !== undefined) {

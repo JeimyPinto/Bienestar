@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { UserFormProps, User } from "../types"
 import { create, update } from "../services/services/user";
-import { ROLES } from "../lib/enabledRoles";
+import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
 

@@ -1,4 +1,3 @@
-const { faker } = require('@faker-js/faker');
 const bcrypt = require('bcrypt');
 
 module.exports = {
@@ -14,7 +13,20 @@ module.exports = {
       phone: "3058122481",
       email: "jeimytatianapinto@gmail.com",
       password: bcrypt.hashSync("1053872476", 10),
-      role: "admin",
+      role: "superadmin",
+      status: 'activo',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    users.push({
+      firstName: "Carlos Andrés",
+      lastName: "Loaiza",
+      documentType: "CC",
+      documentNumber: 75085166,
+      phone: "3006575225",
+      email: "caloaizar@sena.edu.co",
+      password: bcrypt.hashSync("75085166", 10),
+      role: "instructor",
       status: 'activo',
       createdAt: new Date(),
       updatedAt: new Date(),

@@ -9,7 +9,7 @@ import RequestForm from "../requests/requestForm";
 import RequestHistory from "../requests/requestHistory"
 import { User } from "../types";
 import { Request } from "../types/request";
-import { ENABLED_ROLES } from "../lib/enabledRoles";
+import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired"
 import getUserToken from "../lib/getUserToken"
 import getToken from "../lib/getToken"
@@ -76,8 +76,8 @@ export default function DashboardPage() {
           />
           <div className="mt-6">
             {user &&
-              (ENABLED_ROLES.includes(user.role) ? (
-                <DashboardAdmin />
+              ([ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user.role) ? (
+                <DashboardAdmin role={user.role} />
               ) : (
                 <DashboardUser />
               ))}
