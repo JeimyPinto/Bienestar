@@ -30,4 +30,6 @@ export interface RequestHistoryProps {
     requests: Request[];
     loading: boolean;
     errorMessage: string;
+    onCreateRequest: () => void;
+    successMessage?: string;
 }

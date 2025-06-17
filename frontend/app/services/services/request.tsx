@@ -135,7 +135,7 @@ export async function create(request: Record<string, unknown>, token?: string) {
     } catch (error) {
         return {
             message: "Error en el servidor al crear la solicitud",
-           details:error.message
+            details: error,
         };
     }
 }
@@ -165,7 +165,7 @@ export async function update(id: number, request: Record<string, unknown>, token
     } catch (error) {
         return {
             message: "Error en el servidor al actualizar la solicitud",
-            details: error.message,
+            details: error,
         };
     }
 }
@@ -194,7 +194,7 @@ export async function getByUserId(userId: string, token?: string) {
     } catch (error) {
         return {
             message: "Error en el servidor al obtener las solicitudes del usuario",
-            details:error.message
+            details: error,
         };
     }
 }

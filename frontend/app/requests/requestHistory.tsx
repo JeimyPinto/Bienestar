@@ -1,18 +1,25 @@
+import { useEffect, useState } from "react";
 import { areaColors } from "../styles/areaColors";
 import ErrorMessage from "../ui/errorMessage";
 import Spinner from "../ui/spinner";
-import { RequestHistoryProps } from "../types/request";
+import SuccessMessage from "../ui/successMessage";
+import { RequestHistoryProps } from "../types/request"
 
-interface Props extends RequestHistoryProps {
-  onCreateRequest: () => void;
-}
 
 export default function RequestHistory({
   requests,
   loading,
   errorMessage,
+  successMessage,
   onCreateRequest,
-}: Props) {
+}: RequestHistoryProps) {
+  const [showSuccess, setShowSuccess] = useState(!!successMessage);
+
+  // Mostrar mensaje de éxito si existe
+  useEffect(() => {
+    setShowSuccess(!!successMessage);
+  }, [successMessage]);
+
   return (
     <section className="bg-white shadow-lg rounded-xl p-4 sm:p-6 mt-4 sm:mt-6 overflow-x-auto sm:max-w-[1400px] sm:mx-auto">
       <div className="flex flex-col gap-4 mb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -26,6 +33,11 @@ export default function RequestHistory({
           Nueva Solicitud
         </button>
       </div>
+      {showSuccess && successMessage && (
+        <div className="mb-4">
+          <SuccessMessage message={successMessage} duration={5000} onClose={() => setShowSuccess(false)} />
+        </div>
+      )}
       {errorMessage && (
         <div className="mb-4">
           <ErrorMessage message={errorMessage} />

@@ -228,25 +228,29 @@ class RequestController {
     async getByUserId(req, res) {
         try {
             const userId = req.params.id;
-            const requests = await Request.findAll({
-                where: { userId },
-                include: [
-                    {
-                        association: "applicant",
-                        model: User,
-                    },
-                    {
-                        association: "service",
-                        model: Service,
-                    }
-                ],
-            });
+            if (!userId) {
+                throw new ErrorController(400, "ID de usuario es requerido", { userId: null });
+            }
+            const requests = await Request.findAll(
+                {
+                    where: { userId },
+                    include: [
+                        {
+                            association: "applicant",
+                            model: User,
+                        },
+                        {
+                            association: "service",
+                            model: Service,
+                        }
+                    ],
+                });
             if (!requests || requests.length === 0) {
                 throw new ErrorController(404, "No se encontraron solicitudes para este usuario", { requests: [] });
             }
             res.status(200).json({
-                message: "Solicitudes del usuario recuperadas con éxito",
-                details: { requests },
+                message: "Solicitudes de remsión del usuario recuperadas con éxito",
+                requests: requests,
             });
         } catch (error) {
             if (error instanceof ErrorController) {

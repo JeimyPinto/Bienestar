@@ -21,24 +21,29 @@ export default function Header() {
     const fetchData = async () => {
       const tokenValue = getToken();
       const userValue = getUserToken();
-      if (tokenValue) {
-        if (isTokenExpired(tokenValue)) {
-          localStorage.removeItem("token");
+      // Solo verifica expiración si NO está en la página principal
+      if (window.location.pathname !== "/") {
+        if (tokenValue) {
+          if (isTokenExpired(tokenValue)) {
+            localStorage.removeItem("token");
+            setToken(null);
+            setUser(null);
+            router.push("/auth");
+          } else {
+            setToken(tokenValue);
+            setUser(userValue as User);
+          }
+        } else {
           setToken(null);
           setUser(null);
-          router.push("/auth");
-        } else {
-          setToken(tokenValue);
-          setUser(userValue as User);
         }
       } else {
-        setToken(null);
-        setUser(null);
+        setToken(tokenValue);
+        setUser(userValue as User);
       }
-    }
+    };
     fetchData();
-  }
-    , [router]);
+  }, [router]);
 
   // Cierra el menú al navegar o cambiar tamaño
   useEffect(() => {

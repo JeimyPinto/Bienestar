@@ -253,7 +253,7 @@ class ServiceController {
   }
   async getByUserId(req, res) {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.id;
       const services = await Service.findAll({
         where: { creatorId: userId },
         include: {
@@ -285,7 +285,7 @@ class ServiceController {
       }
       console.error(error);
       return res.status(500).json({
-        message: "Internal server error / Error interno del servidor",
+        message: "Error interno del servidor",
         details: error.message,
       });
     }

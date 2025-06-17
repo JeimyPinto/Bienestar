@@ -13,6 +13,7 @@ import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired"
 import getUserToken from "../lib/getUserToken"
 import getToken from "../lib/getToken"
+import { getByUserId as getRequestsByUserId } from "../services/services/request";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -21,6 +22,7 @@ export default function DashboardPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
   const requestEditFormRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -28,18 +30,30 @@ export default function DashboardPage() {
       setLoading(true);
       const tokenValue = getToken();
       const userValue = getUserToken();
-      if (tokenValue) {
+      if (tokenValue && userValue?.id) {
         if (isTokenExpired(tokenValue)) {
           localStorage.removeItem("token");
           setUser(null);
           setRequests([]);
         } else {
           setUser(userValue as User);
-          setRequests(userValue?.requests || []);
+          // Obtener requests del usuario desde la API
+          const data = await getRequestsByUserId(userValue.id, tokenValue);
+          console.log("Requests data:", data);
+          if(data.requests) {
+            setRequests(data.requests);
+            setErrorMessage("");
+            setSuccessMessage(data.message);
+          }else{
+            setRequests([]);
+            setErrorMessage(data.message);
+            setSuccessMessage("");
+          }
         }
       } else {
         setUser(null);
         setRequests([]);
+        setSuccessMessage("");
       }
       setLoading(false);
     }
@@ -72,6 +86,7 @@ export default function DashboardPage() {
             requests={requests}
             loading={loading}
             errorMessage={errorMessage}
+            successMessage={successMessage}
             onCreateRequest={openRequestForm}
           />
           <div className="mt-6">
