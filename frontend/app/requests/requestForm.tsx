@@ -5,7 +5,7 @@ import { Service } from "../types/service"
 import { create, update } from "../services/services/request"
 import { getAllActive as getAllServices } from "../services/services/service"
 import { getAllActive as getAllUsers } from "../services/services/user"
-import { ENABLED_ROLES } from "../lib/roles"
+import { ROLES } from "../lib/roles"
 import isTokenExpired from "../lib/isTokenExpired"
 import getUserToken from "../lib/getUserToken"
 import getToken from "../lib/getToken"
@@ -60,27 +60,20 @@ export default function RequestsForm(props: RequestsFormProps) {
     //Cargar usuarios y servicios activos en el formulario
     useEffect(() => {
         if (!token) return;
-        if (user && ENABLED_ROLES.includes(user.role)) {
+        if (user && [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.INSTRUCTOR].includes(user.role)) {
             const loadUsers = async () => {
                 setLoadingUsers(true);
                 try {
-                    const { message, users, error } = await getAllUsers(token);
-                    if (error) {
-                        setUsers([]);
-                        setErrorMessage?.(error)
-                        return;
-                    }
-                    if (Array.isArray(users)) {
-                        if (message) {
-                            setSuccessMessage?.(message);
-                        }
-                        setUsers(users);
+                    const data = await getAllUsers(token);
+                    if (data.users) {
+                        setUsers(data.users);
+                        setSuccessMessage?.(data.message);
                     } else {
                         setUsers([]);
-                        setErrorMessage?.(String(message));
+                        setErrorMessage?.(data.message);
                     }
                 } catch (error) {
-                    setErrorMessage?.(String(error));
+                    setErrorMessage?.("Error al cargar los usuarios: " + error);
                     setUsers([]);
                 } finally {
                     setLoadingUsers(false);
@@ -93,23 +86,17 @@ export default function RequestsForm(props: RequestsFormProps) {
         const loadServices = async () => {
             setLoadingServices(true);
             try {
-                const { message, error, services } = await getAllServices();
-                if (error) {
-                    setServices([]);
-                    setErrorMessage?.(
-                        typeof error === "string" ? error : error?.message || String(error)
-                    );
+                const data = await getAllServices();
+                if (data.services) {
+                    setServices(data.services);
+                    setSuccessMessage?.(data.message);
                 } else {
-                    if (message) {
-                        setSuccessMessage?.(message);
-                    }
-                    if (services) {
-                        setServices(services);
-                    }
+                    setServices([]);
+                    setErrorMessage?.(data.message);
                 }
-            }
-            catch (error) {
-                setErrorMessage?.(String(error));
+            } catch (error) {
+                setErrorMessage?.("Error al cargar los servicios: " + error);
+                setServices([]);
             } finally {
                 setLoadingServices(false);
             }

@@ -6,6 +6,9 @@ import ErrorMessage from "../ui/errorMessage";
 import UserForm from "./userForm";
 import UserCard from "./userCard";
 import { getAllPaginated } from "../services/services/user";
+import isTokenExpired from "../lib/isTokenExpired"
+import getToken from "../lib/getToken"
+
 export default function UserTable() {
     const [token, setToken] = useState<string | null>(null);
     const [users, setUsers] = useState<User[]>([]);
@@ -24,22 +27,23 @@ export default function UserTable() {
         sortColumn,
         sortOrder,
     } = useColumnSorter(users);
+
+    // Obtener token
     useEffect(() => {
-        let tokenValue: string | null = null;
-        if (
-            process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
-            process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
-        ) {
-            tokenValue = localStorage.getItem("token");
-        } else {
-            const cookie = document.cookie;
-            tokenValue =
-                cookie
-                    .split("; ")
-                    .find((row) => row.startsWith("token="))
-                    ?.split("=")[1] || null;
+        const fetchData = async () => {
+            const tokenValue = getToken();
+            if (tokenValue) {
+                if (isTokenExpired(tokenValue)) {
+                    localStorage.removeItem("token");
+                    setToken(null);
+                } else {
+                    setToken(tokenValue);
+                }
+            } else {
+                setToken(null);
+            }
         }
-        if (tokenValue) setToken(tokenValue);
+        fetchData();
     }, []);
 
     useEffect(() => {
@@ -55,15 +59,16 @@ export default function UserTable() {
             try {
                 const data = await getAllPaginated(currentPage, limit, token);
                 if (!isMounted) return;
-                if (data.error) {
-                    setError(typeof data.error === "string" ? data.error : data.error?.message || String(data.error));
-                } else if (data.users) {
+                if (!data.users) {
+                    setUsers([]);
+                    setError(data.message);
+                } else {
                     setUsers(data.users);
                     setCurrentPage(data.currentPage);
                     setTotalUsers(data.totalUsers);
                     setTotalPages(data.totalPages);
                 }
-            } catch {
+            } catch (error) {
                 if (isMounted) setError("Error al cargar los usuarios");
             } finally {
                 if (isMounted) setLoading(false);

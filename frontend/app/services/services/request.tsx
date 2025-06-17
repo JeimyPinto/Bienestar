@@ -16,22 +16,12 @@ export async function getAllActive(token?: string) {
             if (data.details) {
                 console.error("Detalles del error getAllActive requests:", data.details);
             }
-            return {
-                message: data.message ?? null,
-                error: data.error || "Error al obtener las solicitudes activas.",
-                requests: [],
-            };
         }
-        return {
-            message: data.message ?? null,
-            error: null,
-            requests: data.requests ?? [],
-        };
+        return data;
     } catch (error) {
         return {
-            message: null,
-            error: "Server error while fetching requests. / Error en el servidor al obtener las solicitudes. (" + error + ")",
-            requests: [],
+            message: "Error en el servidor al obtener las solicitudes",
+            details: error
         };
     }
 }
@@ -186,9 +176,6 @@ export async function getByUserId(userId: string, token?: string) {
             if (data.details) {
                 console.error("Detalles del error getByUserId requests:", data.details);
             }
-            return {
-                message: data.message,
-            };
         }
         return data;
     } catch (error) {

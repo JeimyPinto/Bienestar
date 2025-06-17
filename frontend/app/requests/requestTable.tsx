@@ -1,38 +1,41 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Request } from "../types/request"
+import { Request } from "../types/request";
 import ErrorMessage from "../ui/errorMessage";
-import RequestForm from "./requestForm"
-import { getAll } from "../services/services/request"
+import SuccessMessage from "../ui/successMessage";
+import RequestForm from "./requestForm";
+import { getAll } from "../services/services/request";
 import { areaColors } from "../styles/areaColors";
-
+import isTokenExpired from "../lib/isTokenExpired"
+import getToken from "../lib/getToken"
 
 export default function RequestTable() {
   const [token, setToken] = useState<string | null>(null);
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const requestEditFormRef = useRef<HTMLDialogElement>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
+  // Obtener token
   useEffect(() => {
-    let tokenValue: string | null = null;
-    if (
-      process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
-      process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
-    ) {
-      tokenValue = localStorage.getItem("token");
-    } else {
-      const cookie = document.cookie;
-      tokenValue =
-        cookie
-          .split("; ")
-          .find((row) => row.startsWith("token="))
-          ?.split("=")[1] || null;
+    const fetchData = async () => {
+      const tokenValue = getToken();
+      if (tokenValue) {
+        if (isTokenExpired(tokenValue)) {
+          localStorage.removeItem("token");
+          setToken(null);
+        } else {
+          setToken(tokenValue);
+        }
+      } else {
+        setToken(null);
+      }
     }
-    if (tokenValue) setToken(tokenValue);
-  }, [token]);
-
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -40,15 +43,15 @@ export default function RequestTable() {
       try {
         setLoading(true);
         const response = await getAll(token);
-        if (response.error) {
-          setErrorMessage(response.message || "Error al cargar las solicitudes / Error loading requests.");
-          return;
+        if (response.requests) {
+          setRequests(response.requests);
+          setSuccessMessage("Solicitudes cargadas correctamente.");
         }
-        setRequests(response.requests);
       } catch (err) {
         setErrorMessage("Error al cargar las solicitudes / Error loading requests. (" + err + ")");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     loadRequests();
   }, [token]);
@@ -58,6 +61,10 @@ export default function RequestTable() {
       requestEditFormRef.current.showModal();
     }
   }, [isFormOpen, selectedRequest]);
+
+  useEffect(() => {
+    if (successMessage) setShowSuccess(true);
+  }, [successMessage]);
 
   function handleRowClick(request: Request) {
     setSelectedRequest(request);
@@ -69,6 +76,9 @@ export default function RequestTable() {
       <div className="flex flex-col gap-6">
         {errorMessage && (
           <ErrorMessage message={errorMessage} />
+        )}
+        {showSuccess && successMessage && (
+          <SuccessMessage message={successMessage} duration={5000} onClose={() => setShowSuccess(false)} />
         )}
         <div className="bg-white border border-cian shadow-lg rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
@@ -139,7 +149,7 @@ export default function RequestTable() {
               </tbody>
             </table>
           </div>
-          {isFormOpen && selectedRequest && (
+          {(isFormOpen && selectedRequest) && (
             <RequestForm
               dialogRef={requestEditFormRef}
               closeDialog={() => setIsFormOpen(false)}
@@ -152,5 +162,5 @@ export default function RequestTable() {
       </div>
     </section >
   );
-};
+}
 
