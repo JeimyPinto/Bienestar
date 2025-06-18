@@ -53,6 +53,22 @@ async function createUser(userData, file, creatorRole) {
     error.details = { creatorRole, requestedRole };
     throw error;
   }
+  // Validación de unicidad de documento
+  const existingUser = await User.findOne({ where: { documentNumber: userData.documentNumber } });
+  if (existingUser) {
+    const error = new Error("Ya existe un usuario con ese número de documento");
+    error.status = 409;
+    error.details = { documentNumber: userData.documentNumber };
+    throw error;
+  }
+  // Validación de unicidad de email
+  const existingEmail = await User.findOne({ where: { email: userData.email } });
+  if (existingEmail) {
+    const error = new Error("Ya existe un usuario con ese email");
+    error.status = 409;
+    error.details = { email: userData.email };
+    throw error;
+  }
   const plainPassword = userData.password && userData.password.trim() !== ""
     ? userData.password
     : userData.documentNumber;

@@ -21,16 +21,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      creatorId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Users",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-      },
       area: {
         type: Sequelize.ENUM,
         values: [

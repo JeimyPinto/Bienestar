@@ -9,30 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Users",
-          key: "id"
-        },
-      },
-      serviceId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Services",
-          key: "id"
-        },
-      },
-      createdBy: { 
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Users",
-          key: "id"
-        },
-      },
       description: {
         type: Sequelize.TEXT
       },

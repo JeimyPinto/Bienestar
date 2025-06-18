@@ -20,7 +20,7 @@ module.exports = {
     });
     users.push({
       firstName: "Carlos Andrés",
-      lastName: "Loaiza",
+      lastName: "Loaiza Rendón",
       documentType: "CC",
       documentNumber: 75085166,
       phone: "3006575225",

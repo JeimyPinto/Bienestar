@@ -1,7 +1,7 @@
 const { faker } = require("@faker-js/faker");
 
 module.exports = {
-  up: async (queryInterface) => {
+  up: async (queryInterface, Sequelize) => {
     // Obtén los IDs de usuarios y servicios existentes
     const users = await queryInterface.sequelize.query(
       "SELECT id FROM Users;",

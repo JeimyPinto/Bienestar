@@ -21,16 +21,6 @@ module.exports = {
         type: Sequelize.ENUM("tecnico", "tecnologia", "complementaria"),
         allowNull: false
       },
-      instructorId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Users",
-          key: "id"
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL"
-      },
       fichaStatus: {
         type: Sequelize.ENUM("etapa lectiva", "etapa practica", "certificados"),
         allowNull: false
