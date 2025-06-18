@@ -6,7 +6,7 @@ const express = require("express");
 // =======================
 // Configuración / Utilidades
 // =======================
-const { uploadService } = require("../config/multer.js");
+const { uploadService } = require("../middlewares/multer.js");
 
 // =======================
 // Middlewares

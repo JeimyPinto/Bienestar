@@ -6,7 +6,7 @@ const router = express.Router();
 const userController = require("../controllers/user.js");
 
 // ===================== MIDDLEWARES =====================
-const { uploadUser } = require("../config/multer.js");
+const { uploadUser } = require("../middlewares/multer.js");
 const { authorizeRoles } = require("../middlewares/auth.js");
 const validate = require("../middlewares/validation.js");
 const sanitize = require("../middlewares/sanitize.js");
