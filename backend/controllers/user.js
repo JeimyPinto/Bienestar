@@ -1,5 +1,6 @@
 // ==================== LIBRERÍAS ====================
 const userService = require("../services/user.js");
+const { createAuditLog } = require("../helpers/audit.js");
 
 class UsuarioController {
   async getAll(req, res, next) {
@@ -78,6 +79,15 @@ class UsuarioController {
     try {
       const user = await userService.createUser(req.body, req.file, req.user?.role);
       res.locals.user = user;
+      // Auditoría de creación
+      await createAuditLog({
+        entity_type: "User",
+        entity_id: user.id,
+        action: "CREATE",
+        old_data: null,
+        new_data: user.toJSON(),
+        changed_by: req.user?.id || null,
+      });
       res.status(201).json({
         message: "Usuario creado correctamente",
         user,
@@ -93,6 +103,15 @@ class UsuarioController {
       const { user, oldUserData } = await userService.updateUser(req.params.id, req.user, req.body, req.file);
       res.locals.user = user;
       res.locals.oldUserData = oldUserData;
+      // Auditoría de actualización
+      await createAuditLog({
+        entity_type: "User",
+        entity_id: user.id,
+        action: "UPDATE",
+        old_data: oldUserData,
+        new_data: user.toJSON(),
+        changed_by: req.user?.id || null,
+      });
       res.status(200).json({
         message: `Usuario actualizado correctamente por ${req.user.firstName} ${req.user.lastName} `,
         user,

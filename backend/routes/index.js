@@ -16,6 +16,7 @@ const authRouter = require("./auth.js");
 const serviceRoutes = require("./service.js");
 const requestRoutes = require("./request.js");
 const userAuditRoutes = require("./user_audit.js");
+const auditLogRoutes = require("./audit_log.js");
 
 // =======================
 // Middlewares / Utilidades
@@ -52,6 +53,9 @@ router.use("/requests", authenticateToken, requestRoutes);
 
 // Rutas de auditoría de usuario
 router.use("/user-audit", userAuditRoutes);
+
+// Rutas de auditoría general
+router.use("/audit-logs", auditLogRoutes);
 
 // =======================
 // Exportación del router

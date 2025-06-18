@@ -12,12 +12,14 @@ const { uploadService } = require("../config/multer.js");
 // Middlewares
 // =======================
 const { authenticateToken, authorizeRoles } = require("../middlewares/auth");
+const validate = require("../middlewares/validation.js");
 
 // =======================
 // Controladores
 // =======================
 const serviceController = require("../controllers/service.js");
 const ROLES = require("../constants/roles.js");
+const { serviceSchema } = require("../schemas/service.js");
 
 // =======================
 // Inicialización de Router
@@ -38,10 +40,24 @@ router.get("/user/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUP
 router.get("/:id", authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR), serviceController.getById);
 
 // Crear un nuevo servicio (requiere autenticación y rol, permite subir imagen)
-router.post("/", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), uploadService.single("file"), serviceController.create);
+router.post(
+  "/",
+  authenticateToken,
+  authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+  uploadService.single("file"),
+  validate(serviceSchema),
+  serviceController.create
+);
 
 // Actualizar un servicio existente (requiere autenticación y rol, permite subir imagen)
-router.put("/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), uploadService.single("file"), serviceController.update);
+router.put(
+  "/:id",
+  authenticateToken,
+  authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+  uploadService.single("file"),
+  validate(serviceSchema),
+  serviceController.update
+);
 
 // =======================
 // Exportación del router

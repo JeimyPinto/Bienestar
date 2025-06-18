@@ -1,16 +1,11 @@
 const db = require("../models/index.js");
-const Service = db.Service;
-const User = db.User;
+const serviceService = require("../services/service.js");
+const { createAuditLog } = require("../helpers/audit.js");
 
 class ServiceController {
   async getAll(req, res, next) {
     try {
-      const services = await Service.findAll({
-        include: {
-          association: "creator",
-          model: User,
-        },
-      });
+      const services = await serviceService.getAllServices();
       if (services.length === 0) {
         const error = new Error("No services found / No se encontraron servicios");
         error.status = 404;
@@ -28,13 +23,7 @@ class ServiceController {
 
   async getAllActive(req, res, next) {
     try {
-      const services = await Service.findAll({
-        where: { status: "activo" },
-        include: {
-          association: "creator",
-          model: User,
-        },
-      });
+      const services = await serviceService.getAllActiveServices();
       if (services.length === 0) {
         const error = new Error("No se encontraron servicios activos");
         error.status = 404;
@@ -52,12 +41,7 @@ class ServiceController {
 
   async getById(req, res, next) {
     try {
-      const service = await Service.findByPk(req.params.id, {
-        include: {
-          association: "creator",
-          model: User,
-        },
-      });
+      const service = await serviceService.getServiceById(req.params.id);
       if (!service) {
         const error = new Error("Service not found / Servicio no encontrado");
         error.status = 404;
@@ -79,19 +63,22 @@ class ServiceController {
         req.body.creatorId = Number(req.body.creatorId);
       }
       const serviceData = await serviceSchema.parseAsync(req.body);
-      const service = await Service.create({
-        ...serviceData,
-        image: null,
+      const service = await serviceService.createService(serviceData, req.file);
+      // Auditoría de creación
+      await createAuditLog({
+        entity_type: "Service",
+        entity_id: service.id,
+        action: "CREATE",
+        old_data: null,
+        new_data: service.toJSON(),
+        changed_by: req.user?.id || null,
       });
-      if (req.file) {
-        service.image = req.file.filename;
-        await service.update({ image: service.image });
-      }
       res.status(201).json({
         message: "Service created successfully / Servicio creado con éxito",
         service,
       });
     } catch (error) {
+      serviceService.removeUploadedFile(req.file);
       next(error);
     }
   }
@@ -99,28 +86,26 @@ class ServiceController {
   async update(req, res, next) {
     try {
       const serviceId = req.params.id;
-      const service = await Service.findByPk(serviceId);
-      if (!service) {
-        const error = new Error("Servicio no encontrado");
-        error.status = 404;
-        error.details = { service: null };
-        throw error;
-      }
       if (req.body.creatorId) {
         req.body.creatorId = Number(req.body.creatorId);
       }
       const serviceData = await serviceSchema.parseAsync(req.body);
-      let updatedFields = { ...serviceData };
-      if (req.file) {
-        await service.update({ image: req.file.filename });
-        updatedFields.image = req.file.filename;
-      }
-      await service.update(updatedFields);
+      const { service, updatedFields } = await serviceService.updateService(serviceId, serviceData, req.file);
+      // Auditoría de actualización
+      await createAuditLog({
+        entity_type: "Service",
+        entity_id: service.id,
+        action: "UPDATE",
+        old_data: { ...service.toJSON(), ...updatedFields }, // Puedes ajustar old_data si tienes el estado anterior
+        new_data: service.toJSON(),
+        changed_by: req.user?.id || null,
+      });
       res.status(200).json({
         message: "Servicio actualizado con éxito",
         service: { ...service.toJSON(), ...updatedFields },
       });
     } catch (error) {
+      serviceService.removeUploadedFile(req.file);
       next(error);
     }
   }
@@ -128,13 +113,7 @@ class ServiceController {
   async getByUserId(req, res, next) {
     try {
       const userId = req.params.id;
-      const services = await Service.findAll({
-        where: { creatorId: userId },
-        include: {
-          association: "creator",
-          model: User,
-        },
-      });
+      const services = await serviceService.getServicesByUserId(userId);
       if (services.length === 0) {
         const error = new Error("No se encontraron servicios para este usuario");
         error.status = 404;

@@ -9,7 +9,6 @@ const userController = require("../controllers/user.js");
 const { uploadUser } = require("../config/multer.js");
 const { authorizeRoles } = require("../middlewares/auth.js");
 const validate = require("../middlewares/validation.js");
-const { auditUser } = require("../middlewares/audit.js");
 const sanitize = require("../middlewares/sanitize.js");
 const removeSensitiveFields = require("../middlewares/removeSensitiveFields.js");
 const sendWelcomeMail = require("../middlewares/sendWelcomeMail.js");
@@ -63,7 +62,6 @@ router.post(
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     validate(createSchema),
     userController.create,
-    auditUser("INSERT"),
     sendWelcomeMail,
     removeSensitiveFields
 );
@@ -76,7 +74,6 @@ router.put(
     sanitize,
     validate(updateSchema),
     userController.update,
-    auditUser("UPDATE"),
     sendUpdateMail,
     removeSensitiveFields
 );
