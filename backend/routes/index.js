@@ -15,7 +15,6 @@ const userRoutes = require("./user.js");
 const authRouter = require("./auth.js");
 const serviceRoutes = require("./service.js");
 const requestRoutes = require("./request.js");
-const userAuditRoutes = require("./user_audit.js");
 const auditLogRoutes = require("./audit_log.js");
 
 // =======================
@@ -50,9 +49,6 @@ router.use("/services", serviceRoutes);
 
 // Rutas de solicitudes (requiere autenticación)
 router.use("/requests", authenticateToken, requestRoutes);
-
-// Rutas de auditoría de usuario
-router.use("/user-audit", userAuditRoutes);
 
 // Rutas de auditoría general
 router.use("/audit-logs", auditLogRoutes);

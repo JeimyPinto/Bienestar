@@ -48,11 +48,6 @@ const chalk = require("chalk");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 
-// =======================
-// Controladores
-// =======================
-const ErrorController = require("./controllers/error.js");
-
 // Define colores para cada método
 const methodColors = {
   GET: chalk.blue.bold,
@@ -142,11 +137,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Manejo de rutas no encontradas
 // =======================
 app.use((req, res, next) => {
-  next(new ErrorController(
-    404,
-    "Ruta no encontrada / Route not found",
-    { path: req.originalUrl }
-  ));
+  next({
+    status: 404,
+    message: "Ruta no encontrada / Route not found",
+    details: { path: req.originalUrl }
+  });
 });
 
 // =======================
