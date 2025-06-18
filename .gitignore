@@ -1,46 +1,57 @@
+# === GLOBAL ===
 .vscode/
+.DS_Store
+*.pem
+*.log
+*.tsbuildinfo
+.env
+.env.*
 
-backend/node_modules/*
+# === BACKEND (Node.js/Express/Sequelize) ===
+backend/node_modules/
 backend/.env
-backend/config/config.json
+backend/.env.*
 backend/package-lock.json
+backend/config/config.json
+backend/coverage/
+backend/logs/
+backend/*.log
+backend/*.tsbuildinfo
+backend/uploads/
 
+# === FRONTEND (Next.js/React) ===
+frontend/node_modules/
 frontend/.env
+frontend/.env.*
 frontend/package-lock.json
+frontend/.pnp
+frontend/.pnp.*
+frontend/.yarn/
+!frontend/.yarn/patches
+!frontend/.yarn/plugins
+!frontend/.yarn/releases
+!frontend/.yarn/versions
+frontend/coverage/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.DS_Store
+frontend/*.pem
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.vercel
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
 
-# FRONTEND IGNORE RULES
+# === MISC ===
+*.swp
+*.swo
+.idea/
+Thumbs.db
 
-# dependencies
-/frontend/node_modules
-/frontend/.pnp
-/frontend/.pnp.*
-/frontend/.yarn/*
-!/frontend/.yarn/patches
-!/frontend/.yarn/plugins
-!/frontend/.yarn/releases
-!/frontend/.yarn/versions
-
-# testing
-/frontend/coverage
-
-# next.js
-/frontend/.next/
-/frontend/out/
-
-/frontend/build
-
-# misc
-/frontend/.DS_Store
-/frontend/*.pem
-
-# debug
-/frontend/npm-debug.log*
-/frontend/yarn-debug.log*
-/frontend/yarn-error.log*
-
-# vercel
-/frontend/.vercel
-
-# typescript
-/frontend/*.tsbuildinfo
-/frontend/next-env.d.ts
+# === SYSTEM ===
+# Mac
+.DS_Store
+# Windows
+Thumbs.db

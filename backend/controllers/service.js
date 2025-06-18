@@ -1,6 +1,5 @@
-const db = require("../models/index.js");
 const serviceService = require("../services/service.js");
-const { createAuditLog } = require("../helpers/audit.js");
+const { createAuditLog } = require("../services/auditLogService.js");
 
 class ServiceController {
   async getAll(req, res, next) {
