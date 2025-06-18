@@ -70,6 +70,24 @@ async function updateService(serviceId, serviceData, file) {
   return { service, updatedFields };
 }
 
+async function updateServiceWithAudit(serviceId, serviceData, file) {
+  const service = await Service.findByPk(serviceId);
+  if (!service) {
+    const error = new Error("Servicio no encontrado");
+    error.status = 404;
+    error.details = { service: null };
+    throw error;
+  }
+  const oldService = service.toJSON();
+  let updatedFields = { ...serviceData };
+  if (file) {
+    await service.update({ image: file.filename });
+    updatedFields.image = file.filename;
+  }
+  await service.update(updatedFields);
+  return { oldService, updatedService: service.toJSON() };
+}
+
 function removeUploadedFile(file) {
   if (file) {
     try {
@@ -87,5 +105,6 @@ module.exports = {
   getServicesByUserId,
   createService,
   updateService,
+  updateServiceWithAudit,
   removeUploadedFile,
 };

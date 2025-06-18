@@ -1,18 +1,19 @@
 const serviceService = require("../services/service.js");
-const { createAuditLog } = require("../services/auditLogService.js");
+const { createAuditLog } = require("../services/auditLog.js");
+const { serviceSchema } = require("../schemas/service.js");
 
 class ServiceController {
   async getAll(req, res, next) {
     try {
       const services = await serviceService.getAllServices();
       if (services.length === 0) {
-        const error = new Error("No services found / No se encontraron servicios");
+        const error = new Error("No se encontraron servicios");
         error.status = 404;
         error.details = { services: null };
         throw error;
       }
       res.status(200).json({
-        message: "Services retrieved successfully / Servicios recuperados con éxito",
+        message: "Servicios recuperados con éxito",
         services,
       });
     } catch (error) {
@@ -30,7 +31,7 @@ class ServiceController {
         throw error;
       }
       res.status(200).json({
-        message: "Active services retrieved successfully / Servicios activos recuperados con éxito",
+        message: "Servicios activos recuperados con éxito",
         services,
       });
     } catch (error) {
@@ -42,13 +43,13 @@ class ServiceController {
     try {
       const service = await serviceService.getServiceById(req.params.id);
       if (!service) {
-        const error = new Error("Service not found / Servicio no encontrado");
+        const error = new Error("Servicio no encontrado");
         error.status = 404;
         error.details = { service: null };
         throw error;
       }
       res.status(200).json({
-        message: "Service retrieved successfully / Servicio recuperado con éxito",
+        message: "Servicio recuperado con éxito",
         service,
       });
     } catch (error) {
@@ -58,12 +59,7 @@ class ServiceController {
 
   async create(req, res, next) {
     try {
-      if (req.body.creatorId) {
-        req.body.creatorId = Number(req.body.creatorId);
-      }
-      const serviceData = await serviceSchema.parseAsync(req.body);
-      const service = await serviceService.createService(serviceData, req.file);
-      // Auditoría de creación
+      const service = await serviceService.createService(req.body, req.file);
       await createAuditLog({
         entity_type: "Service",
         entity_id: service.id,
@@ -73,7 +69,7 @@ class ServiceController {
         changed_by: req.user?.id || null,
       });
       res.status(201).json({
-        message: "Service created successfully / Servicio creado con éxito",
+        message: "Servicio creado con éxito",
         service,
       });
     } catch (error) {
@@ -84,24 +80,18 @@ class ServiceController {
 
   async update(req, res, next) {
     try {
-      const serviceId = req.params.id;
-      if (req.body.creatorId) {
-        req.body.creatorId = Number(req.body.creatorId);
-      }
-      const serviceData = await serviceSchema.parseAsync(req.body);
-      const { service, updatedFields } = await serviceService.updateService(serviceId, serviceData, req.file);
-      // Auditoría de actualización
+      const { oldService, updatedService } = await serviceService.updateServiceWithAudit(req.params.id, req.body, req.file);
       await createAuditLog({
         entity_type: "Service",
-        entity_id: service.id,
+        entity_id: updatedService.id,
         action: "UPDATE",
-        old_data: { ...service.toJSON(), ...updatedFields }, // Puedes ajustar old_data si tienes el estado anterior
-        new_data: service.toJSON(),
+        old_data: oldService,
+        new_data: updatedService,
         changed_by: req.user?.id || null,
       });
       res.status(200).json({
         message: "Servicio actualizado con éxito",
-        service: { ...service.toJSON(), ...updatedFields },
+        service: updatedService,
       });
     } catch (error) {
       serviceService.removeUploadedFile(req.file);

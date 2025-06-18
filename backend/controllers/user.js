@@ -1,7 +1,5 @@
-// ==================== LIBRERÍAS ====================
 const userService = require("../services/user.js");
-const { createAuditLog } = require("../services/auditLogService.js");
-
+const { createAuditLog } = require("../services/auditLog.js");
 class UsuarioController {
   async getAll(req, res, next) {
     try {

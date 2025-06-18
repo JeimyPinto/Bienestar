@@ -1354,6 +1354,147 @@ paths:
           description: No autorizado
         '500':
           description: Error interno del servidor
+  /audit-logs:
+    get:
+      summary: Obtiene todos los registros de auditoría
+      tags:
+        - AuditLog
+      security:
+        - bearerAuth: []
+      description: Retorna todos los registros de auditoría del sistema. Solo accesible para usuarios con rol ADMIN o SUPERADMIN.
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Cantidad de registros por página
+        - in: query
+          name: entityType
+          schema:
+            type: string
+          description: Filtra por tipo de entidad (User, Service, Request, etc.)
+        - in: query
+          name: entityId
+          schema:
+            type: integer
+          description: Filtra por ID de entidad
+      responses:
+        '200':
+          description: Lista de registros de auditoría obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Audit logs retrieved successfully / Registros de auditoría obtenidos correctamente
+                  auditLogs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+                  currentPage:
+                    type: integer
+                    example: 1
+                  totalPages:
+                    type: integer
+                    example: 5
+                  totalLogs:
+                    type: integer
+                    example: 50
+        '401':
+          description: No autorizado
+        '403':
+          description: Prohibido (rol insuficiente)
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error interno del servidor
+                  error:
+                    type: string
+                    example: Error al obtener los registros de auditoría
+    post:
+      summary: Crea un registro de auditoría manualmente
+      tags:
+        - AuditLog
+      security:
+        - bearerAuth: []
+      description: Permite crear un registro de auditoría de forma manual (uso avanzado o pruebas).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditLogInput'
+      responses:
+        '201':
+          description: Registro de auditoría creado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Audit log created successfully / Registro de auditoría creado correctamente
+                  auditLog:
+                    $ref: '#/components/schemas/AuditLog'
+        '400':
+          description: Error de validación en los datos enviados
+        '401':
+          description: No autorizado
+        '403':
+          description: Prohibido (rol insuficiente)
+        '500':
+          description: Error interno al crear el registro de auditoría
+  /audit-logs/{id}:
+    get:
+      summary: Obtiene un registro de auditoría por ID
+      tags:
+        - AuditLog
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del registro de auditoría
+      responses:
+        '200':
+          description: Registro de auditoría encontrado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Audit log retrieved successfully / Registro de auditoría obtenido correctamente
+                  auditLog:
+                    $ref: '#/components/schemas/AuditLog'
+        '404':
+          description: Registro de auditoría no encontrado
+        '401':
+          description: No autorizado
+        '403':
+          description: Prohibido (rol insuficiente)
+        '500':
+          description: Error interno al obtener el registro de auditoría
 components:
   securitySchemes:
     bearerAuth:
@@ -1538,3 +1679,76 @@ components:
           $ref: '#/components/schemas/Service'
         creator:
           $ref: '#/components/schemas/User'
+    AuditLog:
+      type: object
+      required:
+        - id
+        - action
+        - entityType
+        - entityId
+        - userId
+        - timestamp
+        - details
+      properties:
+        id:
+          type: integer
+          example: 1
+        action:
+          type: string
+          description: Acción realizada (CREATE, UPDATE, DELETE, LOGIN, etc.)
+          example: UPDATE
+        entityType:
+          type: string
+          description: Tipo de entidad afectada (User, Service, Request, etc.)
+          example: User
+        entityId:
+          type: integer
+          description: ID de la entidad afectada
+          example: 5
+        userId:
+          type: integer
+          description: ID del usuario que realizó la acción
+          example: 2
+        timestamp:
+          type: string
+          format: date-time
+          description: Fecha y hora de la acción
+          example: "2024-06-17T12:00:00Z"
+        details:
+          type: object
+          description: Detalles adicionales de la acción (antes/después, cambios, etc.)
+          example:
+            before:
+              status: "activo"
+            after:
+              status: "inactivo"
+        user:
+          $ref: '#/components/schemas/User'
+    AuditLogInput:
+      type: object
+      required:
+        - action
+        - entityType
+        - entityId
+        - userId
+        - details
+      properties:
+        action:
+          type: string
+          example: UPDATE
+        entityType:
+          type: string
+          example: User
+        entityId:
+          type: integer
+          example: 5
+        userId:
+          type: integer
+          example: 2
+        details:
+          type: object
+          example:
+            before:
+              status: "activo"
+            after:
+              status: "inactivo"

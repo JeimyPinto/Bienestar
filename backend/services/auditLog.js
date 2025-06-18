@@ -18,7 +18,20 @@ async function getAuditLogById(id) {
   return db.audit_log.findByPk(id);
 }
 
+async function createAuditLog({ entity_type, entity_id, action, old_data, new_data, changed_by, changed_at = new Date() }) {
+  return db.audit_log.create({
+    entity_type,
+    entity_id,
+    action,
+    old_data,
+    new_data,
+    changed_by,
+    changed_at,
+  });
+}
+
 module.exports = {
   getAuditLogs,
   getAuditLogById,
+  createAuditLog,
 };
