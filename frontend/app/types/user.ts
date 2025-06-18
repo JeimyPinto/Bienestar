@@ -41,3 +41,27 @@ export interface UserFormProps {
     errorMessage?: string;
     setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
 }
+export interface UserTableDesktopProps {
+    users: User[];
+    loading: boolean;
+    sortColumn: keyof User;
+    sortOrder: string;
+    handleSort: (column: keyof User) => void;
+    handleRowClick: (user: User) => void;
+    currentPage: number;
+    totalPages: number;
+    totalUsers: number;
+    setCurrentPage: (page: number) => void;
+}
+export interface UserCardMobileProps {
+    users: User[];
+    handleRowClick: (user: User) => void;
+    loading?: boolean;
+}
+export interface UserTableFilterBarProps {
+  limit: number;
+  setLimit: (limit: number) => void;
+  setCurrentPage: (page: number) => void;
+  filter: string;
+  setFilter: (value: string) => void;
+}

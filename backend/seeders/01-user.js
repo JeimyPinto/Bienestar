@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -14,7 +14,7 @@ module.exports = {
       email: "jeimytatianapinto@gmail.com",
       password: bcrypt.hashSync("1053872476", 10),
       role: "superadmin",
-      status: 'activo',
+      status: "activo",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -27,17 +27,17 @@ module.exports = {
       email: "caloaizar@sena.edu.co",
       password: bcrypt.hashSync("75085166", 10),
       role: "instructor",
-      status: 'activo',
+      status: "activo",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
-    await queryInterface.bulkInsert('Users', users);
-    console.log('Usuarios creados exitosamente.');
+    await queryInterface.bulkInsert("Users", users);
+    console.log("Usuarios creados exitosamente.");
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Users', null, {});
-    console.log('Usuarios eliminados exitosamente.');
+    await queryInterface.bulkDelete("Users", null, {});
+    console.log("Usuarios eliminados exitosamente.");
   },
 };

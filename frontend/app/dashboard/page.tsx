@@ -3,16 +3,16 @@
 import { useEffect, useState, useRef } from "react";
 import Header from "../ui/header";
 import UserCard from "../users/userCard";
-import DashboardAdmin from "./admin/page";
-import DashboardUser from "./user/page";
+import DashboardAdmin from "./dashboardAdmin";
 import RequestForm from "../requests/requestForm";
-import RequestHistory from "../requests/requestHistory"
+import RequestHistory from "../requests/requestHistory";
+import SuccessMessage from "../ui/successMessage";
 import { User } from "../types";
 import { Request } from "../types/request";
 import { ROLES } from "../lib/roles";
-import isTokenExpired from "../lib/isTokenExpired"
-import getUserToken from "../lib/getUserToken"
-import getToken from "../lib/getToken"
+import isTokenExpired from "../lib/isTokenExpired";
+import getUserToken from "../lib/getUserToken";
+import getToken from "../lib/getToken";
 import { getByUserId as getRequestsByUserId } from "../services/services/request";
 
 export default function DashboardPage() {
@@ -29,7 +29,14 @@ export default function DashboardPage() {
     const fetchData = async () => {
       setLoading(true);
       const tokenValue = getToken();
-      const userValue = getUserToken();
+      let userValue = null;
+      if (tokenValue) {
+        try {
+          userValue = getUserToken(tokenValue);
+        } catch (e) {
+          userValue = null;
+        }
+      }
       if (tokenValue && userValue?.id) {
         if (isTokenExpired(tokenValue)) {
           localStorage.removeItem("token");
@@ -79,6 +86,12 @@ export default function DashboardPage() {
   return (
     <>
       <Header />
+      {successMessage && (
+        <SuccessMessage
+          message={successMessage}
+          onClose={() => setSuccessMessage("")}
+        />
+      )}
       <main className="min-h-screen bg-gray-100 py-4 sm:py-8 px-2 sm:px-0">
         <div className="container mx-auto max-w-8xl px-2 sm:px-4">
           <UserCard user={user} />
@@ -93,9 +106,7 @@ export default function DashboardPage() {
             {user &&
               ([ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user.role) ? (
                 <DashboardAdmin role={user.role} />
-              ) : (
-                <DashboardUser />
-              ))}
+              ) : null)}
           </div>
           {isFormOpen && (
             <RequestForm

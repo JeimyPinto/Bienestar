@@ -15,16 +15,16 @@ const serviceSchema = z.object({
     })
   ),
   area: z.enum([
-    'Salud',
-    'Arte y Cultura',
-    'Deporte y Recreación',
-    'Apoyo Socioeconomico y Reconocimiento a la Excelencia',
-    'Apoyo Psicosocial'
+    "Salud",
+    "Arte y Cultura",
+    "Deporte y Recreación",
+    "Apoyo Socioeconomico y Reconocimiento a la Excelencia",
+    "Apoyo Psicosocial"
   ], {
     errorMap: () => ({ message: "Invalid area / Área inválida" }),
   }),
   image: z.string().optional(),
-  status: z.enum(['activo', 'inactivo']).default('activo'),
+  status: z.enum(["activo", "inactivo"]).default("activo"),
 });
 
 module.exports = {

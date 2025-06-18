@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
-import { RequestsFormProps, Request } from "../types/request"
-import { User } from "../types"
-import { Service } from "../types/service"
-import { create, update } from "../services/services/request"
-import { getAllActive as getAllServices } from "../services/services/service"
-import { getAllActive as getAllUsers } from "../services/services/user"
-import { ROLES } from "../lib/roles"
-import isTokenExpired from "../lib/isTokenExpired"
-import getUserToken from "../lib/getUserToken"
-import getToken from "../lib/getToken"
-import Spinner from "../ui/spinner"
+import { useEffect, useState } from "react";
+import { RequestsFormProps, Request } from "../types/request";
+import { User } from "../types";
+import { Service } from "../types/service";
+import { create, update } from "../services/services/request";
+import { getAllActive as getAllServices } from "../services/services/service";
+import { getAllActive as getAllUsers } from "../services/services/user";
+import { ROLES } from "../lib/roles";
+import isTokenExpired from "../lib/isTokenExpired";
+import getUsertoken from "../lib/getUserToken";
+import getToken from "../lib/getToken";
+import Spinner from "../ui/spinner";
 const emptyRequest: Request = {
     id: 0,
     userId: 0,
@@ -40,8 +40,14 @@ export default function RequestsForm(props: RequestsFormProps) {
     useEffect(() => {
         const fetchData = async () => {
             const tokenValue = getToken();
-            const userValue = getUserToken();
+            let userValue = null;
             if (tokenValue) {
+                setToken(tokenValue);
+                try {
+                    userValue = getUsertoken(tokenValue);
+                } catch (e) {
+                    userValue = null;
+                }
                 if (isTokenExpired(tokenValue)) {
                     localStorage.removeItem("token");
                     setUser(null);
@@ -51,11 +57,9 @@ export default function RequestsForm(props: RequestsFormProps) {
             } else {
                 setUser(null);
             }
-            setToken(tokenValue);
-        }
+        };
         fetchData();
-    }
-        , []);
+    }, []);
 
     //Cargar usuarios y servicios activos en el formulario
     useEffect(() => {

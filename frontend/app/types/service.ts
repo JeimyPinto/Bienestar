@@ -34,3 +34,15 @@ export interface ServiceFormProps {
   errorMessage?: string;
   setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
 }
+
+export interface ServiceCardMobileProps {
+  services: Service[];
+  loading: boolean;
+  onCardClick: (service: Service) => void;
+}
+
+export interface ServiceTableDesktopProps {
+  services: Service[];
+  loading: boolean;
+  onRowClick: (service: Service) => void;
+}

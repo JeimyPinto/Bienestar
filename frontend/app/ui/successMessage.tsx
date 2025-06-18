@@ -1,12 +1,7 @@
 import React from "react";
+import { SuccessMessageProps } from "../types/components/type";
 
-interface SuccessMessageProps {
-  message: string;
-  duration?: number;
-  onClose?: () => void; 
-}
-
-const SuccessMessage: React.FC<SuccessMessageProps> = ({ message, duration = 10000, onClose }) => {
+const SuccessMessage: React.FC<SuccessMessageProps> = ({ message, duration = 5000, onClose }) => {
   React.useEffect(() => {
     if (duration && onClose) {
       const timer = setTimeout(onClose, duration);

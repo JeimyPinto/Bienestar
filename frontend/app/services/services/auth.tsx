@@ -20,24 +20,19 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
                 credentials: "include",
             });
 
-        console.log("Login response:", response);
-        const responseData = await response.json();
-        console.log("Login responseData:", responseData);
-        const { message, token, error, details } = responseData;
-
+        const data = await response.json();
         if (!response.ok) {
-            if (details) {
-                console.error("Detalles del error de login:", details);
+            if (data.details) {
+                console.error("Detalles del error de login:", data.details);
+                return { message: data.details, token: null };
             }
-            return {
-                message: message || "Error de inicio de sesión. Por favor, inténtalo de nuevo.",
-                token: null,
-                error: error || null
-            };
         }
-        return { message, token, error: null };
+        return data;
     } catch (error) {
         console.error("Error iniciando sesión en: ", error);
-        throw new Error("Error de inicio de sesión. Por favor, inténtalo de nuevo.");
+        return{
+            message: "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
+            details: error
+        }
     }
 }

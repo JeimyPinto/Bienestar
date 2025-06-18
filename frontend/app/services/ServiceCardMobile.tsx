@@ -1,15 +1,9 @@
 import React from "react"
 import Image from "next/image"
-import { Service } from "../types/service"
+import { Service, ServiceCardMobileProps } from "../types/service"
 import { areaColors } from "../styles/areaColors"
 
-interface Props {
-  services: Service[];
-  loading: boolean;
-  onCardClick: (service: Service) => void;
-}
-
-const ServiceCardMobile: React.FC<Props> = ({ services, loading, onCardClick }) => (
+const ServiceCardMobile: React.FC<ServiceCardMobileProps> = ({ services, loading, onCardClick }) => (
   <div className="sm:hidden flex flex-col gap-4">
     {loading ? (
       <div className="text-center text-azul font-medium py-10">Cargando servicios...</div>

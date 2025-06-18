@@ -4,6 +4,12 @@
 const express = require("express");
 
 // =======================
+// Middlewares / Utilidades
+// =======================
+const { authenticateToken, authorizeRoles } = require("../middlewares/auth");
+const ROLES = require("../constants/roles");
+
+// =======================
 // Controladores
 // =======================
 const requestController = require("../controllers/request.js");
@@ -17,22 +23,51 @@ const router = express.Router();
 // Rutas de solicitudes
 // =======================
 // Obtener todas las solicitudes
-router.get("/", requestController.getAll);
+router.get(
+    "/",
+    authenticateToken,
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    requestController.getAll
+);
 
 // Obtener todas las solicitudes activas
-router.get("/active", requestController.getAllActive);
+router.get(
+    "/active",
+    authenticateToken,
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    requestController.getAllActive
+);
 
 // Obtener una solicitud por ID
-router.get("/:id", requestController.getById);
+router.get(
+    "/:id",
+    authenticateToken,
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    requestController.getById
+);
 
 // Crear una nueva solicitud
-router.post("/", requestController.create);
+router.post(
+    "/",
+    authenticateToken,
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    requestController.create
+);
 
 // Actualizar una solicitud existente
-router.put("/:id", requestController.update);
+router.put(
+    "/:id",
+    authenticateToken,
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    requestController.update
+);
 
 // Obtener todas las solicitudes de un usuario específico
-router.get("/user/:id", requestController.getByUserId);
+router.get(
+    "/user/:id",
+    authenticateToken,
+    requestController.getByUserId
+);
 
 // =======================
 // Exportación del router

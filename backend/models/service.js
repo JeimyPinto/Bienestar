@@ -1,11 +1,11 @@
-'use strict';
-const { Model } = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Service extends Model {
     static associate(models) {
       Service.belongsTo(models.User, {
-        foreignKey: 'creatorId',
-        as: 'creator',
+        foreignKey: "creatorId",
+        as: "creator",
       });
     }
   }
@@ -16,30 +16,30 @@ module.exports = (sequelize, DataTypes) => {
       creatorId: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'User',
-          key: 'id',
+          model: "User",
+          key: "id",
         },
       },
       area: {
         type: DataTypes.ENUM,
         values: [
-          'Salud',
-          'Arte y Cultura',
-          'Deporte y Recreación',
-          'Apoyo Socioeconomico y Reconocimiento a la Excelencia',
-          'Apoyo Psicosocial',
+          "Salud",
+          "Arte y Cultura",
+          "Deporte y Recreación",
+          "Apoyo Socioeconomico y Reconocimiento a la Excelencia",
+          "Apoyo Psicosocial",
         ],
       },
       image: DataTypes.STRING,
       status: {
-        type: DataTypes.ENUM('activo', 'inactivo'),
+        type: DataTypes.ENUM("activo", "inactivo"),
         allowNull: false,
-        defaultValue: 'activo',
+        defaultValue: "activo",
       },
     },
     {
       sequelize,
-      modelName: 'Service',
+      modelName: "Service",
       timestamps: true,
     }
   );

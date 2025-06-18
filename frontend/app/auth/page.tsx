@@ -31,7 +31,7 @@ export default function LoginPage() {
         return setLoading(false);
       }
 
-      const { message, token, error } = await login({ email, password, recaptchaToken });
+      const { message, token } = await login({ email, password, recaptchaToken });
 
       if (error) {
         setError("Error al iniciar sesión.( " + error + " )");

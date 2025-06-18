@@ -1,11 +1,9 @@
 const db = require("../models/index.js");
 const Service = db.Service;
 const User = db.User;
-const ErrorController = require("../controllers/error.js");
-const { serviceSchema } = require("../schemas/service.js");
 
 class ServiceController {
-  async getAll(req, res) {
+  async getAll(req, res, next) {
     try {
       const services = await Service.findAll({
         include: {
@@ -14,42 +12,21 @@ class ServiceController {
         },
       });
       if (services.length === 0) {
-        throw new ErrorController(404, "No services found / No se encontraron servicios", { services: null });
+        const error = new Error("No services found / No se encontraron servicios");
+        error.status = 404;
+        error.details = { services: null };
+        throw error;
       }
       res.status(200).json({
         message: "Services retrieved successfully / Servicios recuperados con éxito",
-        error: null,
-        details: null,
         services,
       });
     } catch (error) {
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: null,
-          error: error.message,
-          details: error.details || null,
-          services: null,
-        });
-      }
-      if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: null,
-          error: "Database error / Error de base de datos",
-          details: error.message,
-          services: null,
-        });
-      }
-      console.error(error);
-      return res.status(500).json({
-        message: null,
-        error: "Internal server error / Error interno del servidor",
-        details: error.message,
-        services: null,
-      });
+      next(error);
     }
   }
 
-  async getAllActive(req, res) {
+  async getAllActive(req, res, next) {
     try {
       const services = await Service.findAll({
         where: { status: "activo" },
@@ -59,42 +36,21 @@ class ServiceController {
         },
       });
       if (services.length === 0) {
-        throw new ErrorController(404, "No se encontraron servicios activos", { services: [] });
+        const error = new Error("No se encontraron servicios activos");
+        error.status = 404;
+        error.details = { services: [] };
+        throw error;
       }
       res.status(200).json({
         message: "Active services retrieved successfully / Servicios activos recuperados con éxito",
-        error: null,
-        details: null,
         services,
       });
     } catch (error) {
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: null,
-          error: error.message,
-          details: error.details || null,
-          services: null,
-        });
-      }
-      if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: null,
-          error: "Database error / Error de base de datos",
-          details: error.message,
-          services: null,
-        });
-      }
-      console.error(error);
-      return res.status(500).json({
-        message: null,
-        error: "Internal server error / Error interno del servidor",
-        details: error.message,
-        services: null,
-      });
+      next(error);
     }
   }
 
-  async getById(req, res) {
+  async getById(req, res, next) {
     try {
       const service = await Service.findByPk(req.params.id, {
         include: {
@@ -103,42 +59,21 @@ class ServiceController {
         },
       });
       if (!service) {
-        throw new ErrorController(404, "Service not found / Servicio no encontrado", { service: null });
+        const error = new Error("Service not found / Servicio no encontrado");
+        error.status = 404;
+        error.details = { service: null };
+        throw error;
       }
       res.status(200).json({
         message: "Service retrieved successfully / Servicio recuperado con éxito",
-        error: null,
-        details: null,
         service,
       });
     } catch (error) {
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: null,
-          error: error.message,
-          details: error.details || null,
-          service: null,
-        });
-      }
-      if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: null,
-          error: "Database error / Error de base de datos",
-          details: error.message,
-          service: null,
-        });
-      }
-      console.error(error);
-      return res.status(500).json({
-        message: null,
-        error: "Internal server error / Error interno del servidor",
-        details: error.message,
-        service: null,
-      });
+      next(error);
     }
   }
 
-  async create(req, res) {
+  async create(req, res, next) {
     try {
       if (req.body.creatorId) {
         req.body.creatorId = Number(req.body.creatorId);
@@ -154,52 +89,22 @@ class ServiceController {
       }
       res.status(201).json({
         message: "Service created successfully / Servicio creado con éxito",
-        error: null,
-        details: null,
         service,
       });
     } catch (error) {
-      // Errores de validación de Zod
-      if (error.errors) {
-        return res.status(400).json({
-          message: null,
-          error: "Validation Error / Error de Validación",
-          details: error.errors,
-          service: null,
-        });
-      }
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: null,
-          error: error.message,
-          details: error.details || null,
-          service: null,
-        });
-      }
-      if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: null,
-          error: "Database error / Error de base de datos",
-          details: error.message,
-          service: null,
-        });
-      }
-      console.error(error);
-      res.status(500).json({
-        message: null,
-        error: "Internal server error / Error interno del servidor",
-        details: error.message,
-        service: null,
-      });
+      next(error);
     }
   }
 
-  async update(req, res) {
+  async update(req, res, next) {
     try {
       const serviceId = req.params.id;
       const service = await Service.findByPk(serviceId);
       if (!service) {
-        throw new ErrorController(404, "Service not found / Servicio no encontrado", { service: null });
+        const error = new Error("Servicio no encontrado");
+        error.status = 404;
+        error.details = { service: null };
+        throw error;
       }
       if (req.body.creatorId) {
         req.body.creatorId = Number(req.body.creatorId);
@@ -212,46 +117,15 @@ class ServiceController {
       }
       await service.update(updatedFields);
       res.status(200).json({
-        message: "Service updated successfully / Servicio actualizado con éxito",
-        error: null,
-        details: null,
+        message: "Servicio actualizado con éxito",
         service: { ...service.toJSON(), ...updatedFields },
       });
     } catch (error) {
-      if (error.errors) {
-        return res.status(400).json({
-          message: null,
-          error: "Validation Error / Error de Validación",
-          details: error.errors,
-          service: null,
-        });
-      }
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: null,
-          error: error.message,
-          details: error.details || null,
-          service: null,
-        });
-      }
-      if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: null,
-          error: "Database error / Error de base de datos",
-          details: error.message,
-          service: null,
-        });
-      }
-      console.error(error);
-      res.status(500).json({
-        message: null,
-        error: "Internal server error / Error interno del servidor",
-        details: error.message,
-        service: null,
-      });
+      next(error);
     }
   }
-  async getByUserId(req, res) {
+
+  async getByUserId(req, res, next) {
     try {
       const userId = req.params.id;
       const services = await Service.findAll({
@@ -262,32 +136,17 @@ class ServiceController {
         },
       });
       if (services.length === 0) {
-        throw new ErrorController(404, "No se encontraron servicios para este usuario", { services: [] });
+        const error = new Error("No se encontraron servicios para este usuario");
+        error.status = 404;
+        error.details = { services: [] };
+        throw error;
       }
       res.status(200).json({
         message: "Servicios recuperados con éxito para el usuario",
         services,
       });
     } catch (error) {
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: null,
-          error: error.message,
-          details: error.details || null,
-          services: null,
-        });
-      }
-      if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: "Error de base de datos",
-          details: error.message,
-        });
-      }
-      console.error(error);
-      return res.status(500).json({
-        message: "Error interno del servidor",
-        details: error.message,
-      });
+      next(error);
     }
   }
 }

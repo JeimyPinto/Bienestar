@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
 /**
  * Migración para crear la tabla user_audit para auditoría de cambios en la tabla Users.
  */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('user_audit', {
+    await queryInterface.createTable("user_audit", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -31,7 +31,7 @@ module.exports = {
       changed_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       },
       changed_by: {
         type: Sequelize.STRING,
@@ -40,6 +40,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('user_audit');
+    await queryInterface.dropTable("user_audit");
   }
 };

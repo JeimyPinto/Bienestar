@@ -8,10 +8,10 @@ const path = require("path");
 // Variables de entorno
 // =======================
 // Carga las variables de entorno desde el archivo adecuado
-if (process.env.NODE_ENV === 'development') {
-  require('dotenv').config({ path: '.env_local' });
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").config({ path: ".env_local" });
 } else {
-  require('dotenv').config(); 
+  require("dotenv").config(); 
 }
 const PORT = process.env.PORT || 4000;
 
@@ -19,8 +19,8 @@ const PORT = process.env.PORT || 4000;
 // Base de datos
 // =======================
 // Importa la función para conectar a la base de datos
-const { config, connectDB } = require('./config/database.js');
-const db = require('./models');
+const { connectDB } = require("./config/database.js");
+const db = require("./models");
 
 // =======================
 // Middlewares
@@ -45,8 +45,8 @@ const chalk = require("chalk");
 // Documentación API
 // =======================
 // Swagger UI para documentación interactiva
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
 
 // =======================
 // Controladores
@@ -118,7 +118,7 @@ morgan.token("colored-status", (req, res) => {
   return color(status);
 });
 // Formato personalizado
-const customFormat = ':colored-method :url :colored-status :response-time ms - :res[content-length]';
+const customFormat = ":colored-method :url :colored-status :response-time ms - :res[content-length]";
 app.use(morgan(customFormat));
 
 // =======================
@@ -134,21 +134,26 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // =======================
 // Carga y sirve la documentación Swagger desde swagger.yaml
 const swaggerDocument = YAML.load(
-  path.join(__dirname, 'swagger.yaml')
+  path.join(__dirname, "swagger.yaml")
 );
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // =======================
 // Manejo de rutas no encontradas
 // =======================
-// Lanza un error personalizado si la ruta no existe
-app.use((req, res) => {
-  throw new ErrorController(
+app.use((req, res, next) => {
+  next(new ErrorController(
     404,
     "Ruta no encontrada / Route not found",
     { path: req.originalUrl }
-  )
+  ));
 });
+
+// =======================
+// Middleware global de manejo de errores
+// =======================
+const errorHandler = require("./middlewares/errorHandler");
+app.use(errorHandler);
 
 // =======================
 // Conexión a la base de datos y arranque del servidor

@@ -5,8 +5,8 @@ import { getAll } from "../services/services/service";
 import isTokenExpired from "../lib/isTokenExpired";
 import getToken from "../lib/getToken";
 import { Service } from "../types/service";
-import ServiceTableDesktop from "./ServiceTableDesktop";
-import ServiceCardMobile from "./ServiceCardMobile";
+import ServiceTableDesktop from "./serviceTableDesktop";
+import ServiceCardMobile from "./serviceCardMobile";
 
 export default function ServicePage() {
   const [token, setToken] = useState<string | null>(null);

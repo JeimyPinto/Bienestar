@@ -1,4 +1,4 @@
-const ErrorController = require("../controllers/error")
+const ErrorController = require("../controllers/error");
 const jwt = require("jsonwebtoken");
 
 function authenticateToken(req, res, next) {

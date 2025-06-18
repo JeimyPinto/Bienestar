@@ -1,13 +1,7 @@
 const { z } = require("zod");
+const ROLES = require("../constants/roles");
 
-/**
- * Esquemas de validación de datos para los usuarios
- * @module Schemas/User
- * @requires zod (npm i zod)
- * @version 18/03/2025
- * @autor Jeimy Pinto
- */
-const adminCreateUserSchema = z
+const createSchema = z
   .object({
     firstName: z
       .string()
@@ -33,10 +27,14 @@ const adminCreateUserSchema = z
         message: "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'",
       })
       .optional(),
-    role: z
-      .string()
-      .nonempty({ message: "Role is required / El rol es obligatorio" }),
+    role: z.enum([
+      ROLES.USER,
+      ROLES.INSTRUCTOR,
+      ROLES.ADMIN,
+      ROLES.SUPERADMIN
+    ], { message: "Role must be one of: user, instructor, admin, superadmin / El rol debe ser uno de: user, instructor, admin, superadmin" }),
     image: z.string().optional(), // nombre del archivo, si lo quieres guardar
+    groupId: z.number().int().nullable().optional(),
   })
   .transform((data) => ({
     ...data,
@@ -44,48 +42,7 @@ const adminCreateUserSchema = z
     password: data.password || data.documentNumber,
   }));
 
-const userUpdateSelfSchema = z
-  .object({
-    firstName: z
-      .string()
-      .nonempty("First name is required / El nombre es obligatorio"),
-    lastName: z
-      .string()
-      .nonempty("Last name is required / El apellido es obligatorio"),
-    phone: z
-      .string()
-      .nonempty(
-        "Phone number is required / El número de teléfono es obligatorio"
-      ),
-    email: z
-      .string()
-      .email(
-        "Invalid email address / Dirección de correo electrónico no válida"
-      ),
-    password: z.string().optional(),
-    image: z.string().optional(),
-    status: z
-      .enum(
-        ["activo", "inactivo"],
-        "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'"
-      )
-      .optional(),
-  })
-  .refine(
-    (data) => !!data.documentNumber,
-    {
-      message: "Document number must be unique / El número de documento debe ser único",
-      path: ["documentNumber"],
-    }
-  )
-  .refine((data) => data.role === undefined, {
-    message:
-      "Role cannot be updated by the user / El usuario no puede actualizar el rol",
-    path: ["role"],
-  });
-
-
-const adminUpdateUserSchema = z.object({
+const updateSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   documentType: z.string().optional(),
@@ -96,7 +53,12 @@ const adminUpdateUserSchema = z.object({
     .email("Invalid email address / Dirección de correo electrónico no válida")
     .optional(),
   password: z.string().optional(),
-  role: z.string().optional(),
+  role: z.enum([
+    ROLES.USER,
+    ROLES.INSTRUCTOR,
+    ROLES.ADMIN,
+    ROLES.SUPERADMIN
+  ]).optional(),
   status: z
     .enum(["activo", "inactivo"], {
       message: "Status must be either 'activo' or 'inactivo' / El estado debe ser 'activo' o 'inactivo'",
@@ -104,6 +66,7 @@ const adminUpdateUserSchema = z.object({
     .optional(),
   image: z.string().optional(),
   updatedAt: z.string().optional(),
+  groupId: z.number().int().nullable().optional(),
 });
 
 /**
@@ -129,25 +92,8 @@ const loginSchema = z.object({
     }),
 });
 
-/**
- * Esquema para la validación del número de documento
- * @type {z.ZodObject}
- * @const documentSchema
- * @version 18/03/2025
- * @autor Jeimy Pinto
- */
-const documentSchema = z.object({
-  documentNumber: z
-    .string()
-    .nonempty(
-      "Document number is required / El número de documento es obligatorio"
-    ),
-});
-
 module.exports = {
-  adminCreateUserSchema,
-  userUpdateSelfSchema,
-  adminUpdateUserSchema,
+  createSchema,
+  updateSchema,
   loginSchema,
-  documentSchema,
 };

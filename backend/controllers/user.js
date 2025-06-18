@@ -1,47 +1,28 @@
 // ==================== LIBRERÍAS ====================
-const bcrypt = require("bcrypt");
 const fs = require("fs");
-
-// ==================== CONSTANTES ====================
-const enabledRoles = require("../constants/roles.js");
-const enabledRolesArr = Object.values(enabledRoles);
-const saltRounds = 10;
-
 // ==================== MODELOS ====================
 const db = require("../models/index.js");
 const User = db.User;
-
 // ==================== HERRAMIENTAS / UTILIDADES ====================
-const { sendUserCreatedMail, sendUserUpdatedMail } = require("../utils/sendMail.js");
 const saveUserImage = require("../utils/saveUserImage.js");
-const auditUserAction = require("../utils/auditUserAction.js");
-
-// ==================== ESQUEMAS DE VALIDACIÓN ====================
-const {
-  userUpdateSelfSchema,
-  adminUpdateUserSchema,
-  adminCreateUserSchema
-} = require("../schemas/user.js");
-
-// ==================== CONTROLADORES DE ERROR ====================
-const ErrorController = require("./error.js");
+const { canCreateRole, getAllowedUpdateFields } = require("../helpers/user.js");
+const { hashPassword } = require("../helpers/hash.js");
 
 class UsuarioController {
-  async getAll(req, res) {
+  async getAll(req, res, next) {
     try {
       const users = await User.findAll({
         include: [
-          { association: "services" },
-          { association: "requests" },
-        ]
+          { association: "services", required: false },
+          { association: "requests", required: false },
+        ],
       });
 
       if (users.length === 0) {
-        throw new ErrorController(
-          404,
-          "No hay usuarios registrados",
-          { users: [] }
-        );
+        const error = new Error("No hay usuarios registrados");
+        error.status = 404;
+        error.details = { users: [] };
+        throw error;
       }
 
       res.status(200).json({
@@ -50,78 +31,36 @@ class UsuarioController {
       });
 
     } catch (error) {
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: error.message,
-          details: error.details,
-        });
-      }
-      // Error de base de datos de Sequelize
-      if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: "Error de base de datos",
-          details: error.message,
-        });
-      }
-      // Otros errores
-      console.error(error);
-      return res.status(500).json({
-        message: "Error interno del servidor",
-        details: null,
-      });
+      next(error);
     }
   }
 
-  async getAllActive(req, res) {
+  async getAllActive(req, res, next) {
     try {
       const users = await User.findAll({
         include: [
-          { association: "services" },
-          { association: "requests" },
+          { association: "services", required: false },
+          { association: "requests", required: false },
         ],
         where: { status: "activo" },
       });
       if (users.length === 0) {
-        throw new ErrorController(
-          404,
-          "No hay usuarios activos registrados"
-          , { users: [] }
-        );
+        const error = new Error("No hay usuarios activos registrados");
+        error.status = 404;
+        error.details = { users: [] };
+        throw error;
       }
-      // Excluir la contraseña de los usuarios al devolver los datos
-      const usersWithoutPassword = users.map(user => {
-        const { password, ...userWithoutPassword } = user.get({ plain: true });
-        return userWithoutPassword;
+      res.status(200).json({
+        message:
+          "Usuarios activos obtenidos correctamente",
+        users: users,
       });
-        res.status(200).json({
-          message:
-            "Usuarios activos obtenidos correctamente",
-          users: usersWithoutPassword,
-        });
-      } catch (error) {
-      if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: error.message,
-          details: error.details,
-        });
-      }
-      // Error de base de datos de Sequelize
-    if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: "Error de base de datos",
-          details: error.message,
-        });
-      }
-      // Otros errores
-      console.error(error);
-      return res.status(500).json({
-        message: "Error interno del servidor",
-        details: null,
-      });
+    } catch (error) {
+      next(error);
     }
   }
 
-  async getAllPaginated(req, res) {
+  async getAllPaginated(req, res, next) {
       try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -129,45 +68,26 @@ class UsuarioController {
         const { rows: users, count: totalUsers } = await User.findAndCountAll({
           limit,
           offset,
-          include: {
-            association: "services",
-            required: false,
-          },
+          include: [
+          { association: "services" },
+          { association: "requests" },
+        ],
         });
         const totalPages = Math.ceil(totalUsers / limit);
         res.status(200).json({
           message:
             "Usuarios obtenidos correctamente",
-          error: null,
           users: users,
           currentPage: page,
           totalPages,
           totalUsers,
         });
       } catch (error) {
-        if (error instanceof ErrorController) {
-        return res.status(error.status).json({
-          message: error.message,
-          details: error.details,
-        });
+        next(error);
       }
-      // Error de base de datos de Sequelize
-    if (error.name === "SequelizeDatabaseError") {
-        return res.status(500).json({
-          message: "Error de base de datos",
-          details: error.message,
-        });
-      }
-      // Otros errores
-      console.error(error);
-      return res.status(500).json({
-        message: "Error interno del servidor",
-        details: null,
-      });
     }
-  }
 
-  async getById(req, res) {
+  async getById(req, res, next) {
       try {
         const user = await User.findByPk(req.params.id, {
           include: [
@@ -176,234 +96,102 @@ class UsuarioController {
                 "services",
                 "requests",
               ],
-              required: false, // Permite que el usuario se devuelva incluso si no tiene servicios o solicitudes
+              required: false,
             },
           ],
         });
         if (!user) {
-          return res.status(404).json({
-            message: null,
-            error: "Usuario no encontrado",
-            user: null,
-          });
+          const error = new Error("Usuario no encontrado");
+          error.status = 404;
+          error.details = { user: null };
+          throw error;
         }
         res.status(200).json({
           message: "Usuario obtenido correctamente",
-          error: null,
           user,
         });
       } catch (error) {
-        if (error instanceof ErrorController) {
-          return res.status(error.status).json({
-            message: error.message,
-            details: error.details,
-          });
-        }
-        // Error de base de datos de Sequelize
-        if (error.name === "SequelizeDatabaseError") {
-          return res.status(500).json({
-            message: "Error de base de datos",
-            details: error.message,
-          });
-        }
-        // Otros errores
-        console.error(error);
-        return res.status(500).json({
-          message: "Error interno del servidor",
-          details: null,
-        });
+        next(error);
       }
     }
 
-  async create(req, res) {
-      try {
-        const userData = await adminCreateUserSchema.parseAsync(req.body);
-        // Si password está vacío o no viene, usar documentNumber como password
-        const plainPassword = userData.password && userData.password.trim() !== ""
-          ? userData.password
-          : userData.documentNumber;
-        const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
-
-        const user = await User.create({
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          documentType: userData.documentType,
-          documentNumber: userData.documentNumber,
-          phone: userData.phone,
-          email: userData.email,
-          password: hashedPassword,
-          status: "activo",
-          role: userData.role,
-          image: null // nunca tomar del body
-        });
-
-        // Si se proporciona una imagen, usar utilidad para manejar la carga
-        if (req.file) {
-          await saveUserImage(user, req.file);
-        }
-
-        // Enviar correo de bienvenida solo en producción
-        let mailSent = false;
-        if (process.env.NODE_ENV === 'production') {
-          try {
-            await sendUserCreatedMail({
-              to: user.email,
-              firstName: user.firstName,
-              documentNumber: user.documentNumber,
-              password: plainPassword
-            });
-            mailSent = true;
-          } catch (mailError) {
-            console.warn("Usuario creado, pero error enviando correo:", mailError.message);
-          }
-        }
-        // Auditoría: registrar creación desde backend
-        await auditUserAction(db, {
-          user_id: user.id,
-          action: 'INSERT',
-          new_data: user.toJSON(),
-          changed_by: req.user ? req.user.email : null
-        });
-        res.status(201).json({
-          message: `Usuario creado correctamente / User created successfully${mailSent ? " (Se ha enviado una notificación al usuario con su cuenta creada / A notification has been sent to the user with their account details)" : ""}`,
-          error: null,
-          user,
-        });
-      } catch (error) {
-        // Eliminar archivo subido si existe y hubo error
-        if (req.file) {
-          try {
-            fs.unlinkSync(req.file.path);
-          } catch (err) {
-            console.warn("No se pudo eliminar el archivo subido tras error:", err.message);
-          }
-        }
-        if (error instanceof ErrorController) {
-          return res.status(error.status).json({
-            message: error.message,
-            details: error.details,
-          });
-        }
-        // Error de base de datos de Sequelize
-        if (error.name === "SequelizeDatabaseError") {
-          return res.status(500).json({
-            message: "Error de base de datos",
-            details: error.message,
-          });
-        }
-        // Errores de validación de Zod
-        if (error.errors) {
-          return res.status(400).json({
-            message: null,
-            error:
-              "Error de validación / Validation error: " +
-              error.errors
-                .map((e) => `${e.path?.join(".")}: ${e.message}`)
-                .join("; "),
-            user: null,
-          });
-        }
-        // Otros errores
-        console.error(error);
-        res.status(500).json({
-          message: null,
-          error:
-            "Error al crear el usuario / Error creating user (" +
-            error.message +
-            ")",
-          user: null,
-        });
+  async create(req, res, next) {
+    try {
+      const creatorRole = req.user?.role;
+      const requestedRole = req.body.role;
+      if (!canCreateRole(creatorRole, requestedRole)) {
+        const error = new Error("No tienes permisos para crear usuarios con roles distintos a 'user'");
+        error.status = 403;
+        error.details = { creatorRole, requestedRole };
+        throw error;
       }
+      // Ya validado por middleware: req.body
+      const userData = req.body;
+      // Si password está vacío o no viene, usar documentNumber como password
+      const plainPassword = userData.password && userData.password.trim() !== ""
+        ? userData.password
+        : userData.documentNumber;
+      const hashedPassword = await hashPassword(plainPassword);
+
+      const user = await User.create({
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        documentType: userData.documentType,
+        documentNumber: userData.documentNumber,
+        phone: userData.phone,
+        email: userData.email,
+        password: hashedPassword,
+        status: "activo",
+        role: userData.role,
+        groupId: userData.groupId ?? null,
+        image: null // nunca tomar del body
+      });
+
+      if (req.file) {
+        await saveUserImage(user, req.file);
+      }
+      // Guardar usuario en res.locals para auditoría y otros middlewares
+      res.locals.user = user;
+      res.status(201).json({
+        message: "Usuario creado correctamente",
+        user,
+      });
+    } catch (error) {
+      // Eliminar archivo subido si existe y hubo error
+      if (req.file) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch (err) {
+          console.warn("No se pudo eliminar el archivo subido tras error:", err.message);
+        }
+      }
+      next(error);
+    }
     }
 
 
-  async update(req, res) {
+  async update(req, res, next) {
       try {
         const userId = req.params.id;
         const user = await User.findByPk(userId);
         if (!user) {
-          return res.status(404).json({
-            message: null,
-            error: "Usuario no encontrado",
-          });
+          const error = new Error("Usuario no encontrado");
+          error.status = 404;
+          throw error;
         }
-        let userData;
-        let updateFields = {};
-        // Solo SUPERADMIN puede cambiar el campo 'role'
-        const isSuperAdmin = req.user && req.user.role === "superadmin";
-        const isAdmin = req.user && req.user.role === "admin";
-
-        if (isSuperAdmin) {
-          // SUPERADMIN puede actualizar todos los campos, incluido 'role'
-          userData = await adminUpdateUserSchema.parseAsync(req.body);
-          updateFields = { ...userData };
-          if (userData.password) {
-            updateFields.password = await bcrypt.hash(userData.password, saltRounds);
-          } else {
-            updateFields.password = user.password;
-          }
-          if (req.file) {
-            updateFields.image = req.file.filename;
-          } else if (userData.image !== undefined) {
-            updateFields.image = userData.image;
-          }
-        } else if (isAdmin) {
-          // ADMIN puede actualizar todos los campos excepto 'role'
-          userData = await adminUpdateUserSchema.parseAsync(req.body);
-          // Eliminar 'role' si viene en el body
-          const { role, ...fieldsWithoutRole } = userData;
-          updateFields = { ...fieldsWithoutRole };
-          if (userData.password) {
-            updateFields.password = await bcrypt.hash(userData.password, saltRounds);
-          } else {
-            updateFields.password = user.password;
-          }
-          if (req.file) {
-            updateFields.image = req.file.filename;
-          } else if (userData.image !== undefined) {
-            updateFields.image = userData.image;
-          }
-        } else {
-          // Otros roles solo pueden actualizar teléfono, email o imagen
-          userData = await userUpdateSelfSchema.parseAsync(req.body);
-          if (userData.phone !== undefined) updateFields.phone = userData.phone;
-          if (userData.email !== undefined) updateFields.email = userData.email;
-          if (req.file) {
-            updateFields.image = req.file.filename;
-          } else if (userData.image !== undefined) {
-            updateFields.image = userData.image;
-          }
-        }
-
-        // Manejo de archivo si se subió uno nuevo
+        let updateFields = getAllowedUpdateFields(req.user?.role, req.body);
+        updateFields.password = await hashPassword(updateFields.password, user.password);
         if (req.file) {
           await saveUserImage(user, req.file);
           updateFields.image = req.file.filename;
         }
-
         const oldUserData = user.get({ plain: true });
         await user.update(updateFields);
-        // Enviar correo de actualización solo en producción
-        if (process.env.NODE_ENV === 'production') {
-          await sendUserUpdatedMail({
-            to: user.email,
-            firstName: user.firstName,
-          });
-        }
-        // Auditoría: registrar actualización desde backend
-        await auditUserAction(db, {
-          user_id: user.id,
-          action: 'UPDATE',
-          old_data: oldUserData,
-          new_data: user.get({ plain: true }),
-          changed_by: req.user ? req.user.email : null
-        });
-        // Excluir la contraseña del usuario al devolver los datos
-        const { password, ...userWithoutPassword } = user.get({ plain: true });
-
+        res.locals.user = user;
+        res.locals.oldUserData = oldUserData;
         res.status(200).json({
           message: `Usuario actualizado correctamente por ${req.user.firstName} ${req.user.lastName} / User updated successfully by ${req.user.firstName} ${req.user.lastName} `,
-          user: userWithoutPassword,
+          user: user,
         });
       } catch (error) {
         // Eliminar archivo subido si existe y hubo error
@@ -414,42 +202,7 @@ class UsuarioController {
             console.warn("No se pudo eliminar el archivo subido tras error:", err.message);
           }
         }
-        if (error instanceof ErrorController) {
-          return res.status(error.status).json({
-            message: error.message,
-            details: error.details,
-          });
-        }
-        // Error de base de datos de Sequelize
-        if (error.name === "SequelizeDatabaseError") {
-          return res.status(500).json({
-            message: "Error de base de datos",
-            details: error.message,
-          });
-        }
-        // Errores de validación de Zod
-        if (error.errors) {
-          res.status(400).json({
-            message: null,
-            error:
-              "Error de validación / Validation error: " +
-              error.errors
-                .map((e) => `${e.path?.join(".")}: ${e.message}`)
-                .join("; "),
-            user: null,
-          });
-        } else {
-          // Otros errores
-          console.error(error);
-          res.status(500).json({
-            message: null,
-            error:
-              "Error al actualizar el usuario / Error updating user (" +
-              error.message +
-              ")",
-            user: null,
-          });
-        }
+        next(error);
       }
     }
   }

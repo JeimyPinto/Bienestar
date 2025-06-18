@@ -28,8 +28,13 @@ export default function ServicePage() {
     useEffect(() => {
         const fetchData = async () => {
           const tokenValue = getToken();
-          const userValue = getUserToken();
+          let userValue = null;
           if (tokenValue) {
+            try {
+              userValue = getUserToken(tokenValue);
+            } catch (e) {
+              userValue = null;
+            }
             if (isTokenExpired(tokenValue)) {
               localStorage.removeItem("token");
               setUser(null);

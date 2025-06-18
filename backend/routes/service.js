@@ -38,10 +38,10 @@ router.get("/user/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUP
 router.get("/:id", authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR), serviceController.getById);
 
 // Crear un nuevo servicio (requiere autenticación y rol, permite subir imagen)
-router.post("/", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), uploadService.single('file'), serviceController.create);
+router.post("/", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), uploadService.single("file"), serviceController.create);
 
 // Actualizar un servicio existente (requiere autenticación y rol, permite subir imagen)
-router.put("/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), uploadService.single('file'), serviceController.update);
+router.put("/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), uploadService.single("file"), serviceController.update);
 
 // =======================
 // Exportación del router

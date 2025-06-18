@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Services', {
+    await queryInterface.createTable("Services", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -25,27 +25,27 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users',
-          key: 'id',
+          model: "Users",
+          key: "id",
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       area: {
         type: Sequelize.ENUM,
         values: [
-          'Salud',
-          'Arte y Cultura',
-          'Deporte y Recreación',
-          'Apoyo Socioeconomico y Reconocimiento a la Excelencia',
-          'Apoyo Psicosocial'
+          "Salud",
+          "Arte y Cultura",
+          "Deporte y Recreación",
+          "Apoyo Socioeconomico y Reconocimiento a la Excelencia",
+          "Apoyo Psicosocial"
         ],
         allowNull: false
       },
       status: {
-        type: Sequelize.ENUM('activo', 'inactivo'),
+        type: Sequelize.ENUM("activo", "inactivo"),
         allowNull: false,
-        defaultValue: 'activo'
+        defaultValue: "activo"
       },
       createdAt: {
         allowNull: false,
@@ -58,6 +58,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Services');
+    await queryInterface.dropTable("Services");
   }
 };

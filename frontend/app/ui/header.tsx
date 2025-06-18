@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
@@ -20,28 +20,27 @@ export default function Header() {
   useEffect(() => {
     const fetchData = async () => {
       const tokenValue = getToken();
-      const userValue = getUserToken();
-      // Solo verifica expiración si NO está en la página principal
-      if (window.location.pathname !== "/") {
-        if (tokenValue) {
-          if (isTokenExpired(tokenValue)) {
-            localStorage.removeItem("token");
-            setToken(null);
-            setUser(null);
-            router.push("/auth");
-          } else {
-            setToken(tokenValue);
-            setUser(userValue as User);
-          }
-        } else {
+      let userValue = null;
+      if (tokenValue) {
+        try {
+          userValue = getUserToken(tokenValue);
+        } catch (e) {
+          userValue = null;
+        }
+        if (isTokenExpired(tokenValue)) {
+          localStorage.removeItem("token");
           setToken(null);
           setUser(null);
+          router.push("/auth");
+        } else {
+          setToken(tokenValue);
+          setUser(userValue as User);
         }
       } else {
-        setToken(tokenValue);
-        setUser(userValue as User);
+        setToken(null);
+        setUser(null);
       }
-    };
+    }
     fetchData();
   }, [router]);
 

@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Requests', {
+    await queryInterface.createTable("Requests", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,24 +13,24 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users',
-          key: 'id'
+          model: "Users",
+          key: "id"
         },
       },
       serviceId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Services',
-          key: 'id'
+          model: "Services",
+          key: "id"
         },
       },
       createdBy: { 
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users',
-          key: 'id'
+          model: "Users",
+          key: "id"
         },
       },
       description: {
@@ -50,6 +50,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Requests');
+    await queryInterface.dropTable("Requests");
   }
 };

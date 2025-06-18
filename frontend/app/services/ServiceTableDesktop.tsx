@@ -1,15 +1,9 @@
 import React from "react"
 import Image from "next/image"
-import { Service } from "../types/service"
+import { Service, ServiceTableDesktopProps } from "../types/service"
 import { areaColors } from "../styles/areaColors";
 
-interface Props {
-  services: Service[];
-  loading: boolean;
-  onRowClick: (service: Service) => void;
-}
-
-const ServiceTableDesktop: React.FC<Props> = ({ services, loading, onRowClick }) => (
+const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({ services, loading, onRowClick }) => (
   <div className="bg-white border border-cian shadow-lg rounded-xl overflow-hidden hidden sm:block">
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-cian">

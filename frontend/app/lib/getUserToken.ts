@@ -1,23 +1,14 @@
-import getToken from "./getToken";
+import { jwtDecode } from "jwt-decode";
 
-// Extrae el usuario del token JWT
-function getUsertoken(token: string) {
-  try {
-    const base64Url = token.split(".")[1];
-    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    while (base64.length % 4 !== 0) {
-      base64 += "=";
-    }
-    const payload = JSON.parse(atob(base64));
-    return payload && payload.user ? payload.user : null;
-  } catch {
-    return null;
+// Extrae el usuario del token JWT usando jwt-decode para soportar UTF-8
+export default function getUsertoken(token: string) {
+  if (!token) {
+    throw new Error("Token JWT requerido para extraer el usuario.");
   }
-}
-
-// Devuelve el usuario extraído del token, o null si no hay token o es inválido
-export default function getUserToken() {
-  const token = getToken();
-  if (!token) return null;
-  return getUsertoken(token);
+  try {
+    const payload: any = jwtDecode(token);
+    return payload && payload.user ? payload.user : null;
+  } catch (err) {
+    throw new Error("Token JWT inválido o corrupto.");
+  }
 }

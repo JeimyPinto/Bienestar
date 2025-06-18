@@ -9,18 +9,18 @@ const express = require("express");
 const router = express.Router();
 
 // =======================
-// Rutas / Controladores
+// Rutas
 // =======================
 const userRoutes = require("./user.js");
 const authRouter = require("./auth.js");
 const serviceRoutes = require("./service.js");
 const requestRoutes = require("./request.js");
+const userAuditRoutes = require("./user_audit.js");
 
 // =======================
 // Middlewares / Utilidades
 // =======================
-const { authenticateToken, authorizeRoles } = require("../middlewares/auth");
-const ROLES = require("../constants/roles");
+const { authenticateToken } = require("../middlewares/auth");
 
 // =======================
 // Rutas principales
@@ -48,7 +48,10 @@ router.use(
 router.use("/services", serviceRoutes);
 
 // Rutas de solicitudes (requiere autenticación)
-router.use("/requests", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), requestRoutes);
+router.use("/requests", authenticateToken, requestRoutes);
+
+// Rutas de auditoría de usuario
+router.use("/user-audit", userAuditRoutes);
 
 // =======================
 // Exportación del router

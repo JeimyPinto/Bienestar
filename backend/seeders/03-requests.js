@@ -1,19 +1,19 @@
-const { faker } = require('@faker-js/faker');
+const { faker } = require("@faker-js/faker");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Obtén los IDs de usuarios y servicios existentes
     const users = await queryInterface.sequelize.query(
-      'SELECT id FROM Users;',
+      "SELECT id FROM Users;",
       { type: Sequelize.QueryTypes.SELECT }
     );
     const services = await queryInterface.sequelize.query(
-      'SELECT id FROM Services;',
+      "SELECT id FROM Services;",
       { type: Sequelize.QueryTypes.SELECT }
     );
 
     if (!users.length || !services.length) {
-      throw new Error('No hay usuarios o servicios en la base de datos.');
+      throw new Error("No hay usuarios o servicios en la base de datos.");
     }
 
     const requests = [];
@@ -32,12 +32,12 @@ module.exports = {
       });
     }
 
-    await queryInterface.bulkInsert('Requests', requests);
-    console.log('Requests creadas exitosamente.');
+    await queryInterface.bulkInsert("Requests", requests);
+    console.log("Requests creadas exitosamente.");
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Requests', null, {});
-    console.log('Requests eliminadas exitosamente.');
+    await queryInterface.bulkDelete("Requests", null, {});
+    console.log("Requests eliminadas exitosamente.");
   },
 };

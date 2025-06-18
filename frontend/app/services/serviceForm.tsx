@@ -26,7 +26,6 @@ export default function ServiceForm(props: ServiceFormProps) {
     const [user, setUser] = useState<User | null>(null);
     const [newService, setNewService] = useState<Service>(emptyService);
     const [previewImage, setPreviewImage] = useState<string>("");
-    const firstRender = useRef(true);
 
     // Mostrar modal automáticamente al montar
     useEffect(() => {
@@ -36,26 +35,31 @@ export default function ServiceForm(props: ServiceFormProps) {
     }, [dialogRef]);
 
      // Obtener token
-        useEffect(() => {
-            const fetchData = async () => {
-              const tokenValue = getToken();
-              const userValue = getUserToken();
-              if (tokenValue) {
+    useEffect(() => {
+        const fetchData = async () => {
+            const tokenValue = getToken();
+            let userValue = null;
+            if (tokenValue) {
+                try {
+                    userValue = getUserToken(tokenValue);
+                } catch (e) {
+                    userValue = null;
+                }
                 if (isTokenExpired(tokenValue)) {
-                  localStorage.removeItem("token");
-                  setToken(null);
-                  setUser(null);
+                    localStorage.removeItem("token");
+                    setToken(null);
+                    setUser(null);
                 } else {
-                  setToken(tokenValue);
+                    setToken(tokenValue);
                     setUser(userValue as User);
                 }
-              } else {
+            } else {
                 setToken(null);
                 setUser(null);
-              }
             }
-            fetchData();
-        }, []);
+        }
+        fetchData();
+    }, []);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
