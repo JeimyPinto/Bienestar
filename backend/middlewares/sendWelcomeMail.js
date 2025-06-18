@@ -1,4 +1,4 @@
-const { sendWelcomeMailIfProd } = require("../services/mailService.js");
+const { sendWelcomeMailIfProd } = require("../services/mail.js");
 
 module.exports = async function sendWelcomeMail(req, res, next) {
   try {

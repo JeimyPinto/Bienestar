@@ -1,4 +1,4 @@
-const { sendUpdateMailIfProd } = require("../services/mailService.js");
+const { sendUpdateMailIfProd } = require("../services/mail.js");
 
 module.exports = async function sendUpdateMail(req, res, next) {
   try {

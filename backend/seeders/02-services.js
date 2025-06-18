@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
     // Obtén el primer usuario como creador
     const [user] = await queryInterface.sequelize.query(
       "SELECT id FROM Users ORDER BY id ASC LIMIT 1;",
@@ -48,7 +48,7 @@ module.exports = {
     ]);
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.bulkDelete("Services", null, {});
   }
 };

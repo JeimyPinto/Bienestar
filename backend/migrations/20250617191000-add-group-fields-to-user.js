@@ -13,7 +13,7 @@ module.exports = {
       onDelete: "SET NULL"
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.removeColumn("Users", "groupId");
   }
 };

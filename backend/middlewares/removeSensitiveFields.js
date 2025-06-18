@@ -1,12 +1,12 @@
-
-function removeSensitiveFields(req, res, next) {
+function removeSensitiveFields(res, next) {
   // Intercepta el método res.json
   const originalJson = res.json;
   res.json = function (data) {
     // Función auxiliar para limpiar un usuario
     const cleanUser = (user) => {
       if (user && typeof user === "object") {
-        const { password, ...rest } = user;
+        // eslint-disable-next-line no-unused-vars
+        const { password: _, ...rest } = user;
         return rest;
       }
       return user;

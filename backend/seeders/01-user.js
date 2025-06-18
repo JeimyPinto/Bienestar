@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
     const users = [];
 
     // Usuario fijo
@@ -36,7 +36,7 @@ module.exports = {
     console.log("Usuarios creados exitosamente.");
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.bulkDelete("Users", null, {});
     console.log("Usuarios eliminados exitosamente.");
   },
