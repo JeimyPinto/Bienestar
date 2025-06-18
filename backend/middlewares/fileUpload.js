@@ -1,8 +1,12 @@
 const multer = require("multer");
 const { getUploadPath } = require("../utils/fileStorage.js");
 
-// Multer genérico para usuarios y servicios
-function makeMulter(entity) {
+/**
+ * Crea un middleware de subida de archivos para una entidad específica.
+ * @param {string} entity - Nombre de la entidad ("user", "service", etc.)
+ * @returns {multer.Instance} Middleware de multer configurado
+ */
+function createEntityUploader(entity) {
   return multer({
     storage: multer.diskStorage({
       destination: function (req, file, cb) {
@@ -17,7 +21,7 @@ function makeMulter(entity) {
   });
 }
 
-const uploadUser = makeMulter("user");
-const uploadService = makeMulter("service");
+const uploadUser = createEntityUploader("user");
+const uploadService = createEntityUploader("service");
 
-module.exports = { uploadUser, uploadService };
+module.exports = { uploadUser, uploadService, createEntityUploader };

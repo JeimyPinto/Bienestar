@@ -1,7 +1,10 @@
-// middlewares/recaptcha.js
-const { verifyRecaptcha } = require("../utils/verifyRecaptcha");
+const { verifyRecaptcha } = require("../helpers/verifyRecaptcha");
 
-module.exports = async function recaptchaMiddleware(req, res, next) {
+/**
+ * Middleware para validar el token de Google reCAPTCHA enviado en el body.
+ * Si el token es válido, permite continuar; si no, responde con error 400.
+ */
+async function recaptchaValidator(req, res, next) {
   try {
     const { recaptchaToken } = req.body;
     if (!recaptchaToken) {
@@ -11,7 +14,7 @@ module.exports = async function recaptchaMiddleware(req, res, next) {
       throw error;
     }
     const responseRecaptcha = await verifyRecaptcha(recaptchaToken);
-    if (!responseRecaptcha) {
+    if (!responseRecaptcha || !responseRecaptcha.success) {
       const error = new Error("Token de reCAPTCHA inválido");
       error.status = 400;
       error.details = { field: "recaptchaToken" };
@@ -21,4 +24,6 @@ module.exports = async function recaptchaMiddleware(req, res, next) {
   } catch (error) {
     next(error);
   }
-};
+}
+
+module.exports = recaptchaValidator;

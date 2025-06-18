@@ -1,4 +1,3 @@
-
 const toPascalCase = (str) => {
   return str
     .split(" ")
@@ -7,7 +6,7 @@ const toPascalCase = (str) => {
     .join(" ");
 };
 
-const sanitize = (req, res, next) => {
+const sanitizeRequestBody = (req, res, next) => {
   if (req.body && typeof req.body === "object") {
     for (const key in req.body) {
       if (typeof req.body[key] === "string") {
@@ -27,4 +26,4 @@ const sanitize = (req, res, next) => {
   next();
 };
 
-module.exports = sanitize;
+module.exports = sanitizeRequestBody;

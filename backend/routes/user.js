@@ -7,9 +7,9 @@ const userController = require("../controllers/user.js");
 
 // ===================== MIDDLEWARES =====================
 const { uploadUser } = require("../middlewares/fileUpload.js");
-const { authenticateToken, authorizeRoles } = require("../middlewares");
-const validate = require("../middlewares/validateSchema.js");
-const sanitize = require("../middlewares/sanitizeInput.js");
+const { authorizeRoles } = require("../middlewares");
+const validateRequestSchema = require("../middlewares/validateSchema.js");
+const sanitizeRequestBody = require("../middlewares/sanitizeInput.js");
 const removeSensitiveFields = require("../middlewares/removeSensitiveFields.js");
 const sendWelcomeMail = require("../middlewares/sendWelcomeMail.js");
 const sendUpdateMail = require("../middlewares/sendUpdateMail.js");
@@ -22,6 +22,38 @@ const { createSchema, updateSchema } = require("../schemas/user.js");
 
 // ===================== RUTAS =====================
 
+/**
+ * @openapi
+ * /users:
+ *   get:
+ *     summary: Obtiene todos los usuarios
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     description: Retorna todos los usuarios registrados. Solo accesible para usuarios con rol ADMIN, SUPERADMIN o INSTRUCTOR.
+ *     responses:
+ *       200:
+ *         description: Lista de todos los usuarios obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Usuarios obtenidos correctamente
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       404:
+ *         description: No hay usuarios registrados
+ *       401:
+ *         description: No autorizado
+ *       403:
+ *         description: Prohibido (rol insuficiente)
+ */
 // Obtener todos los usuarios
 router.get(
     "/",
@@ -58,9 +90,9 @@ router.get(
 router.post(
     "/",
     uploadUser.single("file"),
-    sanitize,
+    sanitizeRequestBody,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
-    validate(createSchema),
+    validateRequestSchema(createSchema),
     userController.create,
     sendWelcomeMail,
     removeSensitiveFields
@@ -71,8 +103,8 @@ router.put(
     "/:id",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     uploadUser.single("file"),
-    sanitize,
-    validate(updateSchema),
+    sanitizeRequestBody,
+    validateRequestSchema(updateSchema),
     userController.update,
     sendUpdateMail,
     removeSensitiveFields

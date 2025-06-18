@@ -4,7 +4,7 @@ const User = db.User;
 //Librerías
 const bcrypt = require("bcrypt");
 //Modulos de Herramientas
-const createToken = require("../utils/createToken");
+const createToken = require("../helpers/createToken");
 
 class AuthController {
   async login(req, res, next) {

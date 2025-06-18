@@ -2,6 +2,8 @@
 // Librerías de terceros
 // =======================
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const path = require("path");
 
 // =======================
 // Inicialización de Router
@@ -27,7 +29,23 @@ const { authenticateToken } = require("../middlewares/auth");
 // Rutas principales
 // =======================
 
-// Ruta de prueba de conexión
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     summary: Bienvenida a la API de Bienestar
+ *     tags:
+ *       - General
+ *     description: Endpoint de prueba para verificar la conexión con la API. Devuelve un mensaje de bienvenida y el entorno actual.
+ *     responses:
+ *       200:
+ *         description: Mensaje de bienvenida
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Bienvenido a la API de Bienestar. Este endpoint es solo para pruebas de verificación de conexión a la API.
+ *               environment: development
+ */
 router.get("/", (req, res) => {
   res.status(200).send({
     message: "Bienvenido a la API de Bienestar. Este endpoint es solo para pruebas de verificación de conexión a la API.",
@@ -60,6 +78,14 @@ router.use(
   authenticateToken,
   groupRoutes
 );
+
+// =======================
+// Documentación Swagger automática con swagger-jsdoc
+// =======================
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerJsdocConfig = require("../swagger-jsdoc.config");
+const swaggerSpec = swaggerJSDoc(swaggerJsdocConfig);
+router.use("/auto-docs", authenticateToken, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // =======================
 // Exportación del router

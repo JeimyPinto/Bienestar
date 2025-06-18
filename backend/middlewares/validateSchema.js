@@ -1,5 +1,4 @@
-
-module.exports = function validate(schema, property = "body") {
+function validateRequestSchema(schema, property = "body") {
   return async (req, res, next) => {
     try {
       req[property] = await schema.parseAsync(req[property]);
@@ -15,4 +14,6 @@ module.exports = function validate(schema, property = "body") {
       next(error);
     }
   };
-};
+}
+
+module.exports = validateRequestSchema;

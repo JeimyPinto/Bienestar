@@ -125,13 +125,9 @@ app.use("/api", routes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // =======================
-// Documentación Swagger
+// Documentación Swagger protegida
 // =======================
-// Carga y sirve la documentación Swagger desde swagger.yaml
-const swaggerDocument = YAML.load(
-  path.join(__dirname, "swagger.yaml")
-);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// (Ahora se monta en el router de /api, no aquí)
 
 // =======================
 // Manejo de rutas no encontradas
