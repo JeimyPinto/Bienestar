@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/auth.js");
-const sanitize = require("../middlewares/sanitize.js");
-const validate = require("../middlewares/validation.js");
+const sanitize = require("../middlewares/sanitizeInput.js");
+const validate = require("../middlewares/validateSchema.js");
 const { loginSchema } = require("../schemas/user.js");
 const recaptcha = require("../middlewares/recaptcha.js");
 

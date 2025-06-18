@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const groupController = require("../controllers/group.js");
-const { authenticateToken, authorizeRoles } = require("../middlewares/auth");
-const validate = require("../middlewares/validation.js");
+const { authenticateToken, authorizeRoles } = require("../middlewares");
+const validate = require("../middlewares/validateSchema.js");
 const { createGroupSchema, updateGroupSchema } = require("../schemas/group.js");
 const ROLES = require("../constants/roles");
 

@@ -6,9 +6,9 @@ const express = require("express");
 // =======================
 // Middlewares / Utilidades
 // =======================
-const { authenticateToken, authorizeRoles } = require("../middlewares/auth");
+const { authenticateToken, authorizeRoles } = require("../middlewares");
 const ROLES = require("../constants/roles");
-const validate = require("../middlewares/validation.js");
+const validate = require("../middlewares/validateSchema.js");
 
 // =======================
 // Controladores

@@ -6,10 +6,10 @@ const router = express.Router();
 const userController = require("../controllers/user.js");
 
 // ===================== MIDDLEWARES =====================
-const { uploadUser } = require("../middlewares/multer.js");
-const { authorizeRoles } = require("../middlewares/auth.js");
-const validate = require("../middlewares/validation.js");
-const sanitize = require("../middlewares/sanitize.js");
+const { uploadUser } = require("../middlewares/fileUpload.js");
+const { authenticateToken, authorizeRoles } = require("../middlewares");
+const validate = require("../middlewares/validateSchema.js");
+const sanitize = require("../middlewares/sanitizeInput.js");
 const removeSensitiveFields = require("../middlewares/removeSensitiveFields.js");
 const sendWelcomeMail = require("../middlewares/sendWelcomeMail.js");
 const sendUpdateMail = require("../middlewares/sendUpdateMail.js");

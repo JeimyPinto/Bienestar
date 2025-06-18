@@ -6,13 +6,13 @@ const express = require("express");
 // =======================
 // Configuración / Utilidades
 // =======================
-const { uploadService } = require("../middlewares/multer.js");
+const { uploadService } = require("../middlewares");
 
 // =======================
 // Middlewares
 // =======================
 const { authenticateToken, authorizeRoles } = require("../middlewares/auth");
-const validate = require("../middlewares/validation.js");
+const validate = require("../middlewares/validateSchema.js");
 
 // =======================
 // Controladores
