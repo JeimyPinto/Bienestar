@@ -16,6 +16,7 @@ const authRouter = require("./auth.js");
 const serviceRoutes = require("./service.js");
 const requestRoutes = require("./request.js");
 const auditLogRoutes = require("./audit_log.js");
+const groupRoutes = require("./group.js");
 
 // =======================
 // Middlewares / Utilidades
@@ -52,6 +53,13 @@ router.use("/requests", authenticateToken, requestRoutes);
 
 // Rutas de auditoría general
 router.use("/audit-logs", auditLogRoutes);
+
+// Rutas de grupos (requiere autenticación y roles ADMIN, SUPERADMIN o INSTRUCTOR)
+router.use(
+  "/groups",
+  authenticateToken,
+  groupRoutes
+);
 
 // =======================
 // Exportación del router

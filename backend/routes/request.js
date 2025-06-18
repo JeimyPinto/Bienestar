@@ -8,11 +8,17 @@ const express = require("express");
 // =======================
 const { authenticateToken, authorizeRoles } = require("../middlewares/auth");
 const ROLES = require("../constants/roles");
+const validate = require("../middlewares/validation.js");
 
 // =======================
 // Controladores
 // =======================
 const requestController = require("../controllers/request.js");
+
+// =======================
+// Esquemas
+// =======================
+const { requestSchema } = require("../schemas/request.js");
 
 // =======================
 // Inicialización de Router
@@ -51,6 +57,7 @@ router.post(
     "/",
     authenticateToken,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    validate(requestSchema),
     requestController.create
 );
 
@@ -59,6 +66,7 @@ router.put(
     "/:id",
     authenticateToken,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    validate(requestSchema),
     requestController.update
 );
 

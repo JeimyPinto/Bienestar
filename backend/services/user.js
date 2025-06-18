@@ -1,6 +1,5 @@
 const db = require("../models/index.js");
 const User = db.User;
-const saveUserImage = require("../utils/saveUserImage.js");
 const { canCreateRole, getAllowedUpdateFields } = require("../helpers/user.js");
 const { hashPassword } = require("../helpers/hash.js");
 const fs = require("fs");
@@ -86,8 +85,9 @@ async function createUser(userData, file, creatorRole) {
     groupId: userData.groupId ?? null,
     image: null
   });
-  if (file) {
-    await saveUserImage(user, file);
+  if (file && file.filename) {
+    user.image = file.filename;
+    await user.update({ image: user.image });
   }
   return user;
 }
@@ -101,8 +101,9 @@ async function updateUser(userId, reqUser, body, file) {
   }
   let updateFields = getAllowedUpdateFields(reqUser?.role, body);
   updateFields.password = await hashPassword(updateFields.password, user.password);
-  if (file) {
-    await saveUserImage(user, file);
+  if (file && file.filename) {
+    user.image = file.filename;
+    await user.update({ image: user.image });
     updateFields.image = file.filename;
   }
   const oldUserData = user.get({ plain: true });

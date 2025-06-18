@@ -1,23 +1,13 @@
+const requestService = require("../services/request.js");
+const { requestSchema } = require("../schemas/request.js");
 const db = require("../models/index.js");
 const Service = db.Service;
 const User = db.User;
-const Request = db.Request;
 
 class RequestController {
     async getAll(req, res, next) {
         try {
-            const requests = await Request.findAll({
-                include: [
-                    {
-                        association: "applicant",
-                        model: User,
-                    },
-                    {
-                        association: "service",
-                        model: Service,
-                    }
-                ],
-            });
+            const requests = await requestService.getAllRequests();
             if (requests.length === 0) {
                 const error = new Error("No se encontraron solicitudes");
                 error.status = 404;
@@ -35,19 +25,7 @@ class RequestController {
 
     async getAllActive(req, res, next) {
         try {
-            const requests = await Request.findAll({
-                where: { status: "activo" },
-                include: [
-                    {
-                        association: "applicant",
-                        model: User,
-                    },
-                    {
-                        association: "service",
-                        model: Service,
-                    }
-                ],
-            });
+            const requests = await requestService.getAllActiveRequests();
             if (requests.length === 0) {
                 const error = new Error("No se encontraron solicitudes activas");
                 error.status = 404;
@@ -65,18 +43,7 @@ class RequestController {
 
     async getById(req, res, next) {
         try {
-            const request = await Request.findByPk(req.params.id, {
-                include: [
-                    {
-                        association: "applicant",
-                        model: User,
-                    },
-                    {
-                        association: "service",
-                        model: Service,
-                    }
-                ],
-            });
+            const request = await requestService.getRequestById(req.params.id);
             if (!request) {
                 const error = new Error("Solicitud no encontrada");
                 error.status = 404;
@@ -95,7 +62,7 @@ class RequestController {
     async create(req, res, next) {
         try {
             const requestData = requestSchema.parse(req.body);
-            const request = await Request.create(requestData);
+            const request = await requestService.createRequest(requestData, req.user?.id || null);
             res.status(201).json({
                 message: "Solicitud creada con éxito",
                 details: { request },
@@ -108,14 +75,13 @@ class RequestController {
     async update(req, res, next) {
         try {
             const requestData = requestSchema.parse(req.body);
-            const request = await Request.findByPk(req.params.id);
+            const request = await requestService.updateRequest(req.params.id, requestData, req.user?.id || null);
             if (!request) {
                 const error = new Error("Solicitud no encontrada");
                 error.status = 404;
                 error.details = { request: null };
                 throw error;
             }
-            await request.update(requestData);
             res.status(200).json({
                 message: "Solicitud actualizada con éxito",
                 details: { request },
@@ -134,20 +100,7 @@ class RequestController {
                 error.details = { userId: null };
                 throw error;
             }
-            const requests = await Request.findAll(
-                {
-                    where: { userId },
-                    include: [
-                        {
-                            association: "applicant",
-                            model: User,
-                        },
-                        {
-                            association: "service",
-                            model: Service,
-                        }
-                    ],
-                });
+            const requests = await requestService.getRequestsByUserId(userId);
             if (!requests || requests.length === 0) {
                 const error = new Error("No se encontraron solicitudes para este usuario");
                 error.status = 404;
