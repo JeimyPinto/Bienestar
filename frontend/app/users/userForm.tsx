@@ -24,7 +24,7 @@ const emptyUser: User = {
 };
 
 export default function UserForm(props: UserFormProps) {
-    const { dialogRef, closeDialog, onClose, mode, userToEdit } = props;
+    const { dialogRef, closeDialog, onClose, mode, userToEdit, setSuccessMessage, setErrorMessage } = props;
     const [token, setToken] = useState<string | null>(null);
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -32,17 +32,17 @@ export default function UserForm(props: UserFormProps) {
     // Obtener token
     useEffect(() => {
         const fetchData = async () => {
-          const tokenValue = getToken();
-          if (tokenValue) {
-            if (isTokenExpired(tokenValue)) {
-              localStorage.removeItem("token");
-              setToken(null);
+            const tokenValue = getToken();
+            if (tokenValue) {
+                if (isTokenExpired(tokenValue)) {
+                    localStorage.removeItem("token");
+                    setToken(null);
+                } else {
+                    setToken(tokenValue);
+                }
             } else {
-              setToken(tokenValue);
+                setToken(null);
             }
-          } else {
-            setToken(null);
-          }
         }
         fetchData();
     }, []);
@@ -81,13 +81,13 @@ export default function UserForm(props: UserFormProps) {
                     token
                 );
                 if (responseData.error) {
-                    props.setErrorMessage?.(
-                        responseData.error || "Error al crear el usuario. / Error creating user."
-                    );
+                    setErrorMessage?.(responseData.message);
                 } else {
-                    props.setSuccessMessage?.(
-                        responseData.message || "Usuario creado exitosamente. / User created successfully."
-                    );
+                    if (responseData.details) {
+                        setErrorMessage?.(responseData.message);
+                    } else {
+                        setSuccessMessage?.(responseData.message);
+                    }
                 }
             } else if (mode === "edit") {
                 responseData = await update(
@@ -96,22 +96,25 @@ export default function UserForm(props: UserFormProps) {
                     newUser.file ? newUser.file : undefined,
                     token
                 );
-                if (responseData.error) {
-                    props.setErrorMessage?.(
-                        responseData.error || "Error al actualizar el usuario. / Error updating user."
-                    );
+               if (responseData.error) {
+                    setErrorMessage?.(responseData.message);
                 } else {
-                    props.setSuccessMessage?.(
-                        responseData.message || "Usuario actualizado exitosamente. / User updated successfully."
-                    );
+                    if (responseData.details) {
+                        setErrorMessage?.(responseData.message);
+                    } else {
+                        setSuccessMessage?.(responseData.message);
+                    }
                 }
             }
-            window.location.reload(); // Recargar la página para reflejar los cambios
+            // Solo recarga si fue éxito
+            if (!responseData.details) {
+                window.location.reload();
+            }
         } catch (error) {
             if (mode === "create") {
-                props.setErrorMessage?.("Error al crear el usuario. / Error creating user. " + error);
+                setErrorMessage?.("Error al crear el usuario. / Error creating user. " + error);
             } else if (mode === "edit") {
-                props.setErrorMessage?.("Error al actualizar el usuario. / Error updating user. " + error);
+                setErrorMessage?.("Error al actualizar el usuario. / Error updating user. " + error);
             }
         }
 

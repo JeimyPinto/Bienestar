@@ -29,6 +29,8 @@ export interface UserTableProps {
     setLimit: React.Dispatch<React.SetStateAction<number>>;
     token: string | null;
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+    setSuccessMessage?: (msg: string) => void;
+    setErrorMessage?: (msg: string) => void;
 }
 export interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement>;
@@ -37,9 +39,9 @@ export interface UserFormProps {
     mode: "create" | "edit";
     userToEdit?: User;
     successMessage?: string;
-    setSuccessMessage?: React.Dispatch<React.SetStateAction<string>>;
     errorMessage?: string;
-    setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
+    setSuccessMessage?: (msg: string) => void;
+    setErrorMessage?: (msg: string) => void;
 }
 export interface UserTableDesktopProps {
     users: User[];
@@ -59,9 +61,9 @@ export interface UserCardMobileProps {
     loading?: boolean;
 }
 export interface UserTableFilterBarProps {
-  limit: number;
-  setLimit: (limit: number) => void;
-  setCurrentPage: (page: number) => void;
-  filter: string;
-  setFilter: (value: string) => void;
+    limit: number;
+    setLimit: (limit: number) => void;
+    setCurrentPage: (page: number) => void;
+    filter: string;
+    setFilter: (value: string) => void;
 }

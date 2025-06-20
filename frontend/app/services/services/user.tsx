@@ -13,17 +13,14 @@ export async function getAll(token?: string) {
             credentials: "include",
         });
         const data = await response.json();
-        if (!response.ok) {
-            if (data.details) {
-                console.error("Detalles del error getAll users:", data.details);
-                return { message: data.message };
-            }
-            return { message: data.message };
+        if (!response.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
         }
-        return data;
+        return { error: false, ...data };
     } catch (error) {
         console.error("Error en la función:" + error)
         return {
+            error: true,
             message: "Error interno del servidor",
             details: error
         }
@@ -41,17 +38,14 @@ export async function getAllActive(token?: string) {
             credentials: "include",
         });
         const data = await response.json();
-        if (!response.ok) {
-            if (data.details) {
-                console.error("Detalles del error getAllActive users:", data.details);
-                return { message: data.message };
-            }
-            return { message: data.message };
+        if (!response.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
         }
-        return data;
+        return { error: false, ...data };
     } catch (error) {
         console.error("Error en la función:" + error)
         return {
+            error: true,
             message: "Error interno del servidor",
             details: error
         };
@@ -69,17 +63,14 @@ export async function getAllPaginated(page = 1, limit = 10, token?: string) {
             }, credentials: "include",
         });
         const data = await response.json();
-        if (!response.ok) {
-            if (data.details) {
-                console.error("Detalles del error getAllPaginated users:", data.details);
-                return { message: data.message };
-            }
-            return { message: data.message };
+        if (!response.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
         }
-        return data;
+        return { error: false, ...data };
     } catch (error) {
         console.error("Error en la función:" + error)
         return {
+            error: true,
             message: "Error interno del servidor",
             details: error
         };
@@ -114,17 +105,14 @@ export async function create(user: User, file?: File, token?: string) {
             credentials: "include",
         });
         const data = await response.json();
-        if (!response.ok) {
-            if (data.details) {
-                console.error("Detalles del error create user:", data.details);
-                return { message: data.message };
-            }
-            return { message: data.message };
+        if (!response.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
         }
-        return data;
+        return { error: false, ...data };
     } catch (error) {
         console.error("Error en la función:" + error)
         return {
+            error: true,
             message: "Error Service /Error en el servidor.",
             details: error,
         };
@@ -159,17 +147,14 @@ export async function update(id: string, user: User, file?: File, token?: string
             credentials: "include",
         });
         const data = await response.json();
-        if (!response.ok) {
-            if (data.details) {
-                console.error("Detalles del error update user:", data.details);
-                return { message: data.message };
-            }
-            return { message: data.message };
+        if (!response.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
         }
-        return data;
+        return { error: false, ...data };
     } catch (error) {
         console.error("Error en la función:" + error)
         return {
+            error: true,
             message: "Error Service /Error en el servidor.",
             details: error,
         };

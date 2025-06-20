@@ -10,11 +10,6 @@ import { useColumnSorter } from "../lib/useColumnSorter"
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
 
-interface UserTableProps {
-    setSuccessMessage?: (msg: string) => void;
-    setErrorMessage?: (msg: string) => void;
-}
-
 export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTableProps) {
     const [token, setToken] = useState<string | null>(null);
     const [users, setUsers] = useState<User[]>([]);
@@ -64,18 +59,18 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
         setError(null);
         const loadUsers = async () => {
             try {
-                const data = await getAllPaginated(currentPage, limit, token);
+                const response = await getAllPaginated(currentPage, limit, token);
                 if (!isMounted) return;
-                if (!data.users) {
+                if (response.error) {
                     setUsers([]);
-                    setError(data.message);
-                    if (setErrorMessage) setErrorMessage(data.message);
+                    setError(response.message);
+                    if (setErrorMessage) setErrorMessage(response.message);
                 } else {
-                    setUsers(data.users);
-                    setCurrentPage(data.currentPage);
-                    setTotalUsers(data.totalUsers);
-                    setTotalPages(data.totalPages);
-                    if (setSuccessMessage) setSuccessMessage(data.message);
+                    setUsers(response.users);
+                    setCurrentPage(response.currentPage);
+                    setTotalUsers(response.totalUsers);
+                    setTotalPages(response.totalPages);
+                    if (setSuccessMessage) setSuccessMessage(response.message);
                 }
             } catch (error) {
                 if (isMounted) setError("Error al cargar los usuarios");

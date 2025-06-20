@@ -27,45 +27,40 @@ export default function ServicePage() {
 
     useEffect(() => {
         const fetchData = async () => {
-          const tokenValue = getToken();
-          let userValue = null;
-          if (tokenValue) {
-            try {
-              userValue = getUserToken(tokenValue);
-            } catch (e) {
-              userValue = null;
-            }
-            if (isTokenExpired(tokenValue)) {
-              localStorage.removeItem("token");
-              setUser(null);
+            const tokenValue = getToken();
+            let userValue = null;
+            if (tokenValue) {
+                try {
+                    userValue = getUserToken(tokenValue);
+                } catch (e) {
+                    userValue = null;
+                }
+                if (isTokenExpired(tokenValue)) {
+                    localStorage.removeItem("token");
+                    setUser(null);
+                } else {
+                    setUser(userValue as User);
+                }
             } else {
-              setUser(userValue as User);
+                setUser(null);
             }
-          } else {
-            setUser(null);
-          }
         }
         fetchData();
-      }
-    , []);
+    }
+        , []);
 
     useEffect(() => {
         async function fetchServices() {
             setLoading(true);
-            const { services, message, error } = await getAllActive();
-
-            if (services) {
-                setServices(services);
-                setMessage(typeof message === "string" ? message : "");
+            const response = await getAllActive();
+            if (!response.error && response.services) {
+                setServices(response.services);
+                setMessage(response.message);
                 setErrorMessage(""); // Limpia error si hay servicios
             } else {
                 setServices([]);
                 setMessage(""); // Limpia mensaje si hay error
-                setErrorMessage(
-                    typeof error === "string"
-                        ? error
-                        : error?.message || error?.toString?.() || "Ocurrió un error"
-                );
+                setErrorMessage(response.error);
             }
             setLoading(false);
         }

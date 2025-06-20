@@ -39,7 +39,7 @@ export default function UsersPage() {
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
             {successMessage && (
-                <SuccessMessage message={successMessage} onClear={() => setSuccessMessage("")} />
+                <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
             )}
             <UserTable 
                 setSuccessMessage={setSuccessMessage}
