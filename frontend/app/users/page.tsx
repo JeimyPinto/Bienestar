@@ -38,8 +38,13 @@ export default function UsersPage() {
                 onButtonClick={openCreateDialog}
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
-            {successMessage && <SuccessMessage message={successMessage} />}
-            <UserTable />
+            {successMessage && (
+                <SuccessMessage message={successMessage} onClear={() => setSuccessMessage("")} />
+            )}
+            <UserTable 
+                setSuccessMessage={setSuccessMessage}
+                setErrorMessage={setErrorMessage}
+            />
             {isFormOpen && (
                 <UserForm
                     dialogRef={dialogRef}

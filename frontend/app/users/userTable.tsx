@@ -10,7 +10,12 @@ import { useColumnSorter } from "../lib/useColumnSorter"
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
 
-export default function UserTable() {
+interface UserTableProps {
+    setSuccessMessage?: (msg: string) => void;
+    setErrorMessage?: (msg: string) => void;
+}
+
+export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTableProps) {
     const [token, setToken] = useState<string | null>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -64,14 +69,17 @@ export default function UserTable() {
                 if (!data.users) {
                     setUsers([]);
                     setError(data.message);
+                    if (setErrorMessage) setErrorMessage(data.message);
                 } else {
                     setUsers(data.users);
                     setCurrentPage(data.currentPage);
                     setTotalUsers(data.totalUsers);
                     setTotalPages(data.totalPages);
+                    if (setSuccessMessage) setSuccessMessage(data.message);
                 }
             } catch (error) {
                 if (isMounted) setError("Error al cargar los usuarios");
+                if (setErrorMessage) setErrorMessage("Error al cargar los usuarios");
                 console.error("Error de la función loadUsers:", error);
             } finally {
                 if (isMounted) setLoading(false);

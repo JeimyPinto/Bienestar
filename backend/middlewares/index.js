@@ -4,7 +4,6 @@ module.exports = {
   errorHandler: require("./errorHandler.js"),
   uploadUser: require("./fileUpload.js").uploadUser,
   uploadService: require("./fileUpload.js").uploadService,
-  verifyRecaptcha: require("./recaptchaValidator.js"),
   removeSensitiveFields: require("./removeSensitiveFields.js"),
   sanitizeRequestBody: require("./sanitizeInput.js"),
   sendUpdateMail: require("./sendUpdateMail.js"),

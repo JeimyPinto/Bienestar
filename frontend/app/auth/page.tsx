@@ -7,7 +7,8 @@ import Header from "../ui/header"
 import Footer from "../ui/footer"
 import ErrorMessage from "../ui/errorMessage";
 import ReCAPTCHA from "react-google-recaptcha"
-import { login } from "../services/services/auth"
+import { login, verifyRecaptchaBackend } from "../services/services/auth";
+import getToken from "../lib/getToken";
 
 export default function LoginPage() {
   
@@ -20,46 +21,66 @@ export default function LoginPage() {
   const [token, setToken] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [recaptchaValid, setRecaptchaValid] = useState(false);
+
+  // Maneja el cambio del reCAPTCHA y valida en backend
+  const handleRecaptchaChange = async (token: string | null) => {
+    setRecaptchaToken(token);
+    setRecaptchaValid(false);
+    setError("");
+    if (token) {
+      setLoading(true);
+      const recaptchaResult = await verifyRecaptchaBackend(token);
+      if (recaptchaResult.success) {
+        setRecaptchaValid(true);
+      } else {
+        setError(recaptchaResult.message || "reCAPTCHA inválido.");
+        setRecaptchaValid(false);
+      }
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
-      if (!recaptchaToken) {
-        setError("Por favor completa el reCAPTCHA.");
-        return setLoading(false);
+      if (!recaptchaToken || !recaptchaValid) {
+        setError("Por favor completa y valida el reCAPTCHA.");
+        setLoading(false);
+        return;
       }
 
-      const { message, token } = await login({ email, password, recaptchaToken });
+      // 2. Si es válido, ahora sí intenta el login
+      const { message, token: loginToken } = await login({ email, password, recaptchaToken });
 
       if (error) {
-        setError("Error al iniciar sesión.( " + error + " )");
+        setError(error);
         setLoading(false);
         return;
       }
       if (message) {
         setLoading(false);
       }
-      if (!token) {
+      if (!loginToken) {
         setError("No se recibió un token de autenticación");
         setLoading(false);
         return;
       }
-      //Si el entorno es localhost, guarda el token en localStorage, de lo contrario, lo salva en una cookie
+      // Guarda el token según el entorno (ya lo haces)
       if (
         process.env.NEXT_PUBLIC_API_URL?.includes("localhost") ||
         process.env.NEXT_PUBLIC_API_URL?.includes("127.0.0.1")
       ) {
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", loginToken);
       } else {
-        const tokenValue = document.cookie
-          .split("; ")
-          .find(row => row.startsWith("token="))
-          ?.split("=")[1];
-        setToken(tokenValue || null);
+        setToken(null); // Limpiar para forzar relectura
       }
 
+      // Obtén el token usando la función utilitaria
+      const storedToken = getToken();
+      setToken(storedToken);
       router.push("/dashboard");
       setLoading(false);
     } catch (error) {
@@ -181,13 +202,13 @@ export default function LoginPage() {
                 <ReCAPTCHA
                   ref={recaptchaRef}
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                  onChange={(token) => setRecaptchaToken(token as string | null)}
+                  onChange={handleRecaptchaChange}
                 />
               </div>
               <button
                 type="submit"
-                aria-disabled={loading || !recaptchaToken}
-                disabled={loading || !recaptchaToken}
+                aria-disabled={loading || !recaptchaValid}
+                disabled={loading || !recaptchaValid}
                 className="w-full bg-magenta text-white font-semibold py-3 px-4 rounded-lg hover:bg-cian hover:text-azul focus:outline-none focus:ring-2 focus:ring-magenta transition disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
                 {loading ? "Iniciando sesión..." : "Iniciar sesión"}

@@ -22,11 +22,10 @@ class AuthController {
       });
 
       if (!user) {
-        throw new ErrorController(
-          401,
-          "Correo electrónico o contraseña incorrectos",
-          { field: "email" }
-        );
+        return res.status(404).json({
+          message: "No existe un usuario registrado con ese email.",
+         details: { field: "email" }
+        });
       }
       if (!await bcrypt.compare(password, user.password)) {
         throw new ErrorController(
@@ -55,6 +54,24 @@ class AuthController {
 
       res.status(200).json(response);
     } catch(error) {
+      next(error);
+    }
+  }
+
+  // POST /auth/verify-recaptcha
+  async verifyRecaptcha(req, res, next) {
+    try {
+      const { recaptchaToken } = req.body;
+      if (!recaptchaToken) {
+        return res.status(400).json({ success: false, message: "Falta el token de reCAPTCHA" });
+      }
+      const { verifyRecaptcha } = require("../helpers/verifyRecaptcha");
+      const responseRecaptcha = await verifyRecaptcha(recaptchaToken);
+      if (!responseRecaptcha || !responseRecaptcha.success) {
+        return res.status(400).json({ success: false, message: "Token de reCAPTCHA inválido" });
+      }
+      return res.json({ success: true, message: "reCAPTCHA válido" });
+    } catch (error) {
       next(error);
     }
   }
