@@ -1,3 +1,41 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Service:
+ *       type: object
+ *       required:
+ *         - name
+ *         - creatorId
+ *         - area
+ *         - status
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         name:
+ *           type: string
+ *           example: "Taller de Yoga"
+ *         description:
+ *           type: string
+ *           example: "Sesiones semanales de yoga para estudiantes"
+ *         creatorId:
+ *           type: integer
+ *           example: 2
+ *         area:
+ *           type: string
+ *           enum: ["Salud", "Arte y Cultura", "Deporte y Recreación", "Apoyo Socioeconomico y Reconocimiento a la Excelencia", "Apoyo Psicosocial"]
+ *           example: "Salud"
+ *         image:
+ *           type: string
+ *           nullable: true
+ *           example: "servicio.jpg"
+ *         status:
+ *           type: string
+ *           enum: ["activo", "inactivo"]
+ *           example: "activo"
+ */
+
 // =======================
 // Librerías de terceros
 // =======================

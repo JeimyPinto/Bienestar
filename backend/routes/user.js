@@ -1,3 +1,61 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - firstName
+ *         - lastName
+ *         - documentType
+ *         - documentNumber
+ *         - phone
+ *         - email
+ *         - role
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         firstName:
+ *           type: string
+ *           example: "Juan"
+ *         lastName:
+ *           type: string
+ *           example: "Pérez"
+ *         documentType:
+ *           type: string
+ *           example: "CC"
+ *         documentNumber:
+ *           type: string
+ *           example: "1234567890"
+ *         phone:
+ *           type: string
+ *           example: "3001234567"
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: "juan.perez@ejemplo.com"
+ *         password:
+ *           type: string
+ *           example: "********"
+ *         status:
+ *           type: string
+ *           enum: ["activo", "inactivo"]
+ *           example: "activo"
+ *         role:
+ *           type: string
+ *           enum: ["user", "instructor", "admin", "superadmin"]
+ *           example: "user"
+ *         image:
+ *           type: string
+ *           nullable: true
+ *           example: "avatar.jpg"
+ *         groupId:
+ *           type: integer
+ *           nullable: true
+ *           example: 2
+ */
+
 // ===================== LIBRERÍAS =====================
 const express = require("express");
 const router = express.Router();

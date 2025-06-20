@@ -1,3 +1,38 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Group:
+ *       type: object
+ *       required:
+ *         - fichaNumber
+ *         - programName
+ *         - programType
+ *         - instructorId
+ *         - fichaStatus
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         fichaNumber:
+ *           type: string
+ *           example: "1234567"
+ *         programName:
+ *           type: string
+ *           example: "Tecnología en Análisis y Desarrollo de Software"
+ *         programType:
+ *           type: string
+ *           enum: ["tecnico", "tecnologia", "complementaria"]
+ *           example: "tecnologia"
+ *         instructorId:
+ *           type: integer
+ *           example: 5
+ *         fichaStatus:
+ *           type: string
+ *           enum: ["etapa lectiva", "etapa practica", "certificados"]
+ *           example: "etapa lectiva"
+ */
+
 const express = require("express");
 const router = express.Router();
 const groupController = require("../controllers/group.js");

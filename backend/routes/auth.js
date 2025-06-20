@@ -1,3 +1,28 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     LoginRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *         - recaptchaToken
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: usuario@ejemplo.com
+ *         password:
+ *           type: string
+ *           format: password
+ *           example: "12345678"
+ *         recaptchaToken:
+ *           type: string
+ *           description: Token de Google reCAPTCHA v2/v3
+ *           example: "03AGdBq25..."
+ */
+
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/auth.js");

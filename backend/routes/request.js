@@ -3,6 +3,33 @@
 // =======================
 const express = require("express");
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Request:
+ *       type: object
+ *       required:
+ *         - userId
+ *         - serviceId
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         userId:
+ *           type: integer
+ *           example: 3
+ *         serviceId:
+ *           type: integer
+ *           example: 2
+ *         description:
+ *           type: string
+ *           example: "Solicito inscripción al taller de yoga."
+ *         status:
+ *           type: boolean
+ *           example: true
+ */
+
 // =======================
 // Middlewares / Utilidades
 // =======================
@@ -103,7 +130,6 @@ router.get(
     requestController.getById
 );
 
-// Crear una nueva solicitud
 /**
  * @openapi
  * /requests:
@@ -136,8 +162,6 @@ router.post(
     validateRequestSchema(requestSchema),
     requestController.create
 );
-
-// Actualizar una solicitud existente
 /**
  * @openapi
  * /requests/{id}:
@@ -180,7 +204,6 @@ router.put(
     requestController.update
 );
 
-// Obtener todas las solicitudes de un usuario específico
 router.get(
     "/user/:id",
     authenticateToken,

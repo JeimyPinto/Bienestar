@@ -1,3 +1,37 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AuditLogRequest:
+ *       type: object
+ *       required:
+ *         - action
+ *         - entityType
+ *         - entityId
+ *         - userId
+ *       properties:
+ *         action:
+ *           type: string
+ *           description: Acción realizada (ej: CREATE, UPDATE, DELETE)
+ *           example: "CREATE"
+ *         entityType:
+ *           type: string
+ *           description: Tipo de entidad afectada (ej: User, Service, Group, Request)
+ *           example: "User"
+ *         entityId:
+ *           type: integer
+ *           description: ID de la entidad afectada
+ *           example: 12
+ *         userId:
+ *           type: integer
+ *           description: ID del usuario que realizó la acción
+ *           example: 5
+ *         details:
+ *           type: object
+ *           description: Detalles adicionales de la acción (opcional)
+ *           example: { "field": "valueBefore", "field2": "valueAfter" }
+ */
+
 const express = require("express");
 const router = express.Router();
 const auditLogController = require("../controllers/audit_log.js");
