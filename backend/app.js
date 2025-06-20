@@ -44,9 +44,7 @@ const chalk = require("chalk");
 // =======================
 // Documentación API
 // =======================
-// Swagger UI para documentación interactiva
-const swaggerUi = require("swagger-ui-express");
-const YAML = require("yamljs");
+// (Swagger eliminado)
 
 // Define colores para cada método
 const methodColors = {
