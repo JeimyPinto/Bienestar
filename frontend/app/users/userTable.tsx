@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react"
-import { User } from "../types"
+import { User, UserTableProps } from "../types"
 import ErrorMessage from "../ui/errorMessage"
 import UserForm from "./userForm"
 import UserTableDesktop from "./userTableDesktop"
@@ -24,7 +24,6 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
     const [filter, setFilter] = useState("");
     const userEditFormRef = useRef<HTMLDialogElement>(null);
     const {
-        sortedData: sortedUsers,
         handleSort,
         sortColumn,
         sortOrder,

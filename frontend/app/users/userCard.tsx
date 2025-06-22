@@ -41,6 +41,12 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
                     <p className="text-gray-600 break-words">
                         {user.documentType}: {user.documentNumber}
                     </p>
+                    <p className="text-gray-600 break-words">
+                        Grupo ID: {user.groupId ?? "-"}
+                    </p>
+                    <p className="text-gray-600 break-words">
+                        Grupo: {user.group?.name ?? "-"}
+                    </p>
                     <p
                         className={`text-sm font-semibold ${user.status === "activo" ? "text-green-600" : "text-red-600"
                             }`}

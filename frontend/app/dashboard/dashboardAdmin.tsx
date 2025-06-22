@@ -70,6 +70,13 @@ export default function DashboardAdmin({ role }: { role: string }) {
                             >
                                 Panel de servicios
                             </button>
+                            <button
+                                aria-label="Ir al panel de fichas"
+                                className="flex-1 min-w-[150px] bg-azul text-white py-2 px-4 rounded-lg hover:bg-cian transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-cian"
+                                onClick={() => router.push("/group")}
+                            >
+                                Panel de fichas
+                            </button>
                         </>
                     )}
                     {(role === ROLES.ADMIN || role === ROLES.SUPERADMIN || role === ROLES.INSTRUCTOR) && (

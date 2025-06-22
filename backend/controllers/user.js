@@ -119,6 +119,24 @@ class UsuarioController {
       next(error);
     }
   }
+
+  async getAllInstructors(req, res, next) {
+    try {
+      const instructors = await userService.getAllInstructors();
+      if (!instructors.length) {
+        const error = new Error("No hay instructores registrados");
+        error.status = 404;
+        error.details = { users: [] };
+        throw error;
+      }
+      res.status(200).json({
+        message: "Instructores obtenidos correctamente",
+        users: instructors,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UsuarioController();

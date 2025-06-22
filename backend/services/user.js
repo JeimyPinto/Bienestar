@@ -121,6 +121,12 @@ function removeUploadedFile(file) {
   }
 }
 
+async function getAllInstructors() {
+  return await User.findAll({
+    where: { role: "instructor" },
+  });
+}
+
 module.exports = {
   getAllUsers,
   getAllActiveUsers,
@@ -129,4 +135,5 @@ module.exports = {
   createUser,
   updateUser,
   removeUploadedFile,
+  getAllInstructors,
 };

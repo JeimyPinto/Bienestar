@@ -18,6 +18,8 @@ export interface User {
     services?: Service[];
     requests?: Request[];
     file?: File | null;
+    groupId?: number | string | null; // Nuevo campo
+    group?: { id: number; name: string } | null; // Nuevo campo (ajusta según tu modelo)
 }
 export interface UserTableProps {
     users: User[];

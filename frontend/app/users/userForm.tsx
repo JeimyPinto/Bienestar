@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { UserFormProps, User } from "../types"
 import { create, update } from "../services/services/user";
+import { getAllGroups } from "../services/services/group";
 import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
@@ -28,6 +29,8 @@ export default function UserForm(props: UserFormProps) {
     const [token, setToken] = useState<string | null>(null);
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [groups, setGroups] = useState<Group[]>([]);
+    const [groupsLoading, setGroupsLoading] = useState<boolean>(true);
 
     // Obtener token
     useEffect(() => {
@@ -46,6 +49,17 @@ export default function UserForm(props: UserFormProps) {
         }
         fetchData();
     }, []);
+
+    // Obtener grupos
+    useEffect(() => {
+        async function fetchGroups() {
+            setGroupsLoading(true);
+            const res = await getAllGroups(token || undefined);
+            if (!res.error) setGroups(res.groups);
+            setGroupsLoading(false);
+        }
+        if (token) fetchGroups();
+    }, [token]);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -80,14 +94,11 @@ export default function UserForm(props: UserFormProps) {
                     newUser.file ? newUser.file : undefined,
                     token
                 );
+                console.log("[UserForm] create responseData:", responseData);
                 if (responseData.error) {
                     setErrorMessage?.(responseData.message);
                 } else {
-                    if (responseData.details) {
-                        setErrorMessage?.(responseData.message);
-                    } else {
-                        setSuccessMessage?.(responseData.message);
-                    }
+                    setSuccessMessage?.(responseData.message);
                 }
             } else if (mode === "edit") {
                 responseData = await update(
@@ -96,19 +107,12 @@ export default function UserForm(props: UserFormProps) {
                     newUser.file ? newUser.file : undefined,
                     token
                 );
-               if (responseData.error) {
+                console.log("[UserForm] update responseData:", responseData);
+                if (responseData.error) {
                     setErrorMessage?.(responseData.message);
                 } else {
-                    if (responseData.details) {
-                        setErrorMessage?.(responseData.message);
-                    } else {
-                        setSuccessMessage?.(responseData.message);
-                    }
+                    setSuccessMessage?.(responseData.message);
                 }
-            }
-            // Solo recarga si fue éxito
-            if (!responseData.details) {
-                window.location.reload();
             }
         } catch (error) {
             if (mode === "create") {
@@ -277,6 +281,26 @@ export default function UserForm(props: UserFormProps) {
                         >
                             <option value="activo">Activo</option>
                             <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-azul">Grupo</label>
+                        <select
+                            name="groupId"
+                            value={newUser.groupId ?? ""}
+                            onChange={handleInputChange}
+                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
+                        >
+                            <option value="">
+                                {groupsLoading ? "Cargando grupos..." : "Sin grupo / No asignado"}
+                            </option>
+                            {groups.map((group) => (
+                                <option key={group.id} value={group.id}>
+                                    {group.fichaNumber} - {group.programName}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>

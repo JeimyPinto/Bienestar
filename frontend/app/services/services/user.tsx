@@ -160,3 +160,29 @@ export async function update(id: string, user: User, file?: File, token?: string
         };
     }
 }
+
+// Obtener instructores (solo usuarios con rol INSTRUCTOR)
+export async function getAllInstructors(token?: string) {
+    try {
+        const response = await fetch(`${url}/instructors`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await response.json();
+        if (!response.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        console.error("Error en la función getAllInstructors:" + error)
+        return {
+            error: true,
+            message: "Error interno del servidor",
+            details: error
+        };
+    }
+}

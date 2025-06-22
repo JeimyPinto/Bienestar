@@ -53,7 +53,13 @@ router.get(
     userController.getById,
     removeSensitiveFields
 );
-
+// Obtener todos los instructores
+router.get(
+    "/instructors",
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
+    userController.getAllInstructors,
+    removeSensitiveFields
+);
 // Crear usuario
 router.post(
     "/",
@@ -77,5 +83,7 @@ router.put(
     sendUpdateMail,
     removeSensitiveFields
 );
+
+
 
 module.exports = router;

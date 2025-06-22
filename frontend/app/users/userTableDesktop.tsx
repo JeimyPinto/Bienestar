@@ -61,6 +61,14 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                             onClick={() => handleSort("updatedAt") as any}>
                             Fecha de Actualización {sortColumn === "updatedAt" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
+                        <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
+                            onClick={() => handleSort("groupId") as any}>
+                            Grupo (ID) {sortColumn === "groupId" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
+                        </th>
+                        <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
+                            onClick={() => handleSort("group") as any}>
+                            Nombre del Grupo
+                        </th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-cian">
@@ -133,6 +141,8 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                                 </td>
                                 <td className="px-2 py-2">{new Date(user.createdAt).toLocaleDateString()}</td>
                                 <td className="px-2 py-2">{new Date(user.updatedAt).toLocaleDateString()}</td>
+                                <td className="px-2 py-2">{user.groupId ?? "-"}</td>
+                                <td className="px-2 py-2">{user.group?.name ?? "-"}</td>
                             </tr>
                         ))
                     )}
