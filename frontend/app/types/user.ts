@@ -32,16 +32,14 @@ export interface UserTableProps {
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
     setSuccessMessage?: (msg: string) => void;
     setErrorMessage?: (msg: string) => void;
+    loading?: boolean;
 }
 export interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement>;
-    closeDialog: () => void;
     onClose: () => void;
     mode: "create" | "edit";
     userToEdit?: User;
-    successMessage?: string;
     errorMessage?: string;
-    setSuccessMessage?: (msg: string) => void;
     setErrorMessage?: (msg: string) => void;
 }
 export interface UserTableDesktopProps {

@@ -24,7 +24,13 @@ const UserFormAdminFields = ({ newUser, handleInputChange, groups, groupsLoading
       <div>
         <label className="block text-sm font-medium text-azul">Grupo</label>
         <select name="groupId" value={newUser.groupId ?? ""} onChange={handleInputChange} className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none">
-          <option value="">{groupsLoading ? "Cargando grupos..." : "Sin grupo / No asignado"}</option>
+          {groupsLoading ? (
+            <option value="">Cargando grupos...</option>
+          ) : groups.length === 0 ? (
+            <option value="">Sin grupos disponibles</option>
+          ) : (
+            <option value="">Sin grupo / No asignado</option>
+          )}
           {groups.map((group) => (
             <option key={group.id} value={group.id}>{group.fichaNumber} - {group.programName}</option>
           ))}

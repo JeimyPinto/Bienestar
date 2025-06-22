@@ -3,7 +3,6 @@ import Image from "next/image";
 import { UserFormProps, User, Group } from "../types/index"
 import { create, update } from "../services/services/user";
 import { getAllGroups } from "../services/services/group";
-import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
 import UserFormPersonalInfoFields from "./UserFormPersonalInfoFields";
@@ -28,7 +27,7 @@ const emptyUser: User = {
 };
 
 export default function UserForm(props: UserFormProps) {
-    const { dialogRef, closeDialog, onClose, mode, userToEdit, setSuccessMessage, setErrorMessage } = props;
+    const { dialogRef, onClose, mode, userToEdit, setErrorMessage } = props;
     const [token, setToken] = useState<string | null>(null);
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -59,7 +58,12 @@ export default function UserForm(props: UserFormProps) {
         async function fetchGroups() {
             setGroupsLoading(true);
             const res = await getAllGroups(token || undefined);
-            if (!res.error) setGroups(res.groups);
+            if (!res.error) {
+                setGroups(res.groups);
+            } else {
+                setFormError("No se pudo obtener el listado de Fichas.");
+                setGroups([]);
+            }
             setGroupsLoading(false);
         }
         if (token) fetchGroups();
@@ -91,10 +95,20 @@ export default function UserForm(props: UserFormProps) {
 
         setFormError(""); // Limpiar error local antes de intentar
 
-        // Normalizar groupId: si es string vacío, poner null
+        // Normalizar groupId: si es string vacío, null o undefined, eliminar el campo. Si es string numérico, convertir a número
         let userToSend = { ...newUser };
-        if (userToSend.groupId === "") {
-            userToSend.groupId = null;
+        if (
+            userToSend.groupId === "" ||
+            userToSend.groupId === null ||
+            userToSend.groupId === undefined
+        ) {
+            delete userToSend.groupId;
+        } else if (typeof userToSend.groupId === "string" && !isNaN(Number(userToSend.groupId))) {
+            userToSend.groupId = Number(userToSend.groupId);
+        }
+        // Eliminar image si no hay archivo nuevo ni imagen previa
+        if (!userToSend.file && !userToSend.image) {
+            delete userToSend.image;
         }
 
         try {
@@ -106,13 +120,13 @@ export default function UserForm(props: UserFormProps) {
                     userToSend.file ? userToSend.file : undefined,
                     token
                 );
-                console.log("[UserForm] create responseData:", responseData);
                 if (responseData.error) {
                     setFormError(responseData.message || "Error desconocido");
                     setErrorMessage?.(responseData.message);
                     return;
                 } else {
-                    setSuccessMessage?.(responseData.message);
+                    // No mostrar mensaje de éxito, solo cerrar el modal y notificar a UsersPage
+                    onClose?.();
                 }
             } else if (mode === "edit") {
                 responseData = await update(
@@ -126,7 +140,8 @@ export default function UserForm(props: UserFormProps) {
                     setErrorMessage?.(responseData.message);
                     return;
                 } else {
-                    setSuccessMessage?.(responseData.message);
+                    // No mostrar mensaje de éxito, solo cerrar el modal y notificar a UsersPage
+                    onClose?.();
                 }
             }
         } catch (error) {
@@ -139,9 +154,6 @@ export default function UserForm(props: UserFormProps) {
             }
             return;
         }
-
-        onClose?.();
-        closeDialog();
     }
 
     return (
@@ -156,7 +168,7 @@ export default function UserForm(props: UserFormProps) {
                         : "Editar Usuario"}
                 </h2>
                 <button
-                    onClick={closeDialog}
+                    onClick={onClose}
                     className="text-cian hover:text-azul transition-colors flex items-center justify-center"
                     aria-label="Cerrar"
                     type="button"

@@ -102,6 +102,24 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
 
     const sortedFilteredUsers = useColumnSorter(filteredUsers).sortedData;
 
+    // Handler para éxito en UserForm desde la tabla
+    function handleFormSuccess() {
+        setIsFormOpen(false);
+        // Recargar usuarios
+        if (token) {
+            setLoading(true);
+            getAllPaginated(currentPage, limit, token).then(response => {
+                if (!response.error) {
+                    setUsers(response.users);
+                    setCurrentPage(response.currentPage);
+                    setTotalUsers(response.totalUsers);
+                    setTotalPages(response.totalPages);
+                }
+                setLoading(false);
+            });
+        }
+    }
+
     return (
         <section className="w-full max-w-8xl mx-auto px-2 py-6">
             <div className="flex flex-col gap-4">
@@ -140,8 +158,7 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
                 {isFormOpen && selectedUser && (
                     <UserForm
                         dialogRef={userEditFormRef}
-                        closeDialog={() => setIsFormOpen(false)}
-                        onClose={() => setIsFormOpen(false)}
+                        onClose={handleFormSuccess}
                         mode="edit"
                         userToEdit={selectedUser}
                     />

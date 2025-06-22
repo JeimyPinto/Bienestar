@@ -8,6 +8,7 @@ import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import SectionHeader from "../ui/sectionHeader"
 import { User } from "../types"
+import { getAll as getAllUsers } from "../services/services/user";
 
 export default function UsersPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -16,6 +17,12 @@ export default function UsersPage() {
     const [userToEdit, setUserToEdit] = useState<User | undefined>(undefined);
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [users, setUsers] = useState<User[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit, setLimit] = useState(10);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const openCreateDialog = () => {
         setMode("create");
@@ -27,6 +34,29 @@ export default function UsersPage() {
     const closeDialog = () => {
         setIsFormOpen(false);
         dialogRef.current?.close();
+    };
+
+    // Cargar usuarios
+    const fetchUsers = async () => {
+        setLoading(true);
+        const res = await getAllUsers();
+        if (!res.error) {
+            setUsers(res.users);
+            setTotalUsers(res.totalUsers || res.users.length);
+            setTotalPages(res.totalPages || 1);
+        }
+        setLoading(false);
+    };
+
+    // Cargar usuarios al montar
+    React.useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    // Handler para éxito en UserForm
+    const handleUserFormSuccess = () => {
+        fetchUsers();
+        closeDialog();
     };
 
     return (
@@ -47,24 +77,23 @@ export default function UsersPage() {
             <UserTable 
                 setSuccessMessage={setSuccessMessage}
                 setErrorMessage={setErrorMessage}
-                users={[]}
-                currentPage={1}
-                totalUsers={0}
-                totalPages={0}
-                limit={10}
-                setCurrentPage={() => {}}
-                setLimit={() => {}}
+                users={users}
+                currentPage={currentPage}
+                totalUsers={totalUsers}
+                totalPages={totalPages}
+                limit={limit}
+                setCurrentPage={setCurrentPage}
+                setLimit={setLimit}
                 token={null}
-                setUsers={() => {}}
+                setUsers={setUsers}
+                loading={loading}
             />
             {isFormOpen && (
                 <UserForm
                     dialogRef={dialogRef}
-                    closeDialog={closeDialog}
-                    onClose={closeDialog}
+                    onClose={handleUserFormSuccess}
                     mode={mode}
                     userToEdit={userToEdit}
-                    setSuccessMessage={setSuccessMessage}
                     setErrorMessage={setErrorMessage}
                 />
             )}
