@@ -46,7 +46,6 @@ export default function DashboardPage() {
           setUser(userValue as User);
           // Obtener requests del usuario desde la API
           const data = await getRequestsByUserId(userValue.id, tokenValue);
-          console.log("Requests data:", data);
           if(data.requests) {
             setRequests(data.requests);
             setErrorMessage("");

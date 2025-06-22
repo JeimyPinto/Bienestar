@@ -35,17 +35,14 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
                 />
                 <div className="text-center sm:text-left w-full">
                     <h2 className="text-xl font-bold break-words">{`${user.firstName} ${user.lastName}`}</h2>
-                    <p className="text-gray-600 font-semibold capitalize break-words">{user.role}</p>
+                    <p className="text-magenta font-semibold capitalize break-words">{user.role}</p>
                     <p className="text-gray-600 break-words">{user.email}</p>
                     <p className="text-gray-600 break-words">{user.phone}</p>
                     <p className="text-gray-600 break-words">
                         {user.documentType}: {user.documentNumber}
                     </p>
                     <p className="text-gray-600 break-words">
-                        Grupo ID: {user.groupId ?? "-"}
-                    </p>
-                    <p className="text-gray-600 break-words">
-                        Grupo: {user.group?.name ?? "-"}
+                        Ficha: {user.group?.name ?? "Sin Ficha asignada"}
                     </p>
                     <p
                         className={`text-sm font-semibold ${user.status === "activo" ? "text-green-600" : "text-red-600"

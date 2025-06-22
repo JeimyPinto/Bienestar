@@ -46,18 +46,19 @@ router.get(
     removeSensitiveFields
 );
 
+// Obtener usuarios por rol (debe ir antes de /:id)
+router.get(
+    "/role/:role",
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
+    userController.getAllByRole,
+    removeSensitiveFields
+);
+
 // Obtener usuario por ID
 router.get(
     "/:id",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
     userController.getById,
-    removeSensitiveFields
-);
-// Obtener todos los instructores
-router.get(
-    "/instructors",
-    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
-    userController.getAllInstructors,
     removeSensitiveFields
 );
 // Crear usuario

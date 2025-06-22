@@ -119,19 +119,19 @@ class UsuarioController {
       next(error);
     }
   }
-
-  async getAllInstructors(req, res, next) {
+  async getAllByRole(req, res, next) {
     try {
-      const instructors = await userService.getAllInstructors();
-      if (!instructors.length) {
-        const error = new Error("No hay instructores registrados");
+      const role = req.params.role;
+      const users = await userService.getUsersByRole(role);
+      if (!users.length) {
+        const error = new Error(`No hay usuarios con el rol '${role}' registrados`);
         error.status = 404;
         error.details = { users: [] };
         throw error;
       }
       res.status(200).json({
-        message: "Instructores obtenidos correctamente",
-        users: instructors,
+        message: `Usuarios con rol '${role}' obtenidos correctamente`,
+        users,
       });
     } catch (error) {
       next(error);

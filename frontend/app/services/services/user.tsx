@@ -4,7 +4,7 @@ const url = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 
 export async function getAll(token?: string) {
     try {
-        const response = await fetch(url, {
+        const res = await fetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -12,8 +12,8 @@ export async function getAll(token?: string) {
             },
             credentials: "include",
         });
-        const data = await response.json();
-        if (!response.ok || data.details) {
+        const data = await res.json();
+        if (!res.ok || data.details) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -29,7 +29,7 @@ export async function getAll(token?: string) {
 
 export async function getAllActive(token?: string) {
     try {
-        const response = await fetch(`${url}/active`, {
+        const res = await fetch(`${url}/active`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -37,8 +37,8 @@ export async function getAllActive(token?: string) {
             },
             credentials: "include",
         });
-        const data = await response.json();
-        if (!response.ok || data.details) {
+        const data = await res.json();
+        if (!res.ok || data.details) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -55,15 +55,15 @@ export async function getAllActive(token?: string) {
 // Obtener usuarios paginados
 export async function getAllPaginated(page = 1, limit = 10, token?: string) {
     try {
-        const response = await fetch(`${url}/paginated?page=${page}&limit=${limit}`, {
+        const res = await fetch(`${url}/paginated?page=${page}&limit=${limit}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 ...(token && { Authorization: `Bearer ${token}` }),
             }, credentials: "include",
         });
-        const data = await response.json();
-        if (!response.ok || data.details) {
+        const data = await res.json();
+        if (!res.ok || data.details) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -98,14 +98,14 @@ export async function create(user: User, file?: File, token?: string) {
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
         }
-        const response = await fetch(url, {
+        const res = await fetch(url, {
             method: "POST",
             headers,
             body,
             credentials: "include",
         });
-        const data = await response.json();
-        if (!response.ok || data.details) {
+        const data = await res.json();
+        if (!res.ok || data.details) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -140,14 +140,14 @@ export async function update(id: string, user: User, file?: File, token?: string
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
         }
-        const response = await fetch(`${url}/${id}`, {
+        const res = await fetch(`${url}/${id}`, {
             method: "PUT",
             headers,
             body,
             credentials: "include",
         });
-        const data = await response.json();
-        if (!response.ok || data.details) {
+        const data = await res.json();
+        if (!res.ok || data.details) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -161,10 +161,10 @@ export async function update(id: string, user: User, file?: File, token?: string
     }
 }
 
-// Obtener instructores (solo usuarios con rol INSTRUCTOR)
-export async function getAllInstructors(token?: string) {
+// Obtener usuarios por rol (flexible, por ejemplo: instructor)
+export async function getAllByRole(role: string, token?: string) {
     try {
-        const response = await fetch(`${url}/instructors`, {
+        const res = await fetch(`${url}/role/${role}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -172,17 +172,22 @@ export async function getAllInstructors(token?: string) {
             },
             credentials: "include",
         });
-        const data = await response.json();
-        if (!response.ok || data.details) {
+        const data = await res.json();
+        if (!res.ok || data.details) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
     } catch (error) {
-        console.error("Error en la función getAllInstructors:" + error)
+        console.error("Error en la función getAllByRole:" + error)
         return {
             error: true,
             message: "Error interno del servidor",
             details: error
         };
     }
+}
+
+// Obtener instructores (solo usuarios con rol INSTRUCTOR)
+export async function getAllInstructors(token?: string) {
+    return getAllByRole("instructor", token);
 }

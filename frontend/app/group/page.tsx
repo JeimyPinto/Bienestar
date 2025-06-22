@@ -47,6 +47,25 @@ export default function GroupPage() {
         dialogRef.current?.close();
     }
 
+    // Nueva función para recargar grupos tras crear/editar
+    async function reloadGroups() {
+        const token = getToken();
+        const res = await getAllGroups(token || undefined);
+        if (res.error) {
+            setErrorMessage(res.message);
+            setGroups([]);
+        } else {
+            setGroups(res.groups);
+            setErrorMessage("");
+        }
+    }
+
+    function handleFormClose() {
+        setIsFormOpen(false);
+        dialogRef.current?.close();
+        reloadGroups(); // Recarga la tabla tras cerrar el formulario
+    }
+
     return (
         <>
             <Header />
@@ -68,8 +87,8 @@ export default function GroupPage() {
             {isFormOpen && (
                 <GroupForm
                     dialogRef={dialogRef}
-                    closeDialog={closeDialog}
-                    onClose={closeDialog}
+                    closeDialog={handleFormClose}
+                    onClose={handleFormClose}
                     mode={mode}
                     groupToEdit={groupToEdit}
                     setSuccessMessage={setSuccessMessage}

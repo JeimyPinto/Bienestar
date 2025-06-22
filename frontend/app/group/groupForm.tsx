@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Group } from "../types/group";
-import { getAllInstructors } from "../services/services/user";
-import { User } from "../types/user";
+import { Group, User } from "../types/index";
+import { getAllByRole } from "../services/services/user";
+import { createGroup, updateGroup } from "../services/services/group";
 import getToken from "../lib/getToken";
 
 const emptyGroup: Group = {
@@ -29,6 +29,7 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
     const [newGroup, setNewGroup] = useState<Group>(emptyGroup);
     const [instructors, setInstructors] = useState<User[]>([]);
     const [instructorsLoading, setInstructorsLoading] = useState<boolean>(true);
+    const [formError, setFormError] = useState<string>("");
 
     useEffect(() => {
         async function fetchInstructors() {
@@ -36,12 +37,18 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
             const token = getToken();
             if (!token) {
                 setErrorMessage?.("No hay sesión activa. Por favor, inicia sesión.");
+                setFormError("No hay sesión activa. Por favor, inicia sesión.");
                 setInstructors([]);
                 setInstructorsLoading(false);
                 return;
             }
-            const res = await getAllInstructors(token);
-            if (!res.error) setInstructors(res.users);
+            const res = await getAllByRole("instructor", token);
+            if (!res.error) {
+                setInstructors(res.users);
+            } else {
+                setFormError(res.message || "No se pudo obtener instructores.");
+                setInstructors([]);
+            }
             setInstructorsLoading(false);
         }
         fetchInstructors();
@@ -60,10 +67,47 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
         setNewGroup((prev) => ({ ...prev, [name]: value }));
     }
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        // Aquí iría la lógica para crear o editar la ficha
-        setSuccessMessage?.("Funcionalidad de guardado pendiente");
+        if (!newGroup.fichaNumber.trim() || !newGroup.programName.trim()) {
+            setFormError("Todos los campos son obligatorios.");
+            return;
+        }
+        setFormError("");
+        const token = getToken();
+        if (!token) {
+            setFormError("No hay sesión activa. Por favor, inicia sesión.");
+            return;
+        }
+        let res = null;
+        if (mode === "create") {
+            res = await createGroup({
+                fichaNumber: newGroup.fichaNumber,
+                programName: newGroup.programName,
+                programType: newGroup.programType,
+                instructorId: Number(newGroup.instructorId),
+                fichaStatus: newGroup.fichaStatus,
+            }, token);
+        } else if (mode === "edit" && groupToEdit) {
+            res = await updateGroup(groupToEdit.id, {
+                fichaNumber: newGroup.fichaNumber,
+                programName: newGroup.programName,
+                programType: newGroup.programType,
+                instructorId: Number(newGroup.instructorId),
+                fichaStatus: newGroup.fichaStatus,
+            }, token);
+        }
+        if (!res) {
+            setFormError("No se pudo procesar la solicitud. Intenta de nuevo.");
+            setErrorMessage?.("No se pudo procesar la solicitud. Intenta de nuevo.");
+            return;
+        }
+        if (res.error) {
+            setFormError(res.message || "Error al guardar la ficha");
+            setErrorMessage?.(res.message || "Error al guardar la ficha");
+            return;
+        }
+        setSuccessMessage?.(res.message || "Ficha guardada correctamente");
         onClose();
         closeDialog();
     }
@@ -120,6 +164,9 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
                         <option value="certificados">Certificados</option>
                     </select>
                 </div>
+                {formError && (
+                    <div className="text-red-600 text-center font-semibold">{formError}</div>
+                )}
                 <div className="flex justify-center">
                     <button type="submit" className="bg-cian text-blanco py-2 px-6 rounded-lg shadow-md hover:bg-azul transition-all duration-300 focus:ring-4 focus:ring-cian">
                         {mode === "create" ? "Guardar" : "Actualizar"}

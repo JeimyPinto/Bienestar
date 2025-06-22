@@ -120,10 +120,9 @@ function removeUploadedFile(file) {
     }
   }
 }
-
-async function getAllInstructors() {
+async function getUsersByRole(role) {
   return await User.findAll({
-    where: { role: "instructor" },
+    where: { role },
   });
 }
 
@@ -131,9 +130,10 @@ module.exports = {
   getAllUsers,
   getAllActiveUsers,
   getAllPaginatedUsers,
+  getUsersByRole,
   getUserById,
   createUser,
   updateUser,
   removeUploadedFile,
-  getAllInstructors,
+  getUsersByRole,
 };
