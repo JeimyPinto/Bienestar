@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
-import { ServiceFormProps, Service } from "../types/service"
-import { User } from "../types/user"
+import { ServiceFormProps, Service, Area, User } from "../types/index"
 import { create, update } from "../services/services/service"
-import { Area } from "../types/service";
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
 import getUserToken from "../lib/getUserToken"
+import ServiceFormMainFields from "./serviceFormMainFields";
+import ServiceFormAdminFields from "./serviceFormAdminFields";
 
 const emptyService: Service = {
     id: "",
@@ -26,6 +26,8 @@ export default function ServiceForm(props: ServiceFormProps) {
     const [user, setUser] = useState<User | null>(null);
     const [newService, setNewService] = useState<Service>(emptyService);
     const [previewImage, setPreviewImage] = useState<string>("");
+    const [formError, setFormError] = useState<string>("");
+    const [formSuccess, setFormSuccess] = useState<string>("");
 
     // Mostrar modal automáticamente al montar
     useEffect(() => {
@@ -101,58 +103,57 @@ export default function ServiceForm(props: ServiceFormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-
-        if (!token) return;
-
+        setFormError("");
+        setFormSuccess("");
+        if (!newService.name.trim() || !newService.description.trim()) {
+            setFormError("Todos los campos obligatorios deben estar completos.");
+            return;
+        }
+        if (!token) {
+            setFormError("No hay sesión activa. Por favor, inicia sesión.");
+            return;
+        }
         try {
             let responseData;
-
             if (mode === "create") {
-                const { file, ...serviceData } = newService;
+                const { file, image, ...serviceData } = newService;
                 serviceData.creatorId = user?.id ? Number(user.id) : 0;
-
+                // No enviar image si está vacío o null
+                if (!image) delete serviceData.image;
                 responseData = await create(
                     serviceData,
                     file ? file : undefined,
                     token
                 );
-                if (responseData.error) {
-                    props.setErrorMessage?.(
-                        responseData.error || "Error al crear el servicio. / Error creating service."
-                    );
-                } else {
-                    props.setSuccessMessage?.(
-                        responseData.message || "Servicio creado exitosamente. / Service created successfully."
-                    );
-                }
             } else if (mode === "edit") {
+                // Solo enviar image si existe y no es null
+                const { file, ...serviceData } = newService;
+                if (!serviceData.image) delete serviceData.image;
                 responseData = await update(
                     newService.id,
-                    newService,
+                    serviceData,
                     newService.file ? newService.file : undefined,
                     token
                 );
-                if (responseData.error) {
-                    props.setErrorMessage?.(
-                        responseData.error || "Error al actualizar el servicio. / Error updating service."
-                    );
-                } else {
-                    props.setSuccessMessage?.(
-                        responseData.message || "Servicio actualizado exitosamente. / Service updated successfully."
-                    );
-                }
             }
-            window.location.reload(); // Recargar la página para reflejar los cambios
+            if (!responseData) {
+                setFormError("No se pudo procesar la solicitud. Intenta de nuevo.");
+                props.setErrorMessage?.("No se pudo procesar la solicitud. Intenta de nuevo.");
+                return;
+            }
+            if (responseData.error) {
+                setFormError(responseData.message || responseData.error || "Error al guardar el servicio");
+                props.setErrorMessage?.(responseData.message || responseData.error || "Error al guardar el servicio");
+                return;
+            }
+            setFormSuccess(responseData.message || "Servicio guardado correctamente");
+            props.setSuccessMessage?.(responseData.message || "Servicio guardado correctamente");
+            onClose?.();
+            closeDialog();
         } catch (error) {
-            if (mode === "create") {
-                props.setErrorMessage?.("Error al crear el usuario. / Error creating user. (" + error + ")");
-            } else if (mode === "edit") {
-                props.setErrorMessage?.("Error al actualizar el usuario. / Error updating user. (" + error + ")");
-            }
+            setFormError("Error inesperado al guardar el servicio. " + error);
+            props.setErrorMessage?.("Error inesperado al guardar el servicio. " + error);
         }
-
-        onClose?.();
-        closeDialog();
     }
     return (
         <dialog
@@ -165,92 +166,30 @@ export default function ServiceForm(props: ServiceFormProps) {
                 </h2>
                 <button
                     onClick={closeDialog}
-                    className="text-cian hover:text-azul transition-colors"
+                    className="text-cian hover:text-azul transition-colors p-1"
+                    type="button"
+                    aria-label="Cerrar"
                 >
-                    ✕
+                    <Image
+                        src="/images/ico-close.svg"
+                        alt="Cerrar"
+                        width={24}
+                        height={24}
+                    />
                 </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Nombre
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={newService.name}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Descripción
-                        </label>
-                        <input
-                            type="text"
-                            name="description"
-                            value={newService.description}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Área
-                        </label>
-                        <select
-                            name="area"
-                            value={newService.area}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                            required
-                        >
-                            <option value="Salud">Salud</option>
-                            <option value="Arte y Cultura">Arte y Cultura</option>
-                            <option value="Deporte y Recreación">Deporte y Recreación</option>
-                            <option value="Apoyo Socioeconomico y Reconocimiento a la Excelencia">
-                                Apoyo Socioeconómico y Reconocimiento a la Excelencia
-                            </option>
-                            <option value="Apoyo Psicosocial">Apoyo Psicosocial</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Creador
-                        </label>
-                        <input
-                            type="text"
-                            name="creator"
-                            value={user?.firstName ? user.firstName + " " + user.lastName : ""}
-                            readOnly
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100 text-gray-700 cursor-not-allowed"
-                            tabIndex={-1}
-                        />
-                        <input
-                            type="hidden"
-                            name="creatorId"
-                            value={user?.id ?? ""}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Estado
-                        </label>
-                        <select
-                            name="status"
-                            value={newService.status}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                        >
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
-                        </select>
-                    </div>
-                    <div>
+                    <ServiceFormMainFields
+                        newService={newService}
+                        handleInputChange={handleInputChange}
+                    />
+                    <ServiceFormAdminFields
+                        newService={newService}
+                        user={user}
+                        handleInputChange={handleInputChange}
+                    />
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-medium text-azul">
                             Imagen de Perfil
                         </label>
@@ -274,6 +213,12 @@ export default function ServiceForm(props: ServiceFormProps) {
                         />
                     </div>
                 </div>
+                {formError && (
+                    <div className="text-red-600 text-center font-semibold">{formError}</div>
+                )}
+                {formSuccess && (
+                    <div className="text-green-600 text-center font-semibold">{formSuccess}</div>
+                )}
                 <div className="flex justify-end mt-6">
                     <button
                         type="submit"

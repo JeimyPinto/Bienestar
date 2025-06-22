@@ -5,9 +5,9 @@ import { create, update } from "../services/services/user";
 import { getAllGroups } from "../services/services/group";
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
-import UserFormPersonalInfoFields from "./UserFormPersonalInfoFields";
-import UserFormAdminFields from "./UserFormAdminFields";
-import UserFormImageField from "./UserFormImageField";
+import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
+import UserFormAdminFields from "./userFormAdminFields";
+import UserFormImageField from "./userFormImageField";
 
 const emptyUser: User = {
     id: "",

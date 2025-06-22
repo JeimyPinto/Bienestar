@@ -73,6 +73,21 @@ export default function ServicePage() {
     }, 0);
   }
 
+  function handleFormCloseAndReload() {
+    setIsFormOpen(false);
+    serviceEditFormRef.current?.close();
+    // Recargar servicios después de crear/editar
+    if (token) {
+      setLoading(true);
+      getAll(token).then((data) => {
+        if (!data.error && data.services) {
+          setServices(data.services);
+        }
+        setLoading(false);
+      });
+    }
+  }
+
   return (
     <section className="w-full max-w-8xl mx-auto px-2 sm:px-6 py-4 sm:py-10">
       <div className="flex flex-col gap-6">
@@ -90,8 +105,8 @@ export default function ServicePage() {
         {isFormOpen && selectedservice && (
           <ServiceForm
             dialogRef={serviceEditFormRef}
-            closeDialog={() => setIsFormOpen(false)}
-            onClose={() => setIsFormOpen(false)}
+            closeDialog={handleFormCloseAndReload}
+            onClose={handleFormCloseAndReload}
             mode="edit"
             serviceToEdit={selectedservice}
           />

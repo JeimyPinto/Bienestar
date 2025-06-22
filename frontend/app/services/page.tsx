@@ -1,14 +1,13 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from "react";
-import { Service } from "../types/service";
-import { User } from "../types";
+import { Service, User } from "../types/index";
 import Header from "../ui/header";
 import ErrorMessage from "../ui/errorMessage";
 import ServicesGallery from "./servicesGallery";
 import ServiceTable from "./serviceTable";
 import SectionHeader from "../ui/sectionHeader";
-import { getAllActive } from "../services/services/service";
+import { getAllActive,getAll } from "../services/services/service";
 import ServiceForm from "./serviceForm";
 import isTokenExpired from "../lib/isTokenExpired"
 import getUserToken from "../lib/getUserToken"
@@ -26,6 +25,7 @@ export default function ServicePage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
+        // Solo hace fetch de usuario al montar
         const fetchData = async () => {
             const tokenValue = getToken();
             let userValue = null;
@@ -44,28 +44,36 @@ export default function ServicePage() {
             } else {
                 setUser(null);
             }
-        }
+        };
         fetchData();
-    }
-        , []);
+    }, []);
 
     useEffect(() => {
+        // Solo hace fetch de servicios cuando ya se conoce el usuario
         async function fetchServices() {
             setLoading(true);
-            const response = await getAllActive();
+            let response;
+            if (!user || user?.role === "user") {
+                response = await getAllActive();
+            } else {
+                // Solo ADMIN/SUPERADMIN
+                const tokenValue = getToken();
+                response = await getAll(tokenValue ?? undefined);
+            }
             if (!response.error && response.services) {
                 setServices(response.services);
                 setMessage(response.message);
-                setErrorMessage(""); // Limpia error si hay servicios
+                setErrorMessage("");
             } else {
                 setServices([]);
-                setMessage(""); // Limpia mensaje si hay error
-                setErrorMessage(response.error);
+                setMessage(response.message);
+                setErrorMessage(response.message);
             }
             setLoading(false);
         }
-        fetchServices();
-    }, []);
+        // Solo ejecuta si user ya está definido (no undefined)
+        if (user !== undefined) fetchServices();
+    }, [user]);
 
     const openCreateDialog = () => {
         setMode("create");
@@ -92,11 +100,7 @@ export default function ServicePage() {
                             <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-cian border-opacity-50 mb-4"></div>
                             <span className="text-cian text-lg">Cargando servicios...</span>
                         </div>
-                    ) : services.length > 0 ? (
-                        <ServicesGallery services={services} />
-                    ) : (
-                        <ErrorMessage message={message} />
-                    )}
+                    ) : <ServicesGallery services={services} />}
                 </main>
             ) : (
                 <>

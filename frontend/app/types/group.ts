@@ -21,3 +21,10 @@ export interface GroupTableProps {
     setSuccessMessage?: (msg: string) => void;
     setErrorMessage?: (msg: string) => void;
 }
+
+export interface GroupTableFilterBarProps {
+  limit: number;
+  setLimit: (limit: number) => void;
+  filter: string;
+  setFilter: (filter: string) => void;
+}
