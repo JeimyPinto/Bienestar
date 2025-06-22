@@ -1,5 +1,4 @@
-import { Service } from "./service";
-import { Request } from "./request";
+import { Service,Request,Group } from "./index";
 
 export interface User {
     id: string;
@@ -68,4 +67,21 @@ export interface UserTableFilterBarProps {
     setCurrentPage: (page: number) => void;
     filter: string;
     setFilter: (value: string) => void;
+}
+export interface UserFormAdminFieldsProps {
+    newUser: User;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    groups: Group[];
+    groupsLoading: boolean;
+}
+export interface UserFormImageFieldProps {
+    mode: "create" | "edit";
+    newUser: User;
+    previewImage: string | null;
+    setNewUser: React.Dispatch<React.SetStateAction<User>>;
+    setPreviewImage: React.Dispatch<React.SetStateAction<string | null>>;
+}
+export interface UserFormPersonalInfoFieldsProps {
+    newUser: User;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }

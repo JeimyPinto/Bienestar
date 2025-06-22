@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { UserFormProps, User } from "../types"
+import { UserFormProps, User, Group } from "../types/index"
 import { create, update } from "../services/services/user";
 import { getAllGroups } from "../services/services/group";
 import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired"
 import getToken from "../lib/getToken"
+import UserFormPersonalInfoFields from "./UserFormPersonalInfoFields";
+import UserFormAdminFields from "./UserFormAdminFields";
+import UserFormImageField from "./UserFormImageField";
 
 const emptyUser: User = {
     id: "",
@@ -31,6 +34,7 @@ export default function UserForm(props: UserFormProps) {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [groups, setGroups] = useState<Group[]>([]);
     const [groupsLoading, setGroupsLoading] = useState<boolean>(true);
+    const [formError, setFormError] = useState<string>("");
 
     // Obtener token
     useEffect(() => {
@@ -85,41 +89,55 @@ export default function UserForm(props: UserFormProps) {
 
         if (!token) return;
 
+        setFormError(""); // Limpiar error local antes de intentar
+
+        // Normalizar groupId: si es string vacío, poner null
+        let userToSend = { ...newUser };
+        if (userToSend.groupId === "") {
+            userToSend.groupId = null;
+        }
+
         try {
             let responseData;
 
             if (mode === "create") {
                 responseData = await create(
-                    newUser,
-                    newUser.file ? newUser.file : undefined,
+                    userToSend,
+                    userToSend.file ? userToSend.file : undefined,
                     token
                 );
                 console.log("[UserForm] create responseData:", responseData);
                 if (responseData.error) {
+                    setFormError(responseData.message || "Error desconocido");
                     setErrorMessage?.(responseData.message);
+                    return;
                 } else {
                     setSuccessMessage?.(responseData.message);
                 }
             } else if (mode === "edit") {
                 responseData = await update(
-                    newUser.id,
-                    newUser,
-                    newUser.file ? newUser.file : undefined,
+                    userToSend.id,
+                    userToSend,
+                    userToSend.file ? userToSend.file : undefined,
                     token
                 );
-                console.log("[UserForm] update responseData:", responseData);
                 if (responseData.error) {
+                    setFormError(responseData.message || "Error desconocido");
                     setErrorMessage?.(responseData.message);
+                    return;
                 } else {
                     setSuccessMessage?.(responseData.message);
                 }
             }
         } catch (error) {
             if (mode === "create") {
+                setFormError("Error al crear el usuario. / Error creating user. " + error);
                 setErrorMessage?.("Error al crear el usuario. / Error creating user. " + error);
             } else if (mode === "edit") {
+                setFormError("Error al actualizar el usuario. / Error updating user. " + error);
                 setErrorMessage?.("Error al actualizar el usuario. / Error updating user. " + error);
             }
+            return;
         }
 
         onClose?.();
@@ -129,7 +147,7 @@ export default function UserForm(props: UserFormProps) {
     return (
         <dialog
             ref={dialogRef}
-            className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-lg mx-auto"
+            className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-3xl mx-auto"
         >
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold text-azul">
@@ -139,213 +157,42 @@ export default function UserForm(props: UserFormProps) {
                 </h2>
                 <button
                     onClick={closeDialog}
-                    className="text-cian hover:text-azul transition-colors"
+                    className="text-cian hover:text-azul transition-colors flex items-center justify-center"
+                    aria-label="Cerrar"
+                    type="button"
                 >
-                    ✕
+                    <Image src="/images/ico-close.svg" alt="Cerrar" width={28} height={28} />
                 </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Nombre
-                        </label>
-                        <input
-                            type="text"
-                            name="firstName"
-                            value={newUser.firstName}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required
+            <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="flex gap-6">
+                    <div className="w-full lg:w-2/3">
+                        <UserFormPersonalInfoFields
+                            newUser={newUser}
+                            handleInputChange={handleInputChange}
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Apellido
-                        </label>
-                        <input
-                            type="text"
-                            name="lastName"
-                            value={newUser.lastName}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required
+                    <div className="w-full flex items-center justify-center lg:w-1/3">
+                        <UserFormImageField
+                            mode={mode}
+                            newUser={newUser}
+                            previewImage={previewImage}
+                            setNewUser={setNewUser}
+                            setPreviewImage={setPreviewImage}
                         />
                     </div>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-azul">
-                        Correo Electrónico
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={newUser.email}
-                        onChange={handleInputChange}
-                        className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                        required
-                    />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Tipo de Documento
-                        </label>
-                        <select
-                            name="documentType"
-                            value={newUser.documentType}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required
-                            aria-required="true"
-                        >
-                            <option value="" disabled>
-                                Seleccione una opción
-                            </option>
-                            <option value="CC">Cédula de Ciudadanía</option>
-                            <option value="CE">Cédula de Extranjería</option>
-                            <option value="PA">Pasaporte</option>
-                            <option value="RC">Registro Civil</option>
-                            <option value="TI">Tarjeta de Identidad</option>
-                            <option value="PEP">Permiso Especial de Permanencia</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Número de Documento
-                        </label>
-                        <input
-                            type="text"
-                            name="documentNumber"
-                            value={newUser.documentNumber}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Teléfono
-                        </label>
-                        <input
-                            type="text"
-                            name="phone"
-                            value={newUser.phone}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Contraseña
-                        </label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={newUser.password}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-azul">Rol</label>
-                        <select
-                            name="role"
-                            value={newUser.role}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required
-                        >
-                            {Object.entries(ROLES).map(([key, value]) => (
-                                <option key={value} value={value}>
-                                    {key.charAt(0) + key.slice(1).toLowerCase()}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Estado
-                        </label>
-                        <select
-                            name="status"
-                            value={newUser.status}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                            required
-                        >
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-azul">Grupo</label>
-                        <select
-                            name="groupId"
-                            value={newUser.groupId ?? ""}
-                            onChange={handleInputChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                        >
-                            <option value="">
-                                {groupsLoading ? "Cargando grupos..." : "Sin grupo / No asignado"}
-                            </option>
-                            {groups.map((group) => (
-                                <option key={group.id} value={group.id}>
-                                    {group.fichaNumber} - {group.programName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-azul">
-                        Imagen de Perfil
-                    </label>
-                    {mode === "edit" && (previewImage || newUser.image) && (
-                        <div className="mb-4">
-                            <Image
-                                src={
-                                    previewImage
-                                        ? previewImage
-                                        : `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${newUser.image}`
-                                }
-                                alt={`${newUser.firstName} avatar`}
-                                width={96}
-                                height={96}
-                                className="w-24 h-24 rounded-full object-cover"
-                            />
-                        </div>
-                    )}
-                    <input
-                        type="file"
-                        name="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                const file = e.target.files[0];
-                                setNewUser((prevUser) => ({
-                                    ...prevUser,
-                                    file: file, // el archivo real
-                                    image: file.name, // el nombre del archivo
-                                }));
-                                setPreviewImage(URL.createObjectURL(file));
-                            }
-                        }}
-                        className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                    />
-                </div>
+                <UserFormAdminFields
+                    newUser={newUser}
+                    handleInputChange={handleInputChange}
+                    groups={groups}
+                    groupsLoading={groupsLoading}
+                />
+                {formError && (
+                    <div className="text-red-600 text-center font-semibold">{formError}</div>
+                )}
                 <div className="flex justify-center">
-                    <button
-                        type="submit"
-                        className="bg-cian text-blanco py-2 px-6 rounded-lg shadow-md hover:bg-azul transition-all duration-300 focus:ring-4 focus:ring-cian"
-                    >
+                    <button type="submit" className="bg-cian text-blanco py-2 px-6 rounded-lg shadow-md hover:bg-azul transition-all duration-300 focus:ring-4 focus:ring-cian">
                         {mode === "create" ? "Guardar" : "Actualizar"}
                     </button>
                 </div>

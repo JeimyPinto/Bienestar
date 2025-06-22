@@ -31,6 +31,9 @@ export default function UsersPage() {
 
     return (
         <>
+            {isFormOpen && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-[3px] z-[90] transition-all"></div>
+            )}
             <Header />
             <SectionHeader
                 title="Lista de Usuarios"
@@ -44,6 +47,15 @@ export default function UsersPage() {
             <UserTable 
                 setSuccessMessage={setSuccessMessage}
                 setErrorMessage={setErrorMessage}
+                users={[]}
+                currentPage={1}
+                totalUsers={0}
+                totalPages={0}
+                limit={10}
+                setCurrentPage={() => {}}
+                setLimit={() => {}}
+                token={null}
+                setUsers={() => {}}
             />
             {isFormOpen && (
                 <UserForm

@@ -113,10 +113,6 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
                     setFilter={setFilter}
                 />
 
-                {error && (
-                    <ErrorMessage message={error} />
-                )}
-
                 {/* Desktop view */}
                 <div className="hidden sm:block">
                     <UserTableDesktop
