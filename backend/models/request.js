@@ -42,7 +42,17 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     description: DataTypes.TEXT,
-    status: DataTypes.BOOLEAN
+    status: DataTypes.BOOLEAN,
+    responseStatus: {
+      type: DataTypes.ENUM("pendiente", "aprobada", "rechazada"),
+      allowNull: false,
+      defaultValue: "pendiente"
+    },
+    responseMessage: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "Motivo del rechazo si aplica"
+    }
   }, {
     sequelize,
     modelName: "Request",

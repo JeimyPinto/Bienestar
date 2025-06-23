@@ -15,6 +15,10 @@ const requestSchema = z.object({
         message: "Description is too long / La descripción es demasiado larga",
     }).optional(),
     status: z.boolean().default(true),
+    responseStatus: z.enum(["pendiente", "aprobada", "rechazada"]).default("pendiente"),
+    responseMessage: z.string().max(255, {
+        message: "Response message is too long / El mensaje de respuesta es demasiado largo",
+    }).optional(),
 });
 
 module.exports = {
