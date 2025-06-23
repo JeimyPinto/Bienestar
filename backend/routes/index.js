@@ -16,7 +16,7 @@ const serviceRoutes = require("./service.js");
 const requestRoutes = require("./request.js");
 const auditLogRoutes = require("./audit_log.js");
 const groupRoutes = require("./group.js");
-
+const remissionsRoutes = require("./remission.js");
 // =======================
 // Middlewares / Utilidades
 // =======================
@@ -53,6 +53,13 @@ router.use(
   "/groups",
   authenticateToken,
   groupRoutes
+);
+
+// Rutas de remisiones (requiere autenticación y roles ADMIN o SUPERADMIN)
+router.use(
+  "/remissions",
+  authenticateToken,
+  remissionsRoutes
 );
 
 module.exports = router;

@@ -10,7 +10,7 @@ import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
 
 const emptyUser: User = {
-    id: "",
+    id: 0,
     firstName: "",
     lastName: "",
     documentType: "",
@@ -80,11 +80,11 @@ export default function UserForm(props: UserFormProps) {
         }
     }, [mode, userToEdit]);
 
-    function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+        function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e.target;
         setNewUser((prevUser) => ({
             ...prevUser,
-            [name]: value,
+            [name]: name === "groupId" && value !== "" ? Number(value) : value,
         }));
     }
 
@@ -94,18 +94,7 @@ export default function UserForm(props: UserFormProps) {
         if (!token) return;
 
         setFormError(""); // Limpiar error local antes de intentar
-
-        // Normalizar groupId: si es string vacío, null o undefined, eliminar el campo. Si es string numérico, convertir a número
         let userToSend = { ...newUser };
-        if (
-            userToSend.groupId === "" ||
-            userToSend.groupId === null ||
-            userToSend.groupId === undefined
-        ) {
-            delete userToSend.groupId;
-        } else if (typeof userToSend.groupId === "string" && !isNaN(Number(userToSend.groupId))) {
-            userToSend.groupId = Number(userToSend.groupId);
-        }
         // Eliminar image si no hay archivo nuevo ni imagen previa
         if (!userToSend.file && !userToSend.image) {
             delete userToSend.image;
@@ -125,10 +114,10 @@ export default function UserForm(props: UserFormProps) {
                     setErrorMessage?.(responseData.message);
                     return;
                 } else {
-                    // No mostrar mensaje de éxito, solo cerrar el modal y notificar a UsersPage
                     onClose?.();
                 }
             } else if (mode === "edit") {
+                console.log("Editando usuario:", userToSend);
                 responseData = await update(
                     userToSend.id,
                     userToSend,
@@ -140,7 +129,6 @@ export default function UserForm(props: UserFormProps) {
                     setErrorMessage?.(responseData.message);
                     return;
                 } else {
-                    // No mostrar mensaje de éxito, solo cerrar el modal y notificar a UsersPage
                     onClose?.();
                 }
             }

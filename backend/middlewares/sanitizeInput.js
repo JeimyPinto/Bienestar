@@ -20,6 +20,10 @@ const sanitizeRequestBody = (req, res, next) => {
         if (key === "firstName" || key === "lastName") {
           req.body[key] = toPascalCase(req.body[key]);
         }
+        // Convierte id y groupId a número si son string numéricos
+        if ((key === "id" || key === "groupId") && !isNaN(req.body[key])) {
+          req.body[key] = Number(req.body[key]);
+        }
       }
     }
   }

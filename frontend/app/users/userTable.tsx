@@ -1,24 +1,23 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useState, useRef } from "react"
 import { User, UserTableProps } from "../types"
-import ErrorMessage from "../ui/errorMessage"
 import UserForm from "./userForm"
 import UserTableDesktop from "./userTableDesktop"
 import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
-import { getAllPaginated } from "../services/services/user"
 import { useColumnSorter } from "../lib/useColumnSorter"
-import isTokenExpired from "../lib/isTokenExpired"
-import getToken from "../lib/getToken"
 
-export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTableProps) {
-    const [token, setToken] = useState<string | null>(null);
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [limit, setLimit] = useState<number>(10);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalUsers, setTotalUsers] = useState<number>(0);
-    const [totalPages, setTotalPages] = useState<number>(0);
-    const [error, setError] = useState<string | null>(null);
+export default function UserTable({
+    setSuccessMessage,
+    setErrorMessage,
+    users,
+    currentPage,
+    totalUsers,
+    totalPages,
+    limit,
+    setCurrentPage,
+    setLimit,
+    loading
+}: UserTableProps) {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [filter, setFilter] = useState("");
@@ -28,68 +27,6 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
         sortColumn,
         sortOrder,
     } = useColumnSorter(users);
-
-    // Obtener token
-    useEffect(() => {
-        const fetchData = async () => {
-            const tokenValue = getToken();
-            if (tokenValue) {
-                if (isTokenExpired(tokenValue)) {
-                    localStorage.removeItem("token");
-                    setToken(null);
-                } else {
-                    setToken(tokenValue);
-                }
-            } else {
-                setToken(null);
-            }
-        }
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        if (!token) {
-            setError("No se ha encontrado el token de autenticación.");
-            setLoading(false);
-            return;
-        }
-        let isMounted = true;
-        setLoading(true);
-        setError(null);
-        const loadUsers = async () => {
-            try {
-                const response = await getAllPaginated(currentPage, limit, token);
-                if (!isMounted) return;
-                if (response.error) {
-                    setUsers([]);
-                    setError(response.message);
-                    if (setErrorMessage) setErrorMessage(response.message);
-                } else {
-                    setUsers(response.users);
-                    setCurrentPage(response.currentPage);
-                    setTotalUsers(response.totalUsers);
-                    setTotalPages(response.totalPages);
-                    if (setSuccessMessage) setSuccessMessage(response.message);
-                }
-            } catch (error) {
-                if (isMounted) setError("Error al cargar los usuarios");
-                if (setErrorMessage) setErrorMessage("Error al cargar los usuarios");
-                console.error("Error de la función loadUsers:", error);
-            } finally {
-                if (isMounted) setLoading(false);
-            }
-        };
-        loadUsers();
-        return () => { isMounted = false; };
-    }, [token, currentPage, limit]);
-
-    function handleRowClick(user: User) {
-        setSelectedUser(user);
-        setIsFormOpen(true);
-        setTimeout(() => {
-            userEditFormRef.current?.showModal();
-        }, 0);
-    }
 
     // Filtrado local por nombre, apellido o documento
     const filteredUsers = filter.trim()
@@ -102,22 +39,18 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
 
     const sortedFilteredUsers = useColumnSorter(filteredUsers).sortedData;
 
+    function handleRowClick(user: User) {
+        setSelectedUser(user);
+        setIsFormOpen(true);
+        setTimeout(() => {
+            userEditFormRef.current?.showModal();
+        }, 0);
+    }
+
     // Handler para éxito en UserForm desde la tabla
     function handleFormSuccess() {
         setIsFormOpen(false);
-        // Recargar usuarios
-        if (token) {
-            setLoading(true);
-            getAllPaginated(currentPage, limit, token).then(response => {
-                if (!response.error) {
-                    setUsers(response.users);
-                    setCurrentPage(response.currentPage);
-                    setTotalUsers(response.totalUsers);
-                    setTotalPages(response.totalPages);
-                }
-                setLoading(false);
-            });
-        }
+        // El padre se encarga de recargar los usuarios
     }
 
     return (
@@ -130,7 +63,6 @@ export default function UserTable({ setSuccessMessage, setErrorMessage }: UserTa
                     filter={filter}
                     setFilter={setFilter}
                 />
-
                 {/* Desktop view */}
                 <div className="hidden sm:block">
                     <UserTableDesktop

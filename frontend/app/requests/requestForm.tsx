@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { RequestsFormProps, Request } from "../types/request";
-import { User } from "../types";
-import { Service } from "../types/service";
+import { User, Service, RequestsFormProps, Request } from "../types/index";
 import { create, update } from "../services/services/request";
 import { getAllActive as getAllServices } from "../services/services/service";
 import { getAllActive as getAllUsers } from "../services/services/user";
@@ -16,17 +14,21 @@ const emptyRequest: Request = {
     serviceId: 0,
     description: "",
     status: true,
+    responseStatus: "pendiente",
+    responseMessage: null,
+    createdAt: "",
+    updatedAt: "",
+    applicant: undefined,
+    service: undefined,
+    creator: undefined,
 };
 
 export default function RequestsForm(props: RequestsFormProps) {
     const {
         dialogRef,
-        closeDialog,
         onClose,
         mode,
         requestToEdit,
-        setSuccessMessage,
-        setErrorMessage,
     } = props;
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
@@ -35,6 +37,7 @@ export default function RequestsForm(props: RequestsFormProps) {
     const [newRequest, setNewRequest] = useState<Request>(emptyRequest);
     const [loadingUsers, setLoadingUsers] = useState(false);
     const [loadingServices, setLoadingServices] = useState(false);
+    const [formError, setFormError] = useState<string>("");
 
     // Obtener token y usuario autenticado
     useEffect(() => {
@@ -71,13 +74,10 @@ export default function RequestsForm(props: RequestsFormProps) {
                     const data = await getAllUsers(token);
                     if (data.users) {
                         setUsers(data.users);
-                        setSuccessMessage?.(data.message);
                     } else {
                         setUsers([]);
-                        setErrorMessage?.(data.message);
                     }
                 } catch (error) {
-                    setErrorMessage?.("Error al cargar los usuarios: " + error);
                     setUsers([]);
                 } finally {
                     setLoadingUsers(false);
@@ -93,20 +93,17 @@ export default function RequestsForm(props: RequestsFormProps) {
                 const data = await getAllServices();
                 if (data.services) {
                     setServices(data.services);
-                    setSuccessMessage?.(data.message);
                 } else {
                     setServices([]);
-                    setErrorMessage?.(data.message);
                 }
             } catch (error) {
-                setErrorMessage?.("Error al cargar los servicios: " + error);
                 setServices([]);
             } finally {
                 setLoadingServices(false);
             }
         };
         loadServices();
-    }, [token, user, setErrorMessage, setSuccessMessage]);
+    }, [token, user]);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -121,58 +118,31 @@ export default function RequestsForm(props: RequestsFormProps) {
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         if (!token) return;
-
+        setFormError("");
+        let requestData = { ...newRequest };
+        if (typeof requestData.status === "string") {
+            requestData.status = requestData.status === "activo";
+        }
+        if (user && user.role === "user") {
+            requestData.userId = Number(user.id);
+        }
         try {
-            // Convertir el valor de status a booleano si es un string ("activo"/"inactivo")
-            const requestData = { ...newRequest };
-            if (typeof requestData.status === "string") {
-                requestData.status = requestData.status === "activo";
-            }
-            // Si el usuario es normal, asignar su ID real
-            if (user && user.role === "user") {
-                requestData.userId = Number(user.id);
-            }
+            let response;
             if (mode === "create") {
-                const { message, error } = await create(requestData, token);
-                if (error) {
-                    props.setErrorMessage?.(error);
-                    props.setSuccessMessage?.("");
-                    return;
-                } else {
-                    if (message) {
-                        props.setSuccessMessage?.(message);
-                        props.setErrorMessage?.("");
-                    }
-                    setNewRequest(emptyRequest); // Limpiar el formulario después de crear
-                }
-            } else if (mode === "edit") {
-                if (!requestToEdit) {
-                    props.setErrorMessage?.("No hay solicitud para editar");
-                    return;
-                }
-                const { message, error } = await update(
-                    requestToEdit.id,
-                    requestData,
-                    token
-                );
-                if (error) {
-                    props.setErrorMessage?.(error);
-                    closeDialog();
-                    return;
-                } else {
-                    props.setSuccessMessage?.(message);
-                    props.setErrorMessage?.("");
-                    setNewRequest(emptyRequest);
-                }
+                response = await create(requestData, token);
+            } else if (mode === "edit" && requestToEdit) {
+                response = await update(requestToEdit.id as number, requestData, token);
             }
-            window.location.reload();
+            if (response?.error) {
+                setFormError(response.message || "Error desconocido");
+                return;
+            }
+            setNewRequest(emptyRequest);
+            onClose?.();
         } catch (error) {
-            props.setErrorMessage?.(String(error)); closeDialog();
+            setFormError(String(error));
             return;
         }
-
-        onClose?.();
-        closeDialog();
     }
     return (
         <dialog
@@ -186,7 +156,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                     {mode === "create" ? "Crear Servicio" : "Editar Servicio"}
                 </h2>
                 <button
-                    onClick={closeDialog}
+                    onClick={onClose}
                     aria-label="Cerrar formulario"
                     className="text-cian hover:text-azul transition-colors"
                 >
@@ -308,6 +278,11 @@ export default function RequestsForm(props: RequestsFormProps) {
                         )}
                     </div>
                 </div>
+                {formError && (
+                    <div className="text-red-500 text-sm mt-4">
+                        {formError}
+                    </div>
+                )}
                 <div className="flex justify-end mt-6">
                     <button
                         type="submit"
@@ -317,7 +292,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                     </button>
                     <button
                         type="button"
-                        onClick={closeDialog}
+                        onClick={onClose}
                         className="ml-4 px-4 py-2 bg-gris text-blanco rounded-lg hover:bg-gris-claro transition-colors"
                     >
                         Cancelar

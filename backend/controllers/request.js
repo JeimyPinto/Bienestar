@@ -1,8 +1,6 @@
 const requestService = require("../services/request.js");
 const { requestSchema } = require("../schemas/request.js");
-const db = require("../models/index.js");
-const Service = db.Service;
-const User = db.User;
+const { createAuditLog } = require("../services/auditLog.js");
 
 class RequestController {
     async getAll(req, res, next) {
@@ -16,7 +14,7 @@ class RequestController {
             }
             res.status(200).json({
                 message: "Solicitudes recuperadas con éxito",
-                details: { requests },
+                requests,
             });
         } catch (error) {
             next(error);
@@ -34,7 +32,7 @@ class RequestController {
             }
             res.status(200).json({
                 message: "Solicitudes activas recuperadas con éxito",
-                details: { requests },
+                requests,
             });
         } catch (error) {
             next(error);
@@ -52,7 +50,7 @@ class RequestController {
             }
             res.status(200).json({
                 message: "Solicitud recuperada con éxito",
-                details: { request },
+                request,
             });
         } catch (error) {
             next(error);
@@ -63,9 +61,18 @@ class RequestController {
         try {
             const requestData = requestSchema.parse(req.body);
             const request = await requestService.createRequest(requestData, req.user?.id || null);
+            // Auditoría de creación
+            await createAuditLog({
+                entity_type: "Request",
+                entity_id: request.id,
+                action: "CREATE",
+                old_data: null,
+                new_data: request.toJSON ? request.toJSON() : request,
+                changed_by: req.user?.id || null,
+            });
             res.status(201).json({
                 message: "Solicitud creada con éxito",
-                details: { request },
+                request,
             });
         } catch (error) {
             next(error);
@@ -75,6 +82,8 @@ class RequestController {
     async update(req, res, next) {
         try {
             const requestData = requestSchema.parse(req.body);
+            // Obtener datos previos para auditoría
+            const oldRequest = await requestService.getRequestById(req.params.id);
             const request = await requestService.updateRequest(req.params.id, requestData, req.user?.id || null);
             if (!request) {
                 const error = new Error("Solicitud no encontrada");
@@ -82,9 +91,18 @@ class RequestController {
                 error.details = { request: null };
                 throw error;
             }
+            // Auditoría de actualización
+            await createAuditLog({
+                entity_type: "Request",
+                entity_id: request.id,
+                action: "UPDATE",
+                old_data: oldRequest ? (oldRequest.toJSON ? oldRequest.toJSON() : oldRequest) : null,
+                new_data: request.toJSON ? request.toJSON() : request,
+                changed_by: req.user?.id || null,
+            });
             res.status(200).json({
                 message: "Solicitud actualizada con éxito",
-                details: { request },
+                request,
             });
         } catch (error) {
             next(error);
@@ -109,7 +127,7 @@ class RequestController {
             }
             res.status(200).json({
                 message: "Solicitudes de remsión del usuario recuperadas con éxito",
-                requests: requests,
+                requests,
             });
         } catch (error) {
             next(error);

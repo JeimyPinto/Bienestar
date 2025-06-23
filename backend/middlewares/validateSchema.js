@@ -11,7 +11,11 @@ function validateRequestSchema(schema, property = "body") {
         return res.status(400).json({
           error: true,
           message,
-          details: error.errors.map(e => `${e.path?.join('.')}: ${e.message}`).join('; '),
+          details: error.errors.map(e => ({
+            field: e.path?.join('.') || '',
+            message: e.message,
+            received: e.input
+          })),
         });
       }
       next(error);

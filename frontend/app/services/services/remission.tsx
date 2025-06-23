@@ -1,25 +1,10 @@
-import { Request } from "../../types/request";
+// frontend/app/services/services/remission.ts
+import { Remission } from "../../types/remission";
 
-const url = `${process.env.NEXT_PUBLIC_API_URL}/requests`;
+const url = `${process.env.NEXT_PUBLIC_API_URL}/remissions`;
 
 export async function getAll(token?: string) {
   const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-    credentials: "include",
-  });
-  const data = await res.json();
-  if (!res.ok || data.details) {
-    return { error: true, message: data.message, details: data.details };
-  }
-  return { error: false, ...data };
-}
-
-export async function getAllActive(token?: string) {
-  const res = await fetch(`${url}/active`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -50,14 +35,14 @@ export async function getById(id: string, token?: string) {
   return { error: false, ...data };
 }
 
-export async function create(request: Request, token?: string) {
+export async function create(remission: Remission, token?: string) {
   const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
-    body: JSON.stringify(request),
+    body: JSON.stringify(remission),
     credentials: "include",
   });
   const data = await res.json();
@@ -67,30 +52,14 @@ export async function create(request: Request, token?: string) {
   return { error: false, ...data };
 }
 
-export async function update(id: number, request: Request, token?: string) {
+export async function update(id: string, remission: Remission, token?: string) {
   const res = await fetch(`${url}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
-    body: JSON.stringify(request),
-    credentials: "include",
-  });
-  const data = await res.json();
-  if (!res.ok || data.details) {
-    return { error: true, message: data.message, details: data.details };
-  }
-  return { error: false, ...data };
-}
-
-export async function getByUserId(userId: string, token?: string) {
-  const res = await fetch(`${url}/user/${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
+    body: JSON.stringify(remission),
     credentials: "include",
   });
   const data = await res.json();

@@ -142,7 +142,7 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                                 <td className="px-2 py-2">{new Date(user.createdAt).toLocaleDateString()}</td>
                                 <td className="px-2 py-2">{new Date(user.updatedAt).toLocaleDateString()}</td>
                                 <td className="px-2 py-2">{user.groupId ?? "-"}</td>
-                                <td className="px-2 py-2">{user.group?.name ?? "-"}</td>
+                                <td className="px-2 py-2">{user.group?.programName ?? "-"}</td>
                             </tr>
                         ))
                     )}

@@ -1,7 +1,7 @@
 import { Service,Request,Group } from "./index";
 
 export interface User {
-    id: string;
+    id: number;
     firstName: string;
     lastName: string;
     documentType: string;
@@ -11,14 +11,15 @@ export interface User {
     password?: string;
     status: string;
     role: string;
-    image?: string;
-    createdAt: string;
-    updatedAt: string;
+    image?: string | null;
+    groupId?: number | null;
+    group?: Group | null;
     services?: Service[];
     requests?: Request[];
+    managedGroups?: Group[];
+    createdAt: string;
+    updatedAt: string;
     file?: File | null;
-    groupId?: number | string | null; // Nuevo campo
-    group?: { id: number; name: string } | null; // Nuevo campo (ajusta según tu modelo)
 }
 export interface UserTableProps {
     users: User[];
@@ -44,7 +45,7 @@ export interface UserFormProps {
 }
 export interface UserTableDesktopProps {
     users: User[];
-    loading: boolean;
+    loading?: boolean;
     sortColumn: keyof User;
     sortOrder: string;
     handleSort: (column: keyof User) => void;

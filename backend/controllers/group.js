@@ -56,6 +56,8 @@ class GroupController {
   async update(req, res, next) {
     try {
       const groupData = updateGroupSchema.parse(req.body);
+      // Obtener datos previos para auditoría
+      const oldGroup = await groupService.getGroupById(req.params.id);
       const group = await groupService.updateGroup(req.params.id, groupData);
       if (!group) {
         const error = new Error("Grupo no encontrado");
@@ -66,7 +68,7 @@ class GroupController {
         entity_type: "Group",
         entity_id: group.id,
         action: "UPDATE",
-        old_data: null, // Puedes cargar el old_data si lo necesitas
+        old_data: oldGroup ? (oldGroup.toJSON ? oldGroup.toJSON() : oldGroup) : null,
         new_data: group.toJSON(),
         changed_by: req.user?.id || null,
       });

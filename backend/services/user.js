@@ -9,6 +9,8 @@ async function getAllUsers() {
     include: [
       { association: "services", required: false },
       { association: "requests", required: false },
+      { association: "group", required: false },
+      { association: "managedGroups", required: false },
     ],
   });
 }
@@ -18,6 +20,8 @@ async function getAllActiveUsers() {
     include: [
       { association: "services", required: false },
       { association: "requests", required: false },
+      { association: "group", required: false },
+      { association: "managedGroups", required: false },
     ],
     where: { status: "activo" },
   });
@@ -29,8 +33,10 @@ async function getAllPaginatedUsers(page = 1, limit = 10) {
     limit,
     offset,
     include: [
-      { association: "services" },
-      { association: "requests" },
+      { association: "services", required: false },
+      { association: "requests", required: false },
+      { association: "group", required: false },
+      { association: "managedGroups", required: false },
     ],
   });
 }
@@ -40,6 +46,8 @@ async function getUserById(id) {
     include: [
       { association: "services", required: false },
       { association: "requests", required: false },
+      { association: "group", required: false },
+      { association: "managedGroups", required: false },
     ],
   });
 }

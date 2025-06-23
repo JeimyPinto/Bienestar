@@ -7,8 +7,9 @@ import UserForm from "./userForm"
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import SectionHeader from "../ui/sectionHeader"
-import { User } from "../types"
-import { getAll as getAllUsers } from "../services/services/user";
+import { User } from "../types/index"
+import { getAllPaginated } from "../services/services/user";
+import getToken from "../lib/getToken";
 
 export default function UsersPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -36,11 +37,21 @@ export default function UsersPage() {
         dialogRef.current?.close();
     };
 
-    // Cargar usuarios
+    // Cargar usuarios paginados
     const fetchUsers = async () => {
         setLoading(true);
-        const res = await getAllUsers();
-        if (!res.error) {
+        const token = await getToken();
+        if (!token) {
+            setErrorMessage("No se pudo obtener el token de autenticación.");
+            setLoading(false);
+            return;
+        }
+        const res = await getAllPaginated(currentPage, limit, token);
+        if (res.error) {
+            setErrorMessage(res.message);
+            setUsers(res.users || []);
+        } else {
+            setSuccessMessage(res.message || "");
             setUsers(res.users);
             setTotalUsers(res.totalUsers || res.users.length);
             setTotalPages(res.totalPages || 1);
@@ -48,10 +59,9 @@ export default function UsersPage() {
         setLoading(false);
     };
 
-    // Cargar usuarios al montar
     React.useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [currentPage, limit]);
 
     // Handler para éxito en UserForm
     const handleUserFormSuccess = () => {
@@ -84,9 +94,9 @@ export default function UsersPage() {
                 limit={limit}
                 setCurrentPage={setCurrentPage}
                 setLimit={setLimit}
+                loading={loading}
                 token={null}
                 setUsers={setUsers}
-                loading={loading}
             />
             {isFormOpen && (
                 <UserForm

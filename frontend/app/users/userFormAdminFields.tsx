@@ -33,8 +33,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
               <option value="">Sin grupo / No asignado</option>
             )}
             {groups.map((group) => (
-              <option key={group.id} value={group.id}>{group.fichaNumber} - {group.programName}</option>
-            ))}
+              <option key={group.id} value={Number(group.id)}>{group.fichaNumber} - {group.programName}</option>))}
           </select>
         </div>
         <div>

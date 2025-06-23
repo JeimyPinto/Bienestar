@@ -110,7 +110,6 @@ export default function DashboardPage() {
           {isFormOpen && (
             <RequestForm
               dialogRef={dialogRef}
-              closeDialog={closeRequestForm}
               onClose={closeRequestForm}
               mode="create"
               setErrorMessage={setErrorMessage}

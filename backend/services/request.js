@@ -7,8 +7,9 @@ const auditLogService = require("./auditLog.js");
 async function getAllRequests() {
   return await Request.findAll({
     include: [
-      { association: "applicant", model: User },
-      { association: "service", model: Service },
+      { association: "applicant", model: User, required: false },
+      { association: "service", model: Service, required: false },
+      { association: "creator", model: User, required: false },
     ],
   });
 }

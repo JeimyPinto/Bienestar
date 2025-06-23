@@ -4,16 +4,22 @@ import React, { useState, useRef } from "react";
 import { Request } from "../types/request";
 import Header from "../ui/header";
 import ErrorMessage from "../ui/errorMessage";
+import SuccessMessage from "../ui/successMessage";
 import RequestTable from "./requestTable";
-import SectionHeader from "../ui/sectionHeader";
 import RequestForm from "./requestForm";
+import SectionHeader from "../ui/sectionHeader";
+import { getAll } from "../services/services/request"
+import getToken from "../lib/getToken";
 
 export default function RequestPage() {
+    const dialogRef = useRef<HTMLDialogElement>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [requestToEdit, setRequestToEdit] = useState<Request | undefined>(undefined);
+    const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const dialogRef = useRef<HTMLDialogElement>(null);
+    const [requests, setRequests] = useState<Request[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const openCreateDialog = () => {
         setMode("create");
@@ -26,6 +32,37 @@ export default function RequestPage() {
         setIsFormOpen(false);
         dialogRef.current?.close();
     };
+    // Cargar solicitudes
+    const fetchRequests = async () => {
+        setLoading(true);
+        const token = getToken() || undefined;
+        if (!token) {
+            setErrorMessage("No se pudo obtener el token de autenticación.");
+            setLoading(false);
+            return;
+        }
+        const res = await getAll(token);
+        if (res.error) {
+            setErrorMessage(res.message);
+            setRequests(res.requests || []);
+        } else {
+            setSuccessMessage(res.message);
+            setRequests(res.requests || []);
+        }
+        setLoading(false);
+    };
+
+    React.useEffect(() => {
+        fetchRequests();
+    }, []);
+
+    //Handler para éxito en RequestForm
+    const handleRequestFormSuccess = () => {
+        fetchRequests();
+        closeDialog();
+    };
+
+
     return (
         <>
             <Header />
@@ -37,15 +74,24 @@ export default function RequestPage() {
             {errorMessage && (
                 <ErrorMessage message={errorMessage} />
             )}
-            <RequestTable />
+            {successMessage && (
+                <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
+            )}
+            <RequestTable 
+                requests={requests}
+                setRequests={setRequests}
+                setErrorMessage={setErrorMessage}
+                setSuccessMessage={setSuccessMessage}
+                loading={loading}
+            />
             {isFormOpen && (
                 <RequestForm
                     dialogRef={dialogRef}
-                    closeDialog={closeDialog}
-                    onClose={closeDialog}
+                    onClose={handleRequestFormSuccess}
                     mode={mode}
                     requestToEdit={requestToEdit}
                     setErrorMessage={setErrorMessage}
+                    setSuccessMessage={setSuccessMessage}
                 />
             )}
         </>

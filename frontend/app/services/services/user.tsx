@@ -120,7 +120,7 @@ export async function create(user: User, file?: File, token?: string) {
 }
 
 // Actualizar usuario (ADMIN, SUPERADMIN)
-export async function update(id: string, user: User, file?: File, token?: string) {
+export async function update(id: number, user: User, file?: File, token?: string) {
     try {
         let body: BodyInit;
         const headers: Record<string, string> = {};
@@ -148,6 +148,7 @@ export async function update(id: string, user: User, file?: File, token?: string
         });
         const data = await res.json();
         if (!res.ok || data.details) {
+            console.error("Error al actualizar usuario:", data.details);
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };

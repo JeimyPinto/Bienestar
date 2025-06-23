@@ -1,5 +1,6 @@
 const { Remission, Request, User, Service } = require('../models');
 const remissionSchema = require('../schemas/remission');
+const { createAuditLog } = require('../services/auditLog');
 
 const RemissionController = {
   async create(req, res) {
@@ -15,6 +16,15 @@ const RemissionController = {
       }
 
       const remission = await Remission.create(value);
+      // Auditoría de creación
+      await createAuditLog({
+        entity_type: 'Remission',
+        entity_id: remission.id,
+        action: 'CREATE',
+        old_data: null,
+        new_data: remission.toJSON(),
+        changed_by: req.user?.id || null,
+      });
       return res.status(201).json({ remission });
     } catch (err) {
       return res.status(500).json({ error: err.message });
@@ -62,7 +72,17 @@ const RemissionController = {
       if (error) return res.status(400).json({ error: error.details[0].message });
       const remission = await Remission.findByPk(id);
       if (!remission) return res.status(404).json({ error: 'Remission not found' });
+      const oldRemissionData = remission.get({ plain: true });
       await remission.update(value);
+      // Auditoría de actualización
+      await createAuditLog({
+        entity_type: 'Remission',
+        entity_id: remission.id,
+        action: 'UPDATE',
+        old_data: oldRemissionData,
+        new_data: remission.toJSON(),
+        changed_by: req.user?.id || null,
+      });
       return res.json({ remission });
     } catch (err) {
       return res.status(500).json({ error: err.message });
