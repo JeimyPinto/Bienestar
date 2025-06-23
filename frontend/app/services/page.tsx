@@ -4,10 +4,11 @@ import React, { useEffect, useState, useRef } from "react";
 import { Service, User } from "../types/index";
 import Header from "../ui/header";
 import ErrorMessage from "../ui/errorMessage";
+import SuccessMessage from "../ui/successMessage";
 import ServicesGallery from "./servicesGallery";
 import ServiceTable from "./serviceTable";
 import SectionHeader from "../ui/sectionHeader";
-import { getAllActive,getAll } from "../services/services/service";
+import { getAllActive, getAll } from "../services/services/service";
 import ServiceForm from "./serviceForm";
 import isTokenExpired from "../lib/isTokenExpired"
 import getUserToken from "../lib/getUserToken"
@@ -22,6 +23,7 @@ export default function ServicePage() {
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [serviceToEdit, setServiceToEdit] = useState<Service | undefined>(undefined);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string>("");
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
@@ -48,32 +50,39 @@ export default function ServicePage() {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        // Solo hace fetch de servicios cuando ya se conoce el usuario
-        async function fetchServices() {
-            setLoading(true);
-            let response;
-            if (!user || user?.role === "user") {
-                response = await getAllActive();
-            } else {
-                // Solo ADMIN/SUPERADMIN
-                const tokenValue = getToken();
-                response = await getAll(tokenValue ?? undefined);
-            }
-            if (!response.error && response.services) {
-                setServices(response.services);
-                setMessage(response.message);
-                setErrorMessage("");
-            } else {
-                setServices([]);
-                setMessage(response.message);
-                setErrorMessage(response.message);
-            }
-            setLoading(false);
+    // Extraer fetchServices fuera del useEffect para poder llamarlo manualmente
+    const fetchServices = async () => {
+        setLoading(true);
+        let response;
+        if (!user || user?.role === "user") {
+            response = await getAllActive();
+        } else {
+            // Solo ADMIN/SUPERADMIN
+            const tokenValue = getToken();
+            response = await getAll(tokenValue ?? undefined);
         }
+        if (!response.error && response.services) {
+            setServices(response.services);
+            setMessage(response.message);
+            setErrorMessage("");
+        } else {
+            setServices([]);
+            setMessage(response.message);
+            setErrorMessage(response.message);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
         // Solo ejecuta si user ya está definido (no undefined)
         if (user !== undefined) fetchServices();
     }, [user]);
+
+    // Handler para éxito en ServiceForm
+    const handleServiceFormSuccess = () => {
+        fetchServices();
+        closeDialog();
+    };
 
     const openCreateDialog = () => {
         setMode("create");
@@ -109,18 +118,32 @@ export default function ServicePage() {
                         buttonText="Añadir Nuevo Servicio"
                         onButtonClick={openCreateDialog}
                     />
-                    {errorMessage && (
-                        <ErrorMessage message={errorMessage} />
+                    {errorMessage && <ErrorMessage message={errorMessage} />}
+                    {successMessage && (
+                        <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
                     )}
-                    <ServiceTable />
+                    <ServiceTable
+                        services={services}
+                        loading={loading}
+                        setErrorMessage={setErrorMessage}
+                        setSuccessMessage={setSuccessMessage}
+                        setServices={setServices}
+                        onEditService={(service) => {
+                            setMode("edit");
+                            setServiceToEdit(service);
+                            setIsFormOpen(true);
+                            setTimeout(() => dialogRef.current?.showModal(), 0);
+                        }}
+                    />
                     {isFormOpen && (
                         <ServiceForm
                             dialogRef={dialogRef}
                             closeDialog={closeDialog}
-                            onClose={closeDialog}
+                            onClose={handleServiceFormSuccess}
                             mode={mode}
                             serviceToEdit={serviceToEdit}
                             setErrorMessage={setErrorMessage}
+                            setSuccessMessage={setSuccessMessage}
                         />
                     )}
                 </>

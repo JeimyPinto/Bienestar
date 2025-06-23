@@ -119,7 +119,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                 const { file, image, ...serviceData } = newService;
                 serviceData.creatorId = user?.id ? Number(user.id) : 0;
                 // No enviar image si está vacío o null
-                if (!image) delete serviceData.image;
+                if (!newService.image) delete (serviceData as any).image;
                 responseData = await create(
                     serviceData,
                     file ? file : undefined,
@@ -128,7 +128,7 @@ export default function ServiceForm(props: ServiceFormProps) {
             } else if (mode === "edit") {
                 // Solo enviar image si existe y no es null
                 const { file, ...serviceData } = newService;
-                if (!serviceData.image) delete serviceData.image;
+                if (!newService.image) delete (serviceData as any).image;
                 responseData = await update(
                     newService.id,
                     serviceData,
@@ -148,6 +148,7 @@ export default function ServiceForm(props: ServiceFormProps) {
             }
             setFormSuccess(responseData.message || "Servicio guardado correctamente");
             props.setSuccessMessage?.(responseData.message || "Servicio guardado correctamente");
+            // --- NUEVO: Llama a onClose para recargar la tabla ---
             onClose?.();
             closeDialog();
         } catch (error) {
@@ -178,48 +179,58 @@ export default function ServiceForm(props: ServiceFormProps) {
                     />
                 </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <ServiceFormMainFields
-                        newService={newService}
-                        handleInputChange={handleInputChange}
-                    />
-                    <ServiceFormAdminFields
-                        newService={newService}
-                        user={user}
-                        handleInputChange={handleInputChange}
-                    />
-                    <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-azul">
-                            Imagen de Perfil
-                        </label>
-                        {previewImage && (
-                            <div className="mb-4">
-                                <Image
-                                    src={previewImage}
-                                    alt={`${newService.name} avatar`}
-                                    width={96}
-                                    height={96}
-                                    className="w-24 h-24 rounded-full object-cover"
-                                />
-                            </div>
-                        )}
-                        <input
-                            type="file"
-                            name="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
-                        />
+            <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="flex gap-6">
+                    <div className="w-full lg:w-2/3">
+                        <fieldset className="border border-cian rounded-lg p-4">
+                            <legend className="px-2 text-cian font-semibold">Información Principal</legend>
+                            <ServiceFormMainFields
+                                newService={newService}
+                                handleInputChange={handleInputChange}
+                            />
+                        </fieldset>
+                    </div>
+                    <div className="w-full flex items-center justify-center lg:w-1/3">
+                        <fieldset className="border border-cian rounded-lg p-4 w-full">
+                            <legend className="px-2 text-cian font-semibold">Imagen de Perfil</legend>
+                            {previewImage && (
+                                <div className="mb-4 flex justify-center">
+                                    <Image
+                                        src={previewImage}
+                                        alt={`${newService.name} avatar`}
+                                        width={96}
+                                        height={96}
+                                        className="w-24 h-24 rounded-full object-cover"
+                                    />
+                                </div>
+                            )}
+                            <input
+                                type="file"
+                                name="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
+                            />
+                        </fieldset>
                     </div>
                 </div>
+                <fieldset className="border border-cian rounded-lg p-4">
+                    <legend className="px-2 text-cian font-semibold">Datos Administrativos</legend>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <ServiceFormAdminFields
+                            newService={newService}
+                            user={user}
+                            handleInputChange={handleInputChange}
+                        />
+                    </div>
+                </fieldset>
                 {formError && (
                     <div className="text-red-600 text-center font-semibold">{formError}</div>
                 )}
                 {formSuccess && (
                     <div className="text-green-600 text-center font-semibold">{formSuccess}</div>
                 )}
-                <div className="flex justify-end mt-6">
+                <div className="flex justify-end">
                     <button
                         type="submit"
                         className="px-4 py-2 bg-cian text-blanco rounded-lg hover:bg-azul transition-colors"

@@ -16,7 +16,7 @@ export interface Service {
   creatorId: number;
   creator?: User;
   area: Area;
-  image: string;
+  image?: string;
   status: ServiceStatus;
   createdAt: string;
   updatedAt: string;
@@ -30,11 +30,18 @@ export interface ServiceFormProps {
   mode: "create" | "edit";
   serviceToEdit?: Service;
   successMessage?: string;
-  setSuccessMessage?: React.Dispatch<React.SetStateAction<string>>;
+  setSuccessMessage?: (msg: string) => void;
+  setErrorMessage?: (msg: string) => void;
   errorMessage?: string;
-  setErrorMessage?: React.Dispatch<React.SetStateAction<string>>;
 }
-
+export interface ServiceTableProps {
+  services: Service[];
+  loading: boolean;
+  setErrorMessage?: (msg: string) => void;
+  setSuccessMessage?: (msg: string) => void;
+  setServices?: (services: Service[]) => void;
+  onEditService?: (service: Service) => void;
+}
 export interface ServiceCardMobileProps {
   services: Service[];
   loading: boolean;
