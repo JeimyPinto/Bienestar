@@ -19,6 +19,9 @@ const requestSchema = z.object({
     responseMessage: z.string().max(255, {
         message: "Response message is too long / El mensaje de respuesta es demasiado largo",
     }).optional(),
+    createdBy: z.number().int().positive({
+        message: "El ID del creador debe ser un número entero positivo",
+    }),
 });
 
 module.exports = {

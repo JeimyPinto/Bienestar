@@ -7,7 +7,11 @@ import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired";
 import getUsertoken from "../lib/getUserToken";
 import getToken from "../lib/getToken";
-import Spinner from "../ui/spinner";
+import RequestApplicantFields from "./requestApplicantFields";
+import RequestDescriptionFields from "./requestDescriptionFields";
+import RequestStatusFields from "./requestStatusFields";
+import RequestFormActions from "./requestFormActions";
+
 const emptyRequest: Request = {
     id: 0,
     userId: 0,
@@ -16,11 +20,12 @@ const emptyRequest: Request = {
     status: true,
     responseStatus: "pendiente",
     responseMessage: null,
+    createdBy: 0,
     createdAt: "",
     updatedAt: "",
-    applicant: undefined,
-    service: undefined,
-    creator: undefined,
+    applicant: null,
+    service: null,
+    creator: null,
 };
 
 export default function RequestsForm(props: RequestsFormProps) {
@@ -32,11 +37,7 @@ export default function RequestsForm(props: RequestsFormProps) {
     } = props;
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
-    const [users, setUsers] = useState<User[]>([]);
-    const [services, setServices] = useState<Service[]>([]);
     const [newRequest, setNewRequest] = useState<Request>(emptyRequest);
-    const [loadingUsers, setLoadingUsers] = useState(false);
-    const [loadingServices, setLoadingServices] = useState(false);
     const [formError, setFormError] = useState<string>("");
 
     // Obtener token y usuario autenticado
@@ -64,57 +65,31 @@ export default function RequestsForm(props: RequestsFormProps) {
         fetchData();
     }, []);
 
-    //Cargar usuarios y servicios activos en el formulario
-    useEffect(() => {
-        if (!token) return;
-        if (user && [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.INSTRUCTOR].includes(user.role)) {
-            const loadUsers = async () => {
-                setLoadingUsers(true);
-                try {
-                    // Solo traer usuarios con rol "user"
-                    const data = await getAllUsers(ROLES.USER, token);
-                    if (data.users) {
-                        setUsers(data.users);
-                    } else {
-                        setUsers([]);
-                    }
-                } catch (error) {
-                    setUsers([]);
-                } finally {
-                    setLoadingUsers(false);
-                }
-            };
-            loadUsers();
-        } else {
-            setUsers([]);
-        }
-        const loadServices = async () => {
-            setLoadingServices(true);
-            try {
-                const data = await getAllServices();
-                if (data.services) {
-                    setServices(data.services);
-                } else {
-                    setServices([]);
-                }
-            } catch (error) {
-                setServices([]);
-            } finally {
-                setLoadingServices(false);
-            }
-        };
-        loadServices();
-    }, [token, user]);
-
     // Inicializar el formulario según el modo
     useEffect(() => {
         if (mode === "edit" && requestToEdit) {
-            setNewRequest(requestToEdit)
+            setNewRequest(requestToEdit);
         } else if (mode === "create") {
-            setNewRequest(emptyRequest)
+            setNewRequest(emptyRequest);
         }
     }, [mode, requestToEdit]);
 
+    // Mostrar loader si no hay token o user
+    if (!token || !user) {
+        return (
+            <dialog
+                ref={dialogRef}
+                aria-modal="true"
+                aria-label="Cargando..."
+                className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-lg mx-auto"
+            >
+                <div className="flex flex-col items-center justify-center py-12">
+                    <span className="text-azul text-lg font-semibold mb-4">Cargando datos de la solicitud...</span>
+                    <div className="w-10 h-10 border-4 border-cian border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </dialog>
+        );
+    }
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
@@ -126,6 +101,14 @@ export default function RequestsForm(props: RequestsFormProps) {
         }
         if (user && user.role === "user") {
             requestData.userId = Number(user.id);
+        }
+        // Siempre asignar el creador de la solicitud
+        if (user && user.id) {
+            requestData.createdBy = user.id;
+        }
+        // Si responseMessage es null o vacío y no es rechazada, eliminar el campo para evitar error de validación
+        if (requestData.responseMessage == null || requestData.responseMessage === "") {
+            delete requestData.responseMessage;
         }
         try {
             let response;
@@ -139,7 +122,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                 return;
             }
             setNewRequest(emptyRequest);
-            onClose?.();
+            onClose?.(response?.request || undefined); // Pasar la solicitud creada/editada al callback
         } catch (error) {
             setFormError(String(error));
             return;
@@ -165,202 +148,43 @@ export default function RequestsForm(props: RequestsFormProps) {
                 </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Si el usuario es admin, superadmin o instructor, mostrar selectores de usuario y servicio */}
-                    {[ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user?.role || "") ? (
-                        <div>
-                            <label className="block text-sm font-medium text-azul">
-                                Usuario
-                            </label>
-                            {loadingUsers ? (
-                                <Spinner className="my-2" />
-                            ) : (
-                                <select
-                                    name="userId"
-                                    value={newRequest.userId}
-                                    onChange={e =>
-                                        setNewRequest({ ...newRequest, userId: Number(e.target.value) })
-                                    }
-                                    className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                                    required
-                                >
-                                    <option value="">Seleccione un usuario</option>
-                                    {users.map(u => (
-                                        <option key={u.id} value={u.id}>
-                                            {u.firstName} {u.lastName}
-                                        </option>
-                                    ))}
-                                </select>
-                            )}
-                        </div>
-                    ) : (
-                        <div>
-                            <label className="block text-sm font-medium text-azul">
-                                Usuario
-                            </label>
-                            <input
-                                type="text"
-                                name="userId"
-                                value={user ? `${user.firstName} ${user.lastName}` : ""}
-                                readOnly
-                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
-                                data-userid={user?.id}
-                            />
-                        </div>
-                    )}
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Servicio
-                        </label>
-                        {loadingServices ? (
-                            <Spinner className="my-2" />
-                        ) : (
-                            <select
-                                name="serviceId"
-                                value={newRequest.serviceId}
-                                onChange={e =>
-                                    setNewRequest({ ...newRequest, serviceId: Number(e.target.value) })
-                                }
-                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                                required
-                            >
-                                <option value="">Seleccione un servicio</option>
-                                {services.map(s => (
-                                    <option key={s.id} value={s.id}>
-                                        {s.name}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
-                    <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-azul">
-                            Descripción
-                        </label>
-                        <textarea
-                            name="description"
-                            value={newRequest.description}
-                            onChange={e =>
-                                setNewRequest({ ...newRequest, description: e.target.value })
-                            }
-                            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul resize-y min-h-[120px]"
-                            required
-                            rows={6}
-                            placeholder="Escribe aquí la historia o descripción detallada..."
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Estado
-                        </label>
-                        {mode === "create" ? (
-                            <input
-                                type="text"
-                                name="status"
-                                value="Activo"
-                                readOnly
-                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
-                            />
-                        ) : (
-                            <select
-                                name="status"
-                                value={newRequest.status ? "activo" : "inactivo"}
-                                onChange={e =>
-                                    setNewRequest({
-                                        ...newRequest,
-                                        status: e.target.value === "activo"
-                                    })
-                                }
-                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-                            >
-                                <option value="activo">Activo</option>
-                                <option value="inactivo">Inactivo</option>
-                            </select>
-                        )}
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-azul">
-                            Estado de Respuesta
-                        </label>
-                        {mode === "create" ? (
-                            <input
-                                type="text"
-                                name="responseStatus"
-                                value="Pendiente"
-                                readOnly
-                                className="mt-1 block w-full px-3 py-2 border border-amarillo text-amarillo rounded-md shadow-sm bg-gray-100"
-                            />
-                        ) : (
-                            <select
-                                name="responseStatus"
-                                value={newRequest.responseStatus}
-                                onChange={e => setNewRequest({ ...newRequest, responseStatus: e.target.value })}
-                                className={
-                                    `mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul ` +
-                                    (newRequest.responseStatus === "pendiente" ? "border-amarillo text-amarillo" :
-                                        newRequest.responseStatus === "aceptada" ? "border-verde text-verde" :
-                                            newRequest.responseStatus === "rechazada" ? "border-magenta text-magenta" : "")
-                                }
-                                required
-                            >
-                                <option value="pendiente">🟡 Pendiente</option>
-                                <option value="aceptada">🟢 Aceptada</option>
-                                <option value="rechazada">🔴 Rechazada</option>
-                            </select>
-                        )}
-                    </div>
-                    {/* Campo responseMessage solo si rechazada */}
-                    {newRequest.responseStatus === "rechazada" && (
-                        <div className="sm:col-span-2">
-                            <label className="block text-sm font-medium text-azul">
-                                Motivo del Rechazo
-                            </label>
-                            <textarea
-                                name="responseMessage"
-                                value={newRequest.responseMessage || ""}
-                                onChange={e => setNewRequest({ ...newRequest, responseMessage: e.target.value })}
-                                className="mt-1 block w-full px-3 py-2 border border-magenta rounded-md shadow-sm focus:outline-none focus:ring-magenta focus:border-magenta resize-y min-h-[80px]"
-                                required={newRequest.responseStatus === "rechazada"}
-                                rows={4}
-                                placeholder="Explica el motivo del rechazo..."
-                            />
-                        </div>
-                    )}
-                    {/* Visualización del creador */}
-                    {newRequest.creator && (
-                        <div className="sm:col-span-2">
-                            <label className="block text-sm font-medium text-azul">
-                                Creador de la Solicitud
-                            </label>
-                            <input
-                                type="text"
-                                value={`${newRequest.creator.firstName} ${newRequest.creator.lastName}`}
-                                readOnly
-                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
-                            />
-                        </div>
-                    )}
+                {/* Sección: Solicitante y Servicio */}
+                <div className="bg-cian/5 border border-cian/20 rounded-lg p-4 mb-2">
+                  <h3 className="text-lg font-semibold text-cian mb-3">Datos del Solicitante y Servicio</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <RequestApplicantFields
+                        user={user}
+                        token={token}
+                        newRequest={newRequest}
+                        setNewRequest={setNewRequest}
+                        mode={mode}
+                        editApplicant={mode === "edit" && requestToEdit?.applicant ? requestToEdit.applicant : undefined}
+                    />
+                  </div>
                 </div>
-                {formError && (
-                    <div className="text-red-500 text-sm mt-4">
-                        {formError}
-                    </div>
-                )}
-                <div className="flex justify-end mt-6">
-                    <button
-                        type="submit"
-                        className="px-4 py-2 bg-cian text-blanco rounded-lg hover:bg-azul transition-colors"
-                    >
-                        {mode === "create" ? "Crear Solicitud" : "Actualizar Solicitud"}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="ml-4 px-4 py-2 bg-gris text-blanco rounded-lg hover:bg-gris-claro transition-colors"
-                    >
-                        Cancelar
-                    </button>
+                {/* Sección: Descripción */}
+                <div className="bg-azul/5 border border-azul/20 rounded-lg p-4 mb-2">
+                  <h3 className="text-lg font-semibold text-azul mb-3">Descripción de la Solicitud</h3>
+                  <RequestDescriptionFields
+                      newRequest={newRequest}
+                      setNewRequest={setNewRequest}
+                  />
                 </div>
+                {/* Sección: Estado */}
+                <div className="bg-verde/5 border border-verde/20 rounded-lg p-4 mb-2">
+                  <h3 className="text-lg font-semibold text-verde mb-3">Estado y Respuesta</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <RequestStatusFields
+                        mode={mode}
+                        newRequest={newRequest}
+                        setNewRequest={setNewRequest}
+                    />
+                  </div>
+                </div>
+                <RequestFormActions
+                    formError={formError}
+                    onClose={onClose}
+                />
             </form>
         </dialog>
     );

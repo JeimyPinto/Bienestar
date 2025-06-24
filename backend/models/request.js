@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         key: "id"
       }
     },
-    createdBy: { // <-- Nuevo campo
+    createdBy: {
       type: DataTypes.INTEGER,
       references: {
         model: "User",

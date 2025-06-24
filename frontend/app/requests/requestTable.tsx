@@ -13,6 +13,7 @@ export default function RequestTable({
   setErrorMessage,
   setSuccessMessage,
   loading = false,
+  onRequestUpdate, // Nuevo prop
 }: RequestTableProps) {
   const [token, setToken] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
@@ -83,7 +84,10 @@ export default function RequestTable({
           {(isFormOpen && selectedRequest) && (
             <RequestForm
               dialogRef={requestEditFormRef}
-              onClose={() => setIsFormOpen(false)}
+              onClose={() => {
+                setIsFormOpen(false);
+                if (onRequestUpdate) onRequestUpdate(); // Solo notifica que hubo cambio
+              }}
               mode="edit"
               requestToEdit={selectedRequest}
               setErrorMessage={setErrorMessage}

@@ -83,11 +83,12 @@ export default function RequestPage() {
                 setErrorMessage={setErrorMessage}
                 setSuccessMessage={setSuccessMessage}
                 loading={loading}
+                onRequestUpdate={handleRequestFormSuccess} // Ahora solo notifica y hace fetch
             />
             {isFormOpen && (
                 <RequestForm
                     dialogRef={dialogRef}
-                    onClose={handleRequestFormSuccess}
+                    onClose={handleRequestFormSuccess} // Ahora pasa la solicitud creada/editada
                     mode={mode}
                     requestToEdit={requestToEdit}
                     setErrorMessage={setErrorMessage}
