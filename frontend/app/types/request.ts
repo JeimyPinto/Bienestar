@@ -52,3 +52,7 @@ export interface RequestTableDesktopProps {
     loading?: boolean;
     handleRowClick: (request: Request) => void;
 }
+interface RequestTableFilterBarProps {
+  filter: string;
+  setFilter: (value: string) => void;
+}

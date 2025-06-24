@@ -21,7 +21,7 @@ export default function RequestTableDesktop({
             <th className="px-3 py-3 text-xs font-semibold text-left">Estado</th>
             <th className="px-3 py-3 text-xs font-semibold text-left">Estado de Respuesta</th>
             <th className="px-3 py-3 text-xs font-semibold text-left">Mensaje de Respuesta</th>
-            <th className="px-3 py-3 text-xs font-semibold text-left">Creador</th>
+            <th className="px-3 py-3 text-xs font-semibold text-left">Creador de la Solicitud</th>
             <th className="px-3 py-3 text-xs font-semibold text-left">Fecha de creación</th>
             <th className="px-3 py-3 text-xs font-semibold text-left">Fecha de actualización</th>
           </tr>

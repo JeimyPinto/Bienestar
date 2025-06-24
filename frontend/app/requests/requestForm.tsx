@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { User, Service, RequestsFormProps, Request } from "../types/index";
 import { create, update } from "../services/services/request";
 import { getAllActive as getAllServices } from "../services/services/service";
-import { getAllActive as getAllUsers } from "../services/services/user";
+import { getAllByRole as getAllUsers } from "../services/services/user";
 import { ROLES } from "../lib/roles";
 import isTokenExpired from "../lib/isTokenExpired";
 import getUsertoken from "../lib/getUserToken";
@@ -71,7 +71,8 @@ export default function RequestsForm(props: RequestsFormProps) {
             const loadUsers = async () => {
                 setLoadingUsers(true);
                 try {
-                    const data = await getAllUsers(token);
+                    // Solo traer usuarios con rol "user"
+                    const data = await getAllUsers(ROLES.USER, token);
                     if (data.users) {
                         setUsers(data.users);
                     } else {
@@ -148,12 +149,12 @@ export default function RequestsForm(props: RequestsFormProps) {
         <dialog
             ref={dialogRef}
             aria-modal="true"
-            aria-label={mode === "create" ? "Crear Solicitud" : "Editar Solicitud"}
+            aria-label={mode === "create" ? "Crear Solicitud de Remisión" : "Editar Solicitud de Remisión"}
             className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-lg mx-auto"
         >
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold text-azul">
-                    {mode === "create" ? "Crear Servicio" : "Editar Servicio"}
+                    {mode === "create" ? "Crear Solicitud de Remisión" : "Editar Solicitud de Remisión"}
                 </h2>
                 <button
                     onClick={onClose}
@@ -165,8 +166,8 @@ export default function RequestsForm(props: RequestsFormProps) {
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Si el usuario es admin, mostrar selectores de usuario y servicio */}
-                    {user?.role === "admin" ? (
+                    {/* Si el usuario es admin, superadmin o instructor, mostrar selectores de usuario y servicio */}
+                    {[ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user?.role || "") ? (
                         <div>
                             <label className="block text-sm font-medium text-azul">
                                 Usuario
@@ -277,6 +278,68 @@ export default function RequestsForm(props: RequestsFormProps) {
                             </select>
                         )}
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium text-azul">
+                            Estado de Respuesta
+                        </label>
+                        {mode === "create" ? (
+                            <input
+                                type="text"
+                                name="responseStatus"
+                                value="Pendiente"
+                                readOnly
+                                className="mt-1 block w-full px-3 py-2 border border-amarillo text-amarillo rounded-md shadow-sm bg-gray-100"
+                            />
+                        ) : (
+                            <select
+                                name="responseStatus"
+                                value={newRequest.responseStatus}
+                                onChange={e => setNewRequest({ ...newRequest, responseStatus: e.target.value })}
+                                className={
+                                    `mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul ` +
+                                    (newRequest.responseStatus === "pendiente" ? "border-amarillo text-amarillo" :
+                                        newRequest.responseStatus === "aceptada" ? "border-verde text-verde" :
+                                            newRequest.responseStatus === "rechazada" ? "border-magenta text-magenta" : "")
+                                }
+                                required
+                            >
+                                <option value="pendiente">🟡 Pendiente</option>
+                                <option value="aceptada">🟢 Aceptada</option>
+                                <option value="rechazada">🔴 Rechazada</option>
+                            </select>
+                        )}
+                    </div>
+                    {/* Campo responseMessage solo si rechazada */}
+                    {newRequest.responseStatus === "rechazada" && (
+                        <div className="sm:col-span-2">
+                            <label className="block text-sm font-medium text-azul">
+                                Motivo del Rechazo
+                            </label>
+                            <textarea
+                                name="responseMessage"
+                                value={newRequest.responseMessage || ""}
+                                onChange={e => setNewRequest({ ...newRequest, responseMessage: e.target.value })}
+                                className="mt-1 block w-full px-3 py-2 border border-magenta rounded-md shadow-sm focus:outline-none focus:ring-magenta focus:border-magenta resize-y min-h-[80px]"
+                                required={newRequest.responseStatus === "rechazada"}
+                                rows={4}
+                                placeholder="Explica el motivo del rechazo..."
+                            />
+                        </div>
+                    )}
+                    {/* Visualización del creador */}
+                    {newRequest.creator && (
+                        <div className="sm:col-span-2">
+                            <label className="block text-sm font-medium text-azul">
+                                Creador de la Solicitud
+                            </label>
+                            <input
+                                type="text"
+                                value={`${newRequest.creator.firstName} ${newRequest.creator.lastName}`}
+                                readOnly
+                                className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
+                            />
+                        </div>
+                    )}
                 </div>
                 {formError && (
                     <div className="text-red-500 text-sm mt-4">

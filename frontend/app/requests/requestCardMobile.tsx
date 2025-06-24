@@ -48,7 +48,7 @@ export default function RequestCardMobile({
               </div>
             )}
             <div className="text-xs text-gray-600 mb-1">
-              <span className="font-semibold">Creador:</span> {request.creator?.firstName && request.creator?.lastName ? `${request.creator.firstName} ${request.creator.lastName}` : "-"}
+              <span className="font-semibold">Creador de la Solicitud</span> {request.creator?.firstName && request.creator?.lastName ? `${request.creator.firstName} ${request.creator.lastName}` : "-"}
             </div>
             <div className="flex justify-between text-xs text-gray-500 mt-2">
               <span>Creado: {request.createdAt ? new Date(request.createdAt).toLocaleDateString() : "-"}</span>

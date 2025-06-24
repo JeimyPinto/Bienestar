@@ -34,6 +34,8 @@ export interface UserTableProps {
     setSuccessMessage?: (msg: string) => void;
     setErrorMessage?: (msg: string) => void;
     loading?: boolean;
+    onFormSuccess?: () => void;
+    onEditUser: (user: User) => void;
 }
 export interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement>;

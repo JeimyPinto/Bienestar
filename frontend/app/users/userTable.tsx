@@ -16,7 +16,8 @@ export default function UserTable({
     limit,
     setCurrentPage,
     setLimit,
-    loading
+    loading,
+    onFormSuccess = () => { }, // Callback para manejar el éxito del formulario
 }: UserTableProps) {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -47,10 +48,12 @@ export default function UserTable({
         }, 0);
     }
 
-    // Handler para éxito en UserForm desde la tabla
+    // Cierra el modal y limpia el usuario seleccionado tras éxito
     function handleFormSuccess() {
         setIsFormOpen(false);
-        // El padre se encarga de recargar los usuarios
+        setSelectedUser(null);
+        userEditFormRef.current?.close();
+        onFormSuccess(); // Notifica al padre para recargar usuarios
     }
 
     return (

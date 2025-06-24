@@ -68,6 +68,12 @@ export default function UsersPage() {
         fetchUsers();
         closeDialog();
     };
+    const handleEditUser = (user: User) => {
+        setMode("edit");
+        setUserToEdit(user);
+        setIsFormOpen(true);
+        setTimeout(() => dialogRef.current?.showModal(), 0);
+    };
 
     return (
         <>
@@ -84,7 +90,7 @@ export default function UsersPage() {
             {successMessage && (
                 <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
             )}
-            <UserTable 
+            <UserTable
                 setSuccessMessage={setSuccessMessage}
                 setErrorMessage={setErrorMessage}
                 users={users}
@@ -97,6 +103,8 @@ export default function UsersPage() {
                 loading={loading}
                 token={null}
                 setUsers={setUsers}
+                onFormSuccess={handleUserFormSuccess}
+                onEditUser={handleEditUser}
             />
             {isFormOpen && (
                 <UserForm
