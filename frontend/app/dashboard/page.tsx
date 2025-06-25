@@ -60,7 +60,7 @@ export default function DashboardPage() {
       requestEditFormRef.current.showModal();
     }
   }, [isFormOpen]);
-
+  
   return (
     <>
       {successMessage && (
@@ -79,12 +79,11 @@ export default function DashboardPage() {
             successMessage={successMessage}
             onCreateRequest={openRequestForm}
           />
-          <div className="mt-6">
-            {user &&
-              ([ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user.role) ? (
-                <DashboardAdmin role={user.role} />
-              ) : null)}
-          </div>
+          {user && [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user.role) && (
+            <div className="mt-6">
+              <DashboardAdmin />
+            </div>
+          )}
           {isFormOpen && (
             <RequestForm
               dialogRef={dialogRef}
@@ -94,7 +93,7 @@ export default function DashboardPage() {
             />
           )}
         </div>
-      </main >
+      </main>
     </>
   );
 }

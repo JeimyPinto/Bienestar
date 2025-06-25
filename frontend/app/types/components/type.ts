@@ -6,7 +6,7 @@ export interface ErrorMessageProps {
 export interface SectionHeaderProps {
   title: string;
   buttonText?: string;
-  onButtonClick: () => void;
+  onButtonClick?: () => void;
 }
 
 export interface SuccessMessageProps {

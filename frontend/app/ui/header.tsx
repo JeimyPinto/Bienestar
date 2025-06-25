@@ -1,48 +1,15 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { User } from "../types"
-import isTokenExpired from "../lib/isTokenExpired"
-import getUserToken from "../lib/getUserToken"
-import getToken from "../lib/getToken"
+import { useAuth } from "../hooks/useAuth"
 
 export default function Header() {
-
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const { token, user, logout, refresh } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
-
-  // Verifica el token al cargar el componente
-  useEffect(() => {
-    const fetchData = async () => {
-      const tokenValue = getToken();
-      let userValue = null;
-      if (tokenValue) {
-        try {
-          userValue = getUserToken(tokenValue);
-        } catch {
-          userValue = null;
-        }
-        if (isTokenExpired(tokenValue)) {
-          localStorage.removeItem("token");
-          setToken(null);
-          setUser(null);
-          router.push("/auth");
-        } else {
-          setToken(tokenValue);
-          setUser(userValue as User);
-        }
-      } else {
-        setToken(null);
-        setUser(null);
-      }
-    }
-    fetchData();
-  }, [router]);
 
   // Cierra el menú al navegar o cambiar tamaño
   useEffect(() => {
@@ -50,6 +17,14 @@ export default function Header() {
     window.addEventListener("resize", closeMenu);
     return () => window.removeEventListener("resize", closeMenu);
   }, []);
+
+  // Refresca el token/usuario cada 10 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refresh();
+    }, 10000); // 10 segundos
+    return () => clearInterval(interval);
+  }, [refresh]);
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-4 py-3 md:px-6 md:py-4 bg-azul w-full h-auto text-base md:text-xl text-white shadow-lg relative">
@@ -71,19 +46,13 @@ export default function Header() {
         aria-controls="main-menu"
       >
         <span
-          className={`block w-8 h-1 bg-white rounded transition-all duration-300
-            ${menuOpen ? "rotate-45 translate-y-2" : ""}
-          `}
+          className={`block w-8 h-1 bg-white rounded transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`}
         ></span>
         <span
-          className={`block w-8 h-1 bg-white rounded transition-all duration-300 my-1
-            ${menuOpen ? "opacity-0" : ""}
-          `}
+          className={`block w-8 h-1 bg-white rounded transition-all duration-300 my-1 ${menuOpen ? "opacity-0" : ""}`}
         ></span>
         <span
-          className={`block w-8 h-1 bg-white rounded transition-all duration-300
-            ${menuOpen ? "-rotate-45 -translate-y-2" : ""}
-          `}
+          className={`block w-8 h-1 bg-white rounded transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}
         ></span>
       </button>
       <nav
@@ -127,21 +96,21 @@ export default function Header() {
                   onClick={() => setMenuOpen(false)}
                 >
                   <Image
-                  src={
-                    user?.image
-                    ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + "/users/" + user.image
-                    : "/images/ico-profile.svg"
-                  }
-                  alt={`${user?.firstName ?? ""}`.trim() || "Icono de usuario"}
-                  width={32}
-                  height={32}
-                  priority={true}
-                  className="object-cover mr-2 w-8 h-8"
+                    src={
+                      user?.image
+                        ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + "/users/" + user.image
+                        : "/images/ico-profile.svg"
+                    }
+                    alt={`${user?.firstName ?? ""}`.trim() || "Icono de usuario"}
+                    width={32}
+                    height={32}
+                    priority={true}
+                    className="object-cover mr-2 w-8 h-8"
                   />
                   <span className="relative z-10">
-                  {user
-                    ? `Dashboard de ${user.firstName ? user.firstName.split(" ")[0] : "Usuario"}`
-                    : "Cargando..."}
+                    {user
+                      ? `Dashboard de ${user.firstName ? user.firstName.split(" ")[0] : "Usuario"}`
+                      : "Cargando..."}
                   </span>
                   <span className="absolute left-0 bottom-0 w-0 h-1 bg-cian transition-all duration-300 group-hover:w-full group-focus:w-full rounded"></span>
                 </Link>
@@ -150,7 +119,7 @@ export default function Header() {
                 <button
                   className="block w-full px-6 py-3 rounded-lg bg-magenta/90 shadow-md text-white font-semibold hover:bg-cian/90 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cian"
                   onClick={() => {
-                    localStorage.removeItem("token");
+                    logout();
                     setMenuOpen(false);
                     router.push("/auth");
                   }}
