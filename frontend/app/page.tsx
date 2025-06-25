@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import ServicesGallery from "./services/servicesGallery";
-import Footer from "./ui/footer";
-import Header from "./ui/header";
 import Image from "next/image";
 import Accordion from "./ui/accordion"
 import { getAllActive } from "./services/services/service";
@@ -29,7 +27,6 @@ export default function Page() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header />
       <div className="relative bg-gradient-to-r from-cian to-blue-500 text-white py-16 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-32 -left-32 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
@@ -109,7 +106,6 @@ export default function Page() {
           <ServicesGallery services={services} message={message ?? undefined} />
         </section>
       </main>
-      <Footer />
     </div>
   );
 }

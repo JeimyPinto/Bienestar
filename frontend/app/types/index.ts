@@ -4,3 +4,4 @@ export * from "./request";
 export * from "./group";
 export * from "./login";
 export * from "./remission"
+export * from "./auditLog";

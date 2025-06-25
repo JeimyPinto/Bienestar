@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { UserFormProps, User, Group } from "../types/index"
 import { create, update } from "../services/services/user";
-import { getAllGroups } from "../services/services/group";
-import isTokenExpired from "../lib/isTokenExpired"
-import getToken from "../lib/getToken"
+import { getAll } from "../services/services/group";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
+import { useAuth } from "../hooks/useAuth";
 
 const emptyUser: User = {
     id: 0,
@@ -27,37 +26,19 @@ const emptyUser: User = {
 };
 
 export default function UserForm(props: UserFormProps) {
-    const { dialogRef, onClose, mode, userToEdit, setErrorMessage } = props;
-    const [token, setToken] = useState<string | null>(null);
+    const { dialogRef, onClose, mode, setErrorMessage } = props;
+    const { token, isExpired } = useAuth();
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [groups, setGroups] = useState<Group[]>([]);
     const [groupsLoading, setGroupsLoading] = useState<boolean>(true);
     const [formError, setFormError] = useState<string>("");
 
-    // Obtener token
-    useEffect(() => {
-        const fetchData = async () => {
-            const tokenValue = getToken();
-            if (tokenValue) {
-                if (isTokenExpired(tokenValue)) {
-                    localStorage.removeItem("token");
-                    setToken(null);
-                } else {
-                    setToken(tokenValue);
-                }
-            } else {
-                setToken(null);
-            }
-        }
-        fetchData();
-    }, []);
-
     // Obtener grupos
     useEffect(() => {
         async function fetchGroups() {
             setGroupsLoading(true);
-            const res = await getAllGroups(token || undefined);
+            const res = await getAll(token || undefined);
             if (!res.error) {
                 setGroups(res.groups);
             } else {
@@ -71,16 +52,16 @@ export default function UserForm(props: UserFormProps) {
 
     // Inicializar el formulario según el modo
     useEffect(() => {
-        if (mode === "edit" && userToEdit) {
-            setNewUser({ ...userToEdit, password: "" });
+        if (mode === "edit" && props.userToEdit) {
+            setNewUser({ ...props.userToEdit, password: "" });
             setPreviewImage(null); // Limpiar preview al abrir modal de edición
         } else if (mode === "create") {
             setNewUser({ ...emptyUser }); // Asegura que todos los campos estén vacíos
             setPreviewImage(null);
         }
-    }, [mode, userToEdit]);
+    }, [mode, props.userToEdit]);
 
-        function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e.target;
         setNewUser((prevUser) => ({
             ...prevUser,
@@ -91,10 +72,13 @@ export default function UserForm(props: UserFormProps) {
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
 
-        if (!token) return;
+        if (!token || isExpired) {
+            setFormError("No hay sesión activa o el token expiró. Por favor, inicia sesión.");
+            return;
+        }
 
         setFormError(""); // Limpiar error local antes de intentar
-        let userToSend = { ...newUser };
+        const userToSend = { ...newUser };
         // Eliminar image si no hay archivo nuevo ni imagen previa
         if (!userToSend.file && !userToSend.image) {
             delete userToSend.image;
@@ -117,7 +101,6 @@ export default function UserForm(props: UserFormProps) {
                     onClose?.();
                 }
             } else if (mode === "edit") {
-                console.log("Editando usuario:", userToSend);
                 responseData = await update(
                     userToSend.id,
                     userToSend,

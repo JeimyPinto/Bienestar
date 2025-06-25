@@ -27,18 +27,14 @@ export default function GroupTable({ groups, setGroups, setSuccessMessage, setEr
         setIsFormOpen(true);
         setTimeout(() => dialogRef.current?.showModal(), 0);
     }
-    function handleFormClose() {
-        setIsFormOpen(false);
-        dialogRef.current?.close();
-    }
     async function handleFormCloseAndReload() {
         setIsFormOpen(false);
         dialogRef.current?.close();
         // Recargar grupos después de crear/editar
         const getToken = (await import("../lib/getToken")).default;
-        const { getAllGroups } = await import("../services/services/group");
+        const { getAll } = await import("../services/services/group");
         const token = getToken();
-        const res = await getAllGroups(token || undefined);
+        const res = await getAll(token || undefined);
         if (!res.error) {
             setGroups(res.groups);
         }

@@ -84,7 +84,7 @@ export async function update(id: number, request: Request, token?: string) {
   return { error: false, ...data };
 }
 
-export async function getByUserId(userId: string, token?: string) {
+export async function getByUserId(userId: number, token?: string) {
   const res = await fetch(`${url}/user/${userId}`, {
     method: "GET",
     headers: {

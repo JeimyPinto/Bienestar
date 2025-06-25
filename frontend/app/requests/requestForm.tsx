@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import { User, Service, RequestsFormProps, Request } from "../types/index";
+import {RequestsFormProps, Request } from "../types/index";
 import { create, update } from "../services/services/request";
-import { getAllActive as getAllServices } from "../services/services/service";
-import { getAllByRole as getAllUsers } from "../services/services/user";
-import { ROLES } from "../lib/roles";
-import isTokenExpired from "../lib/isTokenExpired";
-import getUsertoken from "../lib/getUserToken";
-import getToken from "../lib/getToken";
+import { useAuth } from "../hooks/useAuth";
 import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
@@ -35,35 +30,9 @@ export default function RequestsForm(props: RequestsFormProps) {
         mode,
         requestToEdit,
     } = props;
-    const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+    const{ token, user } = useAuth()
     const [newRequest, setNewRequest] = useState<Request>(emptyRequest);
     const [formError, setFormError] = useState<string>("");
-
-    // Obtener token y usuario autenticado
-    useEffect(() => {
-        const fetchData = async () => {
-            const tokenValue = getToken();
-            let userValue = null;
-            if (tokenValue) {
-                setToken(tokenValue);
-                try {
-                    userValue = getUsertoken(tokenValue);
-                } catch (e) {
-                    userValue = null;
-                }
-                if (isTokenExpired(tokenValue)) {
-                    localStorage.removeItem("token");
-                    setUser(null);
-                } else {
-                    setUser(userValue as User);
-                }
-            } else {
-                setUser(null);
-            }
-        };
-        fetchData();
-    }, []);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -95,7 +64,7 @@ export default function RequestsForm(props: RequestsFormProps) {
         event.preventDefault();
         if (!token) return;
         setFormError("");
-        let requestData = { ...newRequest };
+        const  requestData = { ...newRequest };
         if (typeof requestData.status === "string") {
             requestData.status = requestData.status === "activo";
         }
@@ -140,7 +109,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                     {mode === "create" ? "Crear Solicitud de Remisión" : "Editar Solicitud de Remisión"}
                 </h2>
                 <button
-                    onClick={onClose}
+                    onClick={() => onClose?.()}
                     aria-label="Cerrar formulario"
                     className="text-cian hover:text-azul transition-colors"
                 >
@@ -150,36 +119,36 @@ export default function RequestsForm(props: RequestsFormProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Sección: Solicitante y Servicio */}
                 <div className="bg-cian/5 border border-cian/20 rounded-lg p-4 mb-2">
-                  <h3 className="text-lg font-semibold text-cian mb-3">Datos del Solicitante y Servicio</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <RequestApplicantFields
-                        user={user}
-                        token={token}
-                        newRequest={newRequest}
-                        setNewRequest={setNewRequest}
-                        mode={mode}
-                        editApplicant={mode === "edit" && requestToEdit?.applicant ? requestToEdit.applicant : undefined}
-                    />
-                  </div>
+                    <h3 className="text-lg font-semibold text-cian mb-3">Datos del Solicitante y Servicio</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <RequestApplicantFields
+                            user={user}
+                            token={token}
+                            newRequest={newRequest}
+                            setNewRequest={setNewRequest}
+                            mode={mode}
+                            editApplicant={mode === "edit" && requestToEdit?.applicant ? requestToEdit.applicant : undefined}
+                        />
+                    </div>
                 </div>
                 {/* Sección: Descripción */}
                 <div className="bg-azul/5 border border-azul/20 rounded-lg p-4 mb-2">
-                  <h3 className="text-lg font-semibold text-azul mb-3">Descripción de la Solicitud</h3>
-                  <RequestDescriptionFields
-                      newRequest={newRequest}
-                      setNewRequest={setNewRequest}
-                  />
-                </div>
-                {/* Sección: Estado */}
-                <div className="bg-verde/5 border border-verde/20 rounded-lg p-4 mb-2">
-                  <h3 className="text-lg font-semibold text-verde mb-3">Estado y Respuesta</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <RequestStatusFields
-                        mode={mode}
+                    <h3 className="text-lg font-semibold text-azul mb-3">Descripción de la Solicitud</h3>
+                    <RequestDescriptionFields
                         newRequest={newRequest}
                         setNewRequest={setNewRequest}
                     />
-                  </div>
+                </div>
+                {/* Sección: Estado */}
+                <div className="bg-verde/5 border border-verde/20 rounded-lg p-4 mb-2">
+                    <h3 className="text-lg font-semibold text-verde mb-3">Estado y Respuesta</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <RequestStatusFields
+                            mode={mode}
+                            newRequest={newRequest}
+                            setNewRequest={setNewRequest}
+                        />
+                    </div>
                 </div>
                 <RequestFormActions
                     formError={formError}

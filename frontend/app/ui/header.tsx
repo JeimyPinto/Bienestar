@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
@@ -24,7 +24,7 @@ export default function Header() {
       if (tokenValue) {
         try {
           userValue = getUserToken(tokenValue);
-        } catch (e) {
+        } catch {
           userValue = null;
         }
         if (isTokenExpired(tokenValue)) {

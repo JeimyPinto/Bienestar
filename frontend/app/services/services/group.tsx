@@ -1,8 +1,11 @@
 const GROUPS_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/groups`;
 
-export async function getAllGroups(token?: string) {
+type GroupData = Record<string, unknown>;
+
+export async function getAll(token?: string) {
     try {
         const res = await fetch(GROUPS_API_URL, {
+            credentials: "include",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -18,10 +21,11 @@ export async function getAllGroups(token?: string) {
     }
 }
 
-export async function createGroup(groupData: any, token: string) {
+export async function create(groupData: GroupData, token: string) {
     try {
         const res = await fetch(GROUPS_API_URL, {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -38,10 +42,11 @@ export async function createGroup(groupData: any, token: string) {
     }
 }
 
-export async function updateGroup(id: number, groupData: any, token: string) {
+export async function update(id: number, groupData: GroupData, token: string) {
     try {
         const res = await fetch(`${GROUPS_API_URL}/${id}`, {
             method: "PUT",
+            credentials: "include",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",

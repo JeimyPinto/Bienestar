@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useRef } from "react"
-import Header from "../ui/header"
 import UserTable from "./userTable"
 import UserForm from "./userForm"
 import ErrorMessage from "../ui/errorMessage";
@@ -38,28 +37,27 @@ export default function UsersPage() {
     };
 
     // Cargar usuarios paginados
-    const fetchUsers = async () => {
-        setLoading(true);
-        const token = await getToken();
-        if (!token) {
-            setErrorMessage("No se pudo obtener el token de autenticación.");
-            setLoading(false);
-            return;
-        }
-        const res = await getAllPaginated(currentPage, limit, token);
-        if (res.error) {
-            setErrorMessage(res.message);
-            setUsers(res.users || []);
-        } else {
-            setSuccessMessage(res.message || "");
-            setUsers(res.users);
-            setTotalUsers(res.totalUsers || res.users.length);
-            setTotalPages(res.totalPages || 1);
-        }
-        setLoading(false);
-    };
-
     React.useEffect(() => {
+        const fetchUsers = async () => {
+            setLoading(true);
+            const token = await getToken();
+            if (!token) {
+                setErrorMessage("No se pudo obtener el token de autenticación.");
+                setLoading(false);
+                return;
+            }
+            const res = await getAllPaginated(currentPage, limit, token);
+            if (res.error) {
+                setErrorMessage(res.message);
+                setUsers(res.users || []);
+            } else {
+                setSuccessMessage(res.message || "");
+                setUsers(res.users);
+                setTotalUsers(res.totalUsers || res.users.length);
+                setTotalPages(res.totalPages || 1);
+            }
+            setLoading(false);
+        };
         fetchUsers();
     }, [currentPage, limit]);
 
@@ -80,7 +78,6 @@ export default function UsersPage() {
             {isFormOpen && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-[3px] z-[90] transition-all"></div>
             )}
-            <Header />
             <SectionHeader
                 title="Lista de Usuarios"
                 buttonText="Añadir Usuario"

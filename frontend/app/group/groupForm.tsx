@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Group, User } from "../types/index";
 import { getAllByRole } from "../services/services/user";
-import { createGroup, updateGroup } from "../services/services/group";
+import { create, update } from "../services/services/group";
 import getToken from "../lib/getToken";
 
 const emptyGroup: Group = {
@@ -52,7 +52,7 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
             setInstructorsLoading(false);
         }
         fetchInstructors();
-    }, []);
+    }, [setErrorMessage]);
 
     useEffect(() => {
         if (mode === "edit" && groupToEdit) {
@@ -81,7 +81,7 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
         }
         let res = null;
         if (mode === "create") {
-            res = await createGroup({
+            res = await create({
                 fichaNumber: newGroup.fichaNumber,
                 programName: newGroup.programName,
                 programType: newGroup.programType,
@@ -89,7 +89,7 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
                 fichaStatus: newGroup.fichaStatus,
             }, token);
         } else if (mode === "edit" && groupToEdit) {
-            res = await updateGroup(groupToEdit.id, {
+            res = await update(groupToEdit.id, {
                 fichaNumber: newGroup.fichaNumber,
                 programName: newGroup.programName,
                 programType: newGroup.programType,

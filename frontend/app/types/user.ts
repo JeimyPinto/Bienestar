@@ -31,8 +31,6 @@ export interface UserTableProps {
     setLimit: React.Dispatch<React.SetStateAction<number>>;
     token: string | null;
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-    setSuccessMessage?: (msg: string) => void;
-    setErrorMessage?: (msg: string) => void;
     loading?: boolean;
     onFormSuccess?: () => void;
     onEditUser: (user: User) => void;
@@ -41,7 +39,6 @@ export interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement>;
     onClose: () => void;
     mode: "create" | "edit";
-    userToEdit?: User;
     errorMessage?: string;
     setErrorMessage?: (msg: string) => void;
 }

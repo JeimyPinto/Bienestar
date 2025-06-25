@@ -1,6 +1,6 @@
 export type ProgramType = "tecnico" | "tecnologia" | "complementaria";
 export type FichaStatus = "etapa lectiva" | "etapa practica" | "certificados";
-
+import {User} from "./user"
 export interface Group {
     id: number;
     fichaNumber: string;
@@ -10,9 +10,8 @@ export interface Group {
     fichaStatus: FichaStatus;
     createdAt: string;
     updatedAt: string;
-    // Relacionales opcionales
-    instructor?: any;
-    members?: any[];
+    instructor?: User;
+    members?: User[];
 }
 
 export interface GroupTableProps {

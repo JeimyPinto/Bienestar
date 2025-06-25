@@ -1,8 +1,7 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from "react";
-import { Service, User } from "../types/index";
-import Header from "../ui/header";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { Service } from "../types/index";
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import ServicesGallery from "./servicesGallery";
@@ -10,14 +9,11 @@ import ServiceTable from "./serviceTable";
 import SectionHeader from "../ui/sectionHeader";
 import { getAllActive, getAll } from "../services/services/service";
 import ServiceForm from "./serviceForm";
-import isTokenExpired from "../lib/isTokenExpired"
-import getUserToken from "../lib/getUserToken"
-import getToken from "../lib/getToken"
+import { useAuth } from "../hooks/useAuth";
 
 export default function ServicePage() {
-    const [user, setUser] = useState<User | null>(null);
+    const { user, token } = useAuth();
     const [services, setServices] = useState<Service[]>([]);
-    const [message, setMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
@@ -26,57 +22,28 @@ export default function ServicePage() {
     const [successMessage, setSuccessMessage] = useState<string>("");
     const dialogRef = useRef<HTMLDialogElement>(null);
 
-    useEffect(() => {
-        // Solo hace fetch de usuario al montar
-        const fetchData = async () => {
-            const tokenValue = getToken();
-            let userValue = null;
-            if (tokenValue) {
-                try {
-                    userValue = getUserToken(tokenValue);
-                } catch (e) {
-                    userValue = null;
-                }
-                if (isTokenExpired(tokenValue)) {
-                    localStorage.removeItem("token");
-                    setUser(null);
-                } else {
-                    setUser(userValue as User);
-                }
-            } else {
-                setUser(null);
-            }
-        };
-        fetchData();
-    }, []);
-
-    // Extraer fetchServices fuera del useEffect para poder llamarlo manualmente
-    const fetchServices = async () => {
+    const fetchServices = useCallback(async () => {
         setLoading(true);
         let response;
         if (!user || user?.role === "user") {
             response = await getAllActive();
         } else {
             // Solo ADMIN/SUPERADMIN
-            const tokenValue = getToken();
-            response = await getAll(tokenValue ?? undefined);
+            response = await getAll(token ?? undefined);
         }
         if (!response.error && response.services) {
             setServices(response.services);
-            setMessage(response.message);
             setErrorMessage("");
         } else {
             setServices([]);
-            setMessage(response.message);
             setErrorMessage(response.message);
         }
         setLoading(false);
-    };
+    }, [user, token]);
 
     useEffect(() => {
-        // Solo ejecuta si user ya está definido (no undefined)
         if (user !== undefined) fetchServices();
-    }, [user]);
+    }, [user, fetchServices]);
 
     // Handler para éxito en ServiceForm
     const handleServiceFormSuccess = () => {
@@ -97,7 +64,6 @@ export default function ServicePage() {
     };
     return (
         <>
-            <Header />
             {(!user || user?.role === "user") ? (
                 <main className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-8 sm:px-6 sm:py-12 md:px-10 md:py-16 shadow-xl mx-auto w-full max-w-full transition-all">
                     <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-azul">Servicios Disponibles</h1>

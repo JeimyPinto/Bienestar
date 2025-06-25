@@ -2,7 +2,6 @@
 
 import React, { useState, useRef } from "react";
 import { Request } from "../types/request";
-import Header from "../ui/header";
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import RequestTable from "./requestTable";
@@ -65,7 +64,6 @@ export default function RequestPage() {
 
     return (
         <>
-            <Header />
             <SectionHeader
                 title="Listado de Solicitudes"
                 buttonText="Añadir Nueva Solicitud"

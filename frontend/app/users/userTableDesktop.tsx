@@ -21,52 +21,52 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                 <thead className="bg-cian text-azul">
                     <tr>
                         <th className="px-2 py-3 text-xs font-semibold"
-                            onClick={() => handleSort("id") as any}>
+                            onClick={() => handleSort("id")}>
                             ID {sortColumn === "id" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold">Imagen</th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("firstName") as any}>
+                            onClick={() => handleSort("firstName")}>
                             Nombre {sortColumn === "firstName" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("email") as any}>
+                            onClick={() => handleSort("email")}>
                             Email {sortColumn === "email" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("documentType") as any}>
+                            onClick={() => handleSort("documentType")}>
                             Tipo de Documento {sortColumn === "documentType" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("documentNumber") as any}>
+                            onClick={() => handleSort("documentNumber")}>
                             Número de Documento {sortColumn === "documentNumber" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("phone") as any}>
+                            onClick={() => handleSort("phone")}>
                             Teléfono {sortColumn === "phone" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("role") as any}>
+                            onClick={() => handleSort("role")}>
                             Rol {sortColumn === "role" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("status") as any}>
+                            onClick={() => handleSort("status")}>
                             Estado {sortColumn === "status" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("createdAt") as any}>
+                            onClick={() => handleSort("createdAt")}>
                             Fecha de Creación {sortColumn === "createdAt" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("updatedAt") as any}>
+                            onClick={() => handleSort("updatedAt")}>
                             Fecha de Actualización {sortColumn === "updatedAt" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("groupId") as any}>
+                            onClick={() => handleSort("groupId")}>
                             Grupo (ID) {sortColumn === "groupId" && (sortOrder === "asc" ? "⬆️" : "⬇️")}
                         </th>
                         <th className="px-2 py-3 text-xs font-semibold cursor-pointer select-none"
-                            onClick={() => handleSort("group") as any}>
+                            onClick={() => handleSort("group")}>
                             Nombre del Grupo
                         </th>
                     </tr>

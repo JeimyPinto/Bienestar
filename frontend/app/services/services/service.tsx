@@ -127,7 +127,7 @@ export async function update(id: string, service: Service, file?: File, token?: 
 }
 
 // Obtener servicios creados por un usuario específico (ADMIN, SUPERADMIN)
-export async function getByUserId(userId: string, token?: string) {
+export async function getByUserId(userId: number, token?: string) {
     try {
         const res = await fetch(`${url}/user/${userId}`, {
             method: "GET",

@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Header from "../ui/header";
 import SectionHeader from "../ui/sectionHeader";
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import GroupTable from "./groupTable";
-import { getAllGroups } from "../services/services/group";
+import { getAll} from "../services/services/group";
 import { Group } from "../types/group";
 import GroupForm from "./groupForm";
 import getToken from "../lib/getToken";
@@ -24,7 +23,7 @@ export default function GroupPage() {
     useEffect(() => {
         async function fetchGroups() {
             const token = getToken();
-            const res = await getAllGroups(token || undefined);
+            const res = await getAll(token || undefined);
             if (res.error) {
                 setErrorMessage(res.message);
                 setGroups([]);
@@ -42,15 +41,11 @@ export default function GroupPage() {
         setIsFormOpen(true);
         setTimeout(() => dialogRef.current?.showModal(), 0);
     }
-    function closeDialog() {
-        setIsFormOpen(false);
-        dialogRef.current?.close();
-    }
 
     // Nueva función para recargar grupos tras crear/editar
     async function reloadGroups() {
         const token = getToken();
-        const res = await getAllGroups(token || undefined);
+        const res = await getAll(token || undefined);
         if (res.error) {
             setErrorMessage(res.message);
             setGroups([]);
@@ -63,12 +58,11 @@ export default function GroupPage() {
     function handleFormClose() {
         setIsFormOpen(false);
         dialogRef.current?.close();
-        reloadGroups(); // Recarga la tabla tras cerrar el formulario
+        reloadGroups();
     }
 
     return (
         <>
-            <Header />
             <SectionHeader
                 title="Lista de Fichas"
                 buttonText="Añadir Ficha"

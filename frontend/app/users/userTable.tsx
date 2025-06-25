@@ -7,8 +7,6 @@ import UserTableFilterBar from "./userTableFilterBar"
 import { useColumnSorter } from "../lib/useColumnSorter"
 
 export default function UserTable({
-    setSuccessMessage,
-    setErrorMessage,
     users,
     currentPage,
     totalUsers,

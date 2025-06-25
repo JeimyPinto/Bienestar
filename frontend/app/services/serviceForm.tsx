@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { ServiceFormProps, Service, Area, User } from "../types/index"
+import { ServiceFormProps, Service, Area } from "../types/index"
 import { create, update } from "../services/services/service"
-import isTokenExpired from "../lib/isTokenExpired"
-import getToken from "../lib/getToken"
-import getUserToken from "../lib/getUserToken"
 import ServiceFormMainFields from "./serviceFormMainFields";
 import ServiceFormAdminFields from "./serviceFormAdminFields";
+import { useAuth } from "../hooks/useAuth";
 
 const emptyService: Service = {
     id: "",
@@ -22,8 +20,7 @@ const emptyService: Service = {
 
 export default function ServiceForm(props: ServiceFormProps) {
     const { dialogRef, closeDialog, onClose, mode, serviceToEdit } = props;
-    const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+    const { token, user, isExpired } = useAuth();
     const [newService, setNewService] = useState<Service>(emptyService);
     const [previewImage, setPreviewImage] = useState<string>("");
     const [formError, setFormError] = useState<string>("");
@@ -35,33 +32,6 @@ export default function ServiceForm(props: ServiceFormProps) {
             dialogRef.current.showModal?.();
         }
     }, [dialogRef]);
-
-     // Obtener token
-    useEffect(() => {
-        const fetchData = async () => {
-            const tokenValue = getToken();
-            let userValue = null;
-            if (tokenValue) {
-                try {
-                    userValue = getUserToken(tokenValue);
-                } catch (e) {
-                    userValue = null;
-                }
-                if (isTokenExpired(tokenValue)) {
-                    localStorage.removeItem("token");
-                    setToken(null);
-                    setUser(null);
-                } else {
-                    setToken(tokenValue);
-                    setUser(userValue as User);
-                }
-            } else {
-                setToken(null);
-                setUser(null);
-            }
-        }
-        fetchData();
-    }, []);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -109,17 +79,17 @@ export default function ServiceForm(props: ServiceFormProps) {
             setFormError("Todos los campos obligatorios deben estar completos.");
             return;
         }
-        if (!token) {
-            setFormError("No hay sesión activa. Por favor, inicia sesión.");
+        if (!token || isExpired) {
+            setFormError("No hay sesión activa o el token expiró. Por favor, inicia sesión.");
             return;
         }
         try {
             let responseData;
             if (mode === "create") {
-                const { file, image, ...serviceData } = newService;
+                const { file, ...serviceData } = newService;
                 serviceData.creatorId = user?.id ? Number(user.id) : 0;
                 // No enviar image si está vacío o null
-                if (!newService.image) delete (serviceData as any).image;
+                if (!newService.image) delete (serviceData as Partial<typeof newService>).image;
                 responseData = await create(
                     serviceData,
                     file ? file : undefined,
@@ -127,8 +97,8 @@ export default function ServiceForm(props: ServiceFormProps) {
                 );
             } else if (mode === "edit") {
                 // Solo enviar image si existe y no es null
-                const { file, ...serviceData } = newService;
-                if (!newService.image) delete (serviceData as any).image;
+                const { ...serviceData } = newService;
+                if (!newService.image) delete (serviceData as Partial<typeof newService>).image;
                 responseData = await update(
                     newService.id,
                     serviceData,
@@ -138,7 +108,6 @@ export default function ServiceForm(props: ServiceFormProps) {
             }
             if (!responseData) {
                 setFormError("No se pudo procesar la solicitud. Intenta de nuevo.");
-                props.setErrorMessage?.("No se pudo procesar la solicitud. Intenta de nuevo.");
                 return;
             }
             if (responseData.error) {

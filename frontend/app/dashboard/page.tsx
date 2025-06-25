@@ -1,22 +1,18 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Header from "../ui/header";
 import UserCard from "../users/userCard";
 import DashboardAdmin from "./dashboardAdmin";
 import RequestForm from "../requests/requestForm";
 import RequestHistory from "../requests/requestHistory";
 import SuccessMessage from "../ui/successMessage";
-import { User } from "../types";
-import { Request } from "../types/request";
+import { Request } from "../types";
 import { ROLES } from "../lib/roles";
-import isTokenExpired from "../lib/isTokenExpired";
-import getUserToken from "../lib/getUserToken";
-import getToken from "../lib/getToken";
+import { useAuth } from "../hooks/useAuth";
 import { getByUserId as getRequestsByUserId } from "../services/services/request";
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, token, isExpired } = useAuth();
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -28,43 +24,26 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const tokenValue = getToken();
-      let userValue = null;
-      if (tokenValue) {
-        try {
-          userValue = getUserToken(tokenValue);
-        } catch (e) {
-          userValue = null;
-        }
-      }
-      if (tokenValue && userValue?.id) {
-        if (isTokenExpired(tokenValue)) {
-          localStorage.removeItem("token");
-          setUser(null);
+      if (token && user?.id && !isExpired) {
+        // Obtener requests del usuario desde la API
+        const data = await getRequestsByUserId(user.id, token);
+        if(data.requests) {
+          setRequests(data.requests);
+          setErrorMessage("");
+          setSuccessMessage(data.message);
+        }else{
           setRequests([]);
-        } else {
-          setUser(userValue as User);
-          // Obtener requests del usuario desde la API
-          const data = await getRequestsByUserId(userValue.id, tokenValue);
-          if(data.requests) {
-            setRequests(data.requests);
-            setErrorMessage("");
-            setSuccessMessage(data.message);
-          }else{
-            setRequests([]);
-            setErrorMessage(data.message);
-            setSuccessMessage("");
-          }
+          setErrorMessage(data.message);
+          setSuccessMessage("");
         }
       } else {
-        setUser(null);
         setRequests([]);
         setSuccessMessage("");
       }
       setLoading(false);
     }
     fetchData();
-  }, []);
+  }, [token, user, isExpired]);
 
   const openRequestForm = () => {
     setIsFormOpen(true);
@@ -84,7 +63,6 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Header />
       {successMessage && (
         <SuccessMessage
           message={successMessage}
