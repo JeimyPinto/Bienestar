@@ -20,7 +20,10 @@ const remissionsRoutes = require("./remission.js");
 // =======================
 // Middlewares / Utilidades
 // =======================
-const { authenticateToken } = require("../middlewares/auth");
+const { authenticateToken ,authorizeRoles } = require("../middlewares/auth");
+
+const ROLES = require("../constants/roles");
+
 
 router.get("/", (req, res) => {
   res.status(200).send({
@@ -59,6 +62,7 @@ router.use(
 router.use(
   "/remissions",
   authenticateToken,
+  authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
   remissionsRoutes
 );
 

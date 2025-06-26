@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Group, User } from "../types/index";
 import { getAllByRole } from "../services/services/user";
 import { create, update } from "../services/services/group";
-import getToken from "../lib/getToken";
+import { useAuth } from "../hooks/useAuth";
+import {GroupFormProps} from "../types/group";
 
 const emptyGroup: Group = {
     id: 0,
@@ -15,26 +16,16 @@ const emptyGroup: Group = {
     updatedAt: new Date().toISOString(),
 };
 
-export interface GroupFormProps {
-    dialogRef: React.RefObject<HTMLDialogElement>;
-    closeDialog: () => void;
-    onClose: () => void;
-    mode: "create" | "edit";
-    groupToEdit?: Group;
-    setSuccessMessage?: (msg: string) => void;
-    setErrorMessage?: (msg: string) => void;
-}
-
 export default function GroupForm({ dialogRef, closeDialog, onClose, mode, groupToEdit, setSuccessMessage, setErrorMessage }: GroupFormProps) {
     const [newGroup, setNewGroup] = useState<Group>(emptyGroup);
     const [instructors, setInstructors] = useState<User[]>([]);
     const [instructorsLoading, setInstructorsLoading] = useState<boolean>(true);
     const [formError, setFormError] = useState<string>("");
+    const {token} = useAuth();
 
     useEffect(() => {
         async function fetchInstructors() {
             setInstructorsLoading(true);
-            const token = getToken();
             if (!token) {
                 setErrorMessage?.("No hay sesión activa. Por favor, inicia sesión.");
                 setFormError("No hay sesión activa. Por favor, inicia sesión.");
@@ -74,7 +65,6 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
             return;
         }
         setFormError("");
-        const token = getToken();
         if (!token) {
             setFormError("No hay sesión activa. Por favor, inicia sesión.");
             return;

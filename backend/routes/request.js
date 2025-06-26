@@ -9,6 +9,7 @@ const express = require("express");
 const { authenticateToken, authorizeRoles } = require("../middlewares");
 const ROLES = require("../constants/roles");
 const validateRequestSchema = require("../middlewares/validateSchema.js");
+const sanitizeRequestBody = require("../middlewares/sanitizeInput.js");
 
 // =======================
 // Controladores
@@ -25,37 +26,33 @@ const router = express.Router();
 
 router.get(
     "/",
-    authenticateToken,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     requestController.getAll
 );
 
 router.get(
     "/active",
-    authenticateToken,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     requestController.getAllActive
 );
 
 router.get(
     "/:id",
-    authenticateToken,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     requestController.getById
 );
 
 router.post(
     "/",
-    authenticateToken,
-    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    sanitizeRequestBody,
     validateRequestSchema(requestSchema),
     requestController.create
 );
 
 router.put(
     "/:id",
-    authenticateToken,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    sanitizeRequestBody,
     validateRequestSchema(requestSchema),
     requestController.update
 );

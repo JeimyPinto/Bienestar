@@ -10,6 +10,7 @@ import SectionHeader from "../ui/sectionHeader";
 import { getAllActive, getAll } from "../services/services/service";
 import ServiceForm from "./serviceForm";
 import { useAuth } from "../hooks/useAuth";
+import ROLES from "../contants/roles";
 
 export default function ServicePage() {
     const { user, token } = useAuth();
@@ -25,7 +26,7 @@ export default function ServicePage() {
     const fetchServices = useCallback(async () => {
         setLoading(true);
         let response;
-        if (!user || user?.role === "user") {
+        if (!user && (user?.role === "user" || user?.role === "instructor")) {
             response = await getAllActive();
         } else {
             // Solo ADMIN/SUPERADMIN

@@ -28,7 +28,7 @@ class AuthController {
         });
       }
       if (!await bcrypt.compare(password, user.password)) {
-        throw new ErrorController(
+        throw new Error(
           401,
           "Correo electrónico o contraseña incorrectos",
           { field: "password" }

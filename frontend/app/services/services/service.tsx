@@ -1,6 +1,30 @@
 import { Service } from "../../types/service";
+
 const url = `${process.env.NEXT_PUBLIC_API_URL}/services`;
 
+export async function getById(id: number, token?: string) {
+    try {
+        const res = await fetch(`${url}/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await res.json();
+        if (!res.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        return {
+            error: true,
+            message: "Server error while fetching service. / Error en el servidor al obtener el servicio. (" + error + ")",
+            details: error,
+        };
+    }
+}
 // Obtener todos los servicios activos (público)
 export async function getAllActive() {
     try {

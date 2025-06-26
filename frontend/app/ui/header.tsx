@@ -7,7 +7,7 @@ import Link from "next/link"
 import { useAuth } from "../hooks/useAuth"
 
 export default function Header() {
-  const { token, user, logout, refresh } = useAuth();
+  const { token, user, logout, refresh, isExpired } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
@@ -18,13 +18,20 @@ export default function Header() {
     return () => window.removeEventListener("resize", closeMenu);
   }, []);
 
-  // Refresca el token/usuario cada 10 segundos
+  // Refresca el token cada 10 segundos y valida que no haya expirado
   useEffect(() => {
     const interval = setInterval(() => {
       refresh();
     }, 10000); // 10 segundos
+
+    // Si el token ha expirado, cerrar sesión y redirigir
+    if (isExpired) {
+      logout();
+      router.push("/auth");
+    }
+
     return () => clearInterval(interval);
-  }, [refresh]);
+  }, [refresh, isExpired, logout, router]);
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-center px-4 py-3 md:px-6 md:py-4 bg-azul w-full h-auto text-base md:text-xl text-white shadow-lg relative">

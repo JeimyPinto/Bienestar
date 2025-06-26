@@ -8,7 +8,7 @@ import RequestTable from "./requestTable";
 import RequestForm from "./requestForm";
 import SectionHeader from "../ui/sectionHeader";
 import { getAll } from "../services/services/request"
-import getToken from "../lib/getToken";
+import { useAuth } from "../hooks/useAuth";
 
 export default function RequestPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -19,6 +19,7 @@ export default function RequestPage() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [requests, setRequests] = useState<Request[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const {token} = useAuth();
 
     const openCreateDialog = () => {
         setMode("create");
@@ -34,7 +35,6 @@ export default function RequestPage() {
     // Cargar solicitudes
     const fetchRequests = async () => {
         setLoading(true);
-        const token = getToken() || undefined;
         if (!token) {
             setErrorMessage("No se pudo obtener el token de autenticación.");
             setLoading(false);

@@ -188,7 +188,27 @@ export async function getAllByRole(role: string, token?: string) {
     }
 }
 
-// Obtener instructores (solo usuarios con rol INSTRUCTOR)
-export async function getAllInstructors(token?: string) {
-    return getAllByRole("instructor", token);
+export async function getById(id: number, token?: string) {
+    try {
+        const res = await fetch(`${url}/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await res.json();
+        if (!res.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        console.error("Error en la función getById:" + error)
+        return {
+            error: true,
+            message: "Error interno del servidor",
+            details: error
+        };
+    }
 }

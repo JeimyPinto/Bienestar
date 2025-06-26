@@ -1,91 +1,71 @@
-const { Remission, Request, User, Service } = require('../models');
-const remissionSchema = require('../schemas/remission');
-const { createAuditLog } = require('../services/auditLog');
+const { remissionService } = require('../services/remission');
 
 const RemissionController = {
-  async create(req, res) {
+  async create(req, res, next) {
     try {
-      const { error, value } = remissionSchema.validate(req.body);
-      if (error) return res.status(400).json({ error: error.details[0].message });
-
+      const value = req.body;
       // Verifica que la solicitud esté aprobada antes de crear la remisión
-      const request = await Request.findByPk(value.requestId);
-      if (!request) return res.status(404).json({ error: 'Request not found' });
-      if (request.responseStatus !== 'aprobada') {
-        return res.status(400).json({ error: 'Request must be approved to create a remission' });
+      const remission = await remissionService.createRemission(value, req.user?.id || null);
+      res.status(201).json({
+        message: "Remisión creada con éxito",
+        remission,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getAll(req, res, next) {
+    try {
+      const remissions = await remissionService.getAllRemissions();
+      if (!remissions || remissions.length === 0) {
+        const error = new Error('No se encontraron remisiones');
+        error.status = 404;
+        error.details = { remissions: [] };
+        throw error;
       }
-
-      const remission = await Remission.create(value);
-      // Auditoría de creación
-      await createAuditLog({
-        entity_type: 'Remission',
-        entity_id: remission.id,
-        action: 'CREATE',
-        old_data: null,
-        new_data: remission.toJSON(),
-        changed_by: req.user?.id || null,
+      res.status(200).json({
+        message: 'Remisiones recuperadas con éxito',
+        remissions,
       });
-      return res.status(201).json({ remission });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+    } catch (error) {
+      next(error);
     }
   },
 
-  async getAll(req, res) {
+  async getById(req, res, next) {
     try {
-      const remissions = await Remission.findAll({
-        include: [
-          { model: Request, as: 'request' },
-          { model: User, as: 'referredUser' },
-          { model: User, as: 'assignedUser' },
-          { model: Service, as: 'service' },
-        ],
+      const remission = await remissionService.getRemissionById(req.params.id);
+      if (!remission) {
+        const error = new Error('Remission not found');
+        error.status = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: 'Remisión recuperada con éxito',
+        remission,
       });
-      return res.json({ remissions });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+    } catch (error) {
+      next(error);
     }
   },
 
-  async getById(req, res) {
+  async update(req, res, next) {
     try {
       const { id } = req.params;
-      const remission = await Remission.findByPk(id, {
-        include: [
-          { model: Request, as: 'request' },
-          { model: User, as: 'referredUser' },
-          { model: User, as: 'assignedUser' },
-          { model: Service, as: 'service' },
-        ],
+      const value = req.body;
+      const remission = await remissionService.updateRemission(id, value, req.user?.id || null);
+      if (!remission) {
+        const err = new Error('Remission not found');
+        err.status = 404;
+        throw err;
+      }
+      res.status(200).json({
+        message: 'Remisión actualizada con éxito',
+        remission,
       });
-      if (!remission) return res.status(404).json({ error: 'Remission not found' });
-      return res.json({ remission });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
-  },
-
-  async update(req, res) {
-    try {
-      const { id } = req.params;
-      const { error, value } = remissionSchema.validate(req.body);
-      if (error) return res.status(400).json({ error: error.details[0].message });
-      const remission = await Remission.findByPk(id);
-      if (!remission) return res.status(404).json({ error: 'Remission not found' });
-      const oldRemissionData = remission.get({ plain: true });
-      await remission.update(value);
-      // Auditoría de actualización
-      await createAuditLog({
-        entity_type: 'Remission',
-        entity_id: remission.id,
-        action: 'UPDATE',
-        old_data: oldRemissionData,
-        new_data: remission.toJSON(),
-        changed_by: req.user?.id || null,
-      });
-      return res.json({ remission });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+    } catch (error) {
+      next(error);
     }
   },
 };

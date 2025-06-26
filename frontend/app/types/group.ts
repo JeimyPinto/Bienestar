@@ -27,3 +27,13 @@ export interface GroupTableFilterBarProps {
   filter: string;
   setFilter: (filter: string) => void;
 }
+
+export interface GroupFormProps {
+    dialogRef: React.RefObject<HTMLDialogElement>;
+    closeDialog: () => void;
+    onClose: () => void;
+    mode: "create" | "edit";
+    groupToEdit?: Group;
+    setSuccessMessage?: (msg: string) => void;
+    setErrorMessage?: (msg: string) => void;
+}

@@ -1,25 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const RemissionController = require('../controllers/remission');
-const authenticateToken = require('../middlewares/authenticateToken');
-const authorizeRoles = require('../middlewares/authorizeRoles');
-
-// Todas las rutas requieren autenticación
-router.use(authenticateToken);
+const RemissionController = require('../controllers/remission.js');
+const validacionRemission = require('../middlewares/validateSchema.js');
+const {remissionSchema} = require('../schemas/remission.js');
+const sanitizeRequestBody = require("../middlewares/sanitizeInput.js");
 
 // Obtener todas las remisiones (admin/superadmin)
-router.get('/', authorizeRoles('admin', 'superadmin'), RemissionController.getAll);
+router.get('/', RemissionController.getAll);
 
 // Obtener una remisión por id (admin/superadmin)
-router.get('/:id', authorizeRoles('admin', 'superadmin'), RemissionController.getById);
+router.get('/:id',RemissionController.getById);
 
 // Crear una remisión (admin/superadmin)
-router.post('/', authorizeRoles('admin', 'superadmin'), RemissionController.create);
+router.post('/', sanitizeRequestBody, validacionRemission(remissionSchema), RemissionController.create);
 
 // Actualizar una remisión (admin/superadmin)
-router.put('/:id', authorizeRoles('admin', 'superadmin'), RemissionController.update);
-
-// No se permite eliminar remisiones
-// router.delete('/:id', ...);
+router.put('/:id', sanitizeRequestBody, validacionRemission(remissionSchema), RemissionController.update);
 
 module.exports = router;

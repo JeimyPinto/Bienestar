@@ -34,7 +34,7 @@ export async function getAllActive(token?: string) {
   return { error: false, ...data };
 }
 
-export async function getById(id: string, token?: string) {
+export async function getById(id: number, token?: string) {
   const res = await fetch(`${url}/${id}`, {
     method: "GET",
     headers: {

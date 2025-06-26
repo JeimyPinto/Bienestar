@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import getToken from "../lib/getToken";
 import getUsertoken from "../lib/getUserToken";
 import isTokenExpired from "../lib/isTokenExpired";
@@ -8,6 +9,8 @@ export function useAuth() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isExpired, setIsExpired] = useState<boolean>(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Obtiene y decodifica el token
   const refresh = useCallback(() => {
@@ -35,6 +38,12 @@ export function useAuth() {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    if (isExpired && pathname !== "/") {
+      router.push("/auth");
+    }
+  }, [isExpired, pathname, router]);
 
   // Logout: borra token y usuario
   const logout = useCallback(() => {
