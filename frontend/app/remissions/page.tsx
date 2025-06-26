@@ -76,7 +76,6 @@ export default function RemissiontPage() {
             <SuccessMessageStack messages={successMessages} onClose={handleCloseSuccess} />
             <RemissionTable
                 remissions={remissions}
-                setErrorMessage={setErrorMessage}
                 setSuccessMessages={setSuccessMessages}
                 loading={loading}
                 onRemissionUpdate={fetchRemissions}
@@ -87,7 +86,6 @@ export default function RemissiontPage() {
                     onClose={handleRemissionFormSuccess}
                     mode={mode}
                     remissionToEdit={remissionToEdit}
-                    setErrorMessage={setErrorMessage}
                     setSuccessMessages={setSuccessMessages}
                 />
             )}

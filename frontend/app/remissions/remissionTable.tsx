@@ -7,7 +7,6 @@ import RemissionTableFilterBar from "./remissionTableFilterBar";
 
 export default function RemissionTable({
   remissions,
-  setErrorMessage,
   setSuccessMessages,
   loading = false,
   onRemissionUpdate,
@@ -73,7 +72,6 @@ export default function RemissionTable({
               }}
               mode="edit"
               remissionToEdit={selectedRemission}
-              setErrorMessage={setErrorMessage}
               setSuccessMessages={setSuccessMessages}
             />
           )}

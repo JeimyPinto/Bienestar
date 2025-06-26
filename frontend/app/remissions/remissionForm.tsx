@@ -15,7 +15,6 @@ export default function RemissionForm({
   onClose,
   mode,
   remissionToEdit,
-  setErrorMessage,
   setSuccessMessages,
 }: RemissionFormProps) {
   const { token } = useAuth();

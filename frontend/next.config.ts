@@ -2,15 +2,24 @@ module.exports = {
   images: {
     remotePatterns: [
       {
-        protocol: "http", // Cambia a "https" si usas HTTPS
-        hostname: "127.0.0.1", // O "localhost" si es el caso
-        port: "4000", // Puerto donde corre tu backend
-        pathname: "/uploads/**", // Ruta donde se encuentran las imágenes
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "4000",
+        pathname: "/uploads/**",
       },
       {
-        protocol:"https",
-        hostname: "bienestar-backend.onrender.com", // Dominio de tu backend en Render
+        protocol: "http",
+        hostname: "localhost",
+        port: "4000", 
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "bienestar-backend.onrender.com",
+        pathname: "/uploads/**",
       }
     ],
   },
+  // Configuración para producción
+  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
 };
