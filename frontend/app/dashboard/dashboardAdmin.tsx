@@ -32,7 +32,7 @@ export default function DashboardAdmin() {
         if (user?.id && token) {
             fetchServices();
         }
-    }, [user?.id, token]);
+    }, [user, token]);
 
 
     return (

@@ -34,7 +34,7 @@ export default function RemissiontPage() {
     };
 
     // Cargar remisiones
-    const fetchRemissions = async () => {
+    const fetchRemissions = React.useCallback(async () => {
         setLoading(true);
         console.log("Fetching remissions with token:", token);
         const res = await getAll(token ?? undefined);
@@ -47,13 +47,13 @@ export default function RemissiontPage() {
             setRemissions(res.requests || []);
         }
         setLoading(false);
-    };
+    }, [token]);
 
     React.useEffect(() => {
         if (token) {
             fetchRemissions();
         }
-    }, [token]);
+    }, [token, fetchRemissions]);
 
     // Handler para éxito en RemissionForm
     const handleRemissionFormSuccess = (msg?: string) => {

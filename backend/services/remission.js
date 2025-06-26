@@ -1,7 +1,7 @@
 const { Remission, Request, User, Service } = require('../models');
 const { createAuditLog } = require('./auditLog');
 
-const RemissionService = {
+class RemissionService {
   async createRemission(data, userId = null) {
     // Verifica que la solicitud esté aprobada antes de crear la remisión
     const request = await Request.findByPk(data.requestId);
@@ -25,7 +25,7 @@ const RemissionService = {
       changed_by: userId,
     });
     return remission;
-  },
+  }
 
   async getAllRemissions() {
     return await Remission.findAll({
@@ -36,7 +36,7 @@ const RemissionService = {
         { model: Service, as: 'service' },
       ],
     });
-  },
+  }
 
   async getRemissionById(id) {
     return await Remission.findByPk(id, {
@@ -47,7 +47,7 @@ const RemissionService = {
         { model: Service, as: 'service' },
       ],
     });
-  },
+  }
 
   async updateRemission(id, data, userId = null) {
     const remission = await Remission.findByPk(id);
@@ -63,7 +63,7 @@ const RemissionService = {
       changed_by: userId,
     });
     return remission;
-  },
-};
+  }
+}
 
-module.exports = RemissionService;
+module.exports = new RemissionService();

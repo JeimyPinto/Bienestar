@@ -4,8 +4,10 @@ import { Request } from "../types/request";
 import { User } from "../types/user";
 import { getAllActive, getById as getRequestById } from "../services/services/request";
 import { getAllByRole } from "../services/services/user";
+import { create, update } from "../services/services/remission";
 import { ROLES } from "../lib/roles";
 import {RemissionFormProps} from "../types/remission";
+import { useAuth } from "../hooks/useAuth";
 
 
 export default function RemissionForm({
@@ -16,6 +18,7 @@ export default function RemissionForm({
   setErrorMessage,
   setSuccessMessages,
 }: RemissionFormProps) {
+  const { token } = useAuth();
   const [requests, setRequests] = useState<Request[]>([]);
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(remissionToEdit?.requestId || null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
@@ -29,26 +32,30 @@ export default function RemissionForm({
 
   // Cargar requests activas
   useEffect(() => {
-    getAllActive().then(res => {
-      if (res.requests) setRequests(res.requests);
-    });
-  }, []);
+    if (token) {
+      getAllActive(token).then(res => {
+        if (res.requests) setRequests(res.requests);
+      });
+    }
+  }, [token]);
 
   // Cargar admins
   useEffect(() => {
-    getAllByRole(ROLES.ADMIN).then(res => {
-      if (res.users) setAdmins(res.users);
-    });
-  }, []);
+    if (token) {
+      getAllByRole(ROLES.ADMIN, token).then(res => {
+        if (res.users) setAdmins(res.users);
+      });
+    }
+  }, [token]);
 
   // Cuando selecciona una request, obtener sus datos
   useEffect(() => {
-    if (selectedRequestId) {
-      getRequestById(selectedRequestId).then(res => {
+    if (selectedRequestId && token) {
+      getRequestById(selectedRequestId, token).then(res => {
         if (res.request) setSelectedRequest(res.request);
       });
     }
-  }, [selectedRequestId]);
+  }, [selectedRequestId, token]);
 
   // Handler para guardar
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,11 +77,37 @@ export default function RemissionForm({
       setLoading(false);
       return;
     }
-    // Aquí iría la llamada a la API para crear o editar la remisión
-    // Simulación de éxito
-    setSuccessMessages((prev) => [...prev, mode === "create" ? "Remisión creada con éxito" : "Remisión actualizada con éxito"]);
+
+    try {
+      const remissionData: Remission = {
+        id: remissionToEdit?.id,
+        requestId: selectedRequestId!,
+        referredUserId: selectedRequest.userId,
+        serviceId: selectedRequest.serviceId,
+        assignedUserId: assignedUserId!,
+        startDate: startDate,
+        endDate: endDate
+      };
+
+      let result;
+      if (mode === "create") {
+        result = await create(remissionData, token || undefined);
+      } else {
+        result = await update(remissionToEdit!.id!.toString(), remissionData, token || undefined);
+      }
+
+      if (result.error) {
+        setErrorMessage(result.message || "Error al procesar la remisión");
+      } else {
+        setSuccessMessages((prev) => [...prev, result.message || (mode === "create" ? "Remisión creada con éxito" : "Remisión actualizada con éxito")]);
+        onClose(result.message);
+      }
+    } catch (error) {
+      setErrorMessage( "Error inesperado al procesar la remisión");
+      console.error("Error procesando la remisión:", error);
+    }
+
     setLoading(false);
-    onClose();
   };
 
   return (

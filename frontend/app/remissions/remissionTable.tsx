@@ -9,7 +9,6 @@ import { getById as getServiceById } from "../services/services/service";
 
 export default function RemissionTable({
   remissions,
-  setRemissions,
   setErrorMessage,
   setSuccessMessages,
   loading = false,

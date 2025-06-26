@@ -32,14 +32,10 @@ export default function RequestPage() {
         setIsFormOpen(false);
         dialogRef.current?.close();
     };
+    
     // Cargar solicitudes
-    const fetchRequests = async () => {
-        setLoading(true);
-        if (!token) {
-            setErrorMessage("No se pudo obtener el token de autenticación.");
-            setLoading(false);
-            return;
-        }
+    const fetchRequests = React.useCallback(async () => {
+        setLoading(true)
         const res = await getAll(token);
         if (res.error) {
             setErrorMessage(res.message);
@@ -49,11 +45,13 @@ export default function RequestPage() {
             setRequests(res.requests || []);
         }
         setLoading(false);
-    };
+    }, [token]);
 
     React.useEffect(() => {
-        fetchRequests();
-    }, []);
+        if(token) {
+            fetchRequests();
+        }
+    }, [token, fetchRequests]);
 
     //Handler para éxito en RequestForm
     const handleRequestFormSuccess = () => {

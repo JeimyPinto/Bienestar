@@ -43,7 +43,7 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
             setInstructorsLoading(false);
         }
         fetchInstructors();
-    }, [setErrorMessage]);
+    }, [setErrorMessage, token]);
 
     useEffect(() => {
         if (mode === "edit" && groupToEdit) {

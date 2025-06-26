@@ -3,6 +3,11 @@ export interface ErrorMessageProps {
   onRetry?: () => void;
 }
 
+export interface IcoBackProps {
+  href?: string;
+  className?: string;
+}
+
 export interface SectionHeaderProps {
   title: string;
   buttonText?: string;
@@ -14,3 +19,4 @@ export interface SuccessMessageProps {
   duration?: number;
   onClose?: () => void;
 }
+

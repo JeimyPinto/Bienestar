@@ -1,4 +1,4 @@
-const { remissionService } = require('../services/remission');
+const remissionService = require('../services/remission');
 
 const RemissionController = {
   async create(req, res, next) {

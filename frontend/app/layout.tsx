@@ -1,6 +1,7 @@
 import "./styles/globals.css";
 import Header from "./ui/header";
 import Footer from "./ui/footer";
+// import AuthGuard from "./auth/authGuard"
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",
@@ -22,6 +23,7 @@ export default function RootLayout({
       </head>
       <body className="{`${monserrate.className} antialiase`} bg-blanco">
         <Header />
+        {/* <AuthGuard/> */}
         {children}
         <Footer />
       </body>

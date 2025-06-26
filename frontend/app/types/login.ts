@@ -17,3 +17,8 @@ export interface LoginFormProps {
   handleSubmit: (e: React.FormEvent) => void;
   recaptchaRef: React.RefObject<import("react-google-recaptcha").default>;
 }
+
+export interface UseLoginFormProps {
+  recaptchaToken: string | null;
+  recaptchaValid: boolean;
+}

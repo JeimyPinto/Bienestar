@@ -10,7 +10,7 @@ import SectionHeader from "../ui/sectionHeader";
 import { getAllActive, getAll } from "../services/services/service";
 import ServiceForm from "./serviceForm";
 import { useAuth } from "../hooks/useAuth";
-import ROLES from "../contants/roles";
+import { ROLES } from "../lib/roles";
 
 export default function ServicePage() {
     const { user, token } = useAuth();
@@ -26,7 +26,7 @@ export default function ServicePage() {
     const fetchServices = useCallback(async () => {
         setLoading(true);
         let response;
-        if (!user && (user?.role === "user" || user?.role === "instructor")) {
+        if (!user && (user?.role === ROLES.USER || user?.role === "instructor")) {
             response = await getAllActive();
         } else {
             // Solo ADMIN/SUPERADMIN
@@ -65,7 +65,7 @@ export default function ServicePage() {
     };
     return (
         <>
-            {(!user || user?.role === "user") ? (
+            {(!user || user?.role === ROLES.USER) ? (
                 <main className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-8 sm:px-6 sm:py-12 md:px-10 md:py-16 shadow-xl mx-auto w-full max-w-full transition-all">
                     <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-azul">Servicios Disponibles</h1>
                     <p className="mb-6 text-center text-gray-700 max-w-5xl">
