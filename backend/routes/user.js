@@ -46,7 +46,7 @@ router.get(
     removeSensitiveFields
 );
 
-// Obtener usuarios por rol (debe ir antes de /:id)
+// Obtener usuarios por rol
 router.get(
     "/role/:role",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),

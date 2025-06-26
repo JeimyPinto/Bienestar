@@ -6,6 +6,10 @@ const RemissionController = {
       const value = req.body;
       // Verifica que la solicitud esté aprobada antes de crear la remisión
       const remission = await remissionService.createRemission(value, req.user?.id || null);
+      
+      // Almacenar la remisión en res.locals para el middleware de notificación
+      res.locals.remission = remission;
+      
       res.status(201).json({
         message: "Remisión creada con éxito",
         remission,

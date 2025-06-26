@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Remission, RemissionTableProps } from "../types/remission";
 import RemissionForm from "./remissionForm";
 import RemissionTableDesktop from "./remissionTableDesktop";
 import RemissionCardMobile from "./remissionCardMobile";
 import RemissionTableFilterBar from "./remissionTableFilterBar";
-import { getById as getUserById } from "../services/services/user";
-import { getById as getServiceById } from "../services/services/service";
 
 export default function RemissionTable({
   remissions,
@@ -18,34 +16,6 @@ export default function RemissionTable({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [filter, setFilter] = useState("");
   const remissionEditFormRef = useRef<HTMLDialogElement>(null);
-  const [userNames, setUserNames] = useState<Record<number, string>>({});
-  const [serviceNames, setServiceNames] = useState<Record<number, string>>({});
-
-  // Cargar nombres de usuarios y servicios para mostrar en la tabla
-  useEffect(() => {
-    async function fetchNames() {
-      const userIds = Array.from(new Set(remissions.flatMap(r => [r.referredUserId, r.assignedUserId].filter(Boolean))));
-      const serviceIds = Array.from(new Set(remissions.map(r => r.serviceId)));
-      const userNameMap: Record<number, string> = {};
-      const serviceNameMap: Record<number, string> = {};
-      await Promise.all(userIds.map(async (id) => {
-        if (id && !userNames[id]) {
-          const res = await getUserById(id);
-          if (res.user) userNameMap[id] = `${res.user.firstName} ${res.user.lastName}`;
-        }
-      }));
-      await Promise.all(serviceIds.map(async (id) => {
-        if (id && !serviceNames[id]) {
-          const res = await getServiceById(id);
-          if (res.service) serviceNameMap[id] = res.service.name;
-        }
-      }));
-      setUserNames(prev => ({ ...prev, ...userNameMap }));
-      setServiceNames(prev => ({ ...prev, ...serviceNameMap }));
-    }
-    if (remissions.length > 0) fetchNames();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [remissions]);
 
   // Mostrar el modal cuando se selecciona una remisión
   React.useEffect(() => {

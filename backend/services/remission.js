@@ -15,7 +15,17 @@ class RemissionService {
       error.status = 400;
       throw error;
     }
+    
+    // Crear la remisión
     const remission = await Remission.create(data);
+    
+    // Actualizar el status de la request a inactiva
+    await request.update({
+      status: false, // inactiva
+      responseStatus: 'aprobada' // mantener como aprobada
+    });
+    
+    // Crear log de auditoría para la remisión
     await createAuditLog({
       entity_type: 'Remission',
       entity_id: remission.id,
@@ -24,6 +34,18 @@ class RemissionService {
       new_data: remission.toJSON(),
       changed_by: userId,
     });
+    
+    // Crear log de auditoría para la actualización de la request
+    await createAuditLog({
+      entity_type: 'Request',
+      entity_id: request.id,
+      action: 'UPDATE',
+      old_data: { status: true, responseStatus: request.responseStatus },
+      new_data: { status: false, responseStatus: 'aprobada' },
+      changed_by: userId,
+      description: 'Request updated to inactive after remission creation'
+    });
+    
     return remission;
   }
 

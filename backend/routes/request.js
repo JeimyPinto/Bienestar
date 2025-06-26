@@ -10,6 +10,7 @@ const { authenticateToken, authorizeRoles } = require("../middlewares");
 const ROLES = require("../constants/roles");
 const validateRequestSchema = require("../middlewares/validateSchema.js");
 const sanitizeRequestBody = require("../middlewares/sanitizeInput.js");
+const sendRequestNotificationMail = require("../middlewares/sendRequestNotificationMail.js");
 
 // =======================
 // Controladores
@@ -46,7 +47,8 @@ router.post(
     "/",
     sanitizeRequestBody,
     validateRequestSchema(requestSchema),
-    requestController.create
+    requestController.create,
+    sendRequestNotificationMail
 );
 
 router.put(

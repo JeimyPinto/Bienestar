@@ -21,7 +21,7 @@ export interface Remission {
 
 export interface RemissionTableProps {
   remissions: Remission[];
-  setRemissions: (remissions: Remission[]) => void;
+  setRemissions?: (remissions: Remission[]) => void;
   setErrorMessage: (msg: string) => void;
   setSuccessMessages: (msgs: string[] | ((prev: string[]) => string[])) => void;
   loading?: boolean;

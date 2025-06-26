@@ -4,7 +4,6 @@ import { Remission } from "../../types/remission";
 const url = `${process.env.NEXT_PUBLIC_API_URL}/remissions`;
 
 export async function getAll(token?: string) {
-  console.log("token" , token);
   const res = await fetch(url, {
     method: "GET",
     headers: {

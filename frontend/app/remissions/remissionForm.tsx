@@ -26,6 +26,7 @@ export default function RemissionForm({
   const [assignedUserId, setAssignedUserId] = useState<number | null>(remissionToEdit?.assignedUserId || null);
   const [endDate, setEndDate] = useState<string>(remissionToEdit?.endDate || "");
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string>("");
 
   // startDate: para crear es hoy, para editar es el de la remisión
   const startDate = remissionToEdit?.startDate || new Date().toISOString().slice(0, 10);
@@ -43,7 +44,13 @@ export default function RemissionForm({
   useEffect(() => {
     if (token) {
       getAllByRole(ROLES.ADMIN, token).then(res => {
-        if (res.users) setAdmins(res.users);
+        if (res.users) {
+          setAdmins(res.users);
+          setFormError(""); // Limpiar error si se cargan usuarios correctamente
+        } else if (res.error) {
+          // Si no hay usuarios admin, mostrar error específico en el formulario
+          setFormError(res.message || "No hay usuarios administradores disponibles para asignar a la remisión.");
+        }
       });
     }
   }, [token]);
@@ -61,19 +68,21 @@ export default function RemissionForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setFormError(""); // Limpiar errores previos
+    
     // Validaciones básicas
     if (!selectedRequestId || !selectedRequest) {
-      setErrorMessage("Debes seleccionar una solicitud válida.");
+      setFormError("Debes seleccionar una solicitud válida.");
       setLoading(false);
       return;
     }
     if (!assignedUserId) {
-      setErrorMessage("Debes asignar un administrador responsable.");
+      setFormError("Debes asignar un administrador responsable.");
       setLoading(false);
       return;
     }
     if (!endDate || endDate < startDate) {
-      setErrorMessage("La fecha de finalización no puede ser menor que la de inicio.");
+      setFormError("La fecha de finalización no puede ser menor que la de inicio.");
       setLoading(false);
       return;
     }
@@ -97,13 +106,16 @@ export default function RemissionForm({
       }
 
       if (result.error) {
-        setErrorMessage(result.message || "Error al procesar la remisión");
+        setFormError(result.message || "Error al procesar la remisión");
       } else {
         setSuccessMessages((prev) => [...prev, result.message || (mode === "create" ? "Remisión creada con éxito" : "Remisión actualizada con éxito")]);
         onClose(result.message);
       }
     } catch (error) {
-      setErrorMessage( "Error inesperado al procesar la remisión");
+      const errorMessage = error instanceof Error 
+        ? `Error inesperado al procesar la remisión: ${error.message}`
+        : "Error inesperado al procesar la remisión";
+      setFormError(errorMessage);
       console.error("Error procesando la remisión:", error);
     }
 
@@ -114,6 +126,14 @@ export default function RemissionForm({
     <dialog ref={dialogRef} className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-lg mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
         <h2 className="text-2xl font-bold mb-4">{mode === "create" ? "Crear Remisión" : "Editar Remisión"}</h2>
+        
+        {/* Mostrar error del formulario */}
+        {formError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
+            <p className="text-sm">{formError}</p>
+          </div>
+        )}
+        
         {/* Selección de solicitud */}
         <div>
           <label className="block font-semibold mb-1">Solicitud</label>
@@ -188,7 +208,6 @@ export default function RemissionForm({
             min={startDate}
             onChange={e => setEndDate(e.target.value)}
             className="w-full border rounded px-3 py-2"
-            required
           />
         </div>
         <div className="flex justify-end gap-4 mt-6">

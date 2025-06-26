@@ -36,15 +36,13 @@ export default function RemissiontPage() {
     // Cargar remisiones
     const fetchRemissions = React.useCallback(async () => {
         setLoading(true);
-        console.log("Fetching remissions with token:", token);
         const res = await getAll(token ?? undefined);
-        console.log("Remissions fetched:", res);
         if (res.error) {
             setErrorMessage(res.message);
-            setRemissions(res.requests || []);
+            setRemissions(res.remissions || []);
         } else {
-            setSuccessMessages((prev) => [...prev, res.message]);
-            setRemissions(res.requests || []);
+            setErrorMessage(""); // Limpiar errores si todo va bien
+            setRemissions(res.remissions || []);
         }
         setLoading(false);
     }, [token]);
@@ -78,7 +76,6 @@ export default function RemissiontPage() {
             <SuccessMessageStack messages={successMessages} onClose={handleCloseSuccess} />
             <RemissionTable
                 remissions={remissions}
-                setRemissions={setRemissions}
                 setErrorMessage={setErrorMessage}
                 setSuccessMessages={setSuccessMessages}
                 loading={loading}

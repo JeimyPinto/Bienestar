@@ -60,6 +60,10 @@ class RequestController {
         try {
             const requestData = requestSchema.parse(req.body);
             const request = await requestService.createRequest(requestData, req.user?.id || null);
+            
+            // Guardar la request en res.locals para que el middleware pueda acceder a ella
+            res.locals.request = request;
+            
             res.status(201).json({
                 message: "Solicitud creada con éxito",
                 request,

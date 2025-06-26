@@ -36,7 +36,7 @@ export default function RequestPage() {
     // Cargar solicitudes
     const fetchRequests = React.useCallback(async () => {
         setLoading(true)
-        const res = await getAll(token);
+        const res = await getAll(token ?? undefined);
         if (res.error) {
             setErrorMessage(res.message);
             setRequests(res.requests || []);
