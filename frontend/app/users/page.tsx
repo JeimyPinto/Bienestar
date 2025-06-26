@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect, useCallback } from "react"
 import UserTable from "./userTable"
 import UserForm from "./userForm"
 import ErrorMessage from "../ui/errorMessage";
@@ -8,7 +8,7 @@ import SuccessMessage from "../ui/successMessage";
 import SectionHeader from "../ui/sectionHeader"
 import { User } from "../types/index"
 import { getAllPaginated } from "../services/services/user";
-import getToken from "../lib/getToken";
+import {useAuth} from "../hooks/useAuth";
 
 export default function UsersPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -23,6 +23,7 @@ export default function UsersPage() {
     const [totalUsers, setTotalUsers] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [loading, setLoading] = useState(false);
+    const {token} = useAuth();
 
     const openCreateDialog = () => {
         setMode("create");
@@ -37,35 +38,31 @@ export default function UsersPage() {
     };
 
     // Cargar usuarios paginados
-    React.useEffect(() => {
-        const fetchUsers = async () => {
-            setLoading(true);
-            const token = await getToken();
-            if (!token) {
-                setErrorMessage("No se pudo obtener el token de autenticación.");
-                setLoading(false);
-                return;
-            }
-            const res = await getAllPaginated(currentPage, limit, token);
-            if (res.error) {
-                setErrorMessage(res.message);
-                setUsers(res.users || []);
-            } else {
-                setSuccessMessage(res.message || "");
-                setUsers(res.users);
-                setTotalUsers(res.totalUsers || res.users.length);
-                setTotalPages(res.totalPages || 1);
-            }
-            setLoading(false);
-        };
-        fetchUsers();
+    const fetchUsers = useCallback(async () => {
+        setLoading(true);
+        const res = await getAllPaginated(currentPage, limit, token);
+        if (res.error) {
+            setErrorMessage(res.message);
+            setUsers(res.users || []);
+        } else {
+            setSuccessMessage(res.message || "");
+            setUsers(res.users);
+            setTotalUsers(res.totalUsers || res.users.length);
+            setTotalPages(res.totalPages || 1);
+        }
+        setLoading(false);
     }, [currentPage, limit]);
+
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
 
     // Handler para éxito en UserForm
     const handleUserFormSuccess = () => {
         fetchUsers();
         closeDialog();
     };
+    
     const handleEditUser = (user: User) => {
         setMode("edit");
         setUserToEdit(user);
@@ -88,8 +85,6 @@ export default function UsersPage() {
                 <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
             )}
             <UserTable
-                setSuccessMessage={setSuccessMessage}
-                setErrorMessage={setErrorMessage}
                 users={users}
                 currentPage={currentPage}
                 totalUsers={totalUsers}
@@ -107,8 +102,8 @@ export default function UsersPage() {
                 <UserForm
                     dialogRef={dialogRef}
                     onClose={handleUserFormSuccess}
-                    mode={mode}
                     userToEdit={userToEdit}
+                    mode={mode}
                     setErrorMessage={setErrorMessage}
                 />
             )}

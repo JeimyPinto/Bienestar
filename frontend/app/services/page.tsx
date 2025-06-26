@@ -26,7 +26,7 @@ export default function ServicePage() {
     const fetchServices = useCallback(async () => {
         setLoading(true);
         let response;
-        if (!user && (user?.role === ROLES.USER || user?.role === ROLES.INSTRUCTOR)) {
+        if (!user || (user?.role === ROLES.USER || user?.role === ROLES.INSTRUCTOR)) {
             response = await getAllActive();
         } else {
             // Solo ADMIN/SUPERADMIN
