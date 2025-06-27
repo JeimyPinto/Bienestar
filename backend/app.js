@@ -66,25 +66,18 @@ const app = express();
 // Configuración de CORS
 // =======================
 // Solo permite solicitudes desde los orígenes definidos
-const allowedOrigins = [
-  "http://localhost:3001","http://localhost:3000"
-  , "http://127.0.0.1:3000 ",
-  "https://bienestar-frontend.onrender.com",
-];
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Permitir solicitudes sin origen (como las de herramientas de desarrollo)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const message = "El dominio no está permitido por la política CORS";
-        return callback(new Error(message), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: [
+    'http://localhost:3000', // Desarrollo local
+    'https://bienestar-t7js.onrender.com', // Tu frontend en Render
+    'https://bienestarcpic.onrender.com' // Si tienes otro dominio
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
 
 // =======================
 // Seguridad y utilidades
