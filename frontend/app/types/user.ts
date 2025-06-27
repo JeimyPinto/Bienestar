@@ -32,7 +32,6 @@ export interface UserTableProps {
     token: string | null;
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
     loading?: boolean;
-    onFormSuccess?: () => void;
     onEditUser: (user: User) => void;
 }
 export interface UserFormProps {
@@ -42,6 +41,7 @@ export interface UserFormProps {
     userToEdit?: User;
     errorMessage?: string;
     setErrorMessage?: (msg: string) => void;
+    setSuccessMessage?: (msg: string) => void;
 }
 export interface UserTableDesktopProps {
     users: User[];

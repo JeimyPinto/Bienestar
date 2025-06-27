@@ -1,6 +1,5 @@
-import React, { useState, useRef } from "react"
+import React, { useState } from "react"
 import { User, UserTableProps } from "../types"
-import UserForm from "./userForm"
 import UserTableDesktop from "./userTableDesktop"
 import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
@@ -15,12 +14,9 @@ export default function UserTable({
     setCurrentPage,
     setLimit,
     loading,
-    onFormSuccess = () => { }, // Callback para manejar el éxito del formulario
+    onEditUser, // Callback para editar usuarios
 }: UserTableProps) {
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
     const [filter, setFilter] = useState("");
-    const userEditFormRef = useRef<HTMLDialogElement>(null);
     const {
         handleSort,
         sortColumn,
@@ -39,19 +35,7 @@ export default function UserTable({
     const sortedFilteredUsers = useColumnSorter(filteredUsers).sortedData;
 
     function handleRowClick(user: User) {
-        setSelectedUser(user);
-        setIsFormOpen(true);
-        setTimeout(() => {
-            userEditFormRef.current?.showModal();
-        }, 0);
-    }
-
-    // Cierra el modal y limpia el usuario seleccionado tras éxito
-    function handleFormSuccess() {
-        setIsFormOpen(false);
-        setSelectedUser(null);
-        userEditFormRef.current?.close();
-        onFormSuccess(); // Notifica al padre para recargar usuarios
+        onEditUser(user);
     }
 
     return (
@@ -87,15 +71,6 @@ export default function UserTable({
                         loading={loading}
                     />
                 </div>
-
-                {isFormOpen && selectedUser && (
-                    <UserForm
-                        dialogRef={userEditFormRef}
-                        onClose={handleFormSuccess}
-                        mode="edit"
-                        userToEdit={selectedUser}
-                    />
-                )}
             </div>
         </section>
     );

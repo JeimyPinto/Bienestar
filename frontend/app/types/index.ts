@@ -5,3 +5,5 @@ export * from "./group";
 export * from "./login";
 export * from "./remission"
 export * from "./auditLog";
+export * from "./components/type";
+export * from "./hooks";

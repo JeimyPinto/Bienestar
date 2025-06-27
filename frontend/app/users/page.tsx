@@ -1,92 +1,82 @@
 "use client"
 
-import React, { useState, useRef, useEffect, useCallback } from "react"
+import React from "react"
 import UserTable from "./userTable"
 import UserForm from "./userForm"
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import SectionHeader from "../ui/sectionHeader"
-import { User } from "../types/index"
-import { getAllPaginated } from "../services/services/user";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth, useUsers, useModal, useMessages } from "../hooks";
 
 export default function UsersPage() {
-    const dialogRef = useRef<HTMLDialogElement>(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [mode, setMode] = useState<"create" | "edit">("create");
-    const [userToEdit, setUserToEdit] = useState<User | undefined>(undefined);
-    const [successMessage, setSuccessMessage] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [users, setUsers] = useState<User[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [limit, setLimit] = useState(10);
-    const [totalUsers, setTotalUsers] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [loading, setLoading] = useState(false);
     const { token } = useAuth();
 
-    const openCreateDialog = () => {
-        setMode("create");
-        setUserToEdit(undefined);
-        setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
-    };
+    const {
+        successMessage,
+        errorMessage,
+        clearMessages,
+        setSuccessMessage,
+        setErrorMessage
+    } = useMessages();
 
-    const closeDialog = () => {
-        setIsFormOpen(false);
-        dialogRef.current?.close();
-    };
+    // Hook para manejo de usuarios
+    const {
+        users,
+        currentPage,
+        limit,
+        totalUsers,
+        totalPages,
+        loading,
+        setUsers,
+        setCurrentPage,
+        setLimit,
+        refreshUsers
+    } = useUsers({
+        token,
+        onError: setErrorMessage
+    });
 
-    // Cargar usuarios paginados
-    const fetchUsers = useCallback(async () => {
-        if (!token) return; // No hacer fetch si no hay token
-        setLoading(true);
-        const res = await getAllPaginated(currentPage, limit, token);
-        if (res.error) {
-            setErrorMessage(res.message);
-            setUsers(res.users || []);
-        } else {
-            // No mostrar mensaje de éxito para carga normal de usuarios
-            setUsers(res.users);
-            setTotalUsers(res.totalUsers || res.users.length);
-            setTotalPages(res.totalPages || 1);
-        }
-        setLoading(false);
-    }, [currentPage, limit, token]);
-
-    useEffect(() => {
-        fetchUsers();
-        // Limpiar mensajes al cambiar de página
-        setSuccessMessage("");
-        setErrorMessage("");
-    }, [fetchUsers]);
+    // Hook para manejo de modales
+    const {
+        dialogRef,
+        isFormOpen,
+        mode,
+        itemToEdit: userToEdit,
+        openCreateDialog,
+        openEditDialog,
+        closeDialog
+    } = useModal();
 
     // Handler para éxito en UserForm
     const handleUserFormSuccess = () => {
-        fetchUsers();
-        closeDialog();
+        refreshUsers();
+        setTimeout(() => {
+            closeDialog();
+        }, 2000);
     };
 
-    const handleEditUser = (user: User) => {
-        setMode("edit");
-        setUserToEdit(user);
-        setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
+    // Handlers con limpieza de mensajes
+    const handleOpenCreate = () => {
+        openCreateDialog(clearMessages);
+    };
+
+    const handleEditUser = (user: typeof users[0]) => {
+        openEditDialog(user, clearMessages);
     };
 
     return (
         <>
-            {isFormOpen && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-[3px] z-[90] transition-all"></div>
-            )}
             <SectionHeader
                 title="Lista de Usuarios"
                 buttonText="Añadir Usuario"
-                onButtonClick={openCreateDialog}
+                onButtonClick={handleOpenCreate}
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
             {successMessage && (
-                <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
+                <SuccessMessage
+                    message={successMessage}
+                    onClose={() => setSuccessMessage("")}
+                />
             )}
             <UserTable
                 users={users}
@@ -99,17 +89,20 @@ export default function UsersPage() {
                 loading={loading}
                 token={token}
                 setUsers={setUsers}
-                onFormSuccess={handleUserFormSuccess}
                 onEditUser={handleEditUser}
             />
             {isFormOpen && (
-                <UserForm
-                    dialogRef={dialogRef}
-                    onClose={handleUserFormSuccess}
-                    userToEdit={userToEdit}
-                    mode={mode}
-                    setErrorMessage={setErrorMessage}
-                />
+                <>
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-[3px] z-[90] transition-all"></div>
+                    <UserForm
+                        dialogRef={dialogRef}
+                        onClose={handleUserFormSuccess}
+                        userToEdit={userToEdit}
+                        mode={mode}
+                        setErrorMessage={setErrorMessage}
+                        setSuccessMessage={setSuccessMessage}
+                    />
+                </>
             )}
         </>
     );

@@ -33,7 +33,7 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({ message, duration = 500
 
   if (!message) return null;
   return (
-    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md" role="alert">
+    <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md z-[100]" role="alert">
       <strong className="font-bold">¡Éxito!</strong>
       <span className="block sm:inline ml-2">{message}</span>
       {onClose && (
