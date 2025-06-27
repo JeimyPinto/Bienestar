@@ -1,9 +1,16 @@
 import { isValidEmail } from "../../lib/isValidEmail"
 import { LoginParams } from "../../types/login"
+import { tokenManager } from "../../lib/tokenManager"
 
-const url = `${process.env.NEXT_PUBLIC_API_URL}/auth`
+// Asegurar que la variable de entorno se lea correctamente
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const url = `${API_URL}/auth`
+
+console.log('🔍 URL de API configurada:', url)
 
 export async function verifyRecaptchaBackend(recaptchaToken: string) {
+    console.log('🚀 Enviando reCAPTCHA a:', `${url}/verify-recaptcha`)
+    
     const response = await fetch(`${url}/verify-recaptcha`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -22,27 +29,36 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
     }
 
     try {
+        console.log('🚀 Enviando login a:', `${url}/login`)
+        
         const response = await fetch(`${url}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password, recaptchaToken }),
-            credentials: "include",
+            // Eliminar credentials: "include" ya que no usamos cookies
         });
 
         let data;
         try {
             data = await response.json();
         } catch (jsonError) {
-            // Si la respuesta no es JSON, muestra el error crudo
             console.error("Respuesta no JSON del backend:", jsonError);
             return { message: "Error inesperado del servidor.", token: null };
         }
 
         if (!response.ok) {
-            // Imprime el mensaje de error recibido del backend
             console.error("Error de login:", data.message || data.details || data);
             return { message: data.message || "Error al iniciar sesión.", token: null };
         }
+
+        // Guardar token y usuario en localStorage
+        if (data.token) {
+            tokenManager.setToken(data.token);
+            if (data.user) {
+                tokenManager.setUser(data.user);
+            }
+        }
+
         return data;
     } catch (error) {
         console.error("Error iniciando sesión en: ", error);
@@ -50,5 +66,23 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
             message: "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
             token: null
         };
+    }
+}
+
+export async function logout() {
+    try {
+        // Llamar al endpoint de logout (opcional)
+        await fetch(`${url}/logout`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${tokenManager.getToken()}`
+            },
+        });
+    } catch (error) {
+        console.error("Error en logout:", error);
+    } finally {
+        // Siempre limpiar localStorage
+        tokenManager.removeToken();
     }
 }

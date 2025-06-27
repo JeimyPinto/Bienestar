@@ -36,21 +36,19 @@ class AuthController {
       }
       const token = createToken(user);
 
-      let response = {
-        message: `Inicio de sesión exitoso para el usuario ${user.firstName}.
-                Hora de inicio de sesión: ${new Date().toLocaleTimeString()}`
+      // Siempre enviar el token en la respuesta (localStorage)
+      const response = {
+        message: `Inicio de sesión exitoso para el usuario ${user.firstName}. Hora de inicio de sesión: ${new Date().toLocaleTimeString()}`,
+        token: token,
+        user: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+          status: user.status
+        }
       };
-
-      if (process.env.NODE_ENV === "production") {
-        res.cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "Strict",
-          maxAge: 60 * 60 * 1000,
-        });
-      } else {
-        response.token = token;
-      }
 
       res.status(200).json(response);
     } catch(error) {
