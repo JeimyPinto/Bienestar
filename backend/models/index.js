@@ -11,7 +11,32 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 console.log("NODE_ENV detectado:", env);
 
-const configJson = require(__dirname + "/../config/config.json");
+// Buscar config.json de manera más robusta
+let configPath;
+const possiblePaths = [
+  path.join(__dirname, "../config/config.json"),
+  path.join(process.cwd(), "config/config.json"),
+  path.join(process.cwd(), "backend/config/config.json")
+];
+
+console.log("Directorio actual:", process.cwd());
+console.log("__dirname:", __dirname);
+console.log("Buscando config.json en:", possiblePaths);
+
+for (const testPath of possiblePaths) {
+  console.log(`Verificando: ${testPath} - ${fs.existsSync(testPath) ? "EXISTE" : "NO EXISTE"}`);
+  if (fs.existsSync(testPath)) {
+    configPath = testPath;
+    break;
+  }
+}
+
+if (!configPath) {
+  throw new Error(`No se encontró config.json en ninguna de las rutas: ${possiblePaths.join(", ")}`);
+}
+
+console.log("Usando config.json desde:", configPath);
+const configJson = require(configPath);
 const dbConfig = configJson[env];
 
 // Verificar que la configuración existe
