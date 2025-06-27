@@ -8,7 +8,7 @@ import SuccessMessage from "../ui/successMessage";
 import SectionHeader from "../ui/sectionHeader"
 import { User } from "../types/index"
 import { getAllPaginated } from "../services/services/user";
-import {useAuth} from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 export default function UsersPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -23,7 +23,7 @@ export default function UsersPage() {
     const [totalUsers, setTotalUsers] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [loading, setLoading] = useState(false);
-    const {token} = useAuth();
+    const { token } = useAuth();
 
     const openCreateDialog = () => {
         setMode("create");
@@ -39,22 +39,26 @@ export default function UsersPage() {
 
     // Cargar usuarios paginados
     const fetchUsers = useCallback(async () => {
+        if (!token) return; // No hacer fetch si no hay token
         setLoading(true);
-        const res = await getAllPaginated(currentPage, limit, token || undefined);
+        const res = await getAllPaginated(currentPage, limit, token);
         if (res.error) {
             setErrorMessage(res.message);
             setUsers(res.users || []);
         } else {
-            setSuccessMessage(res.message || "");
+            // No mostrar mensaje de éxito para carga normal de usuarios
             setUsers(res.users);
             setTotalUsers(res.totalUsers || res.users.length);
             setTotalPages(res.totalPages || 1);
         }
         setLoading(false);
-    }, [currentPage, limit,token]);
+    }, [currentPage, limit, token]);
 
     useEffect(() => {
         fetchUsers();
+        // Limpiar mensajes al cambiar de página
+        setSuccessMessage("");
+        setErrorMessage("");
     }, [fetchUsers]);
 
     // Handler para éxito en UserForm
@@ -62,7 +66,7 @@ export default function UsersPage() {
         fetchUsers();
         closeDialog();
     };
-    
+
     const handleEditUser = (user: User) => {
         setMode("edit");
         setUserToEdit(user);
@@ -93,7 +97,7 @@ export default function UsersPage() {
                 setCurrentPage={setCurrentPage}
                 setLimit={setLimit}
                 loading={loading}
-                token={null}
+                token={token}
                 setUsers={setUsers}
                 onFormSuccess={handleUserFormSuccess}
                 onEditUser={handleEditUser}

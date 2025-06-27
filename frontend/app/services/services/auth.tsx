@@ -6,11 +6,7 @@ import { tokenManager } from "../../lib/tokenManager"
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const url = `${API_URL}/auth`
 
-console.log('🔍 URL de API configurada:', url)
-
-export async function verifyRecaptchaBackend(recaptchaToken: string) {
-    console.log('🚀 Enviando reCAPTCHA a:', `${url}/verify-recaptcha`)
-    
+export async function verifyRecaptchaBackend(recaptchaToken: string) {    
     const response = await fetch(`${url}/verify-recaptcha`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,9 +24,7 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
         return { message: "Formato de correo electrónico inválido.", token: null };
     }
 
-    try {
-        console.log('🚀 Enviando login a:', `${url}/login`)
-        
+    try {        
         const response = await fetch(`${url}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },

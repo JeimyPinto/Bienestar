@@ -11,15 +11,14 @@ const sendRemissionNotificationMail = async (req, res, next) => {
       const request = await Request.findByPk(remission.requestId, {
         include: [
           { 
-            model: User, 
-            as: 'user',
-            attributes: ['id', 'firstName', 'lastName', 'email', 'documentNumber']
+        model: User, 
+        as: "user",
           }
         ]
       });
 
       if (!request || !request.user) {
-        console.log('No se pudo obtener la solicitud asociada o el solicitante');
+        console.warn("No se pudo obtener la solicitud asociada o el solicitante");
         return next();
       }
 
@@ -27,21 +26,20 @@ const sendRemissionNotificationMail = async (req, res, next) => {
       const service = await Service.findByPk(request.serviceId, {
         include: [
           { 
-            model: User, 
-            as: 'creator',
-            attributes: ['id', 'firstName', 'lastName', 'email']
+        model: User, 
+        as: "creator",
           }
         ]
       });
 
       if (!service || !service.creator || !service.creator.email) {
-        console.log('No se pudo obtener el creador del servicio o su email');
+        console.warn("No se pudo obtener el creador del servicio o su email");
         return next();
       }
 
       // Obtener el usuario asignado (profesional/responsable de la remisión)
       const assignedUser = await User.findByPk(remission.assignedUserId, {
-        attributes: ['firstName', 'lastName', 'email']
+        attributes: ["firstName", "lastName", "email"]
       });
 
       // Enviar correo usando el servicio centralizado
@@ -55,8 +53,7 @@ const sendRemissionNotificationMail = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.error('Error enviando correo de notificación de remisión:', error);
-    // No detener la ejecución si falla el envío del correo
+    console.error("Error enviando correo de notificación de remisión:", error);
   }
   
   next();

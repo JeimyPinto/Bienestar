@@ -40,8 +40,7 @@ if (!dbConfig) {
   throw new Error(`No se encontró configuración para el entorno: ${env}`);
 }
 
-console.log("Entorno:", env);
-console.log("Base de datos configurada:", dbConfig);
+console.log("Entorno:", env, "| Base de datos configurada:", dbConfig);
 
 const db = {};
 

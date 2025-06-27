@@ -11,25 +11,24 @@ const sendRequestNotificationMail = async (req, res, next) => {
       const service = await Service.findByPk(request.serviceId, {
         include: [
           { 
-            model: User, 
-            as: 'creator',
-            attributes: ['id', 'firstName', 'lastName', 'email']
+        model: User, 
+        as: "creator",
           }
         ]
       });
 
       if (!service || !service.creator || !service.creator.email) {
-        console.log('No se pudo obtener el creador del servicio o su email');
+        console.warn("No se pudo obtener el creador del servicio o su email");
         return next();
       }
 
       // Obtener datos del solicitante
       const applicant = await User.findByPk(request.userId, {
-        attributes: ['firstName', 'lastName', 'email', 'documentNumber']
+        attributes: ["firstName", "lastName", "email", "documentNumber"]
       });
 
       if (!applicant) {
-        console.log('No se pudo obtener los datos del solicitante');
+        console.warn("No se pudo obtener los datos del solicitante");
         return next();
       }
 
@@ -40,9 +39,9 @@ const sendRequestNotificationMail = async (req, res, next) => {
         request,
         service
       });
-    }
-  } catch (error) {
-    console.error('Error enviando correo de notificación de solicitud:', error);
+        }
+      } catch (error) {
+        console.error("Error enviando correo de notificación de solicitud:", error);
     // No detener la ejecución si falla el envío del correo
   }
   

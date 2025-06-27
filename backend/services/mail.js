@@ -1,9 +1,10 @@
 const nodemailer = require("nodemailer");
+const chalk = require("chalk");
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587,
-  secure: false,
+  secure: false, // true para puerto 465, false para otros puertos
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -85,15 +86,17 @@ async function sendUserUpdatedMail({ to, firstName }) {
 
 async function sendWelcomeMailIfProd(user, plainPassword) {
   try {
+    console.log(chalk.blue("📧 Enviando correo de bienvenida a:"), chalk.cyan(user.email));
     await sendUserCreatedMail({
       to: user.email,
       firstName: user.firstName,
       documentNumber: user.documentNumber,
       password: plainPassword
     });
+    console.log(chalk.green("✅ Correo de bienvenida enviado exitosamente"));
     return true;
   } catch (mailError) {
-    console.warn("Usuario creado, pero error enviando correo:", mailError.message);
+    console.warn(chalk.red("⚠️ Usuario creado, pero error enviando correo:"), chalk.yellow(mailError.message));
     return false;
   }
 }
@@ -170,29 +173,32 @@ async function sendRequestNotificationMail({ serviceCreator, applicant, request,
 
 async function sendUpdateMailIfProd(user) {
   try {
+    console.log(chalk.blue("📧 Enviando correo de actualización de usuario a:"), chalk.cyan(user.email));
     await sendUserUpdatedMail({
       to: user.email,
       firstName: user.firstName,
     });
+    console.log(chalk.green("✅ Correo de actualización enviado exitosamente"));
     return true;
   } catch (mailError) {
-    console.warn("Usuario actualizado, pero error enviando correo:", mailError.message);
+    console.warn(chalk.red("⚠️ Usuario actualizado, pero error enviando correo:"), chalk.yellow(mailError.message));
     return false;
   }
 }
 
 async function sendRequestNotificationIfProd({ serviceCreator, applicant, request, service }) {
   try {
+    console.log(chalk.magenta("📨 Enviando notificación de solicitud a:"), chalk.cyan(serviceCreator.email));
     await sendRequestNotificationMail({
       serviceCreator,
       applicant,
       request,
       service
     });
-    console.log(`Correo de notificación enviado a ${serviceCreator.email} para la solicitud #${request.id}`);
+    console.log(chalk.green(`✅ Correo de notificación enviado a ${serviceCreator.email} para la solicitud #${request.id}`));
     return true;
   } catch (mailError) {
-    console.warn("Solicitud creada, pero error enviando correo de notificación:", mailError.message);
+    console.warn(chalk.red("⚠️ Solicitud creada, pero error enviando correo de notificación:"), chalk.yellow(mailError.message));
     return false;
   }
 }
@@ -274,6 +280,7 @@ async function sendRemissionNotificationMail({ serviceCreator, applicant, assign
 
 async function sendRemissionNotificationIfProd({ serviceCreator, applicant, assignedUser, remission, request, service }) {
   try {
+    console.log(chalk.green("📋 Enviando notificación de remisión a:"), chalk.cyan(serviceCreator.email));
     await sendRemissionNotificationMail({
       serviceCreator,
       applicant,
@@ -282,10 +289,10 @@ async function sendRemissionNotificationIfProd({ serviceCreator, applicant, assi
       request,
       service
     });
-    console.log(`Correo de notificación de remisión enviado a ${serviceCreator.email} para la remisión #${remission.id}`);
+    console.log(chalk.green(`✅ Correo de notificación de remisión enviado a ${serviceCreator.email} para la remisión #${remission.id}`));
     return true;
   } catch (mailError) {
-    console.warn("Remisión creada, pero error enviando correo de notificación:", mailError.message);
+    console.warn(chalk.red("⚠️ Remisión creada, pero error enviando correo de notificación:"), chalk.yellow(mailError.message));
     return false;
   }
 }
