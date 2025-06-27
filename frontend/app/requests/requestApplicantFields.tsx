@@ -117,8 +117,8 @@ const RequestApplicantFields: React.FC<RequestApplicantFieldsProps> = ({
           </select>
         )}
       </div>
-      {/* Creador de la solicitud (usuario logueado) */}
-      {user && (
+      {/* Creador de la solicitud (usuario logueado) - Solo visible para administradores */}
+      {user && user.role !== "user" && (
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-azul">Creador de la Solicitud</label>
           <input

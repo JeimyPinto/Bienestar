@@ -119,8 +119,10 @@ export default function RequestsForm(props: RequestsFormProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Sección: Solicitante y Servicio */}
                 <div className="bg-cian/5 border border-cian/20 rounded-lg p-4 mb-2">
-                    <h3 className="text-lg font-semibold text-cian mb-3">Datos del Solicitante y Servicio</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <h3 className="text-lg font-semibold text-cian mb-3">
+                        {user.role === "user" ? "Seleccionar Servicio" : "Datos del Solicitante y Servicio"}
+                    </h3>
+                    <div className={`grid gap-4 ${user.role === "user" ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
                         <RequestApplicantFields
                             user={user}
                             token={token}
@@ -139,17 +141,19 @@ export default function RequestsForm(props: RequestsFormProps) {
                         setNewRequest={setNewRequest}
                     />
                 </div>
-                {/* Sección: Estado */}
-                <div className="bg-verde/5 border border-verde/20 rounded-lg p-4 mb-2">
-                    <h3 className="text-lg font-semibold text-verde mb-3">Estado y Respuesta</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <RequestStatusFields
-                            mode={mode}
-                            newRequest={newRequest}
-                            setNewRequest={setNewRequest}
-                        />
+                {/* Sección: Estado - Solo visible para administradores */}
+                {user.role !== "user" && (
+                    <div className="bg-verde/5 border border-verde/20 rounded-lg p-4 mb-2">
+                        <h3 className="text-lg font-semibold text-verde mb-3">Estado y Respuesta</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <RequestStatusFields
+                                mode={mode}
+                                newRequest={newRequest}
+                                setNewRequest={setNewRequest}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
                 <RequestFormActions
                     formError={formError}
                     onClose={onClose}

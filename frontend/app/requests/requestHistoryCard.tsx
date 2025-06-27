@@ -44,8 +44,12 @@ const RequestHistoryCard: React.FC<RequestHistoryCardProps> = ({ requests, loadi
                                 {request.service?.area || "Sin área"}
                             </span>
                         </div>
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${request.status ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                            {request.status ? "Activo" : "Inactivo"}
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${request.responseStatus === 'pendiente' ? 'bg-yellow-100 text-yellow-700' :
+                                request.responseStatus === 'aprobada' ? 'bg-green-100 text-green-700' :
+                                    request.responseStatus === 'rechazada' ? 'bg-red-100 text-red-700' :
+                                        'bg-gray-100 text-gray-700'
+                            }`}>
+                            {request.responseStatus || 'Sin estado'}
                         </span>
                     </div>
 
