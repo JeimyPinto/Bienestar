@@ -11,46 +11,34 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 console.log("NODE_ENV detectado:", env);
 
-// Buscar config.json de manera más robusta
-let configPath;
-const possiblePaths = [
-  path.join(__dirname, "../config/config.json"),
-  path.join(process.cwd(), "config/config.json"),
-  path.join(process.cwd(), "backend/config/config.json")
-];
-
-console.log("Directorio actual:", process.cwd());
-console.log("__dirname:", __dirname);
-console.log("Buscando config.json en:", possiblePaths);
-
-for (const testPath of possiblePaths) {
-  console.log(`Verificando: ${testPath} - ${fs.existsSync(testPath) ? "EXISTE" : "NO EXISTE"}`);
-  if (fs.existsSync(testPath)) {
-    configPath = testPath;
-    break;
+// Configuración directa sin archivo JSON (más confiable para Render)
+const config = {
+  development: {
+    username: process.env.DEV_DB_USER || "bienestar_app",
+    password: process.env.DEV_DB_PASSWORD || "$vvgD?78f0Li",
+    database: process.env.DEV_DB_NAME || "bienestar_app",
+    host: process.env.DEV_DB_HOST || "127.0.0.1",
+    dialect: "mysql",
+    port: 3306
+  },
+  production: {
+    use_env_variable: "DATABASE_URL",
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
   }
-}
+};
 
-if (!configPath) {
-  throw new Error(`No se encontró config.json en ninguna de las rutas: ${possiblePaths.join(", ")}`);
-}
-
-console.log("Usando config.json desde:", configPath);
-const configJson = require(configPath);
-const dbConfig = configJson[env];
+const dbConfig = config[env];
 
 // Verificar que la configuración existe
 if (!dbConfig) {
   throw new Error(`No se encontró configuración para el entorno: ${env}`);
 }
-
-// Reemplaza variables tipo ${VAR} por process.env.VAR
-Object.keys(dbConfig).forEach(key => {
-  if (typeof dbConfig[key] === "string" && dbConfig[key].startsWith("${") && dbConfig[key].endsWith("}")) {
-    const varName = dbConfig[key].slice(2, -1);
-    dbConfig[key] = process.env[varName];
-  }
-});
 
 console.log("Entorno:", env);
 console.log("Base de datos configurada:", dbConfig);
