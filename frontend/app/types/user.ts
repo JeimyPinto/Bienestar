@@ -39,6 +39,7 @@ export interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement>;
     onClose: () => void;
     mode: "create" | "edit";
+    userToEdit?: User;
     errorMessage?: string;
     setErrorMessage?: (msg: string) => void;
 }

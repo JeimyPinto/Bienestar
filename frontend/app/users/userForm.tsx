@@ -26,7 +26,7 @@ const emptyUser: User = {
 };
 
 export default function UserForm(props: UserFormProps) {
-    const { dialogRef, onClose, mode, setErrorMessage } = props;
+    const { dialogRef, onClose, mode, setErrorMessage, userToEdit } = props;
     const { token, isExpired } = useAuth();
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -52,14 +52,14 @@ export default function UserForm(props: UserFormProps) {
 
     // Inicializar el formulario según el modo
     useEffect(() => {
-        if (mode === "edit" && props.userToEdit) {
-            setNewUser({ ...props.userToEdit, password: "" });
+        if (mode === "edit" && userToEdit) {
+            setNewUser({ ...userToEdit, password: "" });
             setPreviewImage(null); // Limpiar preview al abrir modal de edición
         } else if (mode === "create") {
             setNewUser({ ...emptyUser }); // Asegura que todos los campos estén vacíos
             setPreviewImage(null);
         }
-    }, [mode, props.userToEdit]);
+    }, [mode, userToEdit]);
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e.target;

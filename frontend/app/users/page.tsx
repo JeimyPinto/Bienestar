@@ -40,7 +40,7 @@ export default function UsersPage() {
     // Cargar usuarios paginados
     const fetchUsers = useCallback(async () => {
         setLoading(true);
-        const res = await getAllPaginated(currentPage, limit, token);
+        const res = await getAllPaginated(currentPage, limit, token || undefined);
         if (res.error) {
             setErrorMessage(res.message);
             setUsers(res.users || []);
@@ -51,7 +51,7 @@ export default function UsersPage() {
             setTotalPages(res.totalPages || 1);
         }
         setLoading(false);
-    }, [currentPage, limit]);
+    }, [currentPage, limit,token]);
 
     useEffect(() => {
         fetchUsers();

@@ -42,7 +42,7 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
                         {user.documentType}: {user.documentNumber}
                     </p>
                     <p className="text-gray-600 break-words">
-                        Ficha: {user.group?.name ?? "Sin Ficha asignada"}
+                        Ficha: {user.group?.programName ?? "Sin Ficha asignada"}
                     </p>
                     <p
                         className={`text-sm font-semibold ${user.status === "activo" ? "text-green-600" : "text-red-600"

@@ -1,14 +1,23 @@
 "use strict";
 
-require("dotenv").config(); // Asegura que las variables de entorno estén cargadas
+require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const process = require("process");
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV;
+
+// Determinar el entorno desde las variables de entorno
+const env = process.env.NODE_ENV || "development";
+console.log("NODE_ENV detectado:", env);
+
 const configJson = require(__dirname + "/../config/config.json");
 const dbConfig = configJson[env];
+
+// Verificar que la configuración existe
+if (!dbConfig) {
+  throw new Error(`No se encontró configuración para el entorno: ${env}`);
+}
 
 // Reemplaza variables tipo ${VAR} por process.env.VAR
 Object.keys(dbConfig).forEach(key => {
@@ -25,7 +34,12 @@ const db = {};
 
 let sequelize;
 if (dbConfig.use_env_variable) {
-  sequelize = new Sequelize(process.env[dbConfig.use_env_variable], dbConfig);
+  const connectionString = process.env[dbConfig.use_env_variable];
+  if (!connectionString) {
+    throw new Error(`Variable de entorno ${dbConfig.use_env_variable} no encontrada`);
+  }
+  console.log("Usando variable de entorno para conexión:", dbConfig.use_env_variable);
+  sequelize = new Sequelize(connectionString, dbConfig);
 } else {
   sequelize = new Sequelize(
     dbConfig.database,
