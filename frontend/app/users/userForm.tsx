@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { UserFormProps, User } from "../types/index"
 import { create, update } from "../services/services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
-import { useAuth, useGroups } from "../hooks";
+import { useAuth, useGroups, useFormInitialization } from "../hooks";
 
 const emptyUser: User = {
     id: 0,
@@ -27,10 +27,21 @@ const emptyUser: User = {
 export default function UserForm(props: UserFormProps) {
     const { dialogRef, onClose, mode, setErrorMessage, setSuccessMessage, userToEdit } = props;
     const { token } = useAuth();
-    const [newUser, setNewUser] = useState<User>(emptyUser);
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [formError, setFormError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    // Hook para inicialización del formulario
+    const {
+        formData: newUser,
+        setFormData: setNewUser,
+        previewImage,
+        setPreviewImage,
+        resetForm
+    } = useFormInitialization({
+        mode,
+        userToEdit,
+        emptyUser
+    });
 
     // Hook para manejo de grupos
     const {
@@ -40,17 +51,6 @@ export default function UserForm(props: UserFormProps) {
         token,
         onError: (error) => setFormError(error)
     });
-
-    // Inicializar el formulario según el modo
-    useEffect(() => {
-        if (mode === "edit" && userToEdit) {
-            setNewUser({ ...userToEdit, password: "" });
-            setPreviewImage(null); // Limpiar preview al abrir modal de edición
-        } else if (mode === "create") {
-            setNewUser({ ...emptyUser }); // Asegura que todos los campos estén vacíos
-            setPreviewImage(null);
-        }
-    }, [mode, userToEdit]);
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e.target;
@@ -66,7 +66,7 @@ export default function UserForm(props: UserFormProps) {
         if (isSubmitting) return; // Evitar múltiples envíos
 
         setIsSubmitting(true); // Iniciar loading
-        setFormError(""); // Limpiar error local antes de intentar
+        setFormError("");
         const userToSend = { ...newUser };
         // Eliminar image si no hay archivo nuevo ni imagen previa
         if (!userToSend.file && !userToSend.image) {
@@ -88,6 +88,7 @@ export default function UserForm(props: UserFormProps) {
                     return;
                 } else {
                     setSuccessMessage?.("Usuario creado exitosamente");
+                    resetForm(); 
                     // Delay para que se vea el mensaje antes de notificar al padre
                     setTimeout(() => {
                         onClose?.();
@@ -100,14 +101,12 @@ export default function UserForm(props: UserFormProps) {
                     userToSend.file ? userToSend.file : undefined,
                     token || undefined
                 );
-                console.log("Update response:", responseData); // Debug
                 if (responseData.error) {
-                    setFormError(responseData.message || "Error desconocido");
+                    setFormError(responseData.message);
                     setErrorMessage?.(responseData.message);
                     return;
                 } else {
-                    setSuccessMessage?.("Usuario actualizado exitosamente");
-                    // Delay para que se vea el mensaje antes de notificar al padre
+                    setSuccessMessage?.(responseData.message);
                     setTimeout(() => {
                         onClose?.();
                     }, 100);

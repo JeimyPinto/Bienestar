@@ -1,11 +1,6 @@
 import React from "react";
+export { PaginationControlsProps } from "../types/components/type";
 
-interface PaginationControlsProps {
-  currentPage: number;
-  totalPages: number;
-  totalUsers: number;
-  setCurrentPage: (page: number) => void;
-}
 
 const PaginationControls: React.FC<PaginationControlsProps> = ({ currentPage, totalPages, totalUsers, setCurrentPage }) => (
   <nav className="flex flex-col md:flex-row justify-between items-center gap-2 mt-4">

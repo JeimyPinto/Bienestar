@@ -1,9 +1,11 @@
-import React, { useState } from "react"
+import React from "react"
 import { User, UserTableProps } from "../types"
 import UserTableDesktop from "./userTableDesktop"
 import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
 import { useColumnSorter } from "../lib/useColumnSorter"
+import { filterUsers } from "../lib"
+import { useFilter } from "../hooks"
 
 export default function UserTable({
     users,
@@ -14,23 +16,19 @@ export default function UserTable({
     setCurrentPage,
     setLimit,
     loading,
-    onEditUser, // Callback para editar usuarios
+    onEditUser,
 }: UserTableProps) {
-    const [filter, setFilter] = useState("");
+    // Hook para filtrado de usuarios
+    const { filter, setFilter, filteredItems: filteredUsers } = useFilter({
+        items: users,
+        filterFn: filterUsers
+    });
+
     const {
         handleSort,
         sortColumn,
         sortOrder,
     } = useColumnSorter(users);
-
-    // Filtrado local por nombre, apellido o documento
-    const filteredUsers = filter.trim()
-        ? users.filter(user =>
-            user.firstName.toLowerCase().includes(filter.toLowerCase()) ||
-            user.lastName.toLowerCase().includes(filter.toLowerCase()) ||
-            user.documentNumber.toLowerCase().includes(filter.toLowerCase())
-        )
-        : users;
 
     const sortedFilteredUsers = useColumnSorter(filteredUsers).sortedData;
 
