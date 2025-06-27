@@ -10,7 +10,6 @@ export async function getAll(token: string) {
                 "Authorization": `Bearer ${token}`,
             },
             cache: "no-store",
-            credentials: "include", // Incluye cookies
         });
         if (!res.ok) throw new Error("Error al obtener auditorías");
         return await res.json();
@@ -30,7 +29,6 @@ export async function getAuditLogById(id: string | number, token: string) {
                 "Authorization": `Bearer ${token}`,
             },
             cache: "no-store",
-            credentials: "include", // Incluye cookies
         });
         if (!res.ok) throw new Error("Error al obtener auditoría");
         return await res.json();

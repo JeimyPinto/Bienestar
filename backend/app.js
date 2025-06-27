@@ -25,7 +25,6 @@ const db = require("./models");
 // =======================
 // Middlewares
 // =======================
-const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
@@ -68,9 +67,9 @@ const app = express();
 // Solo permite solicitudes desde los orígenes definidos
 const corsOptions = {
   origin: [
-    'http://localhost:3000', // Desarrollo local
-    'https://bienestar-t7js.onrender.com', // Tu frontend en Render
-    'https://bienestarcpic.onrender.com' // Si tienes otro dominio
+    "http://localhost:3000", // Desarrollo local
+    "https://bienestar-t7js.onrender.com", // Tu frontend en Render
+    "https://bienestarcpic.onrender.com" // Si tienes otro dominio
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -87,9 +86,6 @@ app.disable("x-powered-by");
 
 // Middleware para parsear el body de las peticiones en formato JSON
 app.use(bodyParser.json());
-
-// Middleware para parsear cookies
-app.use(cookieParser());
 
 // =======================
 // Logger HTTP personalizado
@@ -138,9 +134,9 @@ const errorHandler = require("./middlewares/errorHandler");
 app.use(errorHandler);
 
 // Middleware para forzar respuesta JSON en cualquier error no manejado
-app.use((err, req, res, next) => {
+app.use((err, res) => {
   res.status(err.status || 500).json({
-    message: err.message || 'Error interno del servidor',
+    message: err.message || "Error interno del servidor",
     details: err.details || null
   });
 });

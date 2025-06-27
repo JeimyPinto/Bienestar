@@ -26,24 +26,17 @@ export default function GroupForm({ dialogRef, closeDialog, onClose, mode, group
     useEffect(() => {
         async function fetchInstructors() {
             setInstructorsLoading(true);
-            if (!token) {
-                setErrorMessage?.("No hay sesión activa. Por favor, inicia sesión.");
-                setFormError("No hay sesión activa. Por favor, inicia sesión.");
-                setInstructors([]);
-                setInstructorsLoading(false);
-                return;
-            }
-            const res = await getAllByRole("instructor", token);
+            const res = await getAllByRole("instructor", token || undefined);
             if (!res.error) {
                 setInstructors(res.users);
             } else {
-                setFormError(res.message || "No se pudo obtener instructores.");
+                setFormError(res.message);
                 setInstructors([]);
             }
             setInstructorsLoading(false);
         }
-        fetchInstructors();
-    }, [setErrorMessage, token]);
+        if(token)fetchInstructors();
+    }, [ token]);
 
     useEffect(() => {
         if (mode === "edit" && groupToEdit) {

@@ -57,7 +57,7 @@ export default function Footer() {
           height={150}
           className="mb-2"
           priority={false}
-        style={{ height: "auto" }}
+          style={{ height: "auto" }}
         />
         <ul className="flex flex-col gap-1">
           <li className="text-lg font-semibold">Contacto</li>

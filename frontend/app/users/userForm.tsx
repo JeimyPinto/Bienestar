@@ -27,7 +27,7 @@ const emptyUser: User = {
 
 export default function UserForm(props: UserFormProps) {
     const { dialogRef, onClose, mode, setErrorMessage, userToEdit } = props;
-    const { token, isExpired } = useAuth();
+    const { token } = useAuth();
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [groups, setGroups] = useState<Group[]>([]);
@@ -72,11 +72,6 @@ export default function UserForm(props: UserFormProps) {
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
 
-        if (!token || isExpired) {
-            setFormError("No hay sesión activa o el token expiró. Por favor, inicia sesión.");
-            return;
-        }
-
         setFormError(""); // Limpiar error local antes de intentar
         const userToSend = { ...newUser };
         // Eliminar image si no hay archivo nuevo ni imagen previa
@@ -91,7 +86,7 @@ export default function UserForm(props: UserFormProps) {
                 responseData = await create(
                     userToSend,
                     userToSend.file ? userToSend.file : undefined,
-                    token
+                    token || undefined
                 );
                 if (responseData.error) {
                     setFormError(responseData.message || "Error desconocido");
@@ -105,7 +100,7 @@ export default function UserForm(props: UserFormProps) {
                     userToSend.id,
                     userToSend,
                     userToSend.file ? userToSend.file : undefined,
-                    token
+                    token || undefined
                 );
                 if (responseData.error) {
                     setFormError(responseData.message || "Error desconocido");
