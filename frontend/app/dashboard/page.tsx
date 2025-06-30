@@ -2,57 +2,42 @@
 
 import { useEffect, useState, useRef } from "react";
 import UserCard from "../users/userCard";
-import DashboardAdmin from "./dashboardAdmin";
+import DashboardRoleActions from "./dashboardRoleActions";
 import RequestForm from "../requests/requestForm";
 import RequestHistory from "../requests/requestHistory";
 import SuccessMessage from "../ui/successMessage";
-import { Request } from "../types";
 import { ROLES } from "../lib/roles";
 import { useAuth } from "../hooks/useAuth";
-import { getByUserId as getRequestsByUserId } from "../services/services/request";
+import { useRequests } from "../hooks/useRequests";
+import { useMessages } from "../hooks/useMessages";
 
 export default function DashboardPage() {
-  const { user, token, isExpired } = useAuth();
-  const [requests, setRequests] = useState<Request[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { user, token } = useAuth();
+  const { successMessage, errorMessage, clearSuccess, setErrorMessage, showSuccess } = useMessages();
+  const { requests, loading, refreshRequests } = useRequests({
+    token,
+    userId: user?.id,
+    onError: (message: string) => setErrorMessage(message)
+  });
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
   const requestEditFormRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      if (token && user?.id && !isExpired) {
-        // Obtener requests del usuario desde la API
-        const data = await getRequestsByUserId(user.id, token);
-        if(data.requests) {
-          setRequests(data.requests);
-          setErrorMessage("");
-          setSuccessMessage(data.message);
-        }else{
-          setRequests([]);
-          setErrorMessage(data.message);
-          setSuccessMessage("");
-        }
-      } else {
-        setRequests([]);
-        setSuccessMessage("");
-      }
-      setLoading(false);
-    }
-    fetchData();
-  }, [token, user, isExpired]);
 
   const openRequestForm = () => {
     setIsFormOpen(true);
     setTimeout(() => dialogRef.current?.showModal(), 0);
   };
 
-  const closeRequestForm = () => {
+  const closeRequestForm = (createdRequest?: unknown) => {
     setIsFormOpen(false);
     dialogRef.current?.close();
+
+    // Si se creó una request exitosamente, actualizar la lista y mostrar mensaje
+    if (createdRequest) {
+      refreshRequests();
+      showSuccess("Solicitud creada exitosamente");
+    }
   };
 
   useEffect(() => {
@@ -60,13 +45,13 @@ export default function DashboardPage() {
       requestEditFormRef.current.showModal();
     }
   }, [isFormOpen]);
-  
+
   return (
     <>
       {successMessage && (
         <SuccessMessage
           message={successMessage}
-          onClose={() => setSuccessMessage("")}
+          onClose={() => clearSuccess()}
         />
       )}
       <main className="min-h-screen bg-gray-100 py-4 sm:py-8 px-2 sm:px-0">
@@ -76,12 +61,11 @@ export default function DashboardPage() {
             requests={requests}
             loading={loading}
             errorMessage={errorMessage}
-            successMessage={successMessage}
             onCreateRequest={openRequestForm}
           />
           {user && [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user.role) && (
             <div className="mt-6">
-              <DashboardAdmin />
+              <DashboardRoleActions />
             </div>
           )}
           {isFormOpen && (

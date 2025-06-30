@@ -40,6 +40,7 @@ export interface ServiceTableProps {
   setErrorMessage?: (msg: string) => void;
   setSuccessMessage?: (msg: string) => void;
   setServices?: (services: Service[]) => void;
+  onServiceUpdate?: () => void;
   onEditService?: (service: Service) => void;
 }
 export interface ServiceCardMobileProps {

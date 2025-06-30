@@ -4,26 +4,65 @@
 @tailwind utilities;
 
 /* =========================
-   Variables de color
+   Paleta de colores de la aplicación
    ========================= */
 :root {
+  /* Colores base */
   --negro: #0a0a0a;
   --blanco: #ffffff;
-  --color-azul-claro: #3aabb7;
-  --color-azul-oscuro: #2f2254;
-  --color-magenta: #54224c;
-  --color-amarillo: #f6dc25;
-  --color-wpp: #25D366;
+  
+  /* Paleta principal de marca */
+  --azul-claro: #3aabb7;        /* Cian/Turquesa principal */
+  --azul-oscuro: #2f2254;       /* Púrpura oscuro */
+  --magenta: #54224c;           /* Magenta corporativo */
+  --amarillo: #f6dc25;          /* Amarillo vibrante */
+  
+  /* Nuevos colores de la paleta extendida */
+  --verde-corporativo: #39a900; /* Verde SENA */
+  --azul-marino: #00324d;       /* Azul marino profundo */
+  --azul-cielo: #82def0;        /* Azul cielo claro */
+  --beige-claro: #fbfbe2;       /* Beige/Crema suave */
+  --verde-bosque: #385c57;      /* Verde bosque */
+  --coral: #cb7766;             /* Coral/Salmón */
+  
+  /* Colores utilitarios */
+  --whatsapp: #25d366;          /* Verde WhatsApp */
+  
+  /* Alias para compatibilidad con código existente */
+  --color-azul-claro: var(--azul-claro);
+  --color-azul-oscuro: var(--azul-oscuro);
+  --color-magenta: var(--magenta);
+  --color-amarillo: var(--amarillo);
+  --color-wpp: var(--whatsapp);
+  
+  /* Colores semánticos */
+  --success: var(--verde-corporativo);
+  --info: var(--azul-cielo);
+  --warning: var(--amarillo);
+  --danger: var(--coral);
+  --primary: var(--azul-claro);
+  --secondary: var(--azul-oscuro);
+  --accent: var(--magenta);
+  --neutral: var(--beige-claro);
+  --dark: var(--azul-marino);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* Mantener los mismos colores en modo oscuro */
     --negro: #0a0a0a;
     --blanco: #ffffff;
-    --color-azul-claro: #3aabb7;
-    --color-azul-oscuro: #2f2254;
-    --color-magenta: #54224c;
-    --color-amarillo: #f6dc25;
+    --azul-claro: #3aabb7;
+    --azul-oscuro: #2f2254;
+    --magenta: #54224c;
+    --amarillo: #f6dc25;
+    --verde-corporativo: #39a900;
+    --azul-marino: #00324d;
+    --azul-cielo: #82def0;
+    --beige-claro: #fbfbe2;
+    --verde-bosque: #385c57;
+    --coral: #cb7766;
+    --whatsapp: #25d366;
   }
 }
 
@@ -70,4 +109,220 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   appearance: textfield;
   -moz-appearance: textfield;
+}
+
+/* =========================
+   Clases utilitarias personalizadas
+   ========================= */
+
+/* Clases de color de fondo */
+.bg-primary { background-color: var(--primary); }
+.bg-secondary { background-color: var(--secondary); }
+.bg-accent { background-color: var(--accent); }
+.bg-success { background-color: var(--success); }
+.bg-info { background-color: var(--info); }
+.bg-warning { background-color: var(--warning); }
+.bg-danger { background-color: var(--danger); }
+.bg-neutral { background-color: var(--neutral); }
+.bg-dark { background-color: var(--dark); }
+
+/* Colores específicos de la marca */
+.bg-azul { background-color: var(--azul-claro); }
+.bg-cian { background-color: var(--azul-cielo); }
+.bg-verde-sena { background-color: var(--verde-corporativo); }
+.bg-verde-bosque { background-color: var(--verde-bosque); }
+.bg-coral { background-color: var(--coral); }
+.bg-beige { background-color: var(--beige-claro); }
+.bg-marino { background-color: var(--azul-marino); }
+
+/* Clases de color de texto */
+.text-primary { color: var(--primary); }
+.text-secondary { color: var(--secondary); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-info { color: var(--info); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+.text-dark { color: var(--dark); }
+
+/* Colores específicos de la marca */
+.text-azul { color: var(--azul-claro); }
+.text-cian { color: var(--azul-cielo); }
+.text-verde-sena { color: var(--verde-corporativo); }
+.text-verde-bosque { color: var(--verde-bosque); }
+.text-coral { color: var(--coral); }
+.text-marino { color: var(--azul-marino); }
+
+/* Clases de color de borde */
+.border-primary { border-color: var(--primary); }
+.border-secondary { border-color: var(--secondary); }
+.border-accent { border-color: var(--accent); }
+.border-success { border-color: var(--success); }
+.border-info { border-color: var(--info); }
+.border-warning { border-color: var(--warning); }
+.border-danger { border-color: var(--danger); }
+.border-dark { border-color: var(--dark); }
+
+/* Colores específicos de la marca */
+.border-azul { border-color: var(--azul-claro); }
+.border-cian { border-color: var(--azul-cielo); }
+.border-verde-sena { border-color: var(--verde-corporativo); }
+.border-verde-bosque { border-color: var(--verde-bosque); }
+.border-coral { border-color: var(--coral); }
+.border-marino { border-color: var(--azul-marino); }
+
+/* Gradientes personalizados */
+.bg-gradient-primary { 
+  background: linear-gradient(to right, var(--primary), var(--azul-cielo)); 
+}
+.bg-gradient-success { 
+  background: linear-gradient(to right, var(--verde-corporativo), var(--verde-bosque)); 
+}
+.bg-gradient-corporate { 
+  background: linear-gradient(to right, var(--azul-oscuro), var(--azul-claro)); 
+}
+.bg-gradient-warm { 
+  background: linear-gradient(to right, var(--coral), var(--amarillo)); 
+}
+.bg-gradient-nature { 
+  background: linear-gradient(to right, var(--verde-bosque), var(--azul-cielo)); 
+}
+.bg-gradient-elegant { 
+  background: linear-gradient(to right, var(--azul-marino), var(--magenta)); 
+}
+
+/* Clases hover para interactividad */
+.hover-primary:hover { background-color: var(--primary); }
+.hover-secondary:hover { background-color: var(--secondary); }
+.hover-success:hover { background-color: var(--success); }
+.hover-danger:hover { background-color: var(--danger); }
+.hover-cian:hover { background-color: var(--azul-cielo); }
+
+/* =========================
+   Estilos base del body
+   ========================= */
+
+/* ===== EFECTOS DE CRISTAL ===== */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===== ANIMACIONES PERSONALIZADAS ===== */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background-size: 200px 100%;
+}
+
+/* ===== EFECTOS DE HOVER MEJORADOS ===== */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* ===== UTILIDADES DE ACCESIBILIDAD ===== */
+.focus-visible-custom:focus-visible {
+  outline: 2px solid var(--azul-cielo);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===== RESPONSIVE HELPERS ===== */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-hidden {
+    display: none !important;
+  }
 }

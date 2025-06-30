@@ -5,7 +5,9 @@ import { create, update } from "../services/services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
-import { useAuth, useGroups, useFormInitialization } from "../hooks";
+import { useAuth } from "../hooks/useAuth";
+import { useGroups } from "../hooks/useGroups";
+import { useFormInitialization } from "../hooks/useFormInitialization";
 
 const emptyUser: User = {
     id: 0,
@@ -49,7 +51,7 @@ export default function UserForm(props: UserFormProps) {
         loading: groupsLoading
     } = useGroups({
         token,
-        onError: (error) => setFormError(error)
+        onError: (error: string) => setFormError(error)
     });
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {

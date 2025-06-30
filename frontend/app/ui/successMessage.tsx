@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { SuccessMessageProps } from "../types/components/type";
+import { SuccessMessageProps } from "../types/components";
 
 // SuccessMessageStack permite mostrar varias notificaciones apiladas
 export function SuccessMessageStack({ messages, duration = 5000, onClose }: {

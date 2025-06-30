@@ -1,7 +1,7 @@
 import Image from "next/image";
 import ErrorMessage from "../ui/errorMessage";
 import ReCAPTCHA from "react-google-recaptcha";
-import {LoginFormProps} from "../types/";
+import {LoginFormProps} from "../types/login";
 
 export default function LoginForm({
   email,

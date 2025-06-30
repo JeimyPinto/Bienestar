@@ -1,54 +1,41 @@
 "use client"
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useState, useRef } from "react";
 import { Service } from "../types/index";
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import ServicesGallery from "./servicesGallery";
 import ServiceTable from "./serviceTable";
 import SectionHeader from "../ui/sectionHeader";
-import { getAllActive, getAll } from "../services/services/service";
 import ServiceForm from "./serviceForm";
 import { useAuth } from "../hooks/useAuth";
+import { useServices } from "../hooks/useServices";
+import { useMessages } from "../hooks/useMessages";
 import { ROLES } from "../lib/roles";
 
 export default function ServicePage() {
     const { user, token } = useAuth();
-    const [services, setServices] = useState<Service[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { successMessage, errorMessage, setErrorMessage, setSuccessMessage } = useMessages();
+    
+    // Determinar el modo según el rol del usuario
+    const servicesMode = (!user || user?.role === ROLES.USER || user?.role === ROLES.INSTRUCTOR) 
+        ? 'allActive' 
+        : 'all';
+    
+    const { services, loading, refreshServices } = useServices({
+        token,
+        mode: servicesMode,
+        onError: (message: string) => setErrorMessage(message)
+    });
+
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [serviceToEdit, setServiceToEdit] = useState<Service | undefined>(undefined);
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
     const dialogRef = useRef<HTMLDialogElement>(null);
-
-    const fetchServices = useCallback(async () => {
-        setLoading(true);
-        let response;
-        if (!user || (user?.role === ROLES.USER || user?.role === ROLES.INSTRUCTOR)) {
-            response = await getAllActive();
-        } else {
-            // Solo ADMIN/SUPERADMIN
-            response = await getAll(token ?? undefined);
-        }
-        if (!response.error && response.services) {
-            setServices(response.services);
-            setErrorMessage("");
-        } else {
-            setServices([]);
-            setErrorMessage(response.message);
-        }
-        setLoading(false);
-    }, [user, token]);
-
-    useEffect(() => {
-        if (user !== undefined) fetchServices();
-    }, [user, fetchServices]);
 
     // Handler para éxito en ServiceForm
     const handleServiceFormSuccess = () => {
-        fetchServices();
+        refreshServices();
         closeDialog();
     };
 
@@ -94,7 +81,7 @@ export default function ServicePage() {
                         loading={loading}
                         setErrorMessage={setErrorMessage}
                         setSuccessMessage={setSuccessMessage}
-                        setServices={setServices}
+                        onServiceUpdate={refreshServices}
                         onEditService={(service) => {
                             setMode("edit");
                             setServiceToEdit(service);

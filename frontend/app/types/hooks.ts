@@ -118,3 +118,43 @@ export interface UseCrudReturn<T = Record<string, unknown>> {
   updateItem: (id: number, data: T) => Promise<{ error: boolean; message?: string }>;
   deleteItem: (id: number) => Promise<{ error: boolean; message?: string }>;
 }
+
+export interface UseRequestsOptions {
+  token?: string | null;
+  userId?: number;
+  onError?: (message: string) => void;
+}
+
+export interface UseRequestsReturn<T = Record<string, unknown>> {
+  // Estado
+  requests: T[];
+  loading: boolean;
+  
+  // Setters
+  setRequests: React.Dispatch<React.SetStateAction<T[]>>;
+  
+  // Funciones
+  fetchRequests: () => Promise<{ error: boolean; message?: string }>;
+  refreshRequests: () => void;
+}
+
+export interface UseServicesOptions {
+  token?: string | null;
+  userId?: number;
+  onError?: (message: string) => void;
+  // Para determinar qué tipo de servicios obtener
+  mode?: 'userServices' | 'allActive' | 'all';
+}
+
+export interface UseServicesReturn<T = Record<string, unknown>> {
+  // Estado
+  services: T[];
+  loading: boolean;
+  
+  // Setters
+  setServices: React.Dispatch<React.SetStateAction<T[]>>;
+  
+  // Funciones
+  fetchServices: () => Promise<{ error: boolean; message?: string }>;
+  refreshServices: () => void;
+}

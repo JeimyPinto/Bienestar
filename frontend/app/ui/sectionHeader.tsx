@@ -1,5 +1,5 @@
 import React from "react";
-import { SectionHeaderProps } from "../types/components/type";
+import { SectionHeaderProps } from "../types/components";
 import IcoBack from "./icoBack";
 
 

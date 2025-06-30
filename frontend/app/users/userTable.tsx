@@ -5,7 +5,7 @@ import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
 import { useColumnSorter } from "../lib/useColumnSorter"
 import { filterUsers } from "../lib"
-import { useFilter } from "../hooks"
+import { useFilter } from "../hooks/useFilter"
 
 export default function UserTable({
     users,
