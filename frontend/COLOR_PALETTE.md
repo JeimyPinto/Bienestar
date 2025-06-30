@@ -3,7 +3,6 @@
 ## Paleta Principal
 
 ### Colores de Marca
-
 | Color | Hex | Variable CSS | Uso Principal |
 |-------|-----|--------------|---------------|
 | 🔵 Azul Claro | `#3AABB7` | `--azul-claro` | Color primario, botones principales |
@@ -14,7 +13,6 @@
 | 🎨 Magenta | `#54224C` | `--magenta` | Acentos especiales |
 
 ### Colores Complementarios
-
 | Color | Hex | Variable CSS | Uso Principal |
 |-------|-----|--------------|---------------|
 | 🌿 Verde Bosque | `#385C57` | `--verde-bosque` | Elementos naturales, alternativas |
@@ -23,7 +21,6 @@
 | 🤍 Beige Claro | `#FBFBE2` | `--beige-claro` | Fondos suaves, neutros |
 
 ### Colores Base
-
 | Color | Hex | Variable CSS | Uso Principal |
 |-------|-----|--------------|---------------|
 | ⚫ Negro | `#0A0A0A` | `--negro` | Textos principales |
@@ -32,7 +29,6 @@
 ## Colores Semánticos
 
 ### Estados del Sistema
-
 | Estado | Variable CSS | Color Base | Uso |
 |--------|--------------|------------|-----|
 | ✅ Éxito | `--success` | Verde SENA | Confirmaciones, completado |
@@ -47,7 +43,6 @@
 ## Clases CSS Disponibles
 
 ### Tailwind CSS (Recomendado)
-
 ```tsx
 // Fondos
 className="bg-primary bg-secondary bg-success bg-danger"
@@ -65,7 +60,6 @@ className="hover:bg-primary hover:text-success"
 ```
 
 ### CSS Puro (Alternativo)
-
 ```css
 .bg-primary, .bg-secondary, .bg-accent
 .bg-success, .bg-info, .bg-warning, .bg-danger
@@ -74,7 +68,6 @@ className="hover:bg-primary hover:text-success"
 ```
 
 ### Gradientes Predefinidos
-
 ```css
 .bg-gradient-primary     /* Azul claro → Azul cielo */
 .bg-gradient-success     /* Verde SENA → Verde bosque */
@@ -87,7 +80,6 @@ className="hover:bg-primary hover:text-success"
 ## Ejemplos de Uso
 
 ### Botones con Tailwind
-
 ```tsx
 // Botón primario
 <button className="bg-primary text-white hover:bg-azul-cielo px-4 py-2 rounded-lg">
@@ -111,7 +103,6 @@ className="hover:bg-primary hover:text-success"
 ```
 
 ### Cards y Contenedores
-
 ```tsx
 // Card principal
 <div className="bg-white border border-azul-cielo rounded-xl shadow-lg p-6">
@@ -134,7 +125,6 @@ className="hover:bg-primary hover:text-success"
 ```
 
 ### Estados y Notificaciones
-
 ```tsx
 // Notificación de éxito
 <div className="bg-success text-white p-4 rounded-lg flex items-center space-x-3">
@@ -156,7 +146,6 @@ className="hover:bg-primary hover:text-success"
 ```
 
 ### Formularios
-
 ```tsx
 // Input principal
 <input 
@@ -177,7 +166,6 @@ className="hover:bg-primary hover:text-success"
 ```
 
 ### Navegación y Headers
-
 ```tsx
 // Header principal
 <header className="bg-azul-oscuro text-white shadow-lg">
@@ -200,7 +188,6 @@ className="hover:bg-primary hover:text-success"
 ```
 
 ### Badges y Estados
-
 ```tsx
 // Badge de estado activo
 <span className="bg-success text-white px-2 py-1 rounded-full text-xs font-medium">
@@ -221,15 +208,10 @@ className="hover:bg-primary hover:text-success"
 ## Accesibilidad
 
 Todos los colores han sido seleccionados para cumplir con:
-
-```markdown
-* ✅ Contraste WCAG AA (4.5:1 mínimo)
-* ✅ Daltonismo friendly
-* ✅ Legibilidad en dispositivos móviles
-* ✅ Coherencia visual
-```
-
-***
+- ✅ Contraste WCAG AA (4.5:1 mínimo)
+- ✅ Daltonismo friendly
+- ✅ Legibilidad en dispositivos móviles
+- ✅ Coherencia visual
 
 ## Compatibilidad
 
@@ -237,4 +219,3 @@ Todos los colores han sido seleccionados para cumplir con:
 - ✅ Funciona con Tailwind CSS
 - ✅ Soporta modo oscuro
 - ✅ Variables CSS nativas para máximo rendimiento
-

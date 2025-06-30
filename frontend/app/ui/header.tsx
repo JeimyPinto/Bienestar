@@ -1,26 +1,22 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { useAuth } from "../hooks/useAuth"
-import { useHeader } from "../hooks/useHeader"
-import {
-  NavLink,
-  UserDashboardLink,
-  LogoutButton,
-  LoginButton,
-  MobileNavItem,
-  MobileUserDashboard,
-  MobileLogoutButton,
-  MobileLoginButton
-} from "./components"
 
 export default function Header() {
   const { token, user, logout, refresh, isExpired } = useAuth();
-  const { menuOpen, toggleMenu, closeMenu } = useHeader();
+  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+
+  // Cierra el menú al navegar o cambiar tamaño
+  useEffect(() => {
+    const closeMenu = () => setMenuOpen(false);
+    window.addEventListener("resize", closeMenu);
+    return () => window.removeEventListener("resize", closeMenu);
+  }, []);
 
   // Refresca el token cada 10 segundos y valida que no haya expirado
   useEffect(() => {
@@ -38,128 +34,126 @@ export default function Header() {
   }, [refresh, isExpired, logout, router]);
 
   return (
-    <header className="bg-gradient-corporate shadow-xl border-b border-azul-cielo/20 backdrop-blur-sm sticky top-0 z-30">
-      <div className="container mx-auto px-4 py-3 md:px-6 md:py-4">
-        <div className="flex justify-between items-center">
-          {/* Logo mejorado */}
-          <Link href="/" tabIndex={0} className="group flex items-center space-x-3">
-            <div className="relative overflow-hidden rounded-xl p-2 transition-all duration-300 group-hover:bg-white/10 bg-white/5 backdrop-blur-sm border border-white/10">
-              <Image
-                src="/images/Icono.png"
-                priority={false}
-                alt="Logo Bienestar al Aprendiz"
-                width={48}
-                height={48}
-                className="transition-transform duration-300 group-hover:scale-105 object-contain"
-              />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-white text-lg md:text-xl font-bold leading-tight">
-                Sistema de Bienestar
-              </h1>
-              <p className="text-azul-cielo/80 text-xs md:text-sm">
-                SENA - Formación Integral
-              </p>
-            </div>
-          </Link>
-
-          {/* Botón hamburguesa mejorado */}
-          <button
-            className="md:hidden relative z-50 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 active:scale-95"
-            onClick={toggleMenu}
-            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-            aria-expanded={menuOpen}
-            aria-controls="main-menu"
-          >
-            <div className="flex flex-col justify-center items-center w-6 h-6">
-              <span
-                className={`block w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${
-                  menuOpen ? "rotate-45 translate-y-1.5" : ""
-                }`}
-              />
-              <span
-                className={`block w-6 h-0.5 bg-white rounded-full transition-all duration-300 my-1 ${
-                  menuOpen ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`block w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${
-                  menuOpen ? "-rotate-45 -translate-y-1.5" : ""
-                }`}
-              />
-            </div>
-          </button>
-
-          {/* Navegación de escritorio */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <NavLink href="/integrantes" onClick={closeMenu}>
-              👥 Integrantes
-            </NavLink>
-            <NavLink href="/services" onClick={closeMenu}>
-              🛠️ Servicios
-            </NavLink>
-            
-            {token ? (
-              <>
-                <UserDashboardLink user={user} onClick={closeMenu} />
-                <LogoutButton onClick={() => {
-                  logout();
-                  closeMenu();
-                  router.push("/auth");
-                }} />
-              </>
-            ) : (
-              <LoginButton onClick={closeMenu} />
-            )}
-          </nav>
-        </div>
-      </div>
-
-      {/* Menú móvil mejorado */}
-      <div
-        className={`md:hidden fixed inset-0 z-40 transition-all duration-300 ${
-          menuOpen ? "visible opacity-100" : "invisible opacity-0"
-        }`}
-      >
-        {/* Overlay */}
-        <div 
-          className="absolute inset-0 bg-azul-marino/95 backdrop-blur-md"
-          onClick={closeMenu}
+    <header className="flex flex-col md:flex-row justify-between items-center px-4 py-3 md:px-6 md:py-4 bg-azul w-full h-auto text-base md:text-xl text-white shadow-lg relative">
+      <Link href="/" tabIndex={0}>
+        <Image
+          src="/images/Icono.png"
+          priority={false}
+          alt="Logo Bienestar al Aprendiz"
+          width={150}
+          height={60}
+          className="p-3"
         />
-        
-        {/* Menú contenido */}
-        <nav
-          id="main-menu"
-          aria-label="Menú principal"
-          className={`absolute top-0 right-0 h-full w-80 max-w-full bg-gradient-to-b from-azul-oscuro to-azul-marino shadow-2xl transform transition-transform duration-300 ${
-            menuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="pt-20 px-6 pb-6 h-full overflow-y-auto">
-            <ul className="space-y-4">
-              <MobileNavItem href="/integrantes" icon="👥" onClick={closeMenu}>
-                Integrantes
-              </MobileNavItem>
-              <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
-                Servicios
-              </MobileNavItem>
-              
-              {token ? (
-                <>
-                  <MobileUserDashboard user={user} onClick={closeMenu} />
-                  <MobileLogoutButton onClick={() => {
+      </Link>
+      <button
+        className="md:hidden absolute right-6 top-6 z-50 flex flex-col justify-center items-center w-10 h-10"
+        onClick={() => setMenuOpen((open) => !open)}
+        aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+        aria-expanded={menuOpen}
+        aria-controls="main-menu"
+      >
+        <span
+          className={`block w-8 h-1 bg-white rounded transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`}
+        ></span>
+        <span
+          className={`block w-8 h-1 bg-white rounded transition-all duration-300 my-1 ${menuOpen ? "opacity-0" : ""}`}
+        ></span>
+        <span
+          className={`block w-8 h-1 bg-white rounded transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}
+        ></span>
+      </button>
+      <nav
+        id="main-menu"
+        aria-label="Menú principal"
+        className={`
+          flex-col md:flex-row items-center justify-center space-y-6 md:space-y-0 md:space-x-4
+          fixed md:static top-0 left-0 w-full h-full md:h-auto md:w-auto
+          bg-[rgba(47,34,84,0.92)] md:bg-transparent z-30
+          transition-all duration-300
+          ${menuOpen ? "flex" : "hidden md:flex"}
+        `}
+      >
+        <ul className="flex flex-col md:flex-row gap-8 md:gap-5 p-2 md:p-0 text-2xl md:text-base w-full md:w-auto">
+          <li>
+            <Link
+              href="/integrantes"
+              onClick={() => setMenuOpen(false)}
+              className="block w-full px-6 py-3 rounded-lg bg-white/80 shadow-md text-azul font-semibold hover:bg-cian/80 hover:text-magenta transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cian relative group"
+            >
+              <span className="relative z-10">Integrantes</span>
+              <span className="absolute left-0 bottom-0 w-0 h-1 bg-cian transition-all duration-300 group-hover:w-full group-focus:w-full rounded"></span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/services"
+              onClick={() => setMenuOpen(false)}
+              className="block w-full px-6 py-3 rounded-lg bg-white/80 shadow-md text-azul font-semibold hover:bg-cian/80 hover:text-magenta transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cian relative group"
+            >
+              <span className="relative z-10">Servicios</span>
+              <span className="absolute left-0 bottom-0 w-0 h-1 bg-cian transition-all duration-300 group-hover:w-full group-focus:w-full rounded"></span>
+            </Link>
+          </li>
+          {token ? (
+            <>
+              <li>
+                <Link
+                  href="/dashboard"
+                  className="block w-full px-6 py-3 rounded-lg bg-white/80 shadow-md text-azul font-semibold hover:bg-cian/80 hover:text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cian relative group flex items-center"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <Image
+                    src={
+                      user?.image
+                        ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + "/users/" + user.image
+                        : "/images/ico-profile.svg"
+                    }
+                    alt={`${user?.firstName ?? ""}`.trim() || "Icono de usuario"}
+                    width={32}
+                    height={32}
+                    priority={true}
+                    className="object-cover mr-2 w-8 h-8"
+                  />
+                  <span className="relative z-10">
+                    {user
+                      ? `Dashboard de ${user.firstName ? user.firstName.split(" ")[0] : "Usuario"}`
+                      : "Cargando..."}
+                  </span>
+                  <span className="absolute left-0 bottom-0 w-0 h-1 bg-cian transition-all duration-300 group-hover:w-full group-focus:w-full rounded"></span>
+                </Link>
+              </li>
+              <li>
+                <button
+                  className="block w-full px-6 py-3 rounded-lg bg-magenta/90 shadow-md text-white font-semibold hover:bg-cian/90 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cian"
+                  onClick={() => {
                     logout();
-                    closeMenu();
+                    setMenuOpen(false);
                     router.push("/auth");
-                  }} />
-                </>
-              ) : (
-                <MobileLoginButton onClick={closeMenu} />
-              )}
-            </ul>
-          </div>
-        </nav>
-      </div>
+                  }}
+                >
+                  Cerrar sesión
+                </button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Link href="/auth" onClick={() => setMenuOpen(false)}>
+                <button className="relative flex items-center justify-between w-full px-6 py-3 rounded-lg bg-gradient-to-b from-blue-500 to-cian shadow-md text-azul-oscuro font-semibold hover:bg-azul/90 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cian">
+                  <span>Ingresar al Portal</span>
+                  <Image
+                    src="/images/ico-login.svg"
+                    alt="Icono de flecha derecha"
+                    width={20}
+                    height={20}
+                    className="ml-3"
+                    priority={false}
+                  />
+                </button>
+              </Link>
+            </li>
+          )}
+        </ul>
+      </nav>
     </header>
   );
 }

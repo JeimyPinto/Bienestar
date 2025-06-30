@@ -25,7 +25,7 @@ export default function ServicePage() {
     const { services, loading, refreshServices } = useServices({
         token,
         mode: servicesMode,
-        onError: (message: string) => setErrorMessage(message)
+        onError: (message) => setErrorMessage(message)
     });
 
     const [isFormOpen, setIsFormOpen] = useState(false);

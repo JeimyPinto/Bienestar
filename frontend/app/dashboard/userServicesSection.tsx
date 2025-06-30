@@ -12,7 +12,7 @@ export default function UserServicesSection() {
     token,
     userId: user?.id,
     mode: 'userServices',
-    onError: (message: string) => setErrorMessage(message)
+    onError: (message) => setErrorMessage(message)
   });
 
   // Solo mostrar para ADMIN/SUPERADMIN

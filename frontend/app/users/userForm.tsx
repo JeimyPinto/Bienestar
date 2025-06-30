@@ -51,7 +51,7 @@ export default function UserForm(props: UserFormProps) {
         loading: groupsLoading
     } = useGroups({
         token,
-        onError: (error: string) => setFormError(error)
+        onError: (error) => setFormError(error)
     });
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {

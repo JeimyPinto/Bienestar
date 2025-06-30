@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const { requests, loading, refreshRequests } = useRequests({
     token,
     userId: user?.id,
-    onError: (message: string) => setErrorMessage(message)
+    onError: (message) => setErrorMessage(message)
   });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
