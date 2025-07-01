@@ -5,9 +5,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useAuth } from "../hooks/useAuth";
 import { useRecaptcha } from "../hooks/useRecaptcha";
 import { useLoginForm } from "../hooks/useLoginForm";
-import LoginForm from "./loginForm";
-import ActiveSessionMessage from "./activeSessionMessage";
-import LoginWelcome from "./loginWelcome";
+import { LoginForm, ActiveSessionMessage, LoginWelcome } from "../components/auth";
 
 export default function LoginPage() {
   const { token, logout } = useAuth();

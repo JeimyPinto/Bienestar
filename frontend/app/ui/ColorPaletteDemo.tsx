@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Card, Badge, Alert, Container, Input, Select } from './index';
 
 export default function ColorPaletteDemo() {
   const colors = [
@@ -22,11 +23,88 @@ export default function ColorPaletteDemo() {
   ];
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <Container size="xl" className="py-8 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-azul-oscuro mb-8">
-          🎨 Demostración de Paleta de Colores
+          🎨 Demostración de Paleta de Colores y Componentes UI
         </h1>
+
+        {/* Demostración de nuevos componentes UI */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-azul-marino mb-6">Componentes UI Básicos</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {/* Botones */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-azul-oscuro mb-4">Botones</h3>
+              <div className="space-y-3">
+                <Button variant="primary" className="w-full">
+                  Primario
+                </Button>
+                <Button variant="success" className="w-full">
+                  Éxito
+                </Button>
+                <Button variant="warning" className="w-full">
+                  Advertencia
+                </Button>
+                <Button variant="danger" size="sm" className="w-full">
+                  Peligro (Pequeño)
+                </Button>
+              </div>
+            </Card>
+
+            {/* Alertas */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-azul-oscuro mb-4">Alertas</h3>
+              <div className="space-y-3">
+                <Alert variant="success" title="Éxito">
+                  Operación completada correctamente
+                </Alert>
+                <Alert variant="warning">
+                  ⚠️ Advertencia importante
+                </Alert>
+                <Alert variant="danger">
+                  ❌ Error crítico detectado
+                </Alert>
+              </div>
+            </Card>
+
+            {/* Badges */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-azul-oscuro mb-4">Estados (Badges)</h3>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="success">Activo</Badge>
+                <Badge variant="warning">Pendiente</Badge>
+                <Badge variant="info">Información</Badge>
+                <Badge variant="neutral">Inactivo</Badge>
+                <Badge variant="danger" size="sm">Error</Badge>
+              </div>
+            </Card>
+          </div>
+
+          {/* Formularios */}
+          <Card className="p-6 mb-6">
+            <h3 className="text-lg font-semibold text-azul-oscuro mb-4">Componentes de Formulario</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input 
+                label="Email" 
+                type="email" 
+                placeholder="ejemplo@correo.com"
+                icon="📧"
+              />
+              <Select
+                label="Tipo de Usuario"
+                placeholder="Seleccione una opción"
+                icon="👤"
+                options={[
+                  { value: 'admin', label: '👑 Administrador' },
+                  { value: 'instructor', label: '👨‍🏫 Instructor' },
+                  { value: 'user', label: '👥 Usuario' }
+                ]}
+              />
+            </div>
+          </Card>
+        </section>
 
         {/* Colores Sólidos */}
         <section className="mb-12">
@@ -145,6 +223,6 @@ export default function ColorPaletteDemo() {
           </div>
         </section>
       </div>
-    </div>
+    </Container>
   );
 }
