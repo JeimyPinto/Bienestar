@@ -13,12 +13,6 @@ export { default as Spinner } from './spinner';
 export { default as ErrorMessage } from './errorMessage';
 export { default as SuccessMessage } from './successMessage';
 export { default as Accordion } from './accordion';
-export { default as SectionHeader } from './sectionHeader';
-export { default as IcoBack } from './icoBack';
-export { default as FormModalHeader } from './FormModalHeader';
-
-// Componentes de demostración
-export { default as ColorPaletteDemo } from './ColorPaletteDemo';
 
 // Re-exportar tipos
 export type { ButtonProps } from './button';

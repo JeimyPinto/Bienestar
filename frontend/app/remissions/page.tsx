@@ -2,11 +2,10 @@
 
 import React, { useState, useRef } from "react";
 import { Remission } from "../types/remission";
-import ErrorMessage from "../ui/errorMessage";
-import { SuccessMessageStack } from "../ui/successMessage";
+import { ErrorMessage, SuccessMessage } from "../ui";
 import RemissionTable from "./remissionTable";
 import RemissionForm from "./remissionForm";
-import SectionHeader from "../ui/sectionHeader";
+import SectionHeader from "../components/sectionHeader";
 import { getAll } from "../services/services/remission"
 import { useAuth } from "../hooks/useAuth";
 
@@ -73,7 +72,13 @@ export default function RemissiontPage() {
                 onButtonClick={openCreateDialog}
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
-            <SuccessMessageStack messages={successMessages} onClose={handleCloseSuccess} />
+            {successMessages.map((msg, idx) => (
+                <SuccessMessage 
+                    key={idx} 
+                    message={msg} 
+                    onClose={() => handleCloseSuccess(idx)} 
+                />
+            ))}
             <RemissionTable
                 remissions={remissions}
                 setSuccessMessages={setSuccessMessages}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import SectionHeader from "../ui/sectionHeader";
+import SectionHeader from "../components/sectionHeader";
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
 import GroupTable from "./groupTable";

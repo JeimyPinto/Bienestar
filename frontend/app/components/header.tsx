@@ -45,7 +45,7 @@ export default function Header() {
           <Link href="/" tabIndex={0} className="group flex items-center space-x-3">
             <div className="relative overflow-hidden rounded-xl p-2 transition-all duration-300 group-hover:bg-white/10 bg-white/5 backdrop-blur-sm border border-white/10">
               <Image
-                src="/images/Icono.png"
+                src="/images/icono.png"
                 priority={false}
                 alt="Logo Bienestar al Aprendiz"
                 width={48}

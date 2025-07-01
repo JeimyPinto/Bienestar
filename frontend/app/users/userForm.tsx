@@ -4,7 +4,7 @@ import { create, update } from "../services/services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
-import FormModalHeader from "../ui/FormModalHeader";
+import FormModalHeader from "../components/FormModalHeader";
 import { useAuth } from "../hooks/useAuth";
 import { useGroups } from "../hooks/useGroups";
 import { useFormInitialization } from "../hooks/useFormInitialization";

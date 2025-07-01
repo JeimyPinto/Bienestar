@@ -1,8 +1,9 @@
 import React, { useState } from "react"
-import { AuditLogTableProps } from "../types/auditLog"
+import { AuditLogTableProps } from "../../types/auditLog"
 import AuditLogTableDesktop from "./auditLogTableDesktop"
 import AuditLogCardMobile from "./auditLogCardMobile"
 import AuditLogTableFilterBar from "./auditLogTableFilterBar"
+import { Container } from "../../ui"
 
 export default function AuditLogTable({
     auditLogs,
@@ -20,7 +21,7 @@ export default function AuditLogTable({
         : auditLogs;
 
     return (
-        <section className="w-full max-w-8xl mx-auto px-2 py-6">
+        <Container>
             <div className="flex flex-col gap-4">
                 <AuditLogTableFilterBar
                     filter={filter}
@@ -43,6 +44,6 @@ export default function AuditLogTable({
                     />
                 </div>
             </div>
-        </section>
+        </Container>
     );
 }

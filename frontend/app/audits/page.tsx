@@ -1,10 +1,9 @@
 "use client"
 
 import React, { useState } from "react"
-import AuditLogTable from "./auditLogTable"
-import ErrorMessage from "../ui/errorMessage";
-import SuccessMessage from "../ui/successMessage";
-import SectionHeader from "../ui/sectionHeader"
+import { AuditLogTable } from "../components/audits"
+import { ErrorMessage, SuccessMessage } from "../ui"
+import { SectionHeader } from "../components"
 import { AuditLog } from "../types/auditLog"
 import { getAll } from "../services/services/auditLog";
 import { useAuth } from "../hooks/useAuth";

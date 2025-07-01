@@ -1,7 +1,7 @@
+  import React from "react";
 import "./styles/globals.css";
-import Header from "./ui/header";
-import Footer from "./ui/footer";
-// import AuthGuard from "./auth/authGuard"
+import Header from "./components/header";
+import Footer from "./components/footer";
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",
@@ -21,9 +21,8 @@ export default function RootLayout({
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
       </head>
-      <body className="{`${monserrate.className} antialiase`} bg-blanco">
+      <body className="antialiased bg-blanco">
         <Header />
-        {/* <AuthGuard/> */}
         {children}
         <Footer />
       </body>
