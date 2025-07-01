@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-const Accordion: React.FC<{ title: string; content: string }> = ({ title, content }) => {
+export default function Accordion({ title, content }: { title: string; content: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +63,4 @@ const Accordion: React.FC<{ title: string; content: string }> = ({ title, conten
             </div>
         </div>
     );
-};
-
-export default Accordion;
+}

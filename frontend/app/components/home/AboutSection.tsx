@@ -1,5 +1,5 @@
-import React from 'react';
-import Accordion from '../../accordion';
+import React from 'react'
+import Accordion from "../../ui/accordion"
 
 export const AboutSection: React.FC = () => {
   return (
