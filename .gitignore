@@ -1,16 +1,6 @@
-# === GLOBAL ===
-.vscode/
-.DS_Store
-*.pem
-*.log
-*.tsbuildinfo
-.env
-.env.*
-
 # === BACKEND (Node.js/Express/Sequelize) ===
 backend/node_modules/
 backend/.env
-backend/.env.*
 backend/package-lock.json
 backend/config/config.json
 backend/coverage/
@@ -22,7 +12,6 @@ backend/uploads/
 # === FRONTEND (Next.js/React) ===
 frontend/node_modules/
 frontend/.env
-frontend/.env.*
 frontend/package-lock.json
 frontend/.pnp
 frontend/.pnp.*
@@ -43,15 +32,3 @@ frontend/yarn-error.log*
 frontend/.vercel
 frontend/*.tsbuildinfo
 frontend/next-env.d.ts
-
-# === MISC ===
-*.swp
-*.swo
-.idea/
-Thumbs.db
-
-# === SYSTEM ===
-# Mac
-.DS_Store
-# Windows
-Thumbs.db
