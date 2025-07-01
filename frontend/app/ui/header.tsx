@@ -66,10 +66,16 @@ export default function Header() {
           {/* Botón hamburguesa mejorado */}
           <button
             className="md:hidden relative z-50 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 active:scale-95"
-            onClick={toggleMenu}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Hamburger button clicked'); // Debug
+              toggleMenu();
+            }}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuOpen}
             aria-controls="main-menu"
+            type="button"
           >
             <div className="flex flex-col justify-center items-center w-6 h-6">
               <span
@@ -123,40 +129,54 @@ export default function Header() {
       >
         {/* Overlay */}
         <div 
-          className="absolute inset-0 bg-azul-marino/95 backdrop-blur-md"
-          onClick={closeMenu}
+          className="absolute inset-0 bg-azul-marino/95 backdrop-blur-md cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMenu();
+          }}
+          aria-label="Cerrar menú"
         />
         
         {/* Menú contenido */}
         <nav
           id="main-menu"
           aria-label="Menú principal"
-          className={`absolute top-0 right-0 h-full w-80 max-w-full bg-gradient-to-b from-azul-oscuro to-azul-marino shadow-2xl transform transition-transform duration-300 ${
+          className={`absolute top-0 right-0 mobile-menu-height w-80 max-w-[85%] sm:max-w-sm bg-gradient-to-b from-azul-oscuro to-azul-marino shadow-2xl transform transition-transform duration-300 mobile-menu-safe-area ${
             menuOpen ? "translate-x-0" : "translate-x-full"
           }`}
+          onClick={(e) => e.stopPropagation()}
         >
-          <div className="pt-20 px-6 pb-6 h-full overflow-y-auto">
-            <ul className="space-y-4">
-              <MobileNavItem href="/integrantes" icon="👥" onClick={closeMenu}>
-                Integrantes
-              </MobileNavItem>
-              <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
-                Servicios
-              </MobileNavItem>
-              
-              {token ? (
-                <>
-                  <MobileUserDashboard user={user} onClick={closeMenu} />
-                  <MobileLogoutButton onClick={() => {
-                    logout();
-                    closeMenu();
-                    router.push("/auth");
-                  }} />
-                </>
-              ) : (
-                <MobileLoginButton onClick={closeMenu} />
-              )}
-            </ul>
+          <div className="flex flex-col h-full">
+            {/* Contenido scrolleable */}
+            <div className="flex-1 pt-16 sm:pt-20 pb-4 overflow-y-auto mobile-menu-scroll">
+              <div className="px-4 sm:px-6 mobile-menu-compact">
+                <ul className="space-y-3 mobile-menu-short mobile-touch-target">
+                  <MobileNavItem href="/integrantes" icon="👥" onClick={closeMenu}>
+                    Integrantes
+                  </MobileNavItem>
+                  <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
+                    Servicios
+                  </MobileNavItem>
+                  
+                  {token ? (
+                    <>
+                      <MobileUserDashboard user={user} onClick={closeMenu} />
+                      <MobileLogoutButton onClick={() => {
+                        logout();
+                        closeMenu();
+                        router.push("/auth");
+                      }} />
+                    </>
+                  ) : (
+                    <MobileLoginButton onClick={closeMenu} />
+                  )}
+                </ul>
+              </div>
+            </div>
+            
+            {/* Área inferior para evitar que el contenido se corte */}
+            <div className="h-4 flex-shrink-0" />
           </div>
         </nav>
       </div>
