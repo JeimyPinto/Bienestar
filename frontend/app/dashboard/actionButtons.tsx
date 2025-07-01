@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
-import { ActionButtonsProps } ../lib/actionCardss";
-import { getAvailableActionCards } from "../constants/actionCards";
-../lib/actionCards
+import { ActionButtonsProps }  from "../types/components"
+import { getAvailableActionCards } from "../lib/actionCards";
+
 export default function ActionButtons({ user }: ActionButtonsProps) {
   const router = useRouter();
 
