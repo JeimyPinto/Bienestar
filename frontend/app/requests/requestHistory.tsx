@@ -38,9 +38,9 @@ export default function RequestHistory({
   }, [successMessage]);
 
   return (
-    <section className="bg-white shadow-lg rounded-xl p-4 sm:p-6 mt-4 sm:mt-6 overflow-x-auto sm:max-w-[1400px] sm:mx-auto">      
+    <section className="bg-white shadow-lg rounded-xl md:rounded-2xl p-4 md:p-6 mt-4 md:mt-6 border border-azul-cielo/20">      
       {showSuccess && successMessage && (
-        <div className="mb-4">
+        <div className="mb-4 md:mb-6">
           <SuccessMessage 
             message={successMessage} 
             duration={5000} 
@@ -48,6 +48,28 @@ export default function RequestHistory({
           />
         </div>
       )}
+
+      {/* Header de la sección */}
+      <div className="mb-4 md:mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:gap-4">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-azul-oscuro flex items-center">
+              <span className="mr-2 text-lg md:text-xl">📋</span>
+              Mis Solicitudes
+            </h2>
+            <p className="text-sm md:text-base text-azul-marino/70 mt-1">
+              {loading ? "Cargando..." : `${requests.length} solicitud${requests.length !== 1 ? 'es' : ''} encontrada${requests.length !== 1 ? 's' : ''}`}
+            </p>
+          </div>
+          
+          {/* Controles adicionales en móvil */}
+          <div className="flex items-center space-x-2">
+            <div className="text-xs md:text-sm text-azul-marino/60 bg-azul-cielo/10 px-2 md:px-3 py-1 rounded-full">
+              {isMobile ? "Vista móvil" : "Vista escritorio"}
+            </div>
+          </div>
+        </div>
+      </div>
       
       {errorMessage && (
         <div className="mb-4">

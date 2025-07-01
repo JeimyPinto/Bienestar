@@ -8,7 +8,7 @@ export interface RequestBase {
     serviceId: number;
     description: string;
     status: boolean;
-    responseStatus: string;
+    responseStatus: "pendiente" | "aprobada" | "rechazada";
     responseMessage?: string | null;
     createdBy?: number;
     createdAt?: string;

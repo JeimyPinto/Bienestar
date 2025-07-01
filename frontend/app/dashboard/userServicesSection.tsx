@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import ServicesGallery from "../services/servicesGallery";
 import ErrorMessage from "../ui/errorMessage";
+import Spinner from "../ui/spinner";
 
 export default function UserServicesSection() {
   const { user, token } = useAuth();
@@ -38,7 +39,7 @@ export default function UserServicesSection() {
       
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary border-opacity-50 mb-3"></div>
+          <Spinner className="mb-3" />
           <span className="text-azul-marino/70">Cargando servicios...</span>
         </div>
       ) : (

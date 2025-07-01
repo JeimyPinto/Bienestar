@@ -41,18 +41,18 @@ export default function RequestPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-6">
-            <div className="container mx-auto px-4 max-w-7xl">
-                {/* Header de la página */}
-                <div className="mb-8">
-                    <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-3xl font-bold text-azul-oscuro mb-2 flex items-center">
-                                    <span className="mr-3">📋</span>
-                                    Historial de Solicitudes
+        <div className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-4 md:py-6">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+                {/* Header de la página - Responsivo */}
+                <div className="mb-6 md:mb-8">
+                    <div className="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 border border-azul-cielo/20">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div className="flex-1">
+                                <h1 className="text-2xl md:text-3xl font-bold text-azul-oscuro mb-2 flex items-center">
+                                    <span className="mr-2 md:mr-3 text-xl md:text-2xl">📋</span>
+                                    <span className="leading-tight">Historial de Solicitudes</span>
                                 </h1>
-                                <p className="text-azul-marino/70">
+                                <p className="text-sm md:text-base text-azul-marino/70">
                                     Gestiona y revisa todas tus solicitudes de remisión
                                 </p>
                             </div>
@@ -60,12 +60,17 @@ export default function RequestPage() {
                                 onClick={openCreateDialog}
                                 className="
                                     bg-success hover:bg-verde-bosque text-white 
-                                    px-6 py-3 rounded-xl font-semibold transition-all duration-300
-                                    hover:shadow-lg hover:scale-105 flex items-center space-x-2
+                                    px-4 md:px-6 py-2.5 md:py-3 rounded-lg md:rounded-xl 
+                                    font-medium md:font-semibold text-sm md:text-base
+                                    transition-all duration-300
+                                    hover:shadow-lg hover:scale-105 
+                                    flex items-center justify-center space-x-2
                                     border border-success/30
+                                    w-full sm:w-auto
+                                    focus:outline-none focus:ring-4 focus:ring-success/20
                                 "
                             >
-                                <span>➕</span>
+                                <span className="text-lg md:text-xl">➕</span>
                                 <span>Nueva Solicitud</span>
                             </button>
                         </div>

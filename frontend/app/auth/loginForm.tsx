@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ErrorMessage from "../ui/errorMessage";
 import ReCAPTCHA from "react-google-recaptcha";
+import Spinner from "../ui/spinner";
 import { LoginFormProps } from "../types/login";
 
 export default function LoginForm({
@@ -94,7 +95,7 @@ export default function LoginForm({
       >
         {loading ? (
           <div className="flex items-center justify-center space-x-2">
-            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+            <Spinner size="sm" color="text-white" />
             <span>Cargando...</span>
           </div>
         ) : (

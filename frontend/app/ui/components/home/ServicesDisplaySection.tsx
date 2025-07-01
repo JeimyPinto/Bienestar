@@ -1,6 +1,7 @@
 import React from 'react';
 import ServicesGallery from '../../../services/servicesGallery';
 import { ServicesDisplaySectionProps } from '../../../types/components';
+import Spinner from '../../spinner';
 
 
 export const ServicesDisplaySection: React.FC<ServicesDisplaySectionProps> = ({
@@ -51,7 +52,7 @@ export const ServicesDisplaySection: React.FC<ServicesDisplaySectionProps> = ({
 const LoadingState: React.FC = () => (
   <div className="flex flex-col items-center justify-center py-20">
     <div className="relative mb-8">
-      <div className="animate-spin rounded-full h-20 w-20 border-4 border-primary/20 border-t-primary"></div>
+      <Spinner className="h-20 w-20" />
       <div className="animate-ping absolute inset-0 rounded-full h-20 w-20 border-4 border-primary/30"></div>
       <div className="absolute inset-0 flex items-center justify-center">
         <span className="text-2xl animate-pulse-soft">🛠️</span>

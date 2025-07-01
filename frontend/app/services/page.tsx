@@ -8,6 +8,7 @@ import ServicesGallery from "./servicesGallery";
 import ServiceTable from "./serviceTable";
 import SectionHeader from "../ui/sectionHeader";
 import ServiceForm from "./serviceForm";
+import Spinner from "../ui/spinner";
 import { useAuth } from "../hooks/useAuth";
 import { useServices } from "../hooks/useServices";
 import { useMessages } from "../hooks/useMessages";
@@ -60,8 +61,8 @@ export default function ServicePage() {
                     </p>
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-16">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-cian border-opacity-50 mb-4"></div>
-                            <span className="text-cian text-lg">Cargando servicios...</span>
+                            <Spinner size="lg" />
+                            <span className="text-cian text-lg mt-4">Cargando servicios...</span>
                         </div>
                     ) : <ServicesGallery services={services} />}
                 </main>
