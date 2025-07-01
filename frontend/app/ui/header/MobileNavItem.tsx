@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { MobileNavItemProps } from  "../../../types/components"
+import { MobileNavItemProps } from  "../../types/components"
 
 
 export const MobileNavItem: React.FC<MobileNavItemProps> = ({

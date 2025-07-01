@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MobileUserDashboardProps } from '../../../types/components';
+import { MobileUserDashboardProps } from '../../types/components';
 
 
 export const MobileUserDashboard: React.FC<MobileUserDashboardProps> = ({

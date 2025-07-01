@@ -15,7 +15,7 @@ import {
   MobileUserDashboard,
   MobileLogoutButton,
   MobileLoginButton
-} from "./components/header/index"
+} from "../ui/header"
 
 export default function Header() {
   const { token, user, logout, refresh, isExpired } = useAuth();
