@@ -1,6 +1,6 @@
 import React from "react";
 import { UserFormAdminFieldsProps } from "../types/index";
-import { ROLES } from "../lib/roles";
+import { ROLES } from "../constants/roles";
 
 export default function UserFormAdminFields({ newUser, handleInputChange, groups, groupsLoading }: UserFormAdminFieldsProps) {
   return (

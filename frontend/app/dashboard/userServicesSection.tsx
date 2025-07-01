@@ -1,7 +1,7 @@
 import { useServices } from "../hooks/useServices";
 import { useMessages } from "../hooks/useMessages";
 import { useAuth } from "../hooks/useAuth";
-import { ROLES } from "../lib/roles";
+import { ROLES } from "../constants/roles";
 import ServicesGallery from "../services/servicesGallery";
 import ErrorMessage from "../ui/errorMessage";
 

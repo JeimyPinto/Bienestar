@@ -1,72 +1,13 @@
 import { useRouter } from "next/navigation";
-import { ROLES } from "../lib/roles";
-import { ActionButtonsProps,ActionCard } from "../types/components";
-
+import { ActionButtonsProps } ../lib/actionCardss";
+import { getAvailableActionCards } from "../constants/actionCards";
+../lib/actionCards
 export default function ActionButtons({ user }: ActionButtonsProps) {
   const router = useRouter();
 
   if (!user) return null;
 
-  const actionCards: ActionCard[] = [
-    {
-      title: "Usuarios",
-      description: "Gestionar usuarios del sistema",
-      path: "/users",
-      icon: "👥",
-      bgColor: "bg-primary",
-      hoverColor: "hover:bg-azul-cielo",
-      requiredRoles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-    },
-    {
-      title: "Servicios",
-      description: "Administrar servicios disponibles",
-      path: "/services",
-      icon: "🛠️",
-      bgColor: "bg-success",
-      hoverColor: "hover:bg-verde-bosque",
-      requiredRoles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-    },
-    {
-      title: "Fichas",
-      description: "Gestionar fichas de formación",
-      path: "/groups",
-      icon: "📚",
-      bgColor: "bg-secondary",
-      hoverColor: "hover:bg-azul-claro",
-      requiredRoles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-    },
-    {
-      title: "Remisiones",
-      description: "Administrar remisiones",
-      path: "/remissions",
-      icon: "📋",
-      bgColor: "bg-warning",
-      hoverColor: "hover:bg-coral",
-      requiredRoles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-    },
-    {
-      title: "Solicitudes",
-      description: "Gestionar solicitudes de remisión",
-      path: "/requests",
-      icon: "📝",
-      bgColor: "bg-info",
-      hoverColor: "hover:bg-azul-claro",
-      requiredRoles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR]
-    },
-    {
-      title: "Auditorías",
-      description: "Registro de actividades del sistema",
-      path: "/audits",
-      icon: "🔍",
-      bgColor: "bg-danger",
-      hoverColor: "hover:bg-coral",
-      requiredRoles: [ROLES.SUPERADMIN]
-    }
-  ];
-
-  const availableCards = actionCards.filter(card =>
-    card.requiredRoles.includes(user.role)
-  );
+  const availableCards = getAvailableActionCards(user.role);
 
   return (
     <section className="bg-gradient-card backdrop-blur-sm shadow-xl rounded-2xl p-6 mt-6 border border-azul-cielo/20 hover:shadow-2xl transition-all duration-300">

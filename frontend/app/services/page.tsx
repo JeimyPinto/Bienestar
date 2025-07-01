@@ -11,7 +11,7 @@ import ServiceForm from "./serviceForm";
 import { useAuth } from "../hooks/useAuth";
 import { useServices } from "../hooks/useServices";
 import { useMessages } from "../hooks/useMessages";
-import { ROLES } from "../lib/roles";
+import { ROLES } from "../constants/roles";
 
 export default function ServicePage() {
     const { user, token } = useAuth();

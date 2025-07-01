@@ -1,5 +1,5 @@
 import { useAuth } from "../hooks/useAuth";
-import { ROLES } from "../lib/roles";
+import { ROLES } from "../constants/roles";
 import ActionButtons from "./actionButtons";
 import UserServicesSection from "./userServicesSection";
 import QuickStats from "./quickStats";

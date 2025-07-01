@@ -19,21 +19,17 @@ const ServiceCardMobile: React.FC<ServiceCardMobileProps> = ({ services, loading
           aria-label={`Editar servicio ${service.name}`}
         >
           <div className="flex items-center gap-3">
-            {service.image ? (
-              <Image
-                src={
-                  service?.image
-                    ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/services/${service.image}`
-                    : "/images/ico-profile.svg"
-                }
-                alt={`${service.name} avatar`}
-                width={48}
-                height={48}
-                className="w-12 h-12 rounded-lg object-cover border border-cian shadow"
-              />
-            ) : (
-              <span className="text-gray-400 italic">Sin imagen</span>
-            )}
+            <Image
+              src={
+              service?.image
+                ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/services/${service.image}`
+                : "/images/logo-sena.png"
+              }
+              alt={`${service.name} avatar`}
+              width={48}
+              height={48}
+              className="w-12 h-12 rounded-lg object-cover border border-cian shadow"
+            />
             <div>
               <div className="font-bold text-azul">{service.name}</div>
               <div className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${areaColors[service.area]}`}>

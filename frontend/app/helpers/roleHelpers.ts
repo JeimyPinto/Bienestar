@@ -1,4 +1,4 @@
-import { ROLES } from "../lib/roles";
+import { ROLES } from "../constants/roles";
 import { RoleDisplayConfig } from "../types/components"
 
 

@@ -83,6 +83,12 @@ export interface RequestTableSelectableProps<T = Request> extends RequestTableBa
     handleRowClick: (request: T) => void;
 }
 
+// Props específicos para tabla de historial
+export interface RequestHistoryTableProps {
+    requests: Request[];
+    loading?: boolean;
+}
+
 // Tipos concretos para cada tabla, usando las bases
 export interface RequestTableProps extends RequestTableEditableProps {
     onRequestUpdate?: () => void; // Cambiado: ahora solo notifica que hubo cambio

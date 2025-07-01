@@ -2,24 +2,26 @@
 
 import React, { useState, useRef } from "react";
 import { Request } from "../types/request";
-import ErrorMessage from "../ui/errorMessage";
-import SuccessMessage from "../ui/successMessage";
-import RequestTable from "./requestTable";
 import RequestForm from "./requestForm";
-import SectionHeader from "../ui/sectionHeader";
-import { getAll } from "../services/services/request"
+import RequestHistory from "./requestHistory";
+import SuccessMessage from "../ui/successMessage";
 import { useAuth } from "../hooks/useAuth";
+import { useRequests } from "../hooks/useRequests";
+import { useMessages } from "../hooks/useMessages";
 
 export default function RequestPage() {
+    const { user, token } = useAuth();
+    const { successMessage, errorMessage, clearSuccess, setErrorMessage, showSuccess } = useMessages();
+    const { requests, loading, refreshRequests } = useRequests({
+        token,
+        userId: user?.id,
+        onError: (message) => setErrorMessage(message)
+    });
+
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [requestToEdit, setRequestToEdit] = useState<Request | undefined>(undefined);
-    const [successMessage, setSuccessMessage] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [requests, setRequests] = useState<Request[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const {token} = useAuth();
 
     const openCreateDialog = () => {
         setMode("create");
@@ -28,69 +30,77 @@ export default function RequestPage() {
         setTimeout(() => dialogRef.current?.showModal(), 0);
     };
 
-    const closeDialog = () => {
+    const closeDialog = (createdRequest?: unknown) => {
         setIsFormOpen(false);
         dialogRef.current?.close();
-    };
-    
-    // Cargar solicitudes
-    const fetchRequests = React.useCallback(async () => {
-        setLoading(true)
-        const res = await getAll(token ?? undefined);
-        if (res.error) {
-            setErrorMessage(res.message);
-            setRequests(res.requests || []);
-        } else {
-            setSuccessMessage(res.message);
-            setRequests(res.requests || []);
+        
+        if (createdRequest) {
+            refreshRequests();
+            showSuccess("Solicitud procesada exitosamente");
         }
-        setLoading(false);
-    }, [token]);
-
-    React.useEffect(() => {
-        if(token) {
-            fetchRequests();
-        }
-    }, [token, fetchRequests]);
-
-    //Handler para éxito en RequestForm
-    const handleRequestFormSuccess = () => {
-        fetchRequests();
-        closeDialog();
     };
-
 
     return (
-        <>
-            <SectionHeader
-                title="Listado de Solicitudes"
-                buttonText="Añadir Nueva Solicitud"
-                onButtonClick={openCreateDialog}
-            />
-            {errorMessage && (
-                <ErrorMessage message={errorMessage} />
-            )}
-            {successMessage && (
-                <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
-            )}
-            <RequestTable 
-                requests={requests}
-                setRequests={setRequests}
-                setErrorMessage={setErrorMessage}
-                setSuccessMessage={setSuccessMessage}
-                loading={loading}
-                onRequestUpdate={handleRequestFormSuccess} // Ahora solo notifica y hace fetch
-            />
-            {isFormOpen && (
-                <RequestForm
-                    dialogRef={dialogRef}
-                    onClose={handleRequestFormSuccess} // Ahora pasa la solicitud creada/editada
-                    mode={mode}
-                    requestToEdit={requestToEdit}
-                    setErrorMessage={setErrorMessage}
-                    setSuccessMessage={setSuccessMessage}
+        <div className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-6">
+            <div className="container mx-auto px-4 max-w-7xl">
+                {/* Header de la página */}
+                <div className="mb-8">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-3xl font-bold text-azul-oscuro mb-2 flex items-center">
+                                    <span className="mr-3">📋</span>
+                                    Historial de Solicitudes
+                                </h1>
+                                <p className="text-azul-marino/70">
+                                    Gestiona y revisa todas tus solicitudes de remisión
+                                </p>
+                            </div>
+                            <button
+                                onClick={openCreateDialog}
+                                className="
+                                    bg-success hover:bg-verde-bosque text-white 
+                                    px-6 py-3 rounded-xl font-semibold transition-all duration-300
+                                    hover:shadow-lg hover:scale-105 flex items-center space-x-2
+                                    border border-success/30
+                                "
+                            >
+                                <span>➕</span>
+                                <span>Nueva Solicitud</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mensajes */}
+                {successMessage && (
+                    <div className="mb-6">
+                        <SuccessMessage
+                            message={successMessage}
+                            onClose={() => clearSuccess()}
+                        />
+                    </div>
+                )}
+
+                {/* Componente de historial */}
+                <RequestHistory
+                    requests={requests}
+                    loading={loading}
+                    errorMessage={errorMessage}
+                    onCreateRequest={openCreateDialog}
                 />
-            )}
-        </>
+
+                {/* Modal de formulario */}
+                {isFormOpen && (
+                    <RequestForm
+                        dialogRef={dialogRef}
+                        onClose={closeDialog}
+                        mode={mode}
+                        requestToEdit={requestToEdit}
+                        setErrorMessage={setErrorMessage}
+                    />
+                )}
+            </div>
+        </div>
     );
 }
