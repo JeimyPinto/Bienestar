@@ -1,8 +1,6 @@
 import React from 'react';
+import { MobileLogoutButtonProps } from "../../../types/components";
 
-interface MobileLogoutButtonProps {
-  onClick: () => void;
-}
 
 export const MobileLogoutButton: React.FC<MobileLogoutButtonProps> = ({ onClick }) => {
   return (

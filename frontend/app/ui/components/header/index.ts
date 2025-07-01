@@ -1,4 +1,3 @@
-// Componentes del Header
 export { NavLink } from './NavLink';
 export { UserDashboardLink } from './UserDashboardLink';
 export { LogoutButton } from './LogoutButton';

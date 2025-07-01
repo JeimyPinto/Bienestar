@@ -1,27 +1,6 @@
 import React, { useEffect } from "react";
 import { SuccessMessageProps } from "../types/components";
 
-// SuccessMessageStack permite mostrar varias notificaciones apiladas
-export function SuccessMessageStack({ messages, duration = 5000, onClose }: {
-  messages: string[];
-  duration?: number;
-  onClose?: (index: number) => void;
-}) {
-  if (!messages || messages.length === 0) return null;
-  return (
-    <div className="fixed top-20 right-4 flex flex-col gap-4 z-50">
-      {messages.map((msg, idx) => (
-        <SuccessMessage
-          key={msg + idx}
-          message={msg}
-          duration={duration}
-          onClose={onClose ? () => onClose(idx) : undefined}
-        />
-      ))}
-    </div>
-  );
-}
-
 const SuccessMessage: React.FC<SuccessMessageProps> = ({ message, duration = 5000, onClose }) => {
   useEffect(() => {
     if (!message) return;

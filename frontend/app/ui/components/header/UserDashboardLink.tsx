@@ -1,27 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { UserDashboardLinkProps } from '../../../types/components';
 
-interface User {
-  firstName?: string;
-  lastName?: string;
-  name?: string;
-  role?: string;
-  email?: string;
-  image?: string | null;
-}
-
-interface UserDashboardLinkProps {
-  user: User | null;
-  onClick?: () => void;
-}
-
-export const UserDashboardLink: React.FC<UserDashboardLinkProps> = ({ 
-  user, 
-  onClick 
+export const UserDashboardLink: React.FC<UserDashboardLinkProps> = ({
+  user,
+  onClick
 }) => {
-  const userName = user?.firstName ? user.firstName.split(" ")[0] : user?.name || "Usuario";
-  const userImage = user?.image 
+  const userName = user?.firstName ? user.firstName.split(" ")[0] : "Usuario";
+  const userImage = user?.image
     ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC || ""}/users/${user.image}`
     : "/images/ico-profile.svg";
 

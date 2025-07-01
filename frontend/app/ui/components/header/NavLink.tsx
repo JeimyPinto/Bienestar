@@ -1,12 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-}
+import {NavLinkProps} from '../../../types/components';
 
 export const NavLink: React.FC<NavLinkProps> = ({ 
   href, 

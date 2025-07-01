@@ -1,18 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
+import { MobileNavItemProps } from  "../../../types/components"
 
-interface MobileNavItemProps {
-  href: string;
-  icon: string;
-  children: React.ReactNode;
-  onClick?: () => void;
-}
 
-export const MobileNavItem: React.FC<MobileNavItemProps> = ({ 
-  href, 
-  icon, 
-  children, 
-  onClick 
+export const MobileNavItem: React.FC<MobileNavItemProps> = ({
+  href,
+  icon,
+  children,
+  onClick
 }) => {
   return (
     <li>

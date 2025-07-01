@@ -1,13 +1,7 @@
 import React from 'react';
 import ServicesGallery from '../../../services/servicesGallery';
-import { Service } from '../../../types/service';
+import { ServicesDisplaySectionProps } from '../../../types/components';
 
-interface ServicesDisplaySectionProps {
-  services: Service[];
-  loading: boolean;
-  errorMessage: string | null;
-  onRetry: () => void;
-}
 
 export const ServicesDisplaySection: React.FC<ServicesDisplaySectionProps> = ({
   services,
@@ -27,11 +21,11 @@ export const ServicesDisplaySection: React.FC<ServicesDisplaySectionProps> = ({
             </span>
           </span>
         </h1>
-        
+
         <div className="flex justify-center mb-6">
           <div className="w-32 h-2 bg-gradient-to-r from-primary via-success to-warning rounded-full animate-shimmer"></div>
         </div>
-        
+
         <p className="text-lg md:text-xl text-azul-marino/80 max-w-3xl mx-auto leading-relaxed">
           Descubre todo lo que tenemos preparado para acompañarte en tu crecimiento personal y académico
         </p>

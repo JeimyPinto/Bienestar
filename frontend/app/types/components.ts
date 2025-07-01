@@ -1,3 +1,5 @@
+import { User, Service } from '../types';
+
 export interface ErrorMessageProps {
   message: string;
   onRetry?: () => void;
@@ -30,4 +32,40 @@ export interface LoginButtonProps {
 }
 export interface LogoutButtonProps {
   onClick: () => void;
+}
+export interface MobileLoginButtonProps {
+  onClick?: () => void;
+}
+export interface MobileLogoutButtonProps {
+  onClick: () => void;
+}
+export interface MobileNavItemProps {
+  href: string;
+  icon: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+export interface ScrollTopButtonProps {
+  show: boolean;
+  onClick: () => void;
+}
+export interface MobileUserDashboardProps {
+  user: User | null;
+  onClick?: () => void;
+}
+export interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+}
+export interface UserDashboardLinkProps {
+  user: User | null;
+  onClick?: () => void;
+}
+export interface ServicesDisplaySectionProps {
+  services: Service[];
+  loading: boolean;
+  errorMessage: string | null;
+  onRetry: () => void;
 }

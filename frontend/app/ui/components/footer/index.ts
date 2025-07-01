@@ -1,4 +1,3 @@
-// Componentes del Footer
 export { RegionalInfo } from './RegionalInfo';
 export { CentralLogo } from './CentralLogo';
 export { ContactInfo } from './ContactInfo';

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LoginButtonProps } from "../../types/components";
+import { LoginButtonProps } from "../../../types/components";
 
 export const LoginButton: React.FC<LoginButtonProps> = ({ onClick }) => {
   return (
