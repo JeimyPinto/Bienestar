@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <main className="flex flex-col items-center justify-center min-h-[60vh] bg-gradient-to-br from-azul-cielo via-beige-claro to-azul-claro/20 px-2 py-8 sm:px-4 sm:py-12 md:py-16 rounded-xl shadow-xl mx-auto w-full max-w-7xl backdrop-blur-sm">
+      <main className="flex flex-col items-center justify-center min-h-[60vh] bg-gradient-to-br from-azul-oscuro via-azul-marino to-azul-claro/40 px-2 py-8 sm:px-4 sm:py-12 md:py-16 rounded-xl shadow-xl mx-auto w-full max-w-7xl backdrop-blur-sm">
         {token ? (
           <ActiveSessionMessage onLogout={logout} />
         ) : (
