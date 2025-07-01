@@ -26,7 +26,7 @@ export default function ServicesGallery({ services, message }: { services?: Serv
                 src={
                   service?.image
                     ? (process.env.NEXT_PUBLIC_URL_FILE_STATIC || "") + "/services/" + service.image
-                    : "/images/ico-profile.svg"
+                    : "/images/logo-sena.png"
                 }
                 alt={`Imagen del servicio ${service.name}`}
                 className="object-cover"

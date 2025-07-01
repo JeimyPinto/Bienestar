@@ -38,32 +38,59 @@ export default function RequestHistory({
   }, [successMessage]);
 
   return (
-    <section className="bg-white shadow-lg rounded-xl p-4 sm:p-6 mt-4 sm:mt-6 overflow-x-auto sm:max-w-[1400px] sm:mx-auto">
-      <div className="flex flex-col gap-4 mb-4 sm:flex-row sm:items-center sm:justify-between">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-        Historial de Solicitudes de Remisión
-      </h2>
-      <button
-        onClick={onCreateRequest}
-        className="bg-cian text-white px-4 py-2 rounded-md hover:bg-azul transition-all duration-200 font-semibold"
-      >
-        Nueva Solicitud
-      </button>
-      </div>
+    <section className="bg-white shadow-lg rounded-xl p-4 sm:p-6 mt-4 sm:mt-6 overflow-x-auto sm:max-w-[1400px] sm:mx-auto">      
       {showSuccess && successMessage && (
-      <div className="mb-4">
-        <SuccessMessage message={successMessage} duration={5000} onClose={() => setShowSuccess(false)} />
-      </div>
+        <div className="mb-4">
+          <SuccessMessage 
+            message={successMessage} 
+            duration={5000} 
+            onClose={() => setShowSuccess(false)} 
+          />
+        </div>
       )}
+      
       {errorMessage && (
-      <div className="mb-4">
-        <ErrorMessage message={errorMessage} />
-      </div>
+        <div className="mb-4">
+          <ErrorMessage message={errorMessage} />
+        </div>
       )}
-      {isMobile ? (
-        <RequestHistoryCard requests={requests} loading={loading} />
-      ) : (
-        <RequestHistoryTable requests={requests} loading={loading} />
+
+      {/* Mensaje informativo cuando no hay solicitudes */}
+      {!loading && !errorMessage && requests.length === 0 && (
+        <div className="bg-azul-cielo/10 border border-azul-cielo/30 rounded-xl p-8 text-center">
+          <div className="flex flex-col items-center">
+            <span className="text-6xl mb-4 opacity-60">📋</span>
+            <h3 className="text-xl font-semibold text-azul-oscuro mb-2">
+              No tienes solicitudes aún
+            </h3>
+            <p className="text-azul-marino/70 mb-6 max-w-md">
+              Cuando crees tu primera solicitud de remisión, aparecerá aquí. 
+              Puedes empezar haciendo clic en &quot;Nueva Solicitud&quot;.
+            </p>
+            <button
+              onClick={onCreateRequest}
+              className="
+                bg-primary hover:bg-azul-cielo text-white 
+                px-6 py-3 rounded-xl font-semibold transition-all duration-300
+                hover:shadow-lg hover:scale-105 flex items-center space-x-2
+              "
+            >
+              <span>🚀</span>
+              <span>Crear mi primera solicitud</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mostrar tabla/cards solo si hay solicitudes o está cargando */}
+      {(loading || requests.length > 0) && (
+        <>
+          {isMobile ? (
+            <RequestHistoryCard requests={requests} loading={loading} />
+          ) : (
+            <RequestHistoryTable requests={requests} loading={loading} />
+          )}
+        </>
       )}
     </section>
   );

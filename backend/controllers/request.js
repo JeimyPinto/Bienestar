@@ -96,21 +96,27 @@ class RequestController {
         try {
             const userId = req.params.id;
             if (!userId) {
-                const error = new Error("ID de usuario es requerido");
+                const error = new Error();
+                error.message =  "ID de usuario es requerido";
                 error.status = 400;
                 error.details = { userId: null };
                 throw error;
             }
             const requests = await requestService.getRequestsByUserId(userId);
+            
+            // Si no hay solicitudes, devolver array vacío con mensaje informativo
             if (!requests || requests.length === 0) {
-                const error = new Error("No se encontraron solicitudes para este usuario");
-                error.status = 404;
-                error.details = { requests: [] };
-                throw error;
+                return res.status(200).json({
+                    message: "No se encontraron solicitudes para este usuario",
+                    requests: [],
+                    isEmpty: true
+                });
             }
+            
             res.status(200).json({
-                message: "Solicitudes de remsión del usuario recuperadas con éxito",
+                message: "Solicitudes de remisión del usuario recuperadas con éxito",
                 requests,
+                isEmpty: false
             });
         } catch (error) {
             next(error);

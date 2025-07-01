@@ -20,17 +20,41 @@ export const useRequests = ({ token, userId, onError }: UseRequestsOptions): Use
     
     try {
       const res = await getRequestsByUserId(userId, token);
-      if (res.error || !res.requests) {
+      
+      // Si el backend retorna error explícito
+      if (res.error) {
         setRequests([]);
-        onErrorRef.current?.(res.message || "Error al cargar solicitudes");
-        return { error: true, message: res.message };
-      } else {
-        setRequests(res.requests);
-        return { error: false, message: res.message };
+        const errorMsg = res.message || "Error al cargar las solicitudes";
+        onErrorRef.current?.(errorMsg);
+        return { error: true, message: errorMsg };
       }
-    } catch {
+      
+      // Si no hay requests o está vacío
+      if (!res.requests || res.requests.length === 0) {
+        setRequests([]);
+        // No mostrar como error si es simplemente que no hay solicitudes
+        if (res.isEmpty) {
+          return { error: false, message: res.message || "No tienes solicitudes aún" };
+        }
+        return { error: false, message: "No hay solicitudes disponibles" };
+      }
+      
+      // Todo está bien, hay solicitudes
+      setRequests(res.requests);
+      return { error: false, message: res.message };
+      
+    } catch(error) {
+      console.error("Error en fetchRequests:", error);
+      let errorMsg = "Error interno del servidor";
+      
+      // Si es un error de parsing JSON, probablemente el servidor retornó HTML
+      if (error instanceof Error && error.message.includes("Unexpected token")) {
+        errorMsg = "Error de conexión con el servidor. Por favor, intenta de nuevo.";
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
+      
       setRequests([]);
-      const errorMsg = "Error al cargar solicitudes";
       onErrorRef.current?.(errorMsg);
       return { error: true, message: errorMsg };
     } finally {

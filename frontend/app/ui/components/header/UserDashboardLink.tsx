@@ -10,7 +10,7 @@ export const UserDashboardLink: React.FC<UserDashboardLinkProps> = ({
   const userName = user?.firstName ? user.firstName.split(" ")[0] : "Usuario";
   const userImage = user?.image
     ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC || ""}/users/${user.image}`
-    : "/images/ico-profile.svg";
+    : "/images/logo-sena.png";
 
   return (
     <Link

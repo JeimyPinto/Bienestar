@@ -99,7 +99,7 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                                             src={
                                                 user?.image
                                                     ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${user.image}`
-                                                    : "/images/ico-profile.svg"
+                                                    : "/images/logo-sena.png"
                                             }
                                             alt={`${user.firstName} avatar`}
                                             width={40}
