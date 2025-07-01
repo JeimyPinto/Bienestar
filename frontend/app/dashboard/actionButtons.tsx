@@ -1,20 +1,6 @@
 import { useRouter } from "next/navigation";
-import { User } from "../types/user";
 import { ROLES } from "../lib/roles";
-
-interface ActionButtonsProps {
-  user: User | null;
-}
-
-interface ActionCard {
-  title: string;
-  description: string;
-  path: string;
-  icon: string;
-  bgColor: string;
-  hoverColor: string;
-  requiredRoles: string[];
-}
+import { ActionButtonsProps,ActionCard } from "../types/components";
 
 export default function ActionButtons({ user }: ActionButtonsProps) {
   const router = useRouter();
@@ -78,17 +64,17 @@ export default function ActionButtons({ user }: ActionButtonsProps) {
     }
   ];
 
-  const availableCards = actionCards.filter(card => 
+  const availableCards = actionCards.filter(card =>
     card.requiredRoles.includes(user.role)
   );
 
   return (
-    <section className="bg-white shadow-lg rounded-2xl p-6 mt-6 border border-gray-100">
+    <section className="bg-gradient-card backdrop-blur-sm shadow-xl rounded-2xl p-6 mt-6 border border-azul-cielo/20 hover:shadow-2xl transition-all duration-300">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Panel de Administración</h2>
-        <p className="text-gray-600">Accede a las herramientas de gestión disponibles</p>
+        <h2 className="text-2xl font-bold text-azul-oscuro mb-2">Panel de Administración</h2>
+        <p className="text-azul-marino/80">Accede a las herramientas de gestión disponibles</p>
       </div>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {availableCards.map((card) => (
           <div
@@ -97,10 +83,11 @@ export default function ActionButtons({ user }: ActionButtonsProps) {
             className={`
               ${card.bgColor} ${card.hoverColor}
               text-white rounded-xl p-6 cursor-pointer
-              transform transition-all duration-200
-              hover:scale-105 hover:shadow-lg
-              focus:outline-none focus:ring-4 focus:ring-opacity-50
+              transform transition-all duration-300
+              hover:scale-105 hover:shadow-xl hover-lift
+              focus:outline-none focus:ring-4 focus:ring-primary/50
               group relative overflow-hidden
+              border border-white/20 backdrop-blur-sm
             `}
             role="button"
             tabIndex={0}
@@ -113,13 +100,13 @@ export default function ActionButtons({ user }: ActionButtonsProps) {
           >
             {/* Efecto de brillo sutil */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-10 transform -skew-x-12 transition-all duration-500 translate-x-[-100%] group-hover:translate-x-[100%]"></div>
-            
+
             <div className="relative z-10">
               <div className="text-3xl mb-3">{card.icon}</div>
               <h3 className="font-bold text-lg mb-2">{card.title}</h3>
               <p className="text-sm opacity-90 leading-relaxed">{card.description}</p>
             </div>
-            
+
             {/* Indicador de flecha */}
             <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-200">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,12 +116,12 @@ export default function ActionButtons({ user }: ActionButtonsProps) {
           </div>
         ))}
       </div>
-      
+
       {/* Información de rol */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <div className="flex items-center text-sm text-gray-600">
-          <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-          <span>Conectado como: <span className="font-medium text-gray-800">{user.role}</span></span>
+      <div className="mt-6 pt-4 border-t border-azul-cielo/30">
+        <div className="flex items-center text-sm text-azul-marino/80">
+          <div className="w-2 h-2 bg-success rounded-full mr-2 animate-pulse"></div>
+          <span>Conectado como: <span className="font-medium text-azul-oscuro">{user.role}</span></span>
         </div>
       </div>
     </section>

@@ -1,36 +1,19 @@
 import { useAuth } from "../hooks/useAuth";
-import { ROLES } from "../lib/roles";
+import { getCurrentTimeGreeting, getDayOfMonth, getAbbreviatedMonth } from "../helpers/timeHelpers";
+import { getRoleDisplay } from "../helpers/roleHelpers";
 
 export default function WelcomeBanner() {
   const { user } = useAuth();
 
   if (!user) return null;
 
-  const getCurrentTimeGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Buenos días";
-    if (hour < 18) return "Buenas tardes";
-    return "Buenas noches";
-  };
-
-  const getRoleDisplay = (role: string) => {
-    switch (role) {
-      case ROLES.SUPERADMIN:
-        return { title: "Superadministrador", emoji: "👑", gradient: "from-magenta to-coral" };
-      case ROLES.ADMIN:
-        return { title: "Administrador", emoji: "⚡", gradient: "from-primary to-azul-cielo" };
-      case ROLES.INSTRUCTOR:
-        return { title: "Instructor", emoji: "🎓", gradient: "from-success to-verde-bosque" };
-      default:
-        return { title: "Usuario", emoji: "👤", gradient: "from-neutral to-azul-marino" };
-    }
-  };
-
   const roleInfo = getRoleDisplay(user.role);
   const greeting = getCurrentTimeGreeting();
+  const dayOfMonth = getDayOfMonth();
+  const month = getAbbreviatedMonth();
 
   return (
-    <div className={`bg-gradient-to-r ${roleInfo.gradient} rounded-2xl p-6 mb-6 text-white shadow-lg`}>
+    <div className={`bg-gradient-to-r ${roleInfo.gradient} rounded-2xl p-6 mb-6 text-white shadow-xl border border-white/20 backdrop-blur-sm hover:shadow-2xl transition-all duration-300`}>
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center mb-2">
@@ -43,18 +26,18 @@ export default function WelcomeBanner() {
             Bienvenido al panel de {roleInfo.title.toLowerCase()}
           </p>
           <div className="flex items-center text-sm text-white/80">
-            <span className="w-2 h-2 bg-success rounded-full mr-2 animate-pulse"></span>
+            <span className="w-2 h-2 bg-success rounded-full mr-2 animate-pulse-soft"></span>
             Sistema activo y funcionando
           </div>
         </div>
         
         <div className="hidden sm:block">
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center border border-white/30 hover:bg-white/30 transition-all duration-300">
             <div className="text-2xl font-bold mb-1">
-              {new Date().toLocaleDateString('es-ES', { day: '2-digit' })}
+              {dayOfMonth}
             </div>
             <div className="text-sm opacity-90">
-              {new Date().toLocaleDateString('es-ES', { month: 'short' })}
+              {month}
             </div>
           </div>
         </div>

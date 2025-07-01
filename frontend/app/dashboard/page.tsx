@@ -54,7 +54,7 @@ export default function DashboardPage() {
           onClose={() => clearSuccess()}
         />
       )}
-      <main className="min-h-screen bg-gray-100 py-4 sm:py-8 px-2 sm:px-0">
+      <main className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-4 sm:py-8 px-2 sm:px-0">
         <div className="container mx-auto max-w-8xl px-2 sm:px-4">
           <UserCard user={user} />
           <RequestHistory

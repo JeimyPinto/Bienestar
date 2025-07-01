@@ -69,3 +69,25 @@ export interface ServicesDisplaySectionProps {
   errorMessage: string | null;
   onRetry: () => void;
 }
+export interface ActiveSessionMessageProps {
+  onLogout: () => void;
+}
+export interface ActionButtonsProps {
+  user: User | null;
+}
+export interface ActionCard {
+  title: string;
+  description: string;
+  path: string;
+  icon: string;
+  bgColor: string;
+  hoverColor: string;
+  requiredRoles: string[];
+}
+export interface RoleDisplayConfig {
+  title: string;
+  emoji: string;
+  gradient: string;
+  color: string;
+  description: string;
+}
