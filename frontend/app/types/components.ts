@@ -91,3 +91,8 @@ export interface RoleDisplayConfig {
   color: string;
   description: string;
 }
+export interface SpinnerProps {
+  className?: string;
+  size?: "sm" | "md" | "lg" | "xl";
+  color?: "primary" | "secondary" | "success" | "warning" | "danger" | "azul-claro" | "azul-oscuro" | "verde-corporativo" | "coral" | "cian";
+}
