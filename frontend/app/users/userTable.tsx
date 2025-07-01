@@ -3,6 +3,7 @@ import { User, UserTableProps } from "../types"
 import UserTableDesktop from "./userTableDesktop"
 import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
+import PaginationControls from "./paginationControls"
 import { useColumnSorter } from "../lib/useColumnSorter"
 import { filterUsers } from "../lib"
 import { useFilter } from "../hooks/useFilter"
@@ -37,8 +38,9 @@ export default function UserTable({
     }
 
     return (
-        <section className="w-full max-w-8xl mx-auto px-2 py-6">
-            <div className="flex flex-col gap-4">
+        <section className="w-full max-w-full mx-auto">
+            <div className="flex flex-col gap-6">
+                {/* Barra de filtros */}
                 <UserTableFilterBar
                     limit={limit}
                     setLimit={setLimit}
@@ -46,8 +48,9 @@ export default function UserTable({
                     filter={filter}
                     setFilter={setFilter}
                 />
-                {/* Desktop view */}
-                <div className="hidden sm:block">
+                
+                {/* Vista de escritorio */}
+                <div className="hidden lg:block">
                     <UserTableDesktop
                         users={sortedFilteredUsers}
                         loading={loading}
@@ -61,13 +64,24 @@ export default function UserTable({
                         setCurrentPage={setCurrentPage}
                     />
                 </div>
-                {/* Mobile view */}
-                <div className="sm:hidden flex flex-col gap-4">
+                
+                {/* Vista móvil/tablet */}
+                <div className="lg:hidden">
                     <UserCardMobile
-                        users={filteredUsers}
+                        users={sortedFilteredUsers}
                         handleRowClick={handleRowClick}
                         loading={loading}
                     />
+                    
+                    {/* Paginación para móvil */}
+                    {!loading && sortedFilteredUsers.length > 0 && (
+                        <PaginationControls
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            totalUsers={totalUsers}
+                            setCurrentPage={setCurrentPage}
+                        />
+                    )}
                 </div>
             </div>
         </section>

@@ -5,6 +5,7 @@ import UserTable from "./userTable"
 import UserForm from "./userForm"
 import ErrorMessage from "../ui/errorMessage";
 import SuccessMessage from "../ui/successMessage";
+import IcoBack from "../ui/icoBack";
 import { useAuth } from "../hooks/useAuth";
 import { useUsers } from "../hooks/useUsers";
 import { useModal } from "../hooks/useModal";
@@ -71,28 +72,33 @@ export default function UsersPage() {
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header de la página */}
                 <div className="mb-8">
-                    <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-3xl font-bold text-azul-oscuro mb-2 flex items-center">
-                                    <span className="mr-3">👥</span>
-                                    Gestión de Usuarios
-                                </h1>
-                                <p className="text-azul-marino/70">
-                                    Administra los usuarios del sistema de bienestar
-                                </p>
+                    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div className="flex items-center space-x-3 sm:space-x-4">
+                                <IcoBack href="/dashboard" className="flex-shrink-0" />
+                                <div className="min-w-0 flex-1">
+                                    <h1 className="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-1 sm:mb-2 flex items-center">
+                                        <span className="mr-2 sm:mr-3">👥</span>
+                                        <span className="truncate">Gestión de Usuarios</span>
+                                    </h1>
+                                    <p className="text-sm sm:text-base text-azul-marino/70">
+                                        Administra los usuarios del sistema de bienestar
+                                    </p>
+                                </div>
                             </div>
                             <button
                                 onClick={handleOpenCreate}
                                 className="
                                     bg-success hover:bg-verde-bosque text-white 
-                                    px-6 py-3 rounded-xl font-semibold transition-all duration-300
-                                    hover:shadow-lg hover:scale-105 flex items-center space-x-2
-                                    border border-success/30
+                                    px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-semibold transition-all duration-300
+                                    hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2
+                                    border border-success/30 flex-shrink-0
+                                    text-sm sm:text-base w-full sm:w-auto
                                 "
                             >
                                 <span>➕</span>
-                                <span>Añadir Usuario</span>
+                                <span className="hidden xs:inline sm:hidden">Añadir</span>
+                                <span className="xs:hidden sm:inline">Añadir Usuario</span>
                             </button>
                         </div>
                     </div>

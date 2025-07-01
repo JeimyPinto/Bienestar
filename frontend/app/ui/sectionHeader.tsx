@@ -5,19 +5,28 @@ import IcoBack from "./icoBack";
 
 export default function SectionHeader({ title, buttonText, onButtonClick }: SectionHeaderProps) {
   return (
-    <main className="flex flex-col md:flex-row justify-between items-center mb-8 p-6 bg-gray-100 rounded-lg shadow-md">
-      <div className="flex items-center gap-4 mb-4 md:mb-0">
+    <main className="flex flex-col sm:flex-row justify-between items-center mb-8 p-4 sm:p-6 bg-white rounded-2xl shadow-lg border border-azul-cielo/20">
+      <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-0 w-full sm:w-auto">
         <IcoBack className="flex-shrink-0" />
-        <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+        <h1 className="text-2xl sm:text-3xl font-bold text-azul-oscuro truncate">
           {title}
         </h1>
       </div>
       {buttonText && (
         <button
           onClick={onButtonClick}
-          className="bg-gradient-to-r from-azul to-magenta text-white py-2 px-4 rounded-md shadow-md hover:from-green-500 hover:to-blue-500 transition-all duration-300 flex-shrink-0"
+          className="
+            bg-success hover:bg-verde-bosque text-white 
+            py-2.5 px-4 sm:py-3 sm:px-6 rounded-xl 
+            font-semibold shadow-md hover:shadow-lg 
+            transition-all duration-300 
+            hover:scale-105 flex items-center space-x-2
+            border border-success/30 w-full sm:w-auto
+            justify-center sm:justify-start
+          "
         >
-          {buttonText}
+          <span>➕</span>
+          <span className="text-sm sm:text-base">{buttonText}</span>
         </button>
       )}
     </main>

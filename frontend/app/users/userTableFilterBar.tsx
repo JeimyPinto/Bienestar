@@ -8,42 +8,75 @@ const UserTableFilterBar: React.FC<UserTableFilterBarProps> = ({
   filter,
   setFilter,
 }) => (
-  <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 bg-white/80 p-4 rounded-lg shadow border border-cian">
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-700 font-medium">Mostrar</label>
-      <select
-        value={limit}
-        onChange={e => {
-          setLimit(Number(e.target.value));
-          setCurrentPage(1);
-        }}
-        className="border border-cian rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-cian bg-white transition shadow-sm hover:border-azul"
-      >
-        {[10, 25, 50, 100].map(opt => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
-      <span className="text-sm text-gray-700">por página</span>
-    </div>
-    <div className="flex items-center gap-2 w-full md:w-auto">
-      <input
-        type="text"
-        value={filter}
-        onChange={e => setFilter(e.target.value)}
-        placeholder="🔍 Buscar por nombre, apellido o documento"
-        className="border border-cian rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cian min-w-[250px] w-full md:w-72 bg-white transition shadow-sm hover:border-azul placeholder-gray-400"
-      />
-      {filter && (
-        <button
-          onClick={() => setFilter("")}
-          className="ml-1 px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-600 text-xs font-semibold transition"
-          title="Limpiar filtro"
+  <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
+    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+      {/* Control de cantidad por página */}
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-medium text-azul-oscuro flex items-center">
+          <span className="mr-2">📊</span>
+          Mostrar
+        </span>
+        <select
+          value={limit}
+          onChange={e => {
+            setLimit(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          className="
+            border-2 border-azul-cielo/30 rounded-lg px-3 py-2 text-sm 
+            focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
+            bg-white text-azul-oscuro transition-all duration-300 hover:border-primary/50
+          "
         >
-          Limpiar
-        </button>
-      )}
+          {[10, 25, 50, 100].map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+        <span className="text-sm text-azul-marino/70">por página</span>
+      </div>
+
+      {/* Barra de búsqueda */}
+      <div className="flex items-center gap-3 w-full lg:w-auto">
+        <div className="relative flex-1 lg:w-80">
+          <input
+            type="text"
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            placeholder="🔍 Buscar por nombre, apellido o documento"
+            className="
+              w-full border-2 border-azul-cielo/30 rounded-lg px-4 py-2.5 text-sm 
+              focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
+              bg-white text-azul-oscuro placeholder-azul-marino/50
+              transition-all duration-300 hover:border-primary/50
+              pr-12
+            "
+          />
+          {filter && (
+            <button
+              onClick={() => setFilter("")}
+              className="
+                absolute right-3 top-1/2 transform -translate-y-1/2
+                w-6 h-6 rounded-full bg-azul-marino/20 hover:bg-danger/20
+                text-azul-marino hover:text-danger transition-all duration-300
+                flex items-center justify-center text-xs font-bold
+              "
+              title="Limpiar filtro"
+              aria-label="Limpiar búsqueda"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        
+        {filter && (
+          <div className="hidden sm:flex items-center text-xs text-azul-marino/60 bg-info/10 px-3 py-2 rounded-lg border border-info/20">
+            <span className="mr-1">🔍</span>
+            Filtrando
+          </div>
+        )}
+      </div>
     </div>
-  </header>
+  </div>
 );
 
 export default UserTableFilterBar;

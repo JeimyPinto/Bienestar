@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Image from "next/image";
 import { UserFormProps, User } from "../types/index"
 import { create, update } from "../services/services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
+import FormModalHeader from "../components/FormModalHeader";
 import { useAuth } from "../hooks/useAuth";
 import { useGroups } from "../hooks/useGroups";
 import { useFormInitialization } from "../hooks/useFormInitialization";
@@ -130,81 +130,90 @@ export default function UserForm(props: UserFormProps) {
     return (
         <dialog
             ref={dialogRef}
-            className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-3xl mx-auto"
+            className="rounded-xl shadow-2xl bg-gradient-to-br from-white via-beige-claro/20 to-azul-cielo/10 border border-azul-claro/20 w-full max-w-4xl mx-auto backdrop-blur-sm"
         >
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-azul">
-                    {mode === "create"
-                        ? "          Añadir Nuevo Usuario"
-                        : "Editar Usuario"}
-                </h2>
-                <button
-                    onClick={onClose}
-                    className="text-cian hover:text-azul transition-colors flex items-center justify-center"
-                    aria-label="Cerrar"
-                    type="button"
-                >
-                    <Image src="/images/ico-close.svg" alt="Cerrar" width={28} height={28} />
-                </button>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-8">
-                <fieldset disabled={isSubmitting} className="space-y-8">
-                    <div className="flex gap-6">
-                        <div className="w-full lg:w-2/3">
-                            <UserFormPersonalInfoFields
-                                newUser={newUser}
-                                handleInputChange={handleInputChange}
-                            />
+            {/* Header con gradiente */}
+            <FormModalHeader
+                mode={mode}
+                entityName="Usuario"
+                onClose={onClose}
+            />
+
+            {/* Contenido del formulario */}
+            <div className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <fieldset disabled={isSubmitting} className="space-y-6">
+                        {/* Layout responsivo para campos principales e imagen */}
+                        <div className="flex flex-col lg:flex-row gap-6">
+                            <div className="flex-1 lg:w-2/3">
+                                <UserFormPersonalInfoFields
+                                    newUser={newUser}
+                                    handleInputChange={handleInputChange}
+                                />
+                            </div>
+                            <div className="lg:w-1/3 flex justify-center lg:justify-start">
+                                <UserFormImageField
+                                    mode={mode}
+                                    newUser={newUser}
+                                    previewImage={previewImage}
+                                    setNewUser={setNewUser}
+                                    setPreviewImage={setPreviewImage}
+                                />
+                            </div>
                         </div>
-                        <div className="w-full flex items-center justify-center lg:w-1/3">
-                            <UserFormImageField
-                                mode={mode}
-                                newUser={newUser}
-                                previewImage={previewImage}
-                                setNewUser={setNewUser}
-                                setPreviewImage={setPreviewImage}
-                            />
+
+                        {/* Campos administrativos */}
+                        <UserFormAdminFields
+                            newUser={newUser}
+                            handleInputChange={handleInputChange}
+                            groups={groups}
+                            groupsLoading={groupsLoading}
+                        />
+                    </fieldset>
+
+                    {/* Mensaje de error */}
+                    {formError && (
+                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-coral p-4 rounded-lg">
+                            <div className="flex items-center">
+                                <svg className="w-5 h-5 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                                    />
+                                </svg>
+                                <p className="text-coral font-medium">{formError}</p>
+                            </div>
                         </div>
-                    </div>
-                    <UserFormAdminFields
-                        newUser={newUser}
-                        handleInputChange={handleInputChange}
-                        groups={groups}
-                        groupsLoading={groupsLoading}
-                    />
-                </fieldset>
-                {formError && (
-                    <div className="text-red-600 text-center font-semibold">{formError}</div>
-                )}
-                <div className="flex justify-center gap-4">
-                    <button 
-                        type="button" 
-                        onClick={onClose}
-                        disabled={isSubmitting}
-                        className="bg-gray-500 text-blanco py-2 px-6 rounded-lg shadow-md hover:bg-gray-600 transition-all duration-300 focus:ring-4 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        Cancelar
-                    </button>
-                    <button 
-                        type="submit" 
-                        disabled={isSubmitting}
-                        className="bg-cian text-blanco py-2 px-6 rounded-lg shadow-md hover:bg-azul transition-all duration-300 focus:ring-4 focus:ring-cian disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                        {isSubmitting && (
-                            <div className="flex items-center justify-center">
-                                <svg className="animate-spin h-4 w-4 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    )}
+
+                    {/* Botones de acción */}
+                    <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">
+                        <button 
+                            type="button" 
+                            onClick={onClose}
+                            disabled={isSubmitting}
+                            className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-medium rounded-lg border border-gray-300 hover:from-gray-200 hover:to-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            type="submit" 
+                            disabled={isSubmitting}
+                            className="px-6 py-3 bg-gradient-to-r from-azul-claro to-azul-oscuro text-white font-medium rounded-lg hover:from-azul-oscuro hover:to-azul-marino focus:outline-none focus:ring-2 focus:ring-azul-claro focus:ring-offset-2 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                        >
+                            {isSubmitting && (
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
-                            </div>
-                        )}
-                        {isSubmitting 
-                            ? (mode === "create" ? "Guardando..." : "Actualizando...")
-                            : (mode === "create" ? "Guardar" : "Actualizar")
-                        }
-                    </button>
-                </div>
-            </form>
+                            )}
+                            {isSubmitting 
+                                ? (mode === "create" ? "Guardando..." : "Actualizando...")
+                                : (mode === "create" ? "Guardar Usuario" : "Actualizar Usuario")
+                            }
+                        </button>
+                    </div>
+                </form>
+            </div>
         </dialog>
     );
 }

@@ -1,27 +1,40 @@
 import Image from "next/image"
 import { areaColors } from "../styles/areaColors"
 import { Service } from "../types/service"
-import ErrorMessage from "../ui/errorMessage"
 import { formatDate } from "../lib/formateDate"
 
 export default function ServicesGallery({ services, message }: { services?: Service[]; message?: string }) {
   if (!services || services.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-4">
-        <ErrorMessage message={message || "Servicios no disponibles."} />
+      <div className="flex flex-col items-center justify-center p-8">
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20 max-w-md">
+          <div className="text-center">
+            <span className="text-6xl mb-4 block">🔍</span>
+            <h3 className="text-xl font-bold text-azul-oscuro mb-2">No hay servicios disponibles</h3>
+            <p className="text-azul-marino/70">
+              {message || "Actualmente no hay servicios disponibles para mostrar."}
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <section aria-label="Galería de servicios" className="w-full flex flex-col items-center justify-center p-4 bg-gray-50">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full max-w-7xl">
+    <section aria-label="Galería de servicios" className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {services.map((service) => (
           <div
             key={service.id}
-            className="bg-white shadow-xl rounded-2xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl border border-gray-100 flex flex-col"
+            className="
+              bg-white shadow-lg rounded-2xl overflow-hidden 
+              transform transition-all duration-300 
+              hover:scale-105 hover:shadow-xl 
+              border border-azul-cielo/20 flex flex-col
+              group
+            "
           >
-            <div className="relative w-full h-48">
+            <div className="relative w-full h-48 overflow-hidden">
               <Image
                 src={
                   service?.image
@@ -29,28 +42,38 @@ export default function ServicesGallery({ services, message }: { services?: Serv
                     : "/images/logo-sena.png"
                 }
                 alt={`Imagen del servicio ${service.name}`}
-                className="object-cover"
+                className="object-cover group-hover:scale-110 transition-transform duration-300"
                 fill
                 sizes="(max-width: 768px) 100vw, 400px"
                 priority={true}
-                style={{ borderBottom: "4px solid blanco" }}
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-azul-marino/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <div className="p-5 flex flex-col flex-1">
-              <h2 className="text-lg font-bold mb-1 text-gray-900 break-words">{service.name}</h2>
+              <h2 className="text-lg font-bold mb-2 text-azul-oscuro break-words group-hover:text-primary transition-colors duration-300">
+                {service.name}
+              </h2>
               <div
-                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${areaColors[service.area]}`}
+                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3 w-fit ${areaColors[service.area]}`}
               >
                 {service.area}
               </div>
-              <p className="text-gray-600 text-sm mb-3 line-clamp-3">{service.description}</p>
-              <div className="mt-auto flex flex-col gap-1 text-xs text-gray-500">
-                <span>
-                  <span className="font-medium">Actualizado:</span> {formatDate(service.updatedAt)}
-                </span>
-                <span>
-                  <span className="font-medium">Publicado:</span> {formatDate(service.createdAt)}
-                </span>
+              <p className="text-azul-marino/70 text-sm mb-4 line-clamp-3 flex-1">
+                {service.description}
+              </p>
+              <div className="mt-auto flex flex-col gap-2 text-xs text-azul-marino/60 border-t border-azul-cielo/20 pt-3">
+                <div className="flex items-center space-x-2">
+                  <span className="text-primary">📅</span>
+                  <span>
+                    <span className="font-medium">Actualizado:</span> {formatDate(service.updatedAt)}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-success">✨</span>
+                  <span>
+                    <span className="font-medium">Publicado:</span> {formatDate(service.createdAt)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

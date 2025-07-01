@@ -52,7 +52,7 @@ export default function ServiceForm(props: ServiceFormProps) {
         }
     }, [mode, serviceToEdit]);
 
-    function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
         const { name, value } = e.target;
         setNewService((prevService) => ({
             ...prevService,
@@ -128,49 +128,65 @@ export default function ServiceForm(props: ServiceFormProps) {
     return (
         <dialog
             ref={dialogRef}
-            className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-lg mx-auto"
+            className="rounded-2xl shadow-2xl p-0 bg-white w-full max-w-4xl mx-auto border border-azul-cielo/20 backdrop-blur-sm"
         >
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-azul">
-                    {mode === "create" ? "Crear Servicio" : "Editar Servicio"}
-                </h2>
-                <button
-                    onClick={closeDialog}
-                    className="text-cian hover:text-azul transition-colors p-1"
-                    type="button"
-                    aria-label="Cerrar"
-                >
-                    <Image
-                        src="/images/ico-close.svg"
-                        alt="Cerrar"
-                        width={24}
-                        height={24}
-                    />
-                </button>
+            <div className="bg-gradient-to-r from-primary to-azul-cielo p-6 rounded-t-2xl">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-white">
+                        {mode === "create" ? "✨ Crear Nuevo Servicio" : "✏️ Editar Servicio"}
+                    </h2>
+                    <button
+                        onClick={closeDialog}
+                        className="text-white hover:text-azul-cielo transition-colors p-2 rounded-lg hover:bg-white/20"
+                        type="button"
+                        aria-label="Cerrar"
+                    >
+                        <Image
+                            src="/images/ico-close.svg"
+                            alt="Cerrar"
+                            width={24}
+                            height={24}
+                            className="filter invert brightness-0"
+                        />
+                    </button>
+                </div>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="flex gap-6">
-                    <div className="w-full lg:w-2/3">
-                        <fieldset className="border border-cian rounded-lg p-4">
-                            <legend className="px-2 text-cian font-semibold">Información Principal</legend>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <div className="flex flex-col lg:flex-row gap-6">
+                    <div className="flex-1 lg:w-2/3">
+                        <fieldset className="border-2 border-azul-cielo/30 rounded-xl p-4 bg-gradient-to-br from-white to-azul-cielo/5">
+                            <legend className="px-3 text-azul-oscuro font-semibold flex items-center">
+                                <span className="mr-2">📝</span>
+                                Información Principal
+                            </legend>
                             <ServiceFormMainFields
                                 newService={newService}
                                 handleInputChange={handleInputChange}
                             />
                         </fieldset>
                     </div>
-                    <div className="w-full flex items-center justify-center lg:w-1/3">
-                        <fieldset className="border border-cian rounded-lg p-4 w-full">
-                            <legend className="px-2 text-cian font-semibold">Imagen de Perfil</legend>
+                    
+                    <div className="lg:w-1/3">
+                        <fieldset className="border-2 border-success/30 rounded-xl p-4 bg-gradient-to-br from-white to-success/5 h-fit">
+                            <legend className="px-3 text-azul-oscuro font-semibold flex items-center">
+                                <span className="mr-2">🖼️</span>
+                                Imagen del Servicio
+                            </legend>
                             {previewImage && (
                                 <div className="mb-4 flex justify-center">
-                                    <Image
-                                        src={previewImage}
-                                        alt={`${newService.name} avatar`}
-                                        width={96}
-                                        height={96}
-                                        className="w-24 h-24 rounded-full object-cover"
-                                    />
+                                    <div className="relative">
+                                        <Image
+                                            src={previewImage}
+                                            alt={`${newService.name} imagen`}
+                                            width={120}
+                                            height={120}
+                                            className="w-30 h-30 rounded-xl object-cover border-2 border-azul-cielo/30 shadow-md"
+                                        />
+                                        <div className="absolute -top-2 -right-2 bg-success text-white rounded-full p-1">
+                                            <span className="text-xs">✓</span>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                             <input
@@ -178,13 +194,25 @@ export default function ServiceForm(props: ServiceFormProps) {
                                 name="file"
                                 accept="image/*"
                                 onChange={handleFileChange}
-                                className="w-full border border-cian rounded-lg p-2 focus:ring-2 focus:ring-cian focus:outline-none"
+                                className="
+                                    w-full border-2 border-azul-cielo/30 rounded-lg p-3 
+                                    focus:ring-2 focus:ring-primary focus:border-primary 
+                                    focus:outline-none transition-all duration-300
+                                    hover:border-primary/50 bg-white
+                                    file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0
+                                    file:bg-primary file:text-white file:font-medium
+                                    file:hover:bg-azul-oscuro file:transition-colors file:cursor-pointer
+                                "
                             />
                         </fieldset>
                     </div>
                 </div>
-                <fieldset className="border border-cian rounded-lg p-4">
-                    <legend className="px-2 text-cian font-semibold">Datos Administrativos</legend>
+                
+                <fieldset className="border-2 border-warning/30 rounded-xl p-4 bg-gradient-to-br from-white to-warning/5">
+                    <legend className="px-3 text-azul-oscuro font-semibold flex items-center">
+                        <span className="mr-2">⚙️</span>
+                        Datos Administrativos
+                    </legend>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <ServiceFormAdminFields
                             newService={newService}
@@ -193,25 +221,44 @@ export default function ServiceForm(props: ServiceFormProps) {
                         />
                     </div>
                 </fieldset>
+                
                 {formError && (
-                    <div className="text-red-600 text-center font-semibold">{formError}</div>
+                    <div className="bg-danger/10 border border-danger/30 text-danger rounded-xl p-4 text-center font-medium flex items-center justify-center">
+                        <span className="mr-2">❌</span>
+                        {formError}
+                    </div>
                 )}
                 {formSuccess && (
-                    <div className="text-green-600 text-center font-semibold">{formSuccess}</div>
+                    <div className="bg-success/10 border border-success/30 text-success rounded-xl p-4 text-center font-medium flex items-center justify-center">
+                        <span className="mr-2">✅</span>
+                        {formSuccess}
+                    </div>
                 )}
-                <div className="flex justify-end">
-                    <button
-                        type="submit"
-                        className="px-4 py-2 bg-cian text-blanco rounded-lg hover:bg-azul transition-colors"
-                    >
-                        {mode === "create" ? "Crear Servicio" : "Actualizar Servicio"}
-                    </button>
+                
+                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-azul-cielo/20">
                     <button
                         type="button"
                         onClick={closeDialog}
-                        className="ml-4 px-4 py-2 bg-gris text-blanco rounded-lg hover:bg-gris-claro transition-colors"
+                        className="
+                            px-6 py-3 bg-neutral hover:bg-beige-claro text-azul-oscuro 
+                            rounded-xl font-medium transition-all duration-300
+                            hover:shadow-md border border-azul-cielo/30
+                            order-2 sm:order-1
+                        "
                     >
                         Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="
+                            px-6 py-3 bg-success hover:bg-verde-bosque text-white 
+                            rounded-xl font-medium transition-all duration-300
+                            hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2
+                            border border-success/30 order-1 sm:order-2
+                        "
+                    >
+                        <span>{mode === "create" ? "✨" : "💾"}</span>
+                        <span>{mode === "create" ? "Crear Servicio" : "Actualizar Servicio"}</span>
                     </button>
                 </div>
             </form>

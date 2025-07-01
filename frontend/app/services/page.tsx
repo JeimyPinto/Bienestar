@@ -54,54 +54,93 @@ export default function ServicePage() {
     return (
         <>
             {(!user || user?.role === ROLES.USER) ? (
-                <main className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-br from-cian via-white to-azul px-2 py-8 sm:px-6 sm:py-12 md:px-10 md:py-16 shadow-xl mx-auto w-full max-w-full transition-all">
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-azul">Servicios Disponibles</h1>
-                    <p className="mb-6 text-center text-gray-700 max-w-5xl">
-                        Si no encuentras el servicio que buscas en este listado, puede ser porque actualmente no se está prestando. Algunos servicios, solo están disponibles por convocatoria (Ejemplo: Monitorias, subsidio de alimentación, apoyo socieconómico), mientras que otros están disponibles todo el tiempo.
-                    </p>
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-16">
-                            <Spinner size="lg" />
-                            <span className="text-cian text-lg mt-4">Cargando servicios...</span>
+                <main className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/10 py-6">
+                    <div className="container mx-auto px-4 max-w-7xl">
+                        {/* Header de la página para usuarios */}
+                        <div className="mb-8">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20 text-center">
+                                <div className="flex items-center justify-center mb-4">
+                                    <div className="bg-gradient-to-r from-primary to-azul-cielo p-3 rounded-full">
+                                        <span className="text-3xl">🛠️</span>
+                                    </div>
+                                </div>
+                                <h1 className="text-3xl font-bold text-azul-oscuro mb-3">
+                                    Servicios Disponibles
+                                </h1>
+                                <p className="text-azul-marino/70 max-w-4xl mx-auto leading-relaxed">
+                                    Si no encuentras el servicio que buscas en este listado, puede ser porque actualmente no se está prestando. 
+                                    Algunos servicios solo están disponibles por convocatoria (Ejemplo: Monitorias, subsidio de alimentación, apoyo socioeconómico), 
+                                    mientras que otros están disponibles todo el tiempo.
+                                </p>
+                            </div>
                         </div>
-                    ) : <ServicesGallery services={services} />}
+
+                        {/* Contenido principal */}
+                        {loading ? (
+                            <div className="flex flex-col items-center justify-center py-20">
+                                <div className="bg-white rounded-2xl shadow-lg p-8 border border-azul-cielo/20">
+                                    <Spinner size="lg" color="primary" />
+                                    <p className="text-primary text-lg mt-4 font-medium">
+                                        Cargando servicios disponibles...
+                                    </p>
+                                </div>
+                            </div>
+                        ) : (
+                            <ServicesGallery services={services} />
+                        )}
+                    </div>
                 </main>
             ) : (
-                <>
-                    <SectionHeader
-                        title="Listado de Servicios"
-                        buttonText="Añadir Nuevo Servicio"
-                        onButtonClick={openCreateDialog}
-                    />
-                    {errorMessage && <ErrorMessage message={errorMessage} />}
-                    {successMessage && (
-                        <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
-                    )}
-                    <ServiceTable
-                        services={services}
-                        loading={loading}
-                        setErrorMessage={setErrorMessage}
-                        setSuccessMessage={setSuccessMessage}
-                        onServiceUpdate={refreshServices}
-                        onEditService={(service) => {
-                            setMode("edit");
-                            setServiceToEdit(service);
-                            setIsFormOpen(true);
-                            setTimeout(() => dialogRef.current?.showModal(), 0);
-                        }}
-                    />
-                    {isFormOpen && (
-                        <ServiceForm
-                            dialogRef={dialogRef}
-                            closeDialog={closeDialog}
-                            onClose={handleServiceFormSuccess}
-                            mode={mode}
-                            serviceToEdit={serviceToEdit}
+                <div className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-6">
+                    <div className="container mx-auto px-4 max-w-7xl">
+                        <SectionHeader
+                            title="Listado de Servicios"
+                            buttonText="Añadir Nuevo Servicio"
+                            onButtonClick={openCreateDialog}
+                        />
+                        
+                        {/* Mensajes */}
+                        {errorMessage && (
+                            <div className="mb-6">
+                                <ErrorMessage message={errorMessage} />
+                            </div>
+                        )}
+                        {successMessage && (
+                            <div className="mb-6">
+                                <SuccessMessage 
+                                    message={successMessage} 
+                                    onClose={() => setSuccessMessage("")} 
+                                />
+                            </div>
+                        )}
+                        
+                        <ServiceTable
+                            services={services}
+                            loading={loading}
                             setErrorMessage={setErrorMessage}
                             setSuccessMessage={setSuccessMessage}
+                            onServiceUpdate={refreshServices}
+                            onEditService={(service) => {
+                                setMode("edit");
+                                setServiceToEdit(service);
+                                setIsFormOpen(true);
+                                setTimeout(() => dialogRef.current?.showModal(), 0);
+                            }}
                         />
-                    )}
-                </>
+                        
+                        {isFormOpen && (
+                            <ServiceForm
+                                dialogRef={dialogRef}
+                                closeDialog={closeDialog}
+                                onClose={handleServiceFormSuccess}
+                                mode={mode}
+                                serviceToEdit={serviceToEdit}
+                                setErrorMessage={setErrorMessage}
+                                setSuccessMessage={setSuccessMessage}
+                            />
+                        )}
+                    </div>
+                </div>
             )}
         </>
     );

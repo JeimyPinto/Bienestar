@@ -6,7 +6,7 @@ import { IcoBackProps } from "../types/components";
 
 const IcoBack: React.FC<IcoBackProps> = ({ href = "/dashboard", className = "" }) => {
   return (
-    <div className={`bg-azul p-2 rounded-lg hover:bg-cian hover:scale-105 transition-all duration-300 ${className}`}>
+    <div className={`bg-azul p-2 sm:p-3 rounded-lg hover:bg-cian hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg ${className}`}>
       <Link href={href} className="flex items-center justify-center">
         <Image
           src="/images/ico-back.svg"
@@ -15,7 +15,7 @@ const IcoBack: React.FC<IcoBackProps> = ({ href = "/dashboard", className = "" }
           alt="Volver"
           width={24}
           height={24}
-          className="hover:filter hover:brightness-0 hover:invert"
+          className="w-5 h-5 sm:w-6 sm:h-6 hover:filter hover:brightness-0 hover:invert transition-all duration-300"
         />
       </Link>
     </div>

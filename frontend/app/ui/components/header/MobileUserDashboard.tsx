@@ -19,36 +19,36 @@ export const MobileUserDashboard: React.FC<MobileUserDashboardProps> = ({
         href="/dashboard"
         onClick={onClick}
         className="
-          block p-3 sm:p-4 rounded-xl
+          block p-4 rounded-xl
           bg-gradient-to-r from-success to-verde-bosque
           text-white border border-success/30
           transition-all duration-300
-          hover:shadow-xl hover:scale-105 hover:translate-x-1
+          hover:shadow-xl hover:scale-105 hover:translate-x-2
           backdrop-blur-sm animate-fade-in-up
           focus-visible-custom
         "
       >
-        <div className="flex items-center space-x-3">
-          <div className="relative flex-shrink-0">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
             <Image
               src={userImage}
               alt={`Perfil de ${userName}`}
-              width={40}
-              height={40}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white/20"
+              width={48}
+              height={48}
+              className="rounded-full object-cover border-2 border-white/20"
               priority={false}
             />
-            <span className="absolute -bottom-1 -right-1 text-sm sm:text-lg">📊</span>
+            <span className="absolute -bottom-1 -right-1 text-lg">📊</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <span className="font-semibold text-base sm:text-lg block truncate">Dashboard</span>
+          <div className="flex-1">
+            <span className="font-semibold text-lg">Dashboard</span>
             {userName && (
-              <p className="text-xs sm:text-sm text-white/80 mt-1 truncate">
+              <p className="text-sm text-white/80 mt-1">
                 Bienvenido, {userName}
               </p>
             )}
             {user?.role && (
-              <p className="text-xs text-white/60 capitalize truncate">
+              <p className="text-xs text-white/60 capitalize">
                 {user.role}
               </p>
             )}
