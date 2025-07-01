@@ -7,7 +7,7 @@ import {
   AboutSection,
   ContactSection,
   ServicesDisplaySection
-} from "./ui/components/home";
+} from "./components/home";
 
 export default function Page() {
   const {

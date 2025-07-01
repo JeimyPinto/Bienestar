@@ -8,7 +8,7 @@ import {
   ScrollTopButton,
   FooterDivider,
   FooterBottom
-} from "./components/footer";
+} from "./footer";
 
 export default function Footer() {
   const { showScrollTop, scrollToTop } = useFooter();
