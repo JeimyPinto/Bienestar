@@ -22,3 +22,12 @@ export interface PaginationControlsProps {
   totalUsers: number;
   setCurrentPage: (page: number) => void;
 }
+export interface MobileLoginButtonProps {
+  onClick?: () => void;
+}
+export interface LoginButtonProps {
+  onClick?: () => void;
+}
+export interface LogoutButtonProps {
+  onClick: () => void;
+}

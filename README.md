@@ -1,4 +1,4 @@
-# 🌟 Sistema de Gestión de Bienestar - SENA
+# 🌟 Sistema de Gestión de Servicios de Bienestar al aprendiz - SENA
 
 Aplicación web completa para la gestión integral de servicios de bienestar, usuarios, solicitudes y remisiones. Desarrollada con **Express.js** (backend) y **Next.js 14** (frontend), desplegada en **Render** con base de datos **PostgreSQL** administrada.
 

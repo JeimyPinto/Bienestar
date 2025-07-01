@@ -1,100 +1,40 @@
 "use client";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import React from "react";
+import { useFooter } from "../hooks/useFooter";
+import {
+  RegionalInfo,
+  CentralLogo,
+  ContactInfo,
+  ScrollTopButton,
+  FooterDivider,
+  FooterBottom
+} from "./components/footer";
 
 export default function Footer() {
-  const [showTop, setShowTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowTop(window.scrollY > 200);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const { showScrollTop, scrollToTop } = useFooter();
 
   return (
-    <footer className="flex flex-col md:flex-row justify-between items-center px-4 sm:px-8 py-6 bg-[var(--color-azul-oscuro)] w-full text-white gap-6 relative">
-      <div className="flex flex-col items-center md:items-start">
-        <ul className="flex flex-col gap-1">
-          <li className="text-lg font-semibold">Regional Caldas</li>
-          <li className="text-base">Centro de Procesos Industriales y Construcción</li>
-          <li className="text-base">Dirección: Calle 48 # 26-85, Manizales, Caldas</li>
-          <li className="text-base">Horario: 8:00 a.m. - 12:00 m. y 2:00 p.m. - 8:00 p.m.</li>
-        </ul>
+    <footer className="bg-gradient-to-b from-azul-oscuro to-azul-marino border-t border-azul-cielo/20 relative overflow-hidden">
+      {/* Efectos de fondo */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-soft"></div>
+        <div className="absolute top-0 right-0 w-72 h-72 bg-azul-cielo/10 rounded-full blur-2xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-success/5 rounded-full blur-2xl"></div>
       </div>
-      <div className="flex flex-col items-center">
-        <div className="flex items-center gap-2 mb-2">
-          <Image
-            src="/images/logo-sena.png"
-            alt="Logo SENA"
-            width={60}
-            height={58.8}
-            priority={false}
-            style={{ height: "auto" }}
-          />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 animate-fade-in-up">
+          <RegionalInfo />
+          <CentralLogo />
+          <ContactInfo />
         </div>
-        <div className="flex items-center gap-2">
-          <Image
-            src="/images/ico-copyright.svg"
-            alt="Copyright"
-            width={20}
-            height={20}
-            priority={false}
-          />
-          <p>{new Date().getFullYear()} - Todos los derechos reservados</p>
-        </div>
+
+        <FooterDivider />
+        <FooterBottom />
       </div>
-      <div className="flex flex-col items-center md:items-end">
-        <Image
-          src="/images/icono.png"
-          alt="Bienestar al Aprendiz"
-          width={150}
-          height={150}
-          className="mb-2"
-          priority={false}
-          style={{ height: "auto" }}
-        />
-        <ul className="flex flex-col gap-1">
-          <li className="text-lg font-semibold">Contacto</li>
-          <li className="flex items-center gap-2">
-            <Image
-              src="/images/ico-email.svg"
-              alt="Correo electrónico"
-              width={20}
-              height={20}
-              priority={false}
-            style={{ height: "auto" }}
-            />
-            <a
-              href="mailto:bienestarregionalcaldascpic@gmail.com"
-              className="text-base underline underline-offset-2 hover:text-[var(--color-azul-claro)] transition-colors duration-200"
-            >
-              bienestarregionalcaldascpic@gmail.com
-            </a>
-          </li>
-        </ul>
-      </div>
-      {showTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 bg-[var(--color-azul-claro)] text-white rounded-md p-3 shadow-lg hover:bg-[var(--color-magenta)] transition-colors duration-200 z-50 flex items-center justify-center"
-          aria-label="Volver arriba"
-        >
-          <Image
-            src="/images/ico-arrow-up.svg"
-            alt="Volver arriba"
-            width={28}
-            height={28}
-            priority={false}
-            style={{ height: "auto" }}
-          />
-        </button>
-      )}
+
+      {/* Botón de volver arriba */}
+      <ScrollTopButton show={showScrollTop} onClick={scrollToTop} />
     </footer>
   );
 }
