@@ -1,8 +1,10 @@
 import React from 'react';
-import { LogoutButtonProps } from "../../../interface/components";
 
+interface LogoutButtonProps {
+  onClick: () => void;
+}
 
-export const LogoutButton: React.FC<LogoutButtonProps> = ({ onClick }) => {
+export default function LogoutButton({ onClick }: LogoutButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -20,4 +22,4 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ onClick }) => {
       <span>Cerrar Sesión</span>
     </button>
   );
-};
+}

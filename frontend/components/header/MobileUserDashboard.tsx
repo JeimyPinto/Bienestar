@@ -1,13 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MobileUserDashboardProps } from '../../../interface/components';
+import { User } from '../../interface/user';
 
+type MobileUserDashboardProps = {
+  user?: User | null;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+};
 
-export const MobileUserDashboard: React.FC<MobileUserDashboardProps> = ({
+export default function MobileUserDashboard({
   user,
   onClick
-}) => {
+}: MobileUserDashboardProps) {
   const userName = user?.firstName ? user.firstName.split(" ")[0] : "Usuario";
   const userImage = user?.image
     ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC || ""}/users/${user.image}`
@@ -57,4 +61,4 @@ export const MobileUserDashboard: React.FC<MobileUserDashboardProps> = ({
       </Link>
     </li>
   );
-};
+}

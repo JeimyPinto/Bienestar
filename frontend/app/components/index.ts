@@ -12,6 +12,6 @@ export { default as Header } from './header';
 // Componentes específicos de la aplicación
 export { default as SectionHeader } from './sectionHeader';
 export { default as IcoBack } from './icoBack';
-export { default as FormModalHeader } from './FormModalHeader';
+export { default as FormModalHeader } from '../../ui/FormModalHeader';
 export { default as ColorPaletteDemo } from './paletColor/ColorPaletteDemo';
 export { default as Footer } from './footer';

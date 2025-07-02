@@ -1,9 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LoginButtonProps } from "../../../interface/components";
 
-export const LoginButton: React.FC<LoginButtonProps> = ({ onClick }) => {
+interface LoginButtonProps {
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+}
+
+export default function LoginButton({ onClick }: LoginButtonProps) {
   return (
     <Link
       href="/auth"
@@ -29,4 +32,4 @@ export const LoginButton: React.FC<LoginButtonProps> = ({ onClick }) => {
       <span>Iniciar Sesión</span>
     </Link>
   );
-};
+}

@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { ReactNode, MouseEvent } from 'react';
 import Link from 'next/link';
-import {NavLinkProps} from '../../../interface/components';
 
-export const NavLink: React.FC<NavLinkProps> = ({ 
-  href, 
-  children, 
-  onClick, 
-  className = "" 
-}) => {
+interface NavLinkProps {
+  href: string;
+  children: ReactNode;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+  className?: string;
+}
+
+export default function NavLink({
+  href,
+  children,
+  onClick,
+  className = "",
+}: NavLinkProps) {
   return (
     <Link
       href={href}
@@ -25,4 +31,4 @@ export const NavLink: React.FC<NavLinkProps> = ({
       {children}
     </Link>
   );
-};
+}

@@ -1,12 +1,17 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { UserDashboardLinkProps } from '../../../interface/components';
+import { User } from '../../interface/user';
 
-export const UserDashboardLink: React.FC<UserDashboardLinkProps> = ({
+interface UserDashboardLinkProps {
+  user?: User | null;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+}
+
+export default function UserDashboardLink({
   user,
   onClick
-}) => {
+}: UserDashboardLinkProps) {
   const userName = user?.firstName ? user.firstName.split(" ")[0] : "Usuario";
   const userImage = user?.image
     ? `${process.env.NEXT_PUBLIC_URL_FILE_STATIC || ""}/users/${user.image}`
@@ -43,4 +48,4 @@ export const UserDashboardLink: React.FC<UserDashboardLinkProps> = ({
       )}
     </Link>
   );
-};
+}

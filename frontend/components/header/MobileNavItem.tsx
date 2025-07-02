@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { ReactNode, MouseEvent } from 'react';
 import Link from 'next/link';
-import { MobileNavItemProps } from  "../../../interface/components"
 
+interface MobileNavItemProps {
+  href: string;
+  icon: ReactNode;
+  children: ReactNode;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+}
 
-export const MobileNavItem: React.FC<MobileNavItemProps> = ({
+export default function MobileNavItem({
   href,
   icon,
   children,
-  onClick
-}) => {
+  onClick,
+}: MobileNavItemProps) {
   return (
     <li>
       <Link
@@ -30,4 +35,4 @@ export const MobileNavItem: React.FC<MobileNavItemProps> = ({
       </Link>
     </li>
   );
-};
+}

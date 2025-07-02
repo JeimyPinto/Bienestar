@@ -6,7 +6,7 @@ import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
 import RequestFormActions from "./requestFormActions";
-import FormModalHeader from "../components/FormModalHeader";
+import FormModalHeader from "../../ui/FormModalHeader";
 import { Spinner } from "../../ui";
 
 const emptyRequest: Request = {

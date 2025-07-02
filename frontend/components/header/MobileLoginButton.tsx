@@ -1,9 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MobileLoginButtonProps } from "../../../interface/components";
 
-export const MobileLoginButton: React.FC<MobileLoginButtonProps> = ({ onClick }) => {
+export interface MobileLoginButtonProps {
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+}
+
+export default function MobileLoginButton({ onClick }: MobileLoginButtonProps) {
   return (
     <li>
       <Link
@@ -40,4 +43,4 @@ export const MobileLoginButton: React.FC<MobileLoginButtonProps> = ({ onClick })
       </Link>
     </li>
   );
-};
+}

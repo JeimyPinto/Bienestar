@@ -1,46 +1,35 @@
-"use client"
+"use client";
 
-import React, { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
-import { useAuth } from "../../hooks/useAuth"
-import { useHeader } from "../../hooks/useHeader"
-import { NavLink } from "./header/NavLink"
-import { UserDashboardLink } from "./header/UserDashboardLink"
-import { LogoutButton } from "./header/LogoutButton"
-import { LoginButton } from "./header/LoginButton"
-import { MobileNavItem } from "./header/MobileNavItem"
-import { MobileUserDashboard } from "./header/MobileUserDashboard"
-import { MobileLogoutButton } from "./header/MobileLogoutButton"
-import { MobileLoginButton } from "./header/MobileLoginButton"
+import React from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { useAuth } from "../../hooks/useAuth";
+import { useHeader } from "../../hooks/useHeader";
+import NavLink from "../header/NavLink";
+import UserDashboardLink from "../header/UserDashboardLink";
+import LogoutButton from "../header/LogoutButton";
+import LoginButton from "../header/LoginButton";
+import MobileNavItem from "../../app/components/header/MobileNavItem";
+import MobileUserDashboard from "../header/MobileUserDashboard";
+import MobileLogoutButton from "../header/MobileLogoutButton";
+import MobileLoginButton from "../header/MobileLoginButton";
 
 export default function Header() {
-  const { token, user, logout, refresh, isExpired } = useAuth();
+  const { token, user, logout } = useAuth();
   const { menuOpen, toggleMenu, closeMenu } = useHeader();
   const router = useRouter();
-
-  // Refresca el token cada 10 segundos y valida que no haya expirado
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refresh();
-    }, 10000); // 10 segundos
-
-    // Si el token ha expirado, cerrar sesión y redirigir
-    if (isExpired) {
-      logout();
-      router.push("/auth");
-    }
-
-    return () => clearInterval(interval);
-  }, [refresh, isExpired, logout, router]);
 
   return (
     <header className="bg-gradient-corporate shadow-xl border-b border-azul-cielo/20 backdrop-blur-sm sticky top-0 z-30">
       <div className="container mx-auto px-4 py-3 md:px-6 md:py-4">
         <div className="flex justify-between items-center">
           {/* Logo mejorado */}
-          <Link href="/" tabIndex={0} className="group flex items-center space-x-3">
+          <Link
+            href="/"
+            tabIndex={0}
+            className="group flex items-center space-x-3"
+          >
             <div className="relative overflow-hidden rounded-xl p-2 transition-all duration-300 group-hover:bg-white/10 bg-white/5 backdrop-blur-sm border border-white/10">
               <Image
                 src="/images/icono.png"
@@ -67,7 +56,7 @@ export default function Header() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Hamburger button clicked'); // Debug
+              console.log("Hamburger button clicked"); // Debug
               toggleMenu();
             }}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
@@ -99,15 +88,17 @@ export default function Header() {
             <NavLink href="/services" onClick={closeMenu}>
               🛠️ Servicios
             </NavLink>
-            
+
             {token ? (
               <>
                 <UserDashboardLink user={user} onClick={closeMenu} />
-                <LogoutButton onClick={() => {
-                  logout();
-                  closeMenu();
-                  router.push("/auth");
-                }} />
+                <LogoutButton
+                  onClick={() => {
+                    logout();
+                    closeMenu();
+                    router.push("/auth");
+                  }}
+                />
               </>
             ) : (
               <LoginButton onClick={closeMenu} />
@@ -123,7 +114,7 @@ export default function Header() {
         }`}
       >
         {/* Overlay */}
-        <div 
+        <div
           className="absolute inset-0 bg-azul-marino/95 backdrop-blur-md cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
@@ -132,7 +123,7 @@ export default function Header() {
           }}
           aria-label="Cerrar menú"
         />
-        
+
         {/* Menú contenido */}
         <nav
           id="main-menu"
@@ -146,27 +137,29 @@ export default function Header() {
             {/* Contenido scrolleable */}
             <div className="flex-1 pt-16 sm:pt-20 pb-4 overflow-y-auto mobile-menu-scroll">
               <div className="px-4 sm:px-6 mobile-menu-compact">
-              <ul className="space-y-3 mobile-menu-short mobile-touch-target">
-                <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
-                Servicios
-                </MobileNavItem>
-                
-                {token ? (
-                <>
-                  <MobileUserDashboard user={user} onClick={closeMenu} />
-                  <MobileLogoutButton onClick={() => {
-                  logout();
-                  closeMenu();
-                  router.push("/auth");
-                  }} />
-                </>
-                ) : (
-                <MobileLoginButton onClick={closeMenu} />
-                )}
-              </ul>
+                <ul className="space-y-3 mobile-menu-short mobile-touch-target">
+                  <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
+                    Servicios
+                  </MobileNavItem>
+
+                  {token ? (
+                    <>
+                      <MobileUserDashboard user={user} onClick={closeMenu} />
+                      <MobileLogoutButton
+                        onClick={() => {
+                          logout();
+                          closeMenu();
+                          router.push("/auth");
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <MobileLoginButton onClick={closeMenu} />
+                  )}
+                </ul>
               </div>
             </div>
-            
+
             {/* Área inferior para evitar que el contenido se corte */}
             <div className="h-4 flex-shrink-0" />
           </div>

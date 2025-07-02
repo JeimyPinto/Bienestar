@@ -1,8 +1,8 @@
-export { NavLink } from './NavLink';
-export { UserDashboardLink } from './UserDashboardLink';
-export { LogoutButton } from './LogoutButton';
-export { LoginButton } from './LoginButton';
+export { NavLink } from '../../../components/header/NavLink';
+export { UserDashboardLink } from '../../../components/header/UserDashboardLink';
+export { LogoutButton } from '../../../components/header/LogoutButton';
+export { LoginButton } from '../../../components/header/LoginButton';
 export { MobileNavItem } from './MobileNavItem';
-export { MobileUserDashboard } from './MobileUserDashboard';
-export { MobileLogoutButton } from './MobileLogoutButton';
-export { MobileLoginButton } from './MobileLoginButton';
+export { MobileUserDashboard } from '../../../components/header/MobileUserDashboard';
+export { MobileLogoutButton } from '../../../components/header/MobileLogoutButton';
+export { MobileLoginButton } from '../../../components/header/MobileLoginButton';
