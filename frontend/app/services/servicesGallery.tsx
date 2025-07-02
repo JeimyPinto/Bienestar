@@ -4,7 +4,9 @@ import { Service } from "../../interface/service"
 import { formatDate } from "../../lib/formateDate"
 import EmptyState from "../../components/home/emptyState"
 
-export default function ServicesGallery({ services, message }: { services?: Service[]; message?: string }) {
+export default function ServicesGallery(props: { services?: Service[]; message?: string }) {
+  const { services, message } = props;
+
   if (!services || services.length === 0) {
     return (
       <EmptyState 
@@ -77,4 +79,3 @@ export default function ServicesGallery({ services, message }: { services?: Serv
     </section>
   );
 }
-

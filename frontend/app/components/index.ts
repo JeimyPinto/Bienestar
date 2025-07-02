@@ -1,7 +1,7 @@
 // Componentes específicos de la aplicación organizados por funcionalidad
 
 // Componentes de autenticación
-export * from './auth';
+export * from '../../components/auth';
 
 // Componentes de auditoría
 export * from './audits';

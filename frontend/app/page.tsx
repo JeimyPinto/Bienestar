@@ -4,7 +4,7 @@ import React from "react";
 import { useHomePage } from "../hooks/useHomePage";
 import HeroSection from "../components/home/heroSection";
 import ContactSection from "../components/home/contactSection";
-import { ServicesDisplaySection } from "../components/home/servicesDisplaySection";
+import  ServicesDisplaySection  from "../components/home/servicesDisplaySection";
 
 export default function Page() {
   const { services, loading, errorMessage, handleRetry } = useHomePage();

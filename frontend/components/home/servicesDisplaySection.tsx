@@ -8,7 +8,7 @@ import { Service } from '../../interface/service';
 type ServicesDisplaySectionProps = {
   services: Service[];
   loading: boolean;
-  errorMessage: string;
+  errorMessage: string | null;
   onRetry: () => void;
 };
 

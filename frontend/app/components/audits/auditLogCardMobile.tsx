@@ -1,6 +1,5 @@
 import React from "react";
 import { AuditLog } from "../../../interface/auditLog";
-import { Card, Badge, Spinner } from "../../../ui";
 
 interface AuditLogCardMobileProps {
   auditLogs: AuditLog[];
@@ -12,12 +11,12 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <Card className="p-8 border border-azul-cielo/20 text-center max-w-md">
-          <Spinner className="w-8 h-8 mx-auto mb-4 text-primary" />
+        <div className="p-8 border border-azul-cielo/20 bg-white rounded-lg shadow-md text-center max-w-md">
+          <div className="w-8 h-8 mx-auto mb-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
           <p className="text-primary text-sm font-medium">
             Cargando auditorías...
           </p>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -25,41 +24,46 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
   if (!auditLogs.length) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <Card className="p-8 border border-azul-cielo/20 text-center max-w-md">
+        <div className="p-8 border border-azul-cielo/20 bg-white rounded-lg shadow-md text-center max-w-md">
           <span className="text-6xl mb-4 block">📋</span>
           <h3 className="text-xl font-bold text-azul-oscuro mb-2">Sin registros</h3>
           <p className="text-azul-marino/70">
             No hay registros de auditoría disponibles.
           </p>
-        </Card>
+        </div>
       </div>
     );
   }
 
+  const getActionBadgeStyles = (action: string) => {
+    switch (action) {
+      case 'CREATE':
+        return 'bg-success/10 text-success border-success/20';
+      case 'UPDATE':
+        return 'bg-warning/10 text-warning border-warning/20';
+      case 'DELETE':
+        return 'bg-danger/10 text-danger border-danger/20';
+      default:
+        return 'bg-info/10 text-info border-info/20';
+    }
+  };
+
   return (
     <div className="space-y-4">
       {auditLogs.map((auditLog) => (
-        <Card
+        <div
           key={auditLog.id}
-          className="p-4 cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-azul-cielo/30"
+          className="p-4 cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border border-azul-cielo/30 bg-white rounded-lg"
           onClick={() => handleRowClick(auditLog)}
-          hover={true}
         >
           {/* Header del card */}
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-bold text-primary">
               #{auditLog.id}
             </span>
-            <Badge 
-              variant={
-                auditLog.action === 'CREATE' ? 'success' :
-                auditLog.action === 'UPDATE' ? 'warning' :
-                auditLog.action === 'DELETE' ? 'danger' : 'info'
-              }
-              size="sm"
-            >
+            <span className={`px-2 py-1 text-xs font-semibold rounded border ${getActionBadgeStyles(auditLog.action)}`}>
               {auditLog.action}
-            </Badge>
+            </span>
           </div>
 
           {/* Información principal */}
@@ -67,9 +71,9 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
             <div className="flex items-center gap-2">
               <span className="text-azul-oscuro font-semibold">🏷️ Entidad:</span>
               <span>{auditLog.entity_type}</span>
-              <Badge variant="neutral" size="sm">
+              <span className="px-2 py-1 text-xs bg-neutral/10 text-neutral border border-neutral/20 rounded">
                 ID: {auditLog.entity_id}
-              </Badge>
+              </span>
             </div>
             
             <div className="flex items-center gap-2">
@@ -117,7 +121,7 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
               </div>
             </div>
           </details>
-        </Card>
+        </div>
       ))}
     </div>
   );
