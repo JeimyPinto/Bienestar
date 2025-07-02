@@ -70,6 +70,31 @@ export const filterGroups = <T extends { name: string; code?: string }>(
 };
 
 /**
+ * Filtra grupos por número de ficha o nombre del programa
+ * @param groups - Array de grupos a filtrar
+ * @param filter - Término de búsqueda
+ * @returns Array de grupos filtrados
+ */
+export const filterGroupsByFichaPrograma = <T extends { 
+  fichaNumber: string; 
+  programName: string 
+}>(
+  groups: T[],
+  filter: string
+): T[] => {
+  if (!filter || !filter.trim()) {
+    return groups;
+  }
+
+  const searchTerm = filter.toLowerCase().trim();
+  
+  return groups.filter(group =>
+    group.fichaNumber.toLowerCase().includes(searchTerm) ||
+    group.programName.toLowerCase().includes(searchTerm)
+  );
+};
+
+/**
  * Función genérica para filtrar cualquier array de objetos por campos específicos
  * @param items - Array de elementos a filtrar
  * @param filter - Término de búsqueda
