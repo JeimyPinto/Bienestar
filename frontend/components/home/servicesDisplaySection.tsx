@@ -5,16 +5,17 @@ import ErrorState from "./errorState";
 import EmptyState from "./emptyState";
 import { useServices } from "../../hooks/useServices";
 
-const { services, loading, refreshServices, errorMessage } = useServices({
-  mode: "allActive",
-  onError: (message) => console.error(message),
-});
-
-function handleRetry() {
-  setErrorMessage(null);
-  refreshServices();
-}
 export default function ServicesDisplaySection() {
+  const { services, loading, refreshServices, errorMessage, clearMessages } = useServices({
+    mode: "allActive",
+    onError: (message) => console.error(message),
+  });
+
+  function handleRetry() {
+    clearMessages();
+    refreshServices();
+  }
+
   return (
     <section className="py-8 w-full">
       {/* Header de la sección */}
@@ -42,7 +43,7 @@ export default function ServicesDisplaySection() {
           {loading ? (
             <LoadingState />
           ) : errorMessage ? (
-            <ErrorState message={errorMessage} onRetry={onRetry} />
+            <ErrorState message={errorMessage} onRetry={handleRetry} />
           ) : services.length === 0 ? (
             <EmptyState />
           ) : (

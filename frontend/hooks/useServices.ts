@@ -26,11 +26,7 @@ interface UseServicesReturn<T> {
   loading: boolean;
   successMessage: string | null;
   errorMessage: string | null;
-
-  // Setters
   setServices: React.Dispatch<React.SetStateAction<T[]>>;
-
-  // Funciones CRUD
   fetchServices: () => Promise<{ error: boolean; message?: string }>;
   refreshServices: () => void;
   createService: (service: Service, file?: File) => Promise<{ error: boolean; message?: string }>;
