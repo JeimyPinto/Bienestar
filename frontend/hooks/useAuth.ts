@@ -45,7 +45,7 @@ export function useAuth() {
     if (!isInitialized) {
       setIsInitialized(true);
     }
-  }, [isInitialized]);
+  }, [isInitialized]); // Mantener isInitialized como dependencia
 
   // Manejo del submit del formulario de login
   const handleLoginSubmit = useCallback(async (e: React.FormEvent, recaptchaToken: string, recaptchaValid: boolean) => {
@@ -56,34 +56,34 @@ export function useAuth() {
     try {
       if (!recaptchaToken || !recaptchaValid) {
         setError("Por favor completa y valida el reCAPTCHA.");
-        setLoading(false);
         return;
       }
 
       // Realizar login
       const result = await login({ email, password, recaptchaToken });
       
-      if (result.error || result.message) {
-        setError(result.error || result.message);
-        setLoading(false);
+      if (result.error) {
+        setError(result.error);
         return;
       }
       
       if (!result.token) {
         setError("No se recibió un token de autenticación");
-        setLoading(false);
         return;
       }
       
-      // Actualizar estado de autenticación después del login exitoso
-      await refresh();
-      
-      // Limpiar formulario
+      // Limpiar formulario inmediatamente
       setEmail("");
       setPassword("");
       setError("");
       
-      // Redirigir al dashboard
+      // Forzar actualización inmediata del estado
+      const validatedSession = tokenManager.validateSession();
+      setToken(validatedSession.token);
+      setUser(validatedSession.user);
+      setIsExpired(!validatedSession.isValid);
+      
+      // Redirigir inmediatamente sin esperar
       router.push("/dashboard");
       
     } catch (error) {
@@ -92,7 +92,7 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  }, [email, password, refresh, router]);
+  }, [email, password, router]); // Remover refresh de dependencias
 
   // Cargar al montar
   useEffect(() => {
@@ -106,13 +106,16 @@ export function useAuth() {
       return;
     }
 
-    // Refresca el token cada 30 segundos (menos frecuente)
+    // Refresca el token cada 60 segundos (menos frecuente para reducir overhead)
     const interval = setInterval(() => {
-      refresh();
-    }, 30000); // 30 segundos
+      // Solo refrescar si no estamos cargando
+      if (!loading) {
+        refresh();
+      }
+    }, 60000); // 60 segundos
 
     return () => clearInterval(interval);
-  }, [refresh, pathname, isInitialized]);
+  }, [refresh, pathname, isInitialized, loading]);
 
   // Efecto separado para manejar redirección por token expirado
   useEffect(() => {

@@ -18,6 +18,7 @@ export async function getById(id: number, token?: string) {
         }
         return { error: false, ...data };
     } catch (error) {
+        console.error("Error en la función getById:", error);
         return {
             error: true,
             message: "Server error while fetching service. / Error en el servidor al obtener el servicio. (" + error + ")",
@@ -39,6 +40,7 @@ export async function getAllActive() {
         }
         return { error: false, ...data };
     } catch (error) {
+        console.error("Error en la función getAllActive:", error);
         return {
             error: true,
             message: "Server error while fetching services. / Error en el servidor al obtener los servicios. (" + error + ")",
@@ -64,6 +66,7 @@ export async function getAll(token?: string) {
         }
         return { error: false, ...data };
     } catch (error) {
+        console.error("Error en la función getAll:", error);
         return {
             error: true,
             message: "Server error while fetching services. / Error en el servidor al obtener los servicios. (" + error + ")",
@@ -103,6 +106,7 @@ export async function create(service: Service, file?: File, token?: string) {
         }
         return { error: false, ...data };
     } catch (error) {
+        console.error("Error en la función create:", error);
         return {
             error: true,
             message: "Error Service / Error en el servidor. (" + error + ")",
@@ -142,6 +146,7 @@ export async function update(id: string, service: Service, file?: File, token?: 
         }
         return { error: false, ...data };
     } catch (error) {
+        console.error("Error en la función update:", error);
         return {
             error: true,
             message: "Error Service / Error en el servidor. (" + error + ")",
@@ -167,6 +172,7 @@ export async function getByUserId(userId: number, token?: string) {
         }
         return { error: false, ...data };
     } catch (error) {
+        console.error("Error en la función getByUserId:", error);
         return {
             error: true,
             message: "Server error while fetching user services. / Error en el servidor al obtener los servicios del usuario",

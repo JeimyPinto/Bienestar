@@ -31,7 +31,7 @@ export default function LoginPage() {
 
   // Wrapper para el submit que incluye los datos del recaptcha
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    handleLoginSubmit(e, recaptchaToken, recaptchaValid);
+    handleLoginSubmit(e, recaptchaToken || "", recaptchaValid);
   };
 
   return (

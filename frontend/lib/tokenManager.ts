@@ -37,7 +37,7 @@ export const tokenManager = {
     return this.getToken() !== null;
   },
 
-  // Verificar si el token está expirado (usando jwt-decode)
+  // Verificar si el token está expirado (usando jwt-decode) - optimizado
   isTokenExpired(token?: string | null): boolean {
     const tokenToCheck = token || this.getToken();
     if (!tokenToCheck) return true;
@@ -47,9 +47,10 @@ export const tokenManager = {
       if (!payload.exp) return true;
       
       const currentTime = Math.floor(Date.now() / 1000);
-      return payload.exp < currentTime;
+      // Agregar margen de 30 segundos para evitar problemas de sincronización
+      return payload.exp < (currentTime + 30);
     } catch (error) {
-      console.error("Error al decodificar token:", error);
+      console.warn("Error al decodificar token:", error);
       return true; // Si hay error, considerar expirado
     }
   },
@@ -104,9 +105,26 @@ export const tokenManager = {
     return token;
   },
 
-  // Validar sesión completa (token válido y usuario disponible)
+  // Validar sesión completa (token válido y usuario disponible) - optimizado
   validateSession(): { isValid: boolean; token: string | null; user: User | null } {
-    const token = this.getValidToken();
+    if (typeof window === "undefined") {
+      return { isValid: false, token: null, user: null };
+    }
+
+    const token = this.getToken();
+    
+    // Si no hay token, sesión inválida
+    if (!token) {
+      return { isValid: false, token: null, user: null };
+    }
+
+    // Si el token está expirado, limpiar y retornar inválido
+    if (this.isTokenExpired(token)) {
+      this.clearSession();
+      return { isValid: false, token: null, user: null };
+    }
+
+    // Obtener usuario
     const user = this.getUser();
     
     return {

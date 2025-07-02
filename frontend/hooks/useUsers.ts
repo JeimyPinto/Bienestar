@@ -192,11 +192,9 @@ export const useUsers = ({
     setCurrentPage,
     setLimit,
     
-    // Funciones
+    // Funciones CRUD
     fetchUsers,
     refreshUsers,
-    
-    // Métodos CRUD
     createUser,
     updateUser,
   };

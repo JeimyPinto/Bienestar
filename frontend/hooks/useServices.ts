@@ -2,47 +2,46 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Service } from "../interface/service";
-import { UseServicesOptions, UseServicesReturn } from "../interface";
-import { 
-  getByUserId as getServicesByUserId,
-  getAllActive as getAllActiveServices,
-  getAll as getAllServices
+import {
+  getByUserId,
+  getAllActive,
+  getAll,
+  getById,
+  create,
+  update
 } from "../services/service";
 
-/**
- * Hook para manejar la carga y gestión de servicios
- * 
- * @param options - Opciones de configuración del hook
- * @param options.token - Token de autenticación
- * @param options.userId - ID del usuario (requerido para mode 'userServices')
- * @param options.onError - Callback para manejar errores
- * @param options.mode - Modo de carga:
- *   - 'userServices': Servicios creados por un usuario específico (requiere token y userId)
- *   - 'allActive': Todos los servicios activos (público)
- *   - 'all': Todos los servicios (requiere token de admin)
- * 
- * @returns Objeto con estado y funciones para manejar servicios
- * 
- * @example
- * // Obtener servicios del usuario actual
- * const { services, loading, refreshServices } = useServices({
- *   token,
- *   userId: user?.id,
- *   mode: 'userServices',
- *   onError: (message) => setErrorMessage(message)
- * });
- * 
- * @example
- * // Obtener todos los servicios activos (público)
- * const { services, loading } = useServices({
- *   mode: 'allActive'
- * });
- */
-export const useServices = ({ 
-  token, 
-  userId, 
-  onError, 
-  mode = 'userServices' 
+
+interface UseServicesOptions {
+  token?: string | null;
+  userId?: number;
+  mode?: 'all' | 'allActive' | 'byId' | 'userServices';
+  serviceId?: number; // Para modo 'byId'
+  onError?: (message?: string) => void;
+}
+
+interface UseServicesReturn<T> {
+  // Estado
+  services: T[];
+  loading: boolean;
+
+  // Setters
+  setServices: React.Dispatch<React.SetStateAction<T[]>>;
+
+  // Funciones CRUD
+  fetchServices: () => Promise<{ error: boolean; message?: string }>;
+  refreshServices: () => void;
+  createService: (service: Service, file?: File) => Promise<{ error: boolean; message?: string }>;
+  updateService: (id: string, service: Service, file?: File) => Promise<{ error: boolean; message?: string }>;
+}
+
+
+export const useServices = ({
+  token,
+  userId,
+  serviceId,
+  onError,
+  mode = 'allActive'
 }: UseServicesOptions): UseServicesReturn<Service> => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,77 +54,199 @@ export const useServices = ({
 
   // Cargar servicios según el modo
   const fetchServices = useCallback(async (): Promise<{ error: boolean; message?: string }> => {
+    if (!token && (mode === 'userServices' || mode === 'all' || mode === 'byId')) {
+      return { error: false }; 
+    }
+
     setLoading(true);
-    
+
     try {
       let res;
-      
+
       switch (mode) {
         case 'userServices':
-          if (!token || !userId) return { error: false }; // No hacer fetch si no hay token o userId
-          res = await getServicesByUserId(userId, token);
-          break;
-        case 'allActive':
-          res = await getAllActiveServices();
+          if (!userId) return { error: true, message: "userId requerido para modo 'userServices'" };
+          res = await getByUserId(userId, token || undefined);
           break;
         case 'all':
-          if (!token) return { error: false }; // No hacer fetch si no hay token
-          res = await getAllServices(token);
+          res = await getAll(token || undefined);
+          break;
+        case 'allActive':
+          res = await getAllActive();
+          break;
+        case 'byId':
+          if (!serviceId) return { error: true, message: "serviceId requerido para modo 'byId'" };
+          res = await getById(serviceId, token || undefined);
+          // Para byId, convertir el servicio único en un array
+          if (!res.error && res.service) {
+            res.services = [res.service];
+          }
           break;
         default:
           return { error: true, message: "Modo no válido" };
       }
 
-      if (res.error || !res.services) {
-        setServices([]);
-        onErrorRef.current?.(res.message || "Error al cargar servicios");
+      if (res.error) {
+        setServices(res.services || []);
+        
+        // Log de depuración con detalles si están disponibles
+        if (res.details) {
+          console.error(`Error en fetchServices (modo: ${mode}):`, {
+            message: res.message,
+            details: res.details,
+            mode,
+            token: token ? "presente" : "ausente",
+            userId,
+            serviceId
+          });
+        } else {
+          console.error(`Error en fetchServices (modo: ${mode}):`, res.message);
+        }
+        
+        onErrorRef.current?.(res.message);
         return { error: true, message: res.message };
       } else {
-        setServices(res.services);
-        return { error: false, message: res.message };
+        setServices(res.services || []);
+        return { error: false };
       }
-    } catch {
+    } catch (error) {
       setServices([]);
       const errorMsg = "Error al cargar servicios";
+      
+      // Log detallado del error de excepción
+      console.error(`Excepción en fetchServices (modo: ${mode}):`, {
+        error,
+        mode,
+        token: token ? "presente" : "ausente",
+        userId,
+        serviceId
+      });
+      
       onErrorRef.current?.(errorMsg);
       return { error: true, message: errorMsg };
     } finally {
       setLoading(false);
     }
-  }, [token, userId, mode]);
+  }, [token, userId, serviceId, mode]);
 
   // Auto-fetch cuando cambien las dependencias críticas
   useEffect(() => {
     const loadServices = async () => {
       await fetchServices();
     };
-    
+
     // Solo auto-cargar si tenemos los requisitos según el modo
-    const shouldLoad = 
+    const shouldLoad =
       (mode === 'userServices' && token && userId) ||
       (mode === 'allActive') ||
-      (mode === 'all' && token);
-    
+      (mode === 'all' && token) ||
+      (mode === 'byId' && token && serviceId);
+
     if (shouldLoad) {
       loadServices();
     }
-  }, [fetchServices, token, userId, mode]);
+  }, [fetchServices, token, userId, serviceId, mode]);
 
   // Función para refrescar servicios después de operaciones CRUD
   const refreshServices = useCallback(() => {
     fetchServices();
   }, [fetchServices]);
 
+  // Métodos CRUD
+  const createService = useCallback(async (service: Service, file?: File): Promise<{ error: boolean; message?: string }> => {
+    if (!token) return { error: true, message: "Token requerido para crear servicio" };
+
+    try {
+      const res = await create(service, file, token || undefined);
+      if (res.error) {
+        // Log de depuración con detalles si están disponibles
+        if (res.details) {
+          console.error("Error en createService:", {
+            message: res.message,
+            details: res.details,
+            service,
+            hasFile: !!file
+          });
+        } else {
+          console.error("Error en createService:", res.message);
+        }
+        
+        onErrorRef.current?.(res.message);
+        return { error: true, message: res.message };
+      } else {
+        // Refrescar la lista después de crear
+        await fetchServices();
+        return { error: false, message: res.message };
+      }
+    } catch (error) {
+      const errorMsg = "Error al crear servicio";
+      
+      // Log detallado del error de excepción
+      console.error("Excepción en createService:", {
+        error,
+        service,
+        hasFile: !!file
+      });
+      
+      onErrorRef.current?.(errorMsg);
+      return { error: true, message: errorMsg };
+    }
+  }, [token, fetchServices]);
+
+  const updateService = useCallback(async (id: string, service: Service, file?: File): Promise<{ error: boolean; message?: string }> => {
+    if (!token) return { error: true, message: "Token requerido para actualizar servicio" };
+
+    try {
+      const res = await update(id, service, file, token || undefined);
+      if (res.error) {
+        // Log de depuración con detalles si están disponibles
+        if (res.details) {
+          console.error("Error en updateService:", {
+            message: res.message,
+            details: res.details,
+            id,
+            service,
+            hasFile: !!file
+          });
+        } else {
+          console.error("Error en updateService:", res.message);
+        }
+        
+        onErrorRef.current?.(res.message);
+        return { error: true, message: res.message };
+      } else {
+        // Refrescar la lista después de actualizar
+        await fetchServices();
+        return { error: false, message: res.message };
+      }
+    } catch (error) {
+      const errorMsg = "Error al actualizar servicio";
+      
+      // Log detallado del error de excepción
+      console.error("Excepción en updateService:", {
+        error,
+        id,
+        service,
+        hasFile: !!file
+      });
+      
+      onErrorRef.current?.(errorMsg);
+      return { error: true, message: errorMsg };
+    }
+  }, [token, fetchServices]);
+
   return {
     // Estado
     services,
     loading,
-    
+
     // Setters
     setServices,
-    
-    // Funciones
+
+    // Funciones CRUD
     fetchServices,
     refreshServices,
+    createService,
+    updateService,
   };
 };

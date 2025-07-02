@@ -1,13 +1,27 @@
 "use client";
 
-import React from "react";
-import { useHomePage } from "../hooks/useHomePage";
+import React, { useState } from "react";
+import { useServices } from "../hooks/useServices";
 import HeroSection from "../components/home/heroSection";
 import ContactSection from "../components/home/contactSection";
-import  ServicesDisplaySection  from "../components/home/servicesDisplaySection";
+import ServicesDisplaySection from "../components/home/servicesDisplaySection";
 
 export default function Page() {
-  const { services, loading, errorMessage, handleRetry } = useHomePage();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  const { 
+    services, 
+    loading, 
+    refreshServices 
+  } = useServices({ 
+    mode: 'allActive',
+    onError: (message) => setErrorMessage(message)
+  });
+
+  const handleRetry = () => {
+    setErrorMessage(null);
+    refreshServices();
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5">
