@@ -1,6 +1,6 @@
 import React from "react";
 import { AuditLog } from "../../../interface/auditLog";
-import { Badge, Spinner, Card } from "../../../ui";
+import Spinner from "../../../ui/spinner";
 
 interface AuditLogTableDesktopProps {
   auditLogs: AuditLog[];
@@ -23,7 +23,7 @@ export default function AuditLogTableDesktop({
   };
 
   return (
-    <Card className="overflow-hidden border-azul-cielo/30">
+    <div className="overflow-hidden border border-azul-cielo/30 rounded-lg shadow-md bg-white">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-azul-cielo/20">
           {/* Header */}
@@ -80,7 +80,7 @@ export default function AuditLogTableDesktop({
                 </td>
               </tr>
             ) : (
-              auditLogs.map((auditLog, index) => (
+              auditLogs.map((auditLog) => (
                 <tr
                   key={auditLog.id}
                   className="hover:bg-gradient-to-r hover:from-azul-cielo/10 hover:to-beige-claro/20 cursor-pointer transition-all duration-300 hover:shadow-md"
@@ -93,14 +93,19 @@ export default function AuditLogTableDesktop({
                     {auditLog.entity_type}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-azul-marino">
-                    <Badge variant="neutral" size="sm">
+                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
                       {auditLog.entity_id}
-                    </Badge>
+                    </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm">
-                    <Badge variant={getActionVariant(auditLog.action)} size="sm">
+                    <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
+                      getActionVariant(auditLog.action) === 'success' ? 'bg-green-100 text-green-800' :
+                      getActionVariant(auditLog.action) === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                      getActionVariant(auditLog.action) === 'danger' ? 'bg-red-100 text-red-800' :
+                      'bg-blue-100 text-blue-800'
+                    }`}>
                       {auditLog.action}
-                    </Badge>
+                    </span>
                   </td>
                   <td className="px-4 py-4 text-xs text-azul-marino max-w-xs">
                     {auditLog.old_data ? (
@@ -156,6 +161,6 @@ export default function AuditLogTableDesktop({
           </tbody>
         </table>
       </div>
-    </Card>
+    </div>
   );
 }

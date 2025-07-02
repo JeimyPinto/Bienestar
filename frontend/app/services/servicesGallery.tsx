@@ -2,21 +2,16 @@ import Image from "next/image"
 import { areaColors } from "../../styles/areaColors"
 import { Service } from "../../interface/service"
 import { formatDate } from "../../lib/formateDate"
+import EmptyState from "../../components/home/emptyState"
 
 export default function ServicesGallery({ services, message }: { services?: Service[]; message?: string }) {
   if (!services || services.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8">
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20 max-w-md">
-          <div className="text-center">
-            <span className="text-6xl mb-4 block">🔍</span>
-            <h3 className="text-xl font-bold text-azul-oscuro mb-2">No hay servicios disponibles</h3>
-            <p className="text-azul-marino/70">
-              {message || "Actualmente no hay servicios disponibles para mostrar."}
-            </p>
-          </div>
-        </div>
-      </div>
+      <EmptyState 
+        title="No hay servicios disponibles"
+        message={message || "Actualmente no hay servicios disponibles para mostrar."}
+        icon="🔍"
+      />
     );
   }
 

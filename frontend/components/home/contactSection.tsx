@@ -1,7 +1,23 @@
 import React from 'react';
 import Image from 'next/image';
 
-export const ContactSection: React.FC = () => {
+export interface ContactSectionProps {
+  qrImageSrc?: string;
+  qrAlt?: string;
+  contactIconSrc?: string;
+  contactIconAlt?: string;
+  linkUrl?: string;
+  linkText?: string;
+}
+
+export default function ContactSection({
+  qrImageSrc = "/images/QR-contacto.png",
+  qrAlt = "QR contacto directo con bienestar",
+  contactIconSrc = "/images/ico-cellphone.svg",
+  contactIconAlt = "Icono de contacto móvil",
+  linkUrl = "https://linktr.ee/rutascpic?utm_source=linktree_profile_share",
+  linkText = "Acceder a Enlaces",
+}: ContactSectionProps) {
   return (
     <section className="w-full bg-gradient-to-br from-success/10 to-azul-cielo/10 rounded-2xl shadow-xl p-6 md:p-8 hover-lift border border-success/20 backdrop-blur-sm">
       <div className="text-center mb-8">
@@ -18,8 +34,8 @@ export const ContactSection: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-success to-azul-cielo rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
           <div className="relative bg-white p-4 rounded-2xl shadow-lg">
             <Image
-              src="/images/QR-contacto.png"
-              alt="QR contacto directo con bienestar"
+              src={qrImageSrc}
+              alt={qrAlt}
               width={240}
               height={240}
               className="rounded-xl transition-transform duration-300 group-hover:scale-105"
@@ -35,8 +51,8 @@ export const ContactSection: React.FC = () => {
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left max-w-md">
           <div className="bg-success/20 p-6 rounded-full mb-6 border border-success/30">
             <Image
-              src="/images/ico-cellphone.svg"
-              alt="Icono de contacto móvil"
+              src={contactIconSrc}
+              alt={contactIconAlt}
               width={48}
               height={48}
               className="filter brightness-0 saturate-100"
@@ -58,13 +74,13 @@ export const ContactSection: React.FC = () => {
             
             <div className="bg-gradient-to-r from-warning to-amarillo hover:from-amarillo hover:to-warning rounded-xl p-4 transition-all duration-300 hover:scale-105 shadow-lg">
               <a
-                href="https://linktr.ee/rutascpic?utm_source=linktree_profile_share"
+                href={linkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-azul-oscuro font-bold text-lg hover:text-azul-marino transition-colors focus-visible-custom flex items-center justify-center space-x-2"
               >
                 <span>🔗</span>
-                <span>Acceder a Enlaces</span>
+                <span>{linkText}</span>
                 <span>📱</span>
               </a>
             </div>
@@ -77,4 +93,4 @@ export const ContactSection: React.FC = () => {
       </div>
     </section>
   );
-};
+}
