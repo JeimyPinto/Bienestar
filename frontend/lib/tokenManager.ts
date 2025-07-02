@@ -92,7 +92,7 @@ export const tokenManager = {
       if (userFromStorage) {
         try {
           const parsedUser = JSON.parse(userFromStorage);
-          console.log("Usuario obtenido de localStorage:", parsedUser); // Log para depuración
+          // console.log("Usuario obtenido de localStorage:", parsedUser); // Log temporalmente deshabilitado
           return parsedUser;
         } catch (error) {
           console.warn("Error parsing user from localStorage:", error);

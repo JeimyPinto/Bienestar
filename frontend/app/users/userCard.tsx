@@ -15,6 +15,9 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
         );
     }
 
+    // Log de depuración para ver todos los datos del usuario
+    console.log("UserCard - Datos del usuario:", user);
+
     return (
         <section
             className="
@@ -69,33 +72,47 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
                     <div className="space-y-1 text-sm text-azul-marino/70">
                         <p className="flex items-center justify-center sm:justify-start break-words">
                             <span className="mr-2">📧</span>
-                            {user.email}
+                            {user.email || "No especificado"}
                         </p>
-                        <p className="flex items-center justify-center sm:justify-start break-words">
-                            <span className="mr-2">📱</span>
-                            {user.phone}
-                        </p>
-                        <p className="flex items-center justify-center sm:justify-start break-words">
-                            <span className="mr-2">🆔</span>
-                            {user.documentType}: {user.documentNumber}
-                        </p>
+                        {user.phone && (
+                            <p className="flex items-center justify-center sm:justify-start break-words">
+                                <span className="mr-2">📱</span>
+                                {user.phone}
+                            </p>
+                        )}
+                        {(user.documentType && user.documentNumber) && (
+                            <p className="flex items-center justify-center sm:justify-start break-words">
+                                <span className="mr-2">🆔</span>
+                                {user.documentType}: {user.documentNumber}
+                            </p>
+                        )}
                         <p className="flex items-center justify-center sm:justify-start break-words">
                             <span className="mr-2">👥</span>
                             {user.group?.programName ?? "Sin Ficha asignada"}
                         </p>
+                        {user.id && (
+                            <p className="flex items-center justify-center sm:justify-start break-words">
+                                <span className="mr-2">🆔</span>
+                                ID: {user.id}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
             
             <div className="mt-4 pt-3 border-t border-azul-cielo/20 flex flex-col sm:flex-row gap-2 sm:justify-between text-xs text-azul-marino/60">
-                <div className="flex items-center justify-center sm:justify-start">
-                    <span className="mr-1">📅</span>
-                    Creado: {new Date(user.createdAt).toLocaleDateString("es-CO")}
-                </div>
-                <div className="flex items-center justify-center sm:justify-start">
-                    <span className="mr-1">🔄</span>
-                    Actualizado: {new Date(user.updatedAt).toLocaleDateString("es-CO")}
-                </div>
+                {user.createdAt && (
+                    <div className="flex items-center justify-center sm:justify-start">
+                        <span className="mr-1">📅</span>
+                        Creado: {new Date(user.createdAt).toLocaleDateString("es-CO")}
+                    </div>
+                )}
+                {user.updatedAt && (
+                    <div className="flex items-center justify-center sm:justify-start">
+                        <span className="mr-1">🔄</span>
+                        Actualizado: {new Date(user.updatedAt).toLocaleDateString("es-CO")}
+                    </div>
+                )}
             </div>
         </section>
     );
