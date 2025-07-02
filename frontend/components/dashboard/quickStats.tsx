@@ -2,6 +2,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useServices } from "../../hooks/useServices";
 import { useRequests } from "../../hooks/useRequests";
 import { ROLES } from "../../constants/roles";
+import { getDashboardStats } from "../../constants/dashboardStats";
 
 export default function QuickStats() {
   const { user, token } = useAuth();
@@ -24,40 +25,12 @@ export default function QuickStats() {
     return null;
   }
 
-  const isAdmin = user.role === ROLES.ADMIN || user.role === ROLES.SUPERADMIN;
-  const activeRequests = requests.filter(r => r.responseStatus === 'pendiente').length;
-  const completedRequests = requests.filter(r => r.responseStatus === 'aprobada').length;
-
-  const stats = [
-    {
-      title: "Solicitudes Pendientes",
-      value: activeRequests,
-      icon: "⏳",
-      color: "bg-warning/10 text-warning border-warning/20 hover:bg-warning/20",
-      description: "Requieren atención",
-      href: "/requests?filter=pendiente"
-    },
-    {
-      title: "Solicitudes Aprobadas",
-      value: completedRequests,
-      icon: "✅",
-      color: "bg-success/10 text-success border-success/20 hover:bg-success/20",
-      description: "Finalizadas exitosamente",
-      href: "/requests?filter=completada"
-    }
-  ];
-
-  // Agregar estadística de servicios solo para admins
-  if (isAdmin) {
-    stats.unshift({
-      title: "Mis Servicios",
-      value: services.length,
-      icon: "🛠️",
-      color: "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20",
-      description: "Servicios creados",
-      href: "/services"
-    });
-  }
+  // Obtener estadísticas usando la función centralizada
+  const stats = getDashboardStats({
+    requests,
+    services,
+    userRole: user.role
+  });
 
   return (
     <section className="mb-6">
@@ -69,7 +42,7 @@ export default function QuickStats() {
             className="
               bg-gradient-card backdrop-blur-sm rounded-xl p-6 shadow-lg 
               border border-azul-cielo/20 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 
-              transition-all duration-300 cursor-pointer text-left w-full
+              cursor-pointer text-left w-full
               focus:outline-none focus:ring-4 focus:ring-azul-cielo/30
               group
             "

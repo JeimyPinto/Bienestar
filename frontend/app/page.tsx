@@ -17,28 +17,12 @@ export default function Page() {
       {/* Contenido Principal */}
       <main className="container mx-auto px-4 py-8 space-y-16">
         {/* Sección de Servicios - Destacada */}
-        <section className="py-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-azul-oscuro mb-4">
-              <span className="bg-gradient-to-r from-azul-oscuro to-azul-marino bg-clip-text text-transparent">
-                Nuestros Servicios
-              </span>
-            </h2>
-            <p className="text-lg text-azul-oscuro/70 max-w-2xl mx-auto leading-relaxed">
-              Descubre todos los servicios que tenemos disponibles para apoyar tu proceso de formación
-            </p>
-            <div className="w-24 h-1 mx-auto mt-6 bg-gradient-to-r from-success to-verde-bosque rounded-full"></div>
-          </div>
-          
-          <div className="flex justify-center">
-            <ServicesDisplaySection
-              services={services}
-              loading={loading}
-              errorMessage={errorMessage}
-              onRetry={handleRetry}
-            />
-          </div>
-        </section>
+        <ServicesDisplaySection
+          services={services}
+          loading={loading}
+          errorMessage={errorMessage}
+          onRetry={handleRetry}
+        />
 
         {/* Sección de Contacto - Centrada y Destacada */}
         <section className="py-8">
