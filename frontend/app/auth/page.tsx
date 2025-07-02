@@ -4,13 +4,23 @@ import { useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useAuth } from "../../hooks/useAuth";
 import { useRecaptcha } from "../../hooks/useRecaptcha";
-import { useLoginForm } from "../../hooks/useLoginForm";
 import LoginForm from "../../components/auth/loginForm";
 import LoginWelcome from "../../components/auth/loginWelcome";
 import ActiveSessionMessage from "../../components/auth/activeSessionMessage";
 
 export default function LoginPage() {
-  const { token, logout } = useAuth();
+  const { 
+    token, 
+    logout,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    error,
+    handleLoginSubmit
+  } = useAuth();
+  
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const {
     recaptchaToken,
@@ -18,15 +28,11 @@ export default function LoginPage() {
     recaptchaError,
     handleRecaptchaChange,
   } = useRecaptcha();
-  const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    loading,
-    error,
-    handleSubmit,
-  } = useLoginForm({ recaptchaToken, recaptchaValid });
+
+  // Wrapper para el submit que incluye los datos del recaptcha
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    handleLoginSubmit(e, recaptchaToken, recaptchaValid);
+  };
 
   return (
     <>

@@ -1,4 +1,6 @@
-import { Service,Request,Group } from "./index";
+import { Service } from "./service";
+import { Request } from "./request";
+import { Group } from "./group";
 
 export interface User {
     id: number;
@@ -20,67 +22,4 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     file?: File | null;
-}
-export interface UserTableProps {
-    users: User[];
-    currentPage: number;
-    totalUsers: number;
-    totalPages: number;
-    limit: number;
-    setCurrentPage: (page: number) => void;
-    setLimit: React.Dispatch<React.SetStateAction<number>>;
-    token: string | null;
-    setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-    loading?: boolean;
-    onEditUser: (user: User) => void;
-}
-export interface UserFormProps {
-    dialogRef: React.RefObject<HTMLDialogElement>;
-    onClose: () => void;
-    mode: "create" | "edit";
-    userToEdit?: User;
-    errorMessage?: string;
-    setErrorMessage?: (msg: string) => void;
-    setSuccessMessage?: (msg: string) => void;
-}
-export interface UserTableDesktopProps {
-    users: User[];
-    loading?: boolean;
-    sortColumn: keyof User;
-    sortOrder: string;
-    handleSort: (column: keyof User) => void;
-    handleRowClick: (user: User) => void;
-    currentPage: number;
-    totalPages: number;
-    totalUsers: number;
-    setCurrentPage: (page: number) => void;
-}
-export interface UserCardMobileProps {
-    users: User[];
-    handleRowClick: (user: User) => void;
-    loading?: boolean;
-}
-export interface UserTableFilterBarProps {
-    limit: number;
-    setLimit: (limit: number) => void;
-    setCurrentPage: (page: number) => void;
-    filter: string;
-    setFilter: (value: string) => void;
-}
-export interface UserFormAdminFieldsProps {
-    newUser: User;
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    groups: Group[];
-    groupsLoading: boolean;
-}
-export interface UserFormImageFieldProps {
-    mode: "create" | "edit";
-    newUser: User;
-    previewImage: string | null;
-    setNewUser: React.Dispatch<React.SetStateAction<User>>;
-    setPreviewImage: React.Dispatch<React.SetStateAction<string | null>>;
-}
-export interface UserFormPersonalInfoFieldsProps {
-    newUser: User;
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }

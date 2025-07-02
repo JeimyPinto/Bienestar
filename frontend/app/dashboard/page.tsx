@@ -1,19 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { ROLES } from "../../constants/roles";
 import UserCard from "../users/userCard";
 import DashboardRoleActions from "../../components/dashboard/dashboardRoleActions";
-import RequestForm from "../requests/requestForm";
+import RequestForm from "../../components/requests/requestForm";
 import SuccessMessage from "../../ui/successMessage";
-import { ROLES } from "../../constants/roles";
 import { useAuth } from "../../hooks/useAuth";
 import { useMessages } from "../../hooks/useMessages";
 
 export default function DashboardPage() {
+  const { successMessage, clearSuccess, showSuccess } = useMessages();
   const { user } = useAuth();
-  const { successMessage, clearSuccess, setErrorMessage, showSuccess } =
-    useMessages();
-
   const [isFormOpen, setIsFormOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -105,7 +103,6 @@ export default function DashboardPage() {
               dialogRef={dialogRef}
               onClose={closeRequestForm}
               mode="create"
-              setErrorMessage={setErrorMessage}
             />
           )}
         </div>

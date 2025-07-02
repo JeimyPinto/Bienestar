@@ -1,11 +1,17 @@
 import React from "react";
-import { RequestStatusFieldsProps } from "../../interface/request";
+import { Request } from "../../interface/request";
 
-const RequestStatusFields: React.FC<RequestStatusFieldsProps> = ({
+interface RequestStatusFieldsProps {
+  mode: "create" | "edit";
+  newRequest: Request;
+  setNewRequest: React.Dispatch<React.SetStateAction<Request>>;
+}
+
+export default function RequestStatusFields({
   mode,
   newRequest,
   setNewRequest,
-}) => {
+}: RequestStatusFieldsProps) {
   return (
     <>
       <div className="col-span-1">
@@ -44,7 +50,7 @@ const RequestStatusFields: React.FC<RequestStatusFieldsProps> = ({
           <select
             name="responseStatus"
             value={newRequest.responseStatus}
-            onChange={e => setNewRequest({ ...newRequest, responseStatus: e.target.value })}
+            onChange={e => setNewRequest({ ...newRequest, responseStatus: e.target.value as "pendiente" | "aprobada" | "rechazada" })}
             className={
               `mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul ` +
               (newRequest.responseStatus === "pendiente" ? "border-amarillo text-amarillo" :
@@ -59,7 +65,6 @@ const RequestStatusFields: React.FC<RequestStatusFieldsProps> = ({
           </select>
         )}
       </div>
-      {/* Campo responseMessage solo si rechazada */}
       {newRequest.responseStatus === "rechazada" && (
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-azul">Motivo del Rechazo</label>
@@ -76,6 +81,4 @@ const RequestStatusFields: React.FC<RequestStatusFieldsProps> = ({
       )}
     </>
   );
-};
-
-export default RequestStatusFields;
+}

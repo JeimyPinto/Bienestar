@@ -1,5 +1,21 @@
 import { useState, useCallback } from "react";
-import { UseMessagesReturn } from "../interface";
+
+export interface UseMessagesReturn {
+  // Estado
+  successMessage: string;
+  errorMessage: string;
+  
+  // Funciones
+  showSuccess: (message: string) => void;
+  showError: (message: string) => void;
+  clearMessages: () => void;
+  clearSuccess: () => void;
+  clearError: () => void;
+  
+  // Para compatibilidad con código existente
+  setSuccessMessage: (message: string) => void;
+  setErrorMessage: (message: string) => void;
+}
 
 export const useMessages = (): UseMessagesReturn => {
   const [successMessage, setSuccessMessageState] = useState<string>("");

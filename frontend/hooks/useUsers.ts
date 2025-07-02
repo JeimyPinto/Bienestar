@@ -1,9 +1,46 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { User } from "../interface/user";
-import { UseUsersOptions, UseUsersReturn } from "../interface";
-import { getAllPaginated } from "../services/user";
-
-export const useUsers = ({ token, initialLimit = 10, onError }: UseUsersOptions): UseUsersReturn<User> => {
+import { 
+  getAll, 
+  getAllActive, 
+  getAllPaginated, 
+  getAllByRole, 
+  getById, 
+  create, 
+  update 
+} from "../services/user";
+interface UseUsersOptions {
+  token: string | null;
+  initialLimit?: number;
+  mode?: 'all' | 'allActive' | 'paginated' | 'byRole' | 'byId';
+  role?: string; // Requerido cuando mode es 'byRole'
+  userId?: number; // Requerido cuando mode es 'byId'
+  onError?: (message?: string) => void;
+}
+interface UseUsersReturn<T> {
+  users: T[];
+  currentPage: number;
+  limit: number;
+  totalUsers: number;
+  totalPages: number;
+  loading: boolean;
+  setUsers: React.Dispatch<React.SetStateAction<T[]>>;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  setLimit: React.Dispatch<React.SetStateAction<number>>;
+  fetchUsers: () => Promise<{ error: boolean; message?: string }>;
+  refreshUsers: () => void;
+  // Métodos CRUD
+  createUser: (user: User, file?: File) => Promise<{ error: boolean; message?: string }>;
+  updateUser: (id: number, user: User, file?: File) => Promise<{ error: boolean; message?: string }>;
+}
+export const useUsers = ({ 
+  token, 
+  initialLimit = 10, 
+  mode = 'paginated', 
+  role, 
+  userId,
+  onError 
+}: UseUsersOptions): UseUsersReturn<User> => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(initialLimit);
@@ -17,49 +54,129 @@ export const useUsers = ({ token, initialLimit = 10, onError }: UseUsersOptions)
     onErrorRef.current = onError;
   }, [onError]);
 
-  // Cargar usuarios paginados
+  // Cargar usuarios según el modo
   const fetchUsers = useCallback(async (): Promise<{ error: boolean; message?: string }> => {
     if (!token) return { error: false }; // No hacer fetch si no hay token
     setLoading(true);
     
     try {
-      const res = await getAllPaginated(currentPage, limit, token);
+      let res;
+      
+      switch (mode) {
+        case 'all':
+          res = await getAll(token);
+          break;
+        case 'allActive':
+          res = await getAllActive(token);
+          break;
+        case 'paginated':
+          res = await getAllPaginated(currentPage, limit, token);
+          break;
+        case 'byRole':
+          if (!role) return { error: true, message: "Rol requerido para modo 'byRole'" };
+          res = await getAllByRole(role, token);
+          break;
+        case 'byId':
+          if (!userId) return { error: true, message: "userId requerido para modo 'byId'" };
+          res = await getById(userId, token);
+          // Para byId, convertir el usuario único en un array
+          if (!res.error && res.user) {
+            res.users = [res.user];
+          }
+          break;
+        default:
+          return { error: true, message: "Modo no válido" };
+      }
+
       if (res.error) {
         setUsers(res.users || []);
-        onErrorRef.current?.(res.message); // Usar la ref para evitar dependencias
+        onErrorRef.current?.(res.message);
         return { error: true, message: res.message };
       } else {
-        setUsers(res.users);
-        setTotalUsers(res.totalUsers || res.users.length);
-        setTotalPages(res.totalPages || 1);
+        setUsers(res.users || []);
+        
+        // Solo actualizar datos de paginación en modo paginated
+        if (mode === 'paginated') {
+          setTotalUsers(res.totalUsers || res.users?.length || 0);
+          setTotalPages(res.totalPages || 1);
+        }
+        
         return { error: false };
       }
     } catch {
       setUsers([]);
       const errorMsg = "Error al cargar usuarios";
-      onErrorRef.current?.(errorMsg); // Usar la ref para evitar dependencias
+      onErrorRef.current?.(errorMsg);
       return { error: true, message: errorMsg };
     } finally {
       setLoading(false);
     }
-  }, [currentPage, limit, token]); // Removido onError de las dependencias
+  }, [currentPage, limit, token, mode, role, userId]);
 
   // Auto-fetch cuando cambien las dependencias críticas
   useEffect(() => {
     const loadUsers = async () => {
       await fetchUsers();
-      // Los errores ya se manejan dentro de fetchUsers
     };
     
-    if (token) {
+    // Solo auto-cargar si tenemos los requisitos según el modo
+    const shouldLoad = 
+      (mode === 'all' && token) ||
+      (mode === 'allActive' && token) ||
+      (mode === 'paginated' && token) ||
+      (mode === 'byRole' && token && role) ||
+      (mode === 'byId' && token && userId);
+    
+    if (shouldLoad) {
       loadUsers();
     }
-  }, [fetchUsers, token]); // fetchUsers ahora es más estable debido a la optimización
+  }, [fetchUsers, token, mode, role, userId]);
 
   // Función para refrescar usuarios después de operaciones CRUD
   const refreshUsers = useCallback(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  // Métodos CRUD
+  const createUser = useCallback(async (user: User, file?: File): Promise<{ error: boolean; message?: string }> => {
+    if (!token) return { error: true, message: "Token requerido para crear usuario" };
+    
+    try {
+      const res = await create(user, file, token);
+      if (res.error) {
+        onErrorRef.current?.(res.message);
+        return { error: true, message: res.message };
+      } else {
+        // Refrescar la lista después de crear
+        await fetchUsers();
+        return { error: false, message: res.message };
+      }
+    } catch {
+      const errorMsg = "Error al crear usuario";
+      onErrorRef.current?.(errorMsg);
+      return { error: true, message: errorMsg };
+    }
+  }, [token, fetchUsers]);
+
+  const updateUser = useCallback(async (id: number, user: User, file?: File): Promise<{ error: boolean; message?: string }> => {
+    if (!token) return { error: true, message: "Token requerido para actualizar usuario" };
+    
+    try {
+      const res = await update(id, user, file, token);
+      if (res.error) {
+        onErrorRef.current?.(res.message);
+        return { error: true, message: res.message };
+      } else {
+        // Refrescar la lista después de actualizar
+        await fetchUsers();
+        return { error: false, message: res.message };
+      }
+    } catch {
+      const errorMsg = "Error al actualizar usuario";
+      onErrorRef.current?.(errorMsg);
+      return { error: true, message: errorMsg };
+    }
+  }, [token, fetchUsers]);
 
   return {
     // Estado
@@ -78,5 +195,9 @@ export const useUsers = ({ token, initialLimit = 10, onError }: UseUsersOptions)
     // Funciones
     fetchUsers,
     refreshUsers,
+    
+    // Métodos CRUD
+    createUser,
+    updateUser,
   };
 };

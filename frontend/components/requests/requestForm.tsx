@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import { RequestsFormProps, Request } from "../../interface/index";
-import { create, update } from "../../services/request";
 import { useAuth } from "../../hooks/useAuth";
+import { useRequests } from "../../hooks/useRequests";
+import { Request } from "../../interface/request";
 import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
-import RequestFormActions from "./requestFormActions";
 import FormModalHeader from "../../ui/FormModalHeader";
-import { Spinner } from "../../ui";
+import  Spinner  from "../../ui/spinner";
 
 const emptyRequest: Request = {
-    id: 0,
     userId: 0,
     serviceId: 0,
     description: "",
@@ -24,7 +22,12 @@ const emptyRequest: Request = {
     service: null,
     creator: null,
 };
-
+interface RequestsFormProps {
+    dialogRef: React.RefObject<HTMLDialogElement>;
+    onClose?: (updatedRequest?: Request) => void;
+    mode: "create" | "edit";
+    requestToEdit?: Request;
+}
 export default function RequestsForm(props: RequestsFormProps) {
     const {
         dialogRef,
@@ -32,10 +35,16 @@ export default function RequestsForm(props: RequestsFormProps) {
         mode,
         requestToEdit,
     } = props;
-    const { token, user } = useAuth()
+    const { token, user } = useAuth();
     const [newRequest, setNewRequest] = useState<Request>(emptyRequest);
     const [formError, setFormError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    // Hook para métodos CRUD de requests
+    const { createRequest, updateRequest } = useRequests({
+        token,
+        onError: (error) => setFormError(error || "Error desconocido")
+    });
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -98,17 +107,19 @@ export default function RequestsForm(props: RequestsFormProps) {
         try {
             let response;
             if (mode === "create") {
-                response = await create(requestData, token);
+                response = await createRequest(requestData);
             } else if (mode === "edit" && requestToEdit) {
-                response = await update(requestToEdit.id as number, requestData, token);
+                response = await updateRequest(requestToEdit.id as number, requestData);
             }
+            
             if (response?.error) {
                 setFormError(response.message || "Error desconocido");
                 return;
             }
+            
             setNewRequest(emptyRequest);
             setTimeout(() => {
-                onClose?.(response?.request || undefined);
+                onClose?.(undefined); // El hook ya refrescará la lista automáticamente
             }, 100);
         } catch (error) {
             setFormError(String(error));

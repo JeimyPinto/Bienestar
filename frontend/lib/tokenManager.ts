@@ -7,6 +7,15 @@ interface JwtPayload {
   [key: string]: unknown;
 }
 
+// Token Manager - Fuente única de verdad para manejo de tokens y usuario
+export const tokenManager = {
+  // Guardar token
+  setToken(token: string): void {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", token);
+    }
+  },
+
   // Obtener token
   getToken(): string | null {
     if (typeof window !== "undefined") {
@@ -19,16 +28,16 @@ interface JwtPayload {
   removeToken(): void {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
-      // También limpiar otros datos del usuario si los hay
       localStorage.removeItem("user");
     }
+  },
 
   // Verificar si hay token
   hasToken(): boolean {
     return this.getToken() !== null;
   },
 
-  // Verificar si el token está expirado (mejorado con jwt-decode)
+  // Verificar si el token está expirado (usando jwt-decode)
   isTokenExpired(token?: string | null): boolean {
     const tokenToCheck = token || this.getToken();
     if (!tokenToCheck) return true;
@@ -113,5 +122,25 @@ interface JwtPayload {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     }
+  },
+
+  // Guardar sesión completa (token + usuario)
+  saveSession(token: string, user: User): void {
+    this.setToken(token);
+    this.setUser(user);
   }
 };
+
+// Función de conveniencia para obtener token (mantener retrocompatibilidad)
+export default function getToken(): string | null {
+  return tokenManager.getValidToken();
+}
+
+// Exportar funciones individuales para retrocompatibilidad
+export function getUserToken(token: string): User | null {
+  return tokenManager.getUserFromToken(token);
+}
+
+export function isTokenExpired(token: string | null): boolean {
+  return tokenManager.isTokenExpired(token);
+}

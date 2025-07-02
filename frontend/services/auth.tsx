@@ -1,11 +1,9 @@
-import  isValidEmail  from "../lib/isValidEmail"
-import { tokenManager } from "../lib/getToken"
+import isValidEmail from "../lib/isValidEmail";
+import { tokenManager } from "../lib/tokenManager";
 
-// Asegurar que la variable de entorno se lea correctamente
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const url = `${API_URL}/auth`
+const url = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
-export async function verifyRecaptchaBackend(recaptchaToken: string) {    
+export async function verifyRecaptchaBackend(recaptchaToken: string) {
     const response = await fetch(`${url}/verify-recaptcha`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -23,18 +21,17 @@ type LoginParams = {
 
 export async function login({ email, password, recaptchaToken }: LoginParams) {
     if (!email || !password || !recaptchaToken) {
-        return { message: "Todos los campos son obligatorios.", token: null };
+        return { error: "Todos los campos son obligatorios.", token: null };
     }
     if (!isValidEmail(email)) {
-        return { message: "Formato de correo electrónico inválido.", token: null };
+        return { error: "Formato de correo electrónico inválido.", token: null };
     }
 
-    try {        
+    try {
         const response = await fetch(`${url}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password, recaptchaToken }),
-            // Eliminar credentials: "include" ya que no usamos cookies
         });
 
         let data;
@@ -42,27 +39,36 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
             data = await response.json();
         } catch (jsonError) {
             console.error("Respuesta no JSON del backend:", jsonError);
-            return { message: "Error inesperado del servidor.", token: null };
+            return { error: "Error inesperado del servidor.", token: null };
         }
 
         if (!response.ok) {
             console.error("Error de login:", data.message || data.details || data);
-            return { message: data.message || "Error al iniciar sesión.", token: null };
+            return { error: data.message || "Error al iniciar sesión.", token: null };
         }
 
-        // Guardar token y usuario en localStorage
+        // Guardar token y usuario en localStorage usando tokenManager
         if (data.token) {
-            tokenManager.setToken(data.token);
             if (data.user) {
-                tokenManager.setUser(data.user);
+                tokenManager.saveSession(data.token, data.user);
+            } else {
+                tokenManager.setToken(data.token);
             }
+
+            // Retornar datos exitosos
+            return {
+                token: data.token,
+                user: data.user,
+                message: data.message || "Login exitoso"
+            };
+        } else {
+            return { error: "No se recibió token del servidor.", token: null };
         }
 
-        return data;
     } catch (error) {
         console.error("Error iniciando sesión en: ", error);
         return {
-            message: "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
+            error: "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
             token: null
         };
     }
@@ -73,7 +79,7 @@ export async function logout() {
         // Llamar al endpoint de logout (opcional)
         await fetch(`${url}/logout`, {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${tokenManager.getToken()}`
             },
@@ -81,7 +87,7 @@ export async function logout() {
     } catch (error) {
         console.error("Error en logout:", error);
     } finally {
-        // Siempre limpiar localStorage
-        tokenManager.removeToken();
+        // Siempre limpiar localStorage usando tokenManager
+        tokenManager.clearSession();
     }
 }

@@ -2,12 +2,12 @@
 
 import React, { useState, useRef } from "react";
 import { Request } from "../../interface/request";
-import RequestForm from "./requestForm";
-import RequestHistory from "./requestHistory";
-import SuccessMessage from "../../ui/successMessage";
 import { useAuth } from "../../hooks/useAuth";
 import { useRequests } from "../../hooks/useRequests";
 import { useMessages } from "../../hooks/useMessages";
+import RequestForm from "../../components/requests/requestForm"
+import RequestHistory from "../../components/requests/requestHistory";
+import SuccessMessage from "../../ui/successMessage";
 
 export default function RequestPage() {
     const { user, token } = useAuth();
@@ -102,7 +102,6 @@ export default function RequestPage() {
                         onClose={closeDialog}
                         mode={mode}
                         requestToEdit={requestToEdit}
-                        setErrorMessage={setErrorMessage}
                     />
                 )}
             </div>
