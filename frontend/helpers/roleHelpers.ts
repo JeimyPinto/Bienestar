@@ -1,6 +1,15 @@
 import { ROLES } from "../constants/roles";
-import { RoleDisplayConfig } from "../interface/components"
 
+/**
+ * Configuración visual para los roles del sistema
+ */
+export interface RoleDisplayConfig {
+    title: string;
+    emoji: string;
+    gradient: string;
+    color: string;
+    description: string;
+}
 
 /**
  * Obtiene la configuración visual para un rol específico

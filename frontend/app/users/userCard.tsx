@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { User } from "../../interface"
+import { User } from "../../interface/user"
 
 export default function UserCard({ user, onClick }: { user: User | null, onClick?: () => void }) {
     if (!user) {
