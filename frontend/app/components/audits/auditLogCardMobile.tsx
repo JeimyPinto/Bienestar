@@ -1,5 +1,5 @@
 import React from "react";
-import { AuditLog } from "../../../types/auditLog";
+import { AuditLog } from "../../../interface/auditLog";
 import { Card, Badge, Spinner } from "../../../ui";
 
 interface AuditLogCardMobileProps {

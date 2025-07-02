@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef } from "react";
-import { Service } from "../../types/index";
+import { Service } from "../../interface/index";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import ServicesGallery from "./servicesGallery";
@@ -9,9 +9,9 @@ import ServiceTable from "./serviceTable";
 import SectionHeader from "../components/sectionHeader";
 import ServiceForm from "./serviceForm";
 import Spinner from "../../ui/spinner";
-import { useAuth } from "../hooks/useAuth";
-import { useServices } from "../hooks/useServices";
-import { useMessages } from "../hooks/useMessages";
+import { useAuth } from "../../hooks/useAuth";
+import { useServices } from "../../hooks/useServices";
+import { useMessages } from "../../hooks/useMessages";
 import { ROLES } from "../constants/roles";
 
 export default function ServicePage() {

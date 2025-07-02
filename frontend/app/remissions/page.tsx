@@ -1,13 +1,13 @@
 "use client"
 
 import React, { useState, useRef } from "react";
-import { Remission } from "../../types/remission";
+import { Remission } from "../../interface/remission";
 import { ErrorMessage, SuccessMessage } from "../../ui";
 import RemissionTable from "./remissionTable";
 import RemissionForm from "./remissionForm";
 import SectionHeader from "../components/sectionHeader";
-import { getAll } from "../services/services/remission"
-import { useAuth } from "../hooks/useAuth";
+import { getAll } from "../../services/remission"
+import { useAuth } from "../../hooks/useAuth";
 
 export default function RemissiontPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useHomePage } from "./hooks/useHomePage";
+import { useHomePage } from "../hooks/useHomePage";
 import {
   HeroSection,
   AboutSection,

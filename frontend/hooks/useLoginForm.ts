@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { login } from "../services/services/auth";
+import { login } from "../services/auth";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./useAuth";
-import { UseLoginFormProps } from "../../types/login"
+import { UseLoginFormProps } from "../interface/login"
 
 
 export function useLoginForm({ recaptchaToken, recaptchaValid }: UseLoginFormProps) {

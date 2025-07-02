@@ -6,8 +6,8 @@ import DashboardRoleActions from "../components/dashboard/dashboardRoleActions";
 import RequestForm from "../requests/requestForm";
 import SuccessMessage from "../../ui/successMessage";
 import { ROLES } from "../constants/roles";
-import { useAuth } from "../hooks/useAuth";
-import { useMessages } from "../hooks/useMessages";
+import { useAuth } from "../../hooks/useAuth";
+import { useMessages } from "../../hooks/useMessages";
 
 export default function DashboardPage() {
   const { user } = useAuth();

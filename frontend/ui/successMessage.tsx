@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { SuccessMessageProps } from "../types/components";
+import { SuccessMessageProps } from "../interface/components";
 
 const SuccessMessage: React.FC<SuccessMessageProps> = ({ message, duration = 5000, onClose }) => {
   useEffect(() => {

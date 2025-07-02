@@ -1,5 +1,5 @@
 import React from "react";
-import { UserFormPersonalInfoFieldsProps } from "../../types/index";
+import { UserFormPersonalInfoFieldsProps } from "../../interface/index";
 
 export default function UserFormPersonalInfoFields({ newUser, handleInputChange }: UserFormPersonalInfoFieldsProps) {
   return (

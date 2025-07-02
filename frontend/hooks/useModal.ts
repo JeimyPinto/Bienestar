@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import { User } from "../../types/user";
-import { ModalMode, UseModalReturn } from "../../types";
+import { User } from "../interface/user";
+import { ModalMode, UseModalReturn } from "../interface";
 
 export const useModal = (): UseModalReturn<User> => {
   const dialogRef = useRef<HTMLDialogElement>(null);

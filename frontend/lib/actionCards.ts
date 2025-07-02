@@ -1,5 +1,5 @@
 import { ROLES } from "../constants/roles";
-import { ActionCard } from "../../types/components";
+import { ActionCard } from "../interface/components";
 
 /**
  * Configuración de las tarjetas de acción del dashboard administrativo

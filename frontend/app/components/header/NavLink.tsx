@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import {NavLinkProps} from '../../../types/components';
+import {NavLinkProps} from '../../../interface/components';
 
 export const NavLink: React.FC<NavLinkProps> = ({ 
   href, 

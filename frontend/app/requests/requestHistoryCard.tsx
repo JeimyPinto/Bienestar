@@ -1,6 +1,6 @@
 import React from 'react';
-import { areaColors } from '../styles/areaColors';
-import { Request } from '../../types/request';
+import { areaColors } from '../../styles/areaColors';
+import { Request } from '../../interface/request';
 import Spinner from '../../ui/spinner';
 
 interface RequestHistoryCardProps {

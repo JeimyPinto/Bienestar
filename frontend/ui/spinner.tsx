@@ -1,5 +1,5 @@
 import React from "react";
-import { SpinnerProps } from "../types/components";
+import { SpinnerProps } from "../interface/components";
 
 
 export default function Spinner({

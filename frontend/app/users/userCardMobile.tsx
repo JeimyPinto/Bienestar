@@ -1,5 +1,5 @@
 import React from "react";
-import { UserCardMobileProps } from "../../types/user";
+import { UserCardMobileProps } from "../../interface/user";
 import UserCard from "./userCard";
 import Spinner from "../../ui/spinner";
 

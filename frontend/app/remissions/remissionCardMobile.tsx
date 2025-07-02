@@ -1,5 +1,5 @@
 import React from "react";
-import { RemissionCardMobileProps } from "../../types/remission";
+import { RemissionCardMobileProps } from "../../interface/remission";
 
 
 

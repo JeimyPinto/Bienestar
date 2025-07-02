@@ -1,7 +1,7 @@
 import React from "react";
-import { RequestCardMobileProps } from "../../types/index";
+import { RequestCardMobileProps } from "../../interface/index";
 import Spinner from "../../ui/spinner";
-import { areaColors } from "../styles/areaColors";
+import { areaColors } from "../../styles/areaColors";
 
 export default function RequestCardMobile({
   requests,

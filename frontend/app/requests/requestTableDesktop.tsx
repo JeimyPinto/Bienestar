@@ -1,7 +1,7 @@
 import React from "react";
-import { RequestTableDesktopProps } from "../../types/index";
+import { RequestTableDesktopProps } from "../../interface/index";
 import Spinner from "../../ui/spinner";
-import { areaColors } from "../styles/areaColors";
+import { areaColors } from "../../styles/areaColors";
 
 export default function RequestTableDesktop({
   requests,

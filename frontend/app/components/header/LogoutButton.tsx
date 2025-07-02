@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogoutButtonProps } from "../../../types/components";
+import { LogoutButtonProps } from "../../../interface/components";
 
 
 export const LogoutButton: React.FC<LogoutButtonProps> = ({ onClick }) => {

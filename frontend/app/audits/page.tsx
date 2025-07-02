@@ -4,9 +4,9 @@ import React, { useState } from "react"
 import { AuditLogTable } from "../components/audits"
 import { ErrorMessage, SuccessMessage } from "../../ui"
 import { SectionHeader } from "../components"
-import { AuditLog } from "../../types/auditLog"
-import { getAll } from "../services/services/auditLog";
-import { useAuth } from "../hooks/useAuth";
+import { AuditLog } from "../../interface/auditLog"
+import { getAll } from "../../services/auditLog";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function AuditPage() {
     const [successMessage, setSuccessMessage] = useState<string>("");

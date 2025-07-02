@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { UserFormImageFieldProps } from "../../types/index";
+import { UserFormImageFieldProps } from "../../interface/index";
 
 export default function UserFormImageField({ mode, newUser, previewImage, setNewUser, setPreviewImage }: UserFormImageFieldProps) {
   return (

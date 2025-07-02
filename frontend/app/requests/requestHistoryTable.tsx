@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { areaColors } from '../styles/areaColors';
-import { RequestHistoryTableProps } from '../../types/request';
+import { areaColors } from '../../styles/areaColors';
+import { RequestHistoryTableProps } from '../../interface/request';
 import Spinner from '../../ui/spinner';
 
 const RequestHistoryTable: React.FC<RequestHistoryTableProps> = ({ requests, loading = false }) => {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { verifyRecaptchaBackend } from "../services/services/auth";
+import { verifyRecaptchaBackend } from "../services/auth";
 
 export function useRecaptcha() {
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);

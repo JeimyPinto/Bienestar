@@ -2,9 +2,9 @@
 
 import { useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { useAuth } from "../hooks/useAuth";
-import { useRecaptcha } from "../hooks/useRecaptcha";
-import { useLoginForm } from "../hooks/useLoginForm";
+import { useAuth } from "../../hooks/useAuth";
+import { useRecaptcha } from "../../hooks/useRecaptcha";
+import { useLoginForm } from "../../hooks/useLoginForm";
 import { LoginForm, ActiveSessionMessage, LoginWelcome } from "../components/auth";
 
 export default function LoginPage() {

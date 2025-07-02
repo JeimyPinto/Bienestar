@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { ServiceFormProps, Service, Area } from "../../types/index"
-import { create, update } from "../services/services/service"
+import { ServiceFormProps, Service, Area } from "../../interface/index"
+import { create, update } from "../../services/service"
 import ServiceFormMainFields from "./serviceFormMainFields";
 import ServiceFormAdminFields from "./serviceFormAdminFields";
 import FormModalHeader from "../components/FormModalHeader";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 
 const emptyService: Service = {
     id: "",

@@ -1,4 +1,4 @@
-import { ActiveSessionMessageProps } from "../../../types/components";
+import { ActiveSessionMessageProps } from "../../../interface/components";
 
 export default function ActiveSessionMessage({ onLogout }: ActiveSessionMessageProps) {
   return (

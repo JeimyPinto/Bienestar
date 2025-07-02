@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import {ScrollTopButtonProps} from "../../../types/components"
+import {ScrollTopButtonProps} from "../../../interface/components"
 
 
 export const ScrollTopButton: React.FC<ScrollTopButtonProps> = ({ show, onClick }) => {

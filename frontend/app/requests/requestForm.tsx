@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { RequestsFormProps, Request } from "../../types/index";
-import { create, update } from "../services/services/request";
-import { useAuth } from "../hooks/useAuth";
+import { RequestsFormProps, Request } from "../../interface/index";
+import { create, update } from "../../services/request";
+import { useAuth } from "../../hooks/useAuth";
 import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";

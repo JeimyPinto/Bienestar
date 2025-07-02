@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MobileLoginButtonProps } from "../../../types/components";
+import { MobileLoginButtonProps } from "../../../interface/components";
 
 export const MobileLoginButton: React.FC<MobileLoginButtonProps> = ({ onClick }) => {
   return (

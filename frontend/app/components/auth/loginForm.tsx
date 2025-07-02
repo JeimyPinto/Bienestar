@@ -1,5 +1,5 @@
 import ReCAPTCHA from "react-google-recaptcha";
-import { LoginFormProps } from "../../../types/login";
+import { LoginFormProps } from "../../../interface/login";
 import { Button, Input, Card, ErrorMessage } from "../../../ui";
 
 export default function LoginForm({

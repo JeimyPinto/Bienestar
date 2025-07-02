@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Group, User } from "../../../types/index";
-import { getAllByRole } from "../../services/services/user";
-import { create, update } from "../../services/services/group";
-import { useAuth } from "../../hooks/useAuth";
-import { GroupFormProps } from "../../../types/group";
+import { Group, User } from "../../../interface/index";
+import { getAllByRole } from "../../../services/user";
+import { create, update } from "../../../services/group";
+import { useAuth } from "../../../hooks/useAuth";
+import { GroupFormProps } from "../../../interface/group";
 import FormModalHeader from "../FormModalHeader";
 
 const emptyGroup: Group = {

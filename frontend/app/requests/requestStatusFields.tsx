@@ -1,5 +1,5 @@
 import React from "react";
-import { RequestStatusFieldsProps } from "../../types/request";
+import { RequestStatusFieldsProps } from "../../interface/request";
 
 const RequestStatusFields: React.FC<RequestStatusFieldsProps> = ({
   mode,

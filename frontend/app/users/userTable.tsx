@@ -1,12 +1,12 @@
 import React from "react"
-import { User, UserTableProps } from "../../types"
+import { User, UserTableProps } from "../../interface"
 import UserTableDesktop from "./userTableDesktop"
 import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
 import PaginationControls from "./paginationControls"
-import { useColumnSorter } from "../lib/useColumnSorter"
-import { filterUsers } from "../lib"
-import { useFilter } from "../hooks/useFilter"
+import { useColumnSorter } from "../../lib/useColumnSorter"
+import { filterUsers } from "../../lib"
+import { useFilter } from "../../hooks/useFilter"
 
 export default function UserTable({
     users,

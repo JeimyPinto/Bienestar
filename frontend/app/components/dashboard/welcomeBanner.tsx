@@ -1,4 +1,4 @@
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 import { getCurrentTimeGreeting, getDayOfMonth, getAbbreviatedMonth } from "../../../helpers/timeHelpers";
 import { getRoleDisplay } from "../../../helpers/roleHelpers";
 

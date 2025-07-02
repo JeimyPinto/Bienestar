@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GroupTableProps, Group } from "../../../types/index";
+import { GroupTableProps, Group } from "../../../interface/index";
 import GroupTableFilterBar from "./groupTableFilterBar";
 import GroupForm from "./groupForm";
 
@@ -31,8 +31,8 @@ export default function GroupTable({ groups, setGroups, setSuccessMessage, setEr
         setIsFormOpen(false);
         dialogRef.current?.close();
         // Recargar grupos después de crear/editar
-        const getToken = (await import("../../lib/getToken")).default;
-        const { getAll } = await import("../../services/services/group");
+        const getToken = (await import("../../../lib/getToken")).default;
+        const { getAll } = await import("../../../services/group");
         const token = getToken();
         const res = await getAll(token || undefined);
         if (!res.error) {

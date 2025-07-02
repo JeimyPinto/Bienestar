@@ -1,7 +1,7 @@
 import React from "react"
 import Image from "next/image"
-import { ServiceCardMobileProps } from "../../types/service"
-import { areaColors } from "../styles/areaColors"
+import { ServiceCardMobileProps } from "../../interface/service"
+import { areaColors } from "../../styles/areaColors"
 
 const ServiceCardMobile: React.FC<ServiceCardMobileProps> = ({ services, loading, onCardClick }) => (
   <div className="sm:hidden flex flex-col gap-4">

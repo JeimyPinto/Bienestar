@@ -1,5 +1,5 @@
 import React from "react";
-import { RemissionTableDesktopProps } from "../../types/remission";
+import { RemissionTableDesktopProps } from "../../interface/remission";
 
 export default function RemissionTableDesktop({ remissions, loading, handleRowClick }: RemissionTableDesktopProps) {
   return (

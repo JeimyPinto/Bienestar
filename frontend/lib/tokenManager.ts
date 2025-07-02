@@ -1,4 +1,4 @@
-import {User} from "../../types/user";
+import {User} from "../interface/user";
 
 export const tokenManager = {
   // Guardar token

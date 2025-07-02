@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { UserFormProps, User } from "../../types/index"
-import { create, update } from "../services/services/user";
+import { UserFormProps, User } from "../../interface/index"
+import { create, update } from "../../services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
 import FormModalHeader from "../components/FormModalHeader";
-import { useAuth } from "../hooks/useAuth";
-import { useGroups } from "../hooks/useGroups";
-import { useFormInitialization } from "../hooks/useFormInitialization";
+import { useAuth } from "../../hooks/useAuth";
+import { useGroups } from "../../hooks/useGroups";
+import { useFormInitialization } from "../../hooks/useFormInitialization";
 
 const emptyUser: User = {
     id: 0,

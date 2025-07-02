@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { UseMessagesReturn } from "../../types";
+import { UseMessagesReturn } from "../interface";
 
 export const useMessages = (): UseMessagesReturn => {
   const [successMessage, setSuccessMessageState] = useState<string>("");

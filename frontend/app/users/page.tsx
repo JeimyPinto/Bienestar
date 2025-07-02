@@ -6,10 +6,10 @@ import UserForm from "./userForm"
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import IcoBack from "../components/icoBack";
-import { useAuth } from "../hooks/useAuth";
-import { useUsers } from "../hooks/useUsers";
-import { useModal } from "../hooks/useModal";
-import { useMessages } from "../hooks/useMessages";
+import { useAuth } from "../../hooks/useAuth";
+import { useUsers } from "../../hooks/useUsers";
+import { useModal } from "../../hooks/useModal";
+import { useMessages } from "../../hooks/useMessages";
 
 export default function UsersPage() {
     const { token } = useAuth();

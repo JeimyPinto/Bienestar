@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { AuditLogTableProps } from "../../../types/auditLog"
+import { AuditLogTableProps } from "../../../interface/auditLog"
 import AuditLogTableDesktop from "./auditLogTableDesktop"
 import AuditLogCardMobile from "./auditLogCardMobile"
 import AuditLogTableFilterBar from "./auditLogTableFilterBar"

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useFooter } from "../hooks/useFooter";
+import { useFooter } from "../../hooks/useFooter";
 import { RegionalInfo } from "./footer/RegionalInfo";
 import { CentralLogo } from "./footer/CentralLogo";
 import { ContactInfo } from "./footer/ContactInfo";

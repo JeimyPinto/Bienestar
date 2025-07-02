@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
-import { RequestHistoryProps } from "../../types/request"
+import { RequestHistoryProps } from "../../interface/request"
 import RequestHistoryTable from "./requestHistoryTable";
 import RequestHistoryCard from "./requestHistoryCard";
 

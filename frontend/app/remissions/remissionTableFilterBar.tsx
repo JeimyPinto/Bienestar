@@ -1,5 +1,5 @@
 import React from "react";
-import { RemissionTableFilterBarProps } from "../../types/remission";
+import { RemissionTableFilterBarProps } from "../../interface/remission";
 
 
 export default function RemissionTableFilterBar({ filter, setFilter }: RemissionTableFilterBarProps) {

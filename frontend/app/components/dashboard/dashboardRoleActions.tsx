@@ -1,4 +1,4 @@
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 import { ROLES } from "../../constants/roles";
 import ActionButtons from "./actionButtons";
 import UserServicesSection from "../../dashboard/userServicesSection";

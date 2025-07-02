@@ -1,6 +1,6 @@
-import { isValidEmail } from "../../lib/isValidEmail"
-import { LoginParams } from "../../../types/login"
-import { tokenManager } from "../../lib/tokenManager"
+import { isValidEmail } from "../../../lib/isValidEmail"
+import { LoginParams } from "../../../interface/login"
+import { tokenManager } from "../../../lib/tokenManager"
 
 // Asegurar que la variable de entorno se lea correctamente
 const API_URL = process.env.NEXT_PUBLIC_API_URL;

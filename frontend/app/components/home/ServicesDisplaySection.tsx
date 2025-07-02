@@ -1,6 +1,6 @@
 import React from 'react';
 import ServicesGallery from '../../services/servicesGallery';
-import { ServicesDisplaySectionProps } from '../../../types/components';
+import { ServicesDisplaySectionProps } from '../../../interface/components';
 
 
 export const ServicesDisplaySection: React.FC<ServicesDisplaySectionProps> = ({

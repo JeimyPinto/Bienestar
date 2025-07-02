@@ -1,5 +1,5 @@
 import React from "react";
-import { RequestDescriptionFieldsProps } from "../../types/request";
+import { RequestDescriptionFieldsProps } from "../../interface/request";
 
 const RequestDescriptionFields: React.FC<RequestDescriptionFieldsProps> = ({
   newRequest,

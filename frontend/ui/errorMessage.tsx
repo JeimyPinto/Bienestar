@@ -1,5 +1,5 @@
 import React from "react";
-import { ErrorMessageProps } from "../types/components";
+import { ErrorMessageProps } from "../interface/components";
 
 export default function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
   return (

@@ -1,7 +1,7 @@
 import React from "react"
 import Image from "next/image"
-import { ServiceTableDesktopProps } from "../../types/service"
-import { areaColors } from "../styles/areaColors";
+import { ServiceTableDesktopProps } from "../../interface/service"
+import { areaColors } from "../../styles/areaColors";
 
 const ServiceTableDesktop: React.FC<ServiceTableDesktopProps> = ({ services, loading, onRowClick }) => (
   <div className="bg-white border border-cian shadow-lg rounded-xl overflow-hidden hidden sm:block">

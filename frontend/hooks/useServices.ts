@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Service } from "../../types/service";
-import { UseServicesOptions, UseServicesReturn } from "../../types";
+import { Service } from "../interface/service";
+import { UseServicesOptions, UseServicesReturn } from "../interface";
 import { 
   getByUserId as getServicesByUserId,
   getAllActive as getAllActiveServices,
   getAll as getAllServices
-} from "../services/services/service";
+} from "../services/service";
 
 /**
  * Hook para manejar la carga y gestión de servicios
