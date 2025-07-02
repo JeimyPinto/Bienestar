@@ -25,27 +25,7 @@ export default function Page() {
         />
 
         {/* Sección de Contacto - Centrada y Destacada */}
-        <section className="py-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-bold text-azul-oscuro mb-4">
-                <span className="bg-gradient-to-r from-success to-verde-bosque bg-clip-text text-transparent">
-                  ¿Necesitas Ayuda?
-                </span>
-              </h2>
-              <p className="text-lg text-azul-oscuro/70 max-w-2xl mx-auto leading-relaxed">
-                Estamos aquí para apoyarte en tu proceso de formación. Contáctanos directamente
-              </p>
-              <div className="w-24 h-1 mx-auto mt-6 bg-gradient-to-r from-success to-verde-bosque rounded-full"></div>
-            </div>
-            
-            <div className="flex justify-center">
-              <div className="w-full max-w-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                <ContactSection />
-              </div>
-            </div>
-          </div>
-        </section>
+        <ContactSection />
 
         {/* Sección adicional de información o CTA */}
         <section className="py-12 bg-gradient-to-r from-azul-oscuro/5 to-success/5 rounded-3xl">
