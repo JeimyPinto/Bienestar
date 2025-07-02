@@ -1,28 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { useServices } from "../hooks/useServices";
 import HeroSection from "../components/home/heroSection";
 import ContactSection from "../components/home/contactSection";
 import ServicesDisplaySection from "../components/home/servicesDisplaySection";
 
 export default function Page() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
-  const { 
-    services, 
-    loading, 
-    refreshServices 
-  } = useServices({ 
-    mode: 'allActive',
-    onError: (message) => setErrorMessage(message)
-  });
-
-  const handleRetry = () => {
-    setErrorMessage(null);
-    refreshServices();
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5">
       {/* Sección Hero */}
@@ -31,12 +13,7 @@ export default function Page() {
       {/* Contenido Principal */}
       <main className="container mx-auto px-4 py-8 space-y-16">
         {/* Sección de Servicios - Destacada */}
-        <ServicesDisplaySection
-          services={services}
-          loading={loading}
-          errorMessage={errorMessage}
-          onRetry={handleRetry}
-        />
+        <ServicesDisplaySection />
 
         {/* Sección de Contacto - Centrada y Destacada */}
         <ContactSection />
@@ -50,29 +27,38 @@ export default function Page() {
                 Tu Formación es Nuestra Prioridad
               </h3>
               <p className="text-lg text-azul-oscuro/80 leading-relaxed mb-8">
-                En el Centro de Procesos Industriales y Construcción trabajamos cada día para brindarte 
-                la mejor experiencia de formación. Nuestro equipo de Bienestar está comprometido con tu 
-                desarrollo integral como aprendiz SENA.
+                En el Centro de Procesos Industriales y Construcción trabajamos
+                cada día para brindarte la mejor experiencia de formación.
+                Nuestro equipo de Bienestar está comprometido con tu desarrollo
+                integral como aprendiz SENA.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
               <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-azul-cielo/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                 <div className="text-4xl mb-4">👥</div>
-                <h4 className="font-bold text-azul-oscuro mb-2">Acompañamiento</h4>
-                <p className="text-sm text-azul-oscuro/70">Te acompañamos en cada etapa de tu proceso formativo</p>
+                <h4 className="font-bold text-azul-oscuro mb-2">
+                  Acompañamiento
+                </h4>
+                <p className="text-sm text-azul-oscuro/70">
+                  Te acompañamos en cada etapa de tu proceso formativo
+                </p>
               </div>
-              
+
               <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-success/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                 <div className="text-4xl mb-4">🌟</div>
                 <h4 className="font-bold text-azul-oscuro mb-2">Calidad</h4>
-                <p className="text-sm text-azul-oscuro/70">Servicios de alta calidad para tu desarrollo integral</p>
+                <p className="text-sm text-azul-oscuro/70">
+                  Servicios de alta calidad para tu desarrollo integral
+                </p>
               </div>
-              
+
               <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-azul-cielo/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                 <div className="text-4xl mb-4">⚡</div>
                 <h4 className="font-bold text-azul-oscuro mb-2">Rapidez</h4>
-                <p className="text-sm text-azul-oscuro/70">Respuesta ágil y eficiente a todas tus solicitudes</p>
+                <p className="text-sm text-azul-oscuro/70">
+                  Respuesta ágil y eficiente a todas tus solicitudes
+                </p>
               </div>
             </div>
           </div>
