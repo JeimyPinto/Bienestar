@@ -62,7 +62,15 @@ export const tokenManager = {
 
     try {
       const payload = jwtDecode<JwtPayload>(tokenToUse);
-      return payload && payload.user ? payload.user as User : null;
+      console.log("Payload del token:", payload); // Log para depuración
+      
+      if (payload && payload.user) {
+        console.log("Usuario extraído del token:", payload.user); // Log para depuración
+        return payload.user as User;
+      } else {
+        console.warn("No se encontró usuario en el payload del token");
+        return null;
+      }
     } catch (error) {
       console.error("Error al extraer usuario del token:", error);
       return null;
@@ -83,14 +91,23 @@ export const tokenManager = {
       const userFromStorage = localStorage.getItem("user");
       if (userFromStorage) {
         try {
-          return JSON.parse(userFromStorage);
+          const parsedUser = JSON.parse(userFromStorage);
+          console.log("Usuario obtenido de localStorage:", parsedUser); // Log para depuración
+          return parsedUser;
         } catch (error) {
           console.warn("Error parsing user from localStorage:", error);
         }
       }
       
       // Si no hay en localStorage, intentar extraer del token
-      return this.getUserFromToken();
+      console.log("No hay usuario en localStorage, intentando extraer del token"); // Log para depuración
+      const userFromToken = this.getUserFromToken();
+      if (userFromToken) {
+        console.log("Usuario extraído del token:", userFromToken); // Log para depuración
+        // Guardar en localStorage para próximas consultas
+        this.setUser(userFromToken);
+      }
+      return userFromToken;
     }
     return null;
   },

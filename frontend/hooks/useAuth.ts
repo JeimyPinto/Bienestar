@@ -64,6 +64,14 @@ export function useAuth() {
       // Realizar login
       const result = await login({ email, password, recaptchaToken });
       
+      // Log para depuración
+      console.log("Resultado del login:", {
+        hasToken: !!result.token,
+        hasUser: !!result.user,
+        userData: result.user,
+        message: result.message
+      });
+      
       if (result.error) {
         // Loguear errores del servicio si contienen detalles técnicos
         if (result.details) {
@@ -84,11 +92,10 @@ export function useAuth() {
       setErrorMessage(null);
       setSuccessMessage("Inicio de sesión exitoso. Redirigiendo...");
       
-      // Forzar actualización inmediata del estado
-      const validatedSession = tokenManager.validateSession();
-      setToken(validatedSession.token);
-      setUser(validatedSession.user);
-      setIsExpired(!validatedSession.isValid);
+      // Usar directamente los datos del resultado del login
+      setToken(result.token);
+      setUser(result.user);
+      setIsExpired(false);
       
       // Redirigir inmediatamente sin esperar
       router.push("/dashboard");
