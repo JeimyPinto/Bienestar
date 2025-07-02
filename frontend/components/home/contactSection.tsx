@@ -20,7 +20,7 @@ export default function ContactSection({
 }: ContactSectionProps) {
   return (
     <section className="py-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-8xl mx-auto">
         {/* Header de la sección */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-azul-oscuro mb-4">
@@ -36,8 +36,8 @@ export default function ContactSection({
         
         {/* Contenedor del componente de contacto */}
         <div className="flex justify-center">
-          <div className="w-full max-w-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="w-full bg-gradient-to-br from-success/10 to-azul-cielo/10 rounded-2xl shadow-xl p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-success/20 backdrop-blur-sm">
+          <div className="w-full max-w-4xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div className="w-full bg-gradient-to-br from-success/10 to-azul-cielo/10 rounded-2xl shadow-xl p-6 md:p-10 lg:p-12 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-success/20 backdrop-blur-sm">
               <div className="text-center mb-8">
                 <h3 className="text-3xl md:text-4xl font-bold text-azul-oscuro flex items-center justify-center mb-4">
                   <span className="text-4xl mr-4 animate-pulse-soft">📞</span>
@@ -46,16 +46,16 @@ export default function ContactSection({
                 <div className="w-20 h-1 mx-auto bg-gradient-to-r from-success to-verde-bosque rounded-full"></div>
               </div>
 
-              <div className="flex flex-col lg:flex-row justify-center items-center gap-8">
+              <div className="flex flex-col xl:flex-row justify-center items-center gap-8 xl:gap-12">
                 {/* QR Code */}
-                <div className="relative group">
+                <div className="relative group flex-shrink-0">
                   <div className="absolute inset-0 bg-gradient-to-r from-success to-azul-cielo rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                   <div className="relative bg-white p-4 rounded-2xl shadow-lg">
                     <Image
                       src={qrImageSrc}
                       alt={qrAlt}
-                      width={240}
-                      height={240}
+                      width={280}
+                      height={280}
                       className="rounded-xl transition-transform duration-300 group-hover:scale-105"
                       priority={false}
                     />
@@ -66,7 +66,7 @@ export default function ContactSection({
                 </div>
 
                 {/* Contact Info */}
-                <div className="flex flex-col items-center lg:items-start text-center lg:text-left max-w-md">
+                <div className="flex flex-col items-center xl:items-start text-center xl:text-left max-w-lg xl:flex-1">
                   <div className="bg-success/20 p-6 rounded-full mb-6 border border-success/30">
                     <Image
                       src={contactIconSrc}
