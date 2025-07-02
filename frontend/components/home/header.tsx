@@ -10,7 +10,7 @@ import NavLink from "../header/NavLink";
 import UserDashboardLink from "../header/UserDashboardLink";
 import LogoutButton from "../header/LogoutButton";
 import LoginButton from "../header/LoginButton";
-import MobileNavItem from "../../app/components/header/MobileNavItem";
+import MobileNavItem from "../../components/header/MobileNavItem";
 import MobileUserDashboard from "../header/MobileUserDashboard";
 import MobileLogoutButton from "../header/MobileLogoutButton";
 import MobileLoginButton from "../header/MobileLoginButton";

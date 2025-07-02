@@ -1,9 +1,12 @@
 import React from 'react';
 import Image from 'next/image';
-import {ScrollTopButtonProps} from "../../../interface/components"
 
+interface ScrollTopButtonProps {
+  show: boolean;
+  onClick: () => void;
+}
 
-export const ScrollTopButton: React.FC<ScrollTopButtonProps> = ({ show, onClick }) => {
+export default function ScrollTopButton({ show, onClick }: ScrollTopButtonProps) {
   if (!show) return null;
 
   return (
@@ -39,4 +42,4 @@ export const ScrollTopButton: React.FC<ScrollTopButtonProps> = ({ show, onClick 
       </div>
     </button>
   );
-};
+}

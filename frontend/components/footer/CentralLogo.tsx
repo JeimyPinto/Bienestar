@@ -1,15 +1,29 @@
 import React from 'react';
 import Image from 'next/image';
 
-export const CentralLogo: React.FC = () => {
+export interface CentralLogoProps {
+  className?: string;
+  logoSrc?: string;
+  logoAlt?: string;
+  logoWidth?: number;
+  logoHeight?: number;
+}
+
+export default function CentralLogo({
+  className = '',
+  logoSrc = '/images/logo-sena.png',
+  logoAlt = 'Logo SENA',
+  logoWidth = 80,
+  logoHeight = 78.4,
+}: CentralLogoProps) {
   return (
-    <div className="flex flex-col items-center justify-center space-y-6">
+    <div className={`flex flex-col items-center justify-center space-y-6 ${className}`}>
       <div className="flex items-center justify-center p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group hover-lift">
         <Image
-          src="/images/logo-sena.png"
-          alt="Logo SENA"
-          width={80}
-          height={78.4}
+          src={logoSrc}
+          alt={logoAlt}
+          width={logoWidth}
+          height={logoHeight}
           priority={false}
           className="transition-transform duration-300 group-hover:scale-105"
           style={{ height: "auto" }}
@@ -32,4 +46,4 @@ export const CentralLogo: React.FC = () => {
       </div>
     </div>
   );
-};
+}

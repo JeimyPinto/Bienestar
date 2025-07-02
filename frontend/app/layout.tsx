@@ -1,7 +1,7 @@
   import React from "react";
 import "../styles/globals.css";
-import Header from "./components/header";
-import Footer from "./components/footer";
+import Header from "../components/home/header"
+import Footer from "../components/home/footer";
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",

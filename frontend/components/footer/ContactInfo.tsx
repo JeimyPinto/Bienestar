@@ -1,13 +1,27 @@
 import React from 'react';
 import Image from 'next/image';
 
-export const ContactInfo: React.FC = () => {
+export interface ContactInfoProps {
+  email?: string;
+  iconSrc?: string;
+  iconAlt?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+}
+
+export default function ContactInfo({
+  email = "bienestarregionalcaldascpic@gmail.com",
+  iconSrc = "/images/ico-email.svg",
+  iconAlt = "Correo electrónico",
+  imageSrc = "/images/icono.png",
+  imageAlt = "Bienestar al Aprendiz",
+}: ContactInfoProps) {
   return (
     <div className="flex flex-col items-center md:items-end space-y-4">
       <div className="group">
         <Image
-          src="/images/icono.png"
-          alt="Bienestar al Aprendiz"
+          src={imageSrc}
+          alt={imageAlt}
           width={120}
           height={120}
           className="transition-transform duration-300 group-hover:scale-105 drop-shadow-lg hover-lift"
@@ -25,8 +39,8 @@ export const ContactInfo: React.FC = () => {
         <div className="flex items-center space-x-3 group">
           <div className="p-2 bg-white/10 rounded-lg group-hover:bg-success/20 transition-colors duration-200">
             <Image
-              src="/images/ico-email.svg"
-              alt="Correo electrónico"
+              src={iconSrc}
+              alt={iconAlt}
               width={20}
               height={20}
               priority={false}
@@ -34,7 +48,7 @@ export const ContactInfo: React.FC = () => {
             />
           </div>
           <a
-            href="mailto:bienestarregionalcaldascpic@gmail.com"
+            href={`mailto:${email}`}
             className="
               text-sm text-azul-cielo hover:text-warning 
               transition-colors duration-200 
@@ -43,10 +57,10 @@ export const ContactInfo: React.FC = () => {
               focus-visible-custom
             "
           >
-            bienestarregionalcaldascpic@gmail.com
+            {email}
           </a>
         </div>
       </div>
     </div>
   );
-};
+}
