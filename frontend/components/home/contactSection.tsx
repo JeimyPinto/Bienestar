@@ -19,7 +19,7 @@ export default function ContactSection({
   linkText = "Acceder a Enlaces",
 }: ContactSectionProps) {
   return (
-    <section className="w-full bg-gradient-to-br from-success/10 to-azul-cielo/10 rounded-2xl shadow-xl p-6 md:p-8 hover-lift border border-success/20 backdrop-blur-sm">
+    <section className="w-full bg-gradient-to-br from-success/10 to-azul-cielo/10 rounded-2xl shadow-xl p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-success/20 backdrop-blur-sm">
       <div className="text-center mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-azul-oscuro flex items-center justify-center mb-4">
           <span className="text-4xl mr-4 animate-pulse-soft">📞</span>

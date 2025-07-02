@@ -19,7 +19,7 @@ export default function ServicesDisplaySection({
   onRetry
 }: ServicesDisplaySectionProps) {
   return (
-    <section className="w-full max-w-6xl bg-gradient-card rounded-2xl shadow-2xl p-6 md:p-10 transition-all duration-300 hover:shadow-hover-lift hover:-translate-y-1 border border-info/20 backdrop-blur-sm">
+    <section className="w-full max-w-6xl bg-gradient-card rounded-2xl shadow-2xl p-6 md:p-10 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-info/20 backdrop-blur-sm">
       {/* Header de la sección */}
       <div className="text-center mb-10">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-azul-oscuro tracking-tight">

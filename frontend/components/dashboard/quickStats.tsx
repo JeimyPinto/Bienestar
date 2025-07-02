@@ -1,6 +1,6 @@
-import { useAuth } from "../../../hooks/useAuth";
-import { useServices } from "../../../hooks/useServices";
-import { useRequests } from "../../../hooks/useRequests";
+import { useAuth } from "../../hooks/useAuth";
+import { useServices } from "../../hooks/useServices";
+import { useRequests } from "../../hooks/useRequests";
 import { ROLES } from "../../constants/roles";
 
 export default function QuickStats() {
@@ -68,7 +68,7 @@ export default function QuickStats() {
             onClick={() => window.location.href = stat.href}
             className="
               bg-gradient-card backdrop-blur-sm rounded-xl p-6 shadow-lg 
-              border border-azul-cielo/20 hover:shadow-xl hover-lift 
+              border border-azul-cielo/20 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 
               transition-all duration-300 cursor-pointer text-left w-full
               focus:outline-none focus:ring-4 focus:ring-azul-cielo/30
               group

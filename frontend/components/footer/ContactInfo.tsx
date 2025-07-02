@@ -24,7 +24,7 @@ export default function ContactInfo({
           alt={imageAlt}
           width={120}
           height={120}
-          className="transition-transform duration-300 group-hover:scale-105 drop-shadow-lg hover-lift"
+          className="transition-transform duration-300 group-hover:scale-105 drop-shadow-lg hover:-translate-y-1 hover:shadow-xl"
           priority={false}
           style={{ height: "auto" }}
         />

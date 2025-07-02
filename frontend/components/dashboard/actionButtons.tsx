@@ -1,7 +1,10 @@
 import { useRouter } from "next/navigation";
-import { ActionButtonsProps }  from "../types/components"
-import { getAvailableActionCards } from "../lib/actionCards";
+import { getAvailableActionCards } from "../../lib/actionCards";
+import { User } from "../../interface/user";
 
+interface ActionButtonsProps {
+  user: User | null;
+}
 export default function ActionButtons({ user }: ActionButtonsProps) {
   const router = useRouter();
 
@@ -25,7 +28,7 @@ export default function ActionButtons({ user }: ActionButtonsProps) {
               ${card.bgColor} ${card.hoverColor}
               text-white rounded-xl p-6 cursor-pointer
               transform transition-all duration-300
-              hover:scale-105 hover:shadow-xl hover-lift
+              hover:scale-105 hover:shadow-xl hover:-translate-y-1
               focus:outline-none focus:ring-4 focus:ring-primary/50
               group relative overflow-hidden
               border border-white/20 backdrop-blur-sm

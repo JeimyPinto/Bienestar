@@ -18,7 +18,7 @@ export default function CentralLogo({
 }: CentralLogoProps) {
   return (
     <div className={`flex flex-col items-center justify-center space-y-6 ${className}`}>
-      <div className="flex items-center justify-center p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group hover-lift">
+      <div className="flex items-center justify-center p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl">
         <Image
           src={logoSrc}
           alt={logoAlt}
