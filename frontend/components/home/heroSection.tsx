@@ -16,7 +16,7 @@ export default function HeroSection({
   subtitle = (
     <>
       Este espacio está diseñado para apoyar a aprendices, instructores y administrativos del{" "}
-      <span className="font-bold text-warning bg-azul-marino/30 px-3 py-1 rounded-lg backdrop-blur-sm border border-warning/20">
+      <span className="font-semibold text-warning bg-white/10 px-2 py-0.5 rounded-md shadow-sm">
         Centro de Procesos Industriales y Construcción
       </span>{" "}
       de la Regional Caldas.
