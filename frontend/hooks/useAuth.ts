@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { tokenManager } from "../lib/tokenManager";
 import { login } from "../services/auth";
 import { User } from "../interface/user";
@@ -17,10 +17,10 @@ export function useAuth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   const router = useRouter();
-  const pathname = usePathname();
 
   // Logout: usa el tokenManager para limpiar todo
   const logout = useCallback(() => {
@@ -28,10 +28,11 @@ export function useAuth() {
     setToken(null);
     setUser(null);
     setIsExpired(true);
-    // Limpiar también el formulario
+    // Limpiar también el formulario y mensajes
     setEmail("");
     setPassword("");
-    setError("");
+    setErrorMessage(null);
+    setSuccessMessage(null);
   }, []);
 
   // Obtiene y valida el token y usuario
@@ -51,11 +52,12 @@ export function useAuth() {
   const handleLoginSubmit = useCallback(async (e: React.FormEvent, recaptchaToken: string, recaptchaValid: boolean) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setErrorMessage(null);
+    setSuccessMessage(null);
     
     try {
       if (!recaptchaToken || !recaptchaValid) {
-        setError("Por favor completa y valida el reCAPTCHA.");
+        setErrorMessage("Por favor completa y valida el reCAPTCHA.");
         return;
       }
 
@@ -63,19 +65,24 @@ export function useAuth() {
       const result = await login({ email, password, recaptchaToken });
       
       if (result.error) {
-        setError(result.error);
+        // Loguear errores del servicio si contienen detalles técnicos
+        if (result.details) {
+          console.error("Error en login:", result.details);
+        }
+        setErrorMessage(result.message);
         return;
       }
       
       if (!result.token) {
-        setError("No se recibió un token de autenticación");
+        setErrorMessage("No se recibió un token de autenticación");
         return;
       }
       
       // Limpiar formulario inmediatamente
       setEmail("");
       setPassword("");
-      setError("");
+      setErrorMessage(null);
+      setSuccessMessage("Inicio de sesión exitoso. Redirigiendo...");
       
       // Forzar actualización inmediata del estado
       const validatedSession = tokenManager.validateSession();
@@ -87,7 +94,7 @@ export function useAuth() {
       router.push("/dashboard");
       
     } catch (error) {
-      setError("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
+      setErrorMessage("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
       console.error("Error iniciando sesión:", error);
     } finally {
       setLoading(false);
@@ -98,38 +105,6 @@ export function useAuth() {
   useEffect(() => {
     refresh();
   }, [refresh]);
-
-  // Lógica de revisión automática de token y redirección por expiración
-  useEffect(() => {
-    // Solo ejecutar si ya se inicializó y no estamos en la página principal
-    if (!isInitialized || pathname === "/") {
-      return;
-    }
-
-    // Refresca el token cada 60 segundos (menos frecuente para reducir overhead)
-    const interval = setInterval(() => {
-      // Solo refrescar si no estamos cargando
-      if (!loading) {
-        refresh();
-      }
-    }, 60000); // 60 segundos
-
-    return () => clearInterval(interval);
-  }, [refresh, pathname, isInitialized, loading]);
-
-  // Efecto separado para manejar redirección por token expirado
-  useEffect(() => {
-    // Solo redirigir si ya se inicializó y no estamos en las páginas permitidas
-    if (!isInitialized || pathname === "/" || pathname === "/auth") {
-      return;
-    }
-
-    // Si el token ha expirado, cerrar sesión y redirigir
-    if (isExpired && token === null) {
-      logout();
-      router.push("/auth");
-    }
-  }, [isExpired, token, pathname, logout, router, isInitialized]);
 
   return { 
     // Estados de sesión
@@ -145,8 +120,8 @@ export function useAuth() {
     password,
     setPassword,
     loading,
-    error,
-    setError,
+    successMessage,
+    errorMessage,
     handleLoginSubmit
   };
 }

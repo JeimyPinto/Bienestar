@@ -7,6 +7,7 @@ type LoginFormProps = {
   setPassword: (password: string) => void;
   loading: boolean;
   error?: string;
+  successMessage?: string;
   recaptchaError?: string;
   recaptchaValid: boolean;
   handleRecaptchaChange: (value: string | null) => void;
@@ -21,6 +22,7 @@ export default function LoginForm({
   setPassword,
   loading,
   error,
+  successMessage,
   recaptchaError,
   recaptchaValid,
   handleRecaptchaChange,
@@ -35,7 +37,13 @@ export default function LoginForm({
         aria-busy={loading}
         className="flex flex-col gap-6"
       >
-        {/* Mensajes de error */}
+        {/* Mensajes de éxito y error */}
+        {successMessage && (
+          <div className="bg-success/10 border border-success/20 text-success px-4 py-3 rounded-lg flex items-center gap-2">
+            <span className="text-lg">✅</span>
+            <span className="text-sm font-medium">{successMessage}</span>
+          </div>
+        )}
         {error && (
           <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-lg flex items-center gap-2">
             <span className="text-lg">⚠️</span>

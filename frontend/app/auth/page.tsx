@@ -17,7 +17,8 @@ export default function LoginPage() {
     password,
     setPassword,
     loading,
-    error,
+    errorMessage,
+    successMessage,
     handleLoginSubmit
   } = useAuth();
   
@@ -48,7 +49,8 @@ export default function LoginPage() {
               password={password}
               setPassword={setPassword}
               loading={loading}
-              error={error}
+              error={errorMessage || undefined}
+              successMessage={successMessage || undefined}
               recaptchaError={recaptchaError}
               recaptchaValid={recaptchaValid}
               handleRecaptchaChange={handleRecaptchaChange}

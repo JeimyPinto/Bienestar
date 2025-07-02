@@ -38,13 +38,11 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
         try {
             data = await response.json();
         } catch (jsonError) {
-            console.error("Respuesta no JSON del backend:", jsonError);
-            return { error: "Error inesperado del servidor.", token: null };
+            return { error: "Error inesperado del servidor.", token: null, details: jsonError };
         }
 
-        if (!response.ok) {
-            console.error("Error de login:", data.message || data.details || data);
-            return { error: data.message || "Error al iniciar sesión.", token: null };
+        if (!response.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
         }
 
         // Guardar token y usuario en localStorage usando tokenManager
@@ -59,17 +57,17 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
             return {
                 token: data.token,
                 user: data.user,
-                message: data.message || "Login exitoso"
+                message: data.message
             };
         } else {
             return { error: "No se recibió token del servidor.", token: null };
         }
 
     } catch (error) {
-        console.error("Error iniciando sesión en: ", error);
         return {
             error: "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
-            token: null
+            token: null,
+            details: error
         };
     }
 }
@@ -84,8 +82,8 @@ export async function logout() {
                 "Authorization": `Bearer ${tokenManager.getToken()}`
             },
         });
-    } catch (error) {
-        console.error("Error en logout:", error);
+    } catch {
+        // Error será manejado por el hook si es necesario
     } finally {
         // Siempre limpiar localStorage usando tokenManager
         tokenManager.clearSession();
