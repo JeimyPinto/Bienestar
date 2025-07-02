@@ -6,16 +6,14 @@ import Image from "next/image"
 import Link from "next/link"
 import { useAuth } from "../hooks/useAuth"
 import { useHeader } from "../hooks/useHeader"
-import {
-  NavLink,
-  UserDashboardLink,
-  LogoutButton,
-  LoginButton,
-  MobileNavItem,
-  MobileUserDashboard,
-  MobileLogoutButton,
-  MobileLoginButton
-} from "./header"
+import { NavLink } from "./header/NavLink"
+import { UserDashboardLink } from "./header/UserDashboardLink"
+import { LogoutButton } from "./header/LogoutButton"
+import { LoginButton } from "./header/LoginButton"
+import { MobileNavItem } from "./header/MobileNavItem"
+import { MobileUserDashboard } from "./header/MobileUserDashboard"
+import { MobileLogoutButton } from "./header/MobileLogoutButton"
+import { MobileLoginButton } from "./header/MobileLoginButton"
 
 export default function Header() {
   const { token, user, logout, refresh, isExpired } = useAuth();
@@ -98,9 +96,6 @@ export default function Header() {
 
           {/* Navegación de escritorio */}
           <nav className="hidden md:flex items-center space-x-1">
-            <NavLink href="/integrantes" onClick={closeMenu}>
-              👥 Integrantes
-            </NavLink>
             <NavLink href="/services" onClick={closeMenu}>
               🛠️ Servicios
             </NavLink>
@@ -151,27 +146,24 @@ export default function Header() {
             {/* Contenido scrolleable */}
             <div className="flex-1 pt-16 sm:pt-20 pb-4 overflow-y-auto mobile-menu-scroll">
               <div className="px-4 sm:px-6 mobile-menu-compact">
-                <ul className="space-y-3 mobile-menu-short mobile-touch-target">
-                  <MobileNavItem href="/integrantes" icon="👥" onClick={closeMenu}>
-                    Integrantes
-                  </MobileNavItem>
-                  <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
-                    Servicios
-                  </MobileNavItem>
-                  
-                  {token ? (
-                    <>
-                      <MobileUserDashboard user={user} onClick={closeMenu} />
-                      <MobileLogoutButton onClick={() => {
-                        logout();
-                        closeMenu();
-                        router.push("/auth");
-                      }} />
-                    </>
-                  ) : (
-                    <MobileLoginButton onClick={closeMenu} />
-                  )}
-                </ul>
+              <ul className="space-y-3 mobile-menu-short mobile-touch-target">
+                <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
+                Servicios
+                </MobileNavItem>
+                
+                {token ? (
+                <>
+                  <MobileUserDashboard user={user} onClick={closeMenu} />
+                  <MobileLogoutButton onClick={() => {
+                  logout();
+                  closeMenu();
+                  router.push("/auth");
+                  }} />
+                </>
+                ) : (
+                <MobileLoginButton onClick={closeMenu} />
+                )}
+              </ul>
               </div>
             </div>
             

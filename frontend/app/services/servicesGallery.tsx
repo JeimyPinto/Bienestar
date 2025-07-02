@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { areaColors } from "../styles/areaColors"
-import { Service } from "../types/service"
+import { Service } from "../../types/service"
 import { formatDate } from "../lib/formateDate"
 
 export default function ServicesGallery({ services, message }: { services?: Service[]; message?: string }) {

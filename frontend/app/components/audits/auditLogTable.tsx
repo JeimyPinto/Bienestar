@@ -1,9 +1,9 @@
 import React, { useState } from "react"
-import { AuditLogTableProps } from "../../types/auditLog"
+import { AuditLogTableProps } from "../../../types/auditLog"
 import AuditLogTableDesktop from "./auditLogTableDesktop"
 import AuditLogCardMobile from "./auditLogCardMobile"
 import AuditLogTableFilterBar from "./auditLogTableFilterBar"
-import { Container } from "../../ui"
+import { Container } from "../../../ui"
 
 export default function AuditLogTable({
     auditLogs,

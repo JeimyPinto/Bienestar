@@ -13,5 +13,5 @@ export { default as Header } from './header';
 export { default as SectionHeader } from './sectionHeader';
 export { default as IcoBack } from './icoBack';
 export { default as FormModalHeader } from './FormModalHeader';
-export { default as ColorPaletteDemo } from './ColorPaletteDemo';
+export { default as ColorPaletteDemo } from './paletColor/ColorPaletteDemo';
 export { default as Footer } from './footer';

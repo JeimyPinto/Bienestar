@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { User } from "../types/user";
-import { ModalMode } from "../types/hooks";
+import { User } from "../../types/user";
+import { ModalMode } from "../../types/hooks";
 
 interface UseFormInitializationOptions {
   mode: ModalMode;

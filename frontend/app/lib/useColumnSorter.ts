@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { User } from "../types/user";
+import { User } from "../../types/user";
 
 const dateColumns = ["createdAt", "updatedAt"];
 

@@ -1,5 +1,5 @@
 import React from "react"
-import { User, UserTableProps } from "../types"
+import { User, UserTableProps } from "../../types"
 import UserTableDesktop from "./userTableDesktop"
 import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"

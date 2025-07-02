@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Request, RequestTableProps } from "../types/index";
+import { Request, RequestTableProps } from "../../types/index";
 import RequestForm from "./requestForm";
 import RequestTableDesktop from "./requestTableDesktop";
 import RequestCardMobile from "./requestCardMobile";

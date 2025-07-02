@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useState, useRef } from "react";
-import { Request } from "../types/request";
+import { Request } from "../../types/request";
 import RequestForm from "./requestForm";
 import RequestHistory from "./requestHistory";
-import SuccessMessage from "../ui/successMessage";
+import SuccessMessage from "../../ui/successMessage";
 import { useAuth } from "../hooks/useAuth";
 import { useRequests } from "../hooks/useRequests";
 import { useMessages } from "../hooks/useMessages";

@@ -1,10 +1,10 @@
-import { useServices } from "../hooks/useServices";
-import { useMessages } from "../hooks/useMessages";
-import { useAuth } from "../hooks/useAuth";
-import { ROLES } from "../constants/roles";
-import ServicesGallery from "../services/servicesGallery";
-import ErrorMessage from "../ui/errorMessage";
-import Spinner from "../ui/spinner";
+import { useServices } from "../../hooks/useServices";
+import { useMessages } from "../../hooks/useMessages";
+import { useAuth } from "../../hooks/useAuth";
+import { ROLES } from "../../constants/roles";
+import ServicesGallery from "../../services/servicesGallery";
+import ErrorMessage from "../../../ui/errorMessage";
+import Spinner from "../../../ui/spinner";
 
 export default function UserServicesSection() {
   const { user, token } = useAuth();

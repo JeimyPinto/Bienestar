@@ -1,6 +1,8 @@
+"use client";
+
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Service } from "../types/service";
-import { UseServicesOptions, UseServicesReturn } from "../types";
+import { Service } from "../../types/service";
+import { UseServicesOptions, UseServicesReturn } from "../../types";
 import { 
   getByUserId as getServicesByUserId,
   getAllActive as getAllActiveServices,

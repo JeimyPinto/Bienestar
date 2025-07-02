@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import { User, UserTableDesktopProps } from "../types/user";
-import Spinner from "../ui/spinner";
+import { User, UserTableDesktopProps } from "../../types/user";
+import Spinner from "../../ui/spinner";
 import PaginationControls from "./paginationControls";
 
 const UserTableDesktop: React.FC<UserTableDesktopProps> = ({

@@ -1,4 +1,4 @@
-import { User } from "../../types/user"
+import { User } from "../../../types/user"
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Remission } from "../types/remission";
-import { Request } from "../types/request";
-import { User } from "../types/user";
+import { Remission } from "../../types/remission";
+import { Request } from "../../types/request";
+import { User } from "../../types/user";
 import { getAllActive, getById as getRequestById } from "../services/services/request";
 import { getAllByRole } from "../services/services/user";
 import { create, update } from "../services/services/remission";
 import { ROLES } from "../constants/roles";
-import {RemissionFormProps} from "../types/remission";
+import {RemissionFormProps} from "../../types/remission";
 import { useAuth } from "../hooks/useAuth";
 
 

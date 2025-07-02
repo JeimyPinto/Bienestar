@@ -1,9 +1,9 @@
-import { useAuth } from "../hooks/useAuth";
-import { ROLES } from "../constants/roles";
+import { useAuth } from "../../hooks/useAuth";
+import { ROLES } from "../../constants/roles";
 import ActionButtons from "./actionButtons";
-import UserServicesSection from "./userServicesSection";
-import QuickStats from "./quickStats";
-import WelcomeBanner from "./welcomeBanner";
+import UserServicesSection from "../../dashboard/userServicesSection";
+import QuickStats from "../../dashboard/quickStats";
+import WelcomeBanner from "../../dashboard/welcomeBanner";
 
 export default function DashboardRoleActions() {
   const { user } = useAuth();

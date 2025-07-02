@@ -1,4 +1,4 @@
-import { Service } from "../../types/service";
+import { Service } from "../../../types/service";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/services`;
 

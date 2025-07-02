@@ -1,5 +1,5 @@
 import { isValidEmail } from "../../lib/isValidEmail"
-import { LoginParams } from "../../types/login"
+import { LoginParams } from "../../../types/login"
 import { tokenManager } from "../../lib/tokenManager"
 
 // Asegurar que la variable de entorno se lea correctamente

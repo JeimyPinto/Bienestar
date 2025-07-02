@@ -1,6 +1,6 @@
 import React from "react";
-import { AuditLog } from "../../types/auditLog";
-import { Badge, Spinner, Card } from "../../ui";
+import { AuditLog } from "../../../types/auditLog";
+import { Badge, Spinner, Card } from "../../../ui";
 
 interface AuditLogTableDesktopProps {
   auditLogs: AuditLog[];

@@ -1,4 +1,4 @@
-import { Request } from "../../types/request";
+import { Request } from "../../../types/request";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/requests`;
 

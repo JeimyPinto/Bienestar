@@ -1,6 +1,6 @@
-import { useAuth } from "../hooks/useAuth";
-import { getCurrentTimeGreeting, getDayOfMonth, getAbbreviatedMonth } from "../helpers/timeHelpers";
-import { getRoleDisplay } from "../helpers/roleHelpers";
+import { useAuth } from "../../hooks/useAuth";
+import { getCurrentTimeGreeting, getDayOfMonth, getAbbreviatedMonth } from "../../../helpers/timeHelpers";
+import { getRoleDisplay } from "../../../helpers/roleHelpers";
 
 export default function WelcomeBanner() {
   const { user } = useAuth();

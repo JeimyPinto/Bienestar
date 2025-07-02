@@ -1,5 +1,5 @@
 import React from "react";
-import { RequestFormActionsProps } from "../types/index";
+import { RequestFormActionsProps } from "../../types/index";
 
 const RequestFormActions: React.FC<RequestFormActionsProps> = ({
   formError,

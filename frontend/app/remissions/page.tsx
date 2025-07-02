@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useState, useRef } from "react";
-import { Remission } from "../types/remission";
-import { ErrorMessage, SuccessMessage } from "../ui";
+import { Remission } from "../../types/remission";
+import { ErrorMessage, SuccessMessage } from "../../ui";
 import RemissionTable from "./remissionTable";
 import RemissionForm from "./remissionForm";
 import SectionHeader from "../components/sectionHeader";

@@ -1,7 +1,7 @@
 import React from "react";
-import { UserCardMobileProps } from "../types/user";
+import { UserCardMobileProps } from "../../types/user";
 import UserCard from "./userCard";
-import Spinner from "../ui/spinner";
+import Spinner from "../../ui/spinner";
 
 const UserCardMobile: React.FC<UserCardMobileProps> = ({ users, handleRowClick, loading }) => (
     <div className="space-y-4">

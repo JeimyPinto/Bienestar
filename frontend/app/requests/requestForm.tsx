@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import {RequestsFormProps, Request } from "../types/index";
+import { RequestsFormProps, Request } from "../../types/index";
 import { create, update } from "../services/services/request";
 import { useAuth } from "../hooks/useAuth";
 import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
 import RequestFormActions from "./requestFormActions";
-import Spinner from "../ui/spinner";
+import FormModalHeader from "../components/FormModalHeader";
+import { Spinner } from "../../ui";
 
 const emptyRequest: Request = {
     id: 0,
@@ -31,9 +32,10 @@ export default function RequestsForm(props: RequestsFormProps) {
         mode,
         requestToEdit,
     } = props;
-    const{ token, user } = useAuth()
+    const { token, user } = useAuth()
     const [newRequest, setNewRequest] = useState<Request>(emptyRequest);
     const [formError, setFormError] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     // Inicializar el formulario según el modo
     useEffect(() => {
@@ -51,15 +53,12 @@ export default function RequestsForm(props: RequestsFormProps) {
                 ref={dialogRef}
                 aria-modal="true"
                 aria-label="Cargando..."
-                className="
-                    rounded-2xl shadow-2xl p-8 bg-white border border-azul-cielo/20
-                    w-full max-w-md mx-auto backdrop-blur-sm
-                "
+                className="rounded-xl shadow-2xl bg-gradient-to-br from-white via-beige-claro/20 to-azul-cielo/10 border border-azul-claro/20 w-full max-w-md mx-auto backdrop-blur-sm"
             >
-                <div className="flex flex-col items-center justify-center py-12">
+                <div className="flex flex-col items-center justify-center py-12 px-6">
                     <div className="mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-r from-primary to-azul-cielo rounded-full flex items-center justify-center">
-                            <Spinner className="w-8 h-8" />
+                        <div className="w-16 h-16 bg-gradient-to-r from-azul-claro to-azul-oscuro rounded-full flex items-center justify-center">
+                            <Spinner className="w-8 h-8 text-white" />
                         </div>
                     </div>
                     <span className="text-azul-oscuro text-lg font-semibold mb-2">Cargando datos...</span>
@@ -73,9 +72,14 @@ export default function RequestsForm(props: RequestsFormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
+        
+        if (isSubmitting) return;
         if (!token) return;
+        
+        setIsSubmitting(true);
         setFormError("");
-        const  requestData = { ...newRequest };
+        
+        const requestData = { ...newRequest };
         if (typeof requestData.status === "string") {
             requestData.status = requestData.status === "activo";
         }
@@ -90,6 +94,7 @@ export default function RequestsForm(props: RequestsFormProps) {
         if (requestData.responseMessage == null || requestData.responseMessage === "") {
             delete requestData.responseMessage;
         }
+        
         try {
             let response;
             if (mode === "create") {
@@ -102,116 +107,119 @@ export default function RequestsForm(props: RequestsFormProps) {
                 return;
             }
             setNewRequest(emptyRequest);
-            onClose?.(response?.request || undefined); // Pasar la solicitud creada/editada al callback
+            setTimeout(() => {
+                onClose?.(response?.request || undefined);
+            }, 100);
         } catch (error) {
             setFormError(String(error));
             return;
+        } finally {
+            setIsSubmitting(false);
         }
     }
+
     return (
         <dialog
             ref={dialogRef}
-            aria-modal="true"
-            aria-label={mode === "create" ? "Crear Solicitud de Remisión" : "Editar Solicitud de Remisión"}
-            className="
-                rounded-xl sm:rounded-2xl shadow-2xl bg-white border border-azul-cielo/20
-                w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 
-                mx-auto backdrop-blur-sm
-                max-h-[95vh] sm:max-h-[90vh] overflow-y-auto
-                m-2 sm:m-4
-            "
+            className="rounded-xl shadow-2xl bg-gradient-to-br from-white via-beige-claro/20 to-azul-cielo/10 border border-azul-claro/20 w-full max-w-5xl mx-auto backdrop-blur-sm max-h-[95vh] overflow-y-auto"
         >
-            <div className="sticky top-0 bg-gradient-corporate text-white p-4 sm:p-6 rounded-t-xl sm:rounded-t-2xl border-b border-azul-cielo/20">
-                <div className="flex justify-between items-start sm:items-center gap-3">
-                    <div className="flex items-start sm:items-center space-x-3 flex-1 min-w-0">
-                        <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-lg sm:text-2xl">📝</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h2 className="text-lg sm:text-xl font-bold leading-tight">
-                                {mode === "create" ? "Nueva Solicitud de Remisión" : "Editar Solicitud de Remisión"}
-                            </h2>
-                            <p className="text-azul-cielo/80 text-xs sm:text-sm mt-1 hidden sm:block">
-                                {mode === "create" ? "Completa la información para crear una nueva solicitud" : "Modifica los datos de la solicitud"}
-                            </p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={() => onClose?.()}
-                        aria-label="Cerrar formulario"
-                        className="
-                            w-8 sm:w-10 h-8 sm:h-10 bg-white/10 hover:bg-white/20 rounded-full
-                            flex items-center justify-center transition-all duration-300
-                            hover:scale-105 focus-visible-custom flex-shrink-0
-                        "
-                    >
-                        <span className="text-lg sm:text-xl">✕</span>
-                    </button>
-                </div>
-            </div>
+            {/* Header con gradiente */}
+            <FormModalHeader
+                mode={mode}
+                entityName="Solicitud de Remisión"
+                onClose={() => onClose?.()}
+            />
 
-            <div className="p-4 sm:p-6">
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                {/* Sección: Solicitante y Servicio */}
-                <div className="bg-gradient-card backdrop-blur-sm rounded-lg sm:rounded-xl p-4 sm:p-6 border border-primary/20 shadow-lg">
-                    <div className="flex items-center mb-3 sm:mb-4">
-                        <div className="w-6 sm:w-8 h-6 sm:h-8 bg-primary/20 rounded-full flex items-center justify-center mr-2 sm:mr-3">
-                            <span className="text-primary font-bold text-sm sm:text-base">👤</span>
-                        </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-azul-oscuro">
-                            {user.role === "user" ? "Seleccionar Servicio" : "Datos del Solicitante y Servicio"}
-                        </h3>
-                    </div>
-                    <div className={`grid gap-3 sm:gap-4 ${user.role === "user" ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"}`}>
-                        <RequestApplicantFields
-                            user={user}
-                            token={token}
-                            newRequest={newRequest}
-                            setNewRequest={setNewRequest}
-                            mode={mode}
-                            editApplicant={mode === "edit" && requestToEdit?.applicant ? requestToEdit.applicant : undefined}
-                        />
-                    </div>
-                </div>
-                
-                {/* Sección: Descripción */}
-                <div className="bg-gradient-card backdrop-blur-sm rounded-lg sm:rounded-xl p-4 sm:p-6 border border-info/20 shadow-lg">
-                    <div className="flex items-center mb-3 sm:mb-4">
-                        <div className="w-6 sm:w-8 h-6 sm:h-8 bg-info/20 rounded-full flex items-center justify-center mr-2 sm:mr-3">
-                            <span className="text-info font-bold text-sm sm:text-base">📝</span>
-                        </div>
-                        <h3 className="text-base sm:text-lg font-semibold text-azul-oscuro">Descripción de la Solicitud</h3>
-                    </div>
-                    <RequestDescriptionFields
-                        newRequest={newRequest}
-                        setNewRequest={setNewRequest}
-                    />
-                </div>
-                
-                {/* Sección: Estado - Solo visible para administradores */}
-                {user.role !== "user" && (
-                    <div className="bg-gradient-card backdrop-blur-sm rounded-lg sm:rounded-xl p-4 sm:p-6 border border-success/20 shadow-lg">
-                        <div className="flex items-center mb-3 sm:mb-4">
-                            <div className="w-6 sm:w-8 h-6 sm:h-8 bg-success/20 rounded-full flex items-center justify-center mr-2 sm:mr-3">
-                                <span className="text-success font-bold text-sm sm:text-base">⚙️</span>
-                            </div>
-                            <h3 className="text-base sm:text-lg font-semibold text-azul-oscuro">Estado y Respuesta</h3>
-                        </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-                            <RequestStatusFields
+            {/* Contenido del formulario */}
+            <div className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <fieldset disabled={isSubmitting} className="space-y-6">
+                        {/* Sección: Solicitante y Servicio */}
+                        <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
+                            <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
+                                <span className="text-xl">👤</span>
+                                {user.role === "user" ? "Seleccionar Servicio" : "Datos del Solicitante y Servicio"}
+                            </h3>
+                            <RequestApplicantFields
+                                user={user}
+                                token={token}
+                                newRequest={newRequest}
+                                setNewRequest={setNewRequest}
                                 mode={mode}
+                                editApplicant={mode === "edit" && requestToEdit?.applicant ? requestToEdit.applicant : undefined}
+                            />
+                        </div>
+
+                        {/* Sección: Descripción */}
+                        <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
+                            <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
+                                <span className="text-xl">📝</span>
+                                Descripción de la Solicitud
+                            </h3>
+                            <RequestDescriptionFields
                                 newRequest={newRequest}
                                 setNewRequest={setNewRequest}
                             />
                         </div>
+
+                        {/* Sección: Estado - Solo visible para administradores */}
+                        {user.role !== "user" && (
+                            <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
+                                <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
+                                    <span className="text-xl">⚙️</span>
+                                    Estado y Respuesta
+                                </h3>
+                                <RequestStatusFields
+                                    mode={mode}
+                                    newRequest={newRequest}
+                                    setNewRequest={setNewRequest}
+                                />
+                            </div>
+                        )}
+                    </fieldset>
+
+                    {/* Mensaje de error */}
+                    {formError && (
+                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-coral p-4 rounded-lg">
+                            <div className="flex items-center">
+                                <svg className="w-5 h-5 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                                    />
+                                </svg>
+                                <p className="text-coral font-medium">{formError}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Botones de acción */}
+                    <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            onClick={() => onClose?.()}
+                            disabled={isSubmitting}
+                            className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-medium rounded-lg border border-gray-300 hover:from-gray-200 hover:to-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="px-6 py-3 bg-gradient-to-r from-azul-claro to-azul-oscuro text-white font-medium rounded-lg hover:from-azul-oscuro hover:to-azul-marino focus:outline-none focus:ring-2 focus:ring-azul-claro focus:ring-offset-2 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                        >
+                            {isSubmitting && (
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                            )}
+                            {isSubmitting 
+                                ? (mode === "create" ? "Guardando..." : "Actualizando...")
+                                : (mode === "create" ? "Guardar Solicitud" : "Actualizar Solicitud")
+                            }
+                        </button>
                     </div>
-                )}
-                
-                <RequestFormActions
-                    formError={formError}
-                    onClose={onClose}
-                />
-            </form>
+                </form>
             </div>
         </dialog>
     );

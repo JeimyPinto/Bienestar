@@ -1,5 +1,5 @@
 // frontend/app/services/services/remission.ts
-import { Remission } from "../../types/remission";
+import { Remission } from "../../../types/remission";
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/remissions`;
 

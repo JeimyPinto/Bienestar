@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Group } from "../types/group";
-import { UseGroupsOptions, UseGroupsReturn } from "../types";
+import { Group } from "../../types/group";
+import { UseGroupsOptions, UseGroupsReturn } from "../../types";
 import { getAll } from "../services/services/group";
 
 export const useGroups = ({ token, onError }: UseGroupsOptions): UseGroupsReturn<Group> => {

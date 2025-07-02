@@ -1,14 +1,13 @@
 "use client";
+
 import React from "react";
 import { useFooter } from "../hooks/useFooter";
-import {
-  RegionalInfo,
-  CentralLogo,
-  ContactInfo,
-  ScrollTopButton,
-  FooterDivider,
-  FooterBottom
-} from "./footer/";
+import { RegionalInfo } from "./footer/RegionalInfo";
+import { CentralLogo } from "./footer/CentralLogo";
+import { ContactInfo } from "./footer/ContactInfo";
+import { ScrollTopButton } from "./footer/ScrollTopButton";
+import { FooterDivider } from "./footer/FooterDivider";
+import { FooterBottom } from "./footer/FooterBottom";
 
 export default function Footer() {
   const { showScrollTop, scrollToTop } = useFooter();

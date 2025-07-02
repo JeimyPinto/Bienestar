@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserFormProps, User } from "../types/index"
+import { UserFormProps, User } from "../../types/index"
 import { create, update } from "../services/services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";

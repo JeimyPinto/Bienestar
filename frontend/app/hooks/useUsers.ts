@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { User } from "../types/user";
-import { UseUsersOptions, UseUsersReturn } from "../types";
+import { User } from "../../types/user";
+import { UseUsersOptions, UseUsersReturn } from "../../types";
 import { getAllPaginated } from "../services/services/user";
 
 export const useUsers = ({ token, initialLimit = 10, onError }: UseUsersOptions): UseUsersReturn<User> => {

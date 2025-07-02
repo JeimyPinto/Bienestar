@@ -1,8 +1,10 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import getToken from "../lib/getToken";
 import getUsertoken from "../lib/getUserToken";
 import isTokenExpired from "../lib/isTokenExpired";
-import { User } from "../types";
+import { User } from "../../types";
 
 export function useAuth() {
   const [token, setToken] = useState<string | null>(null);

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { ServiceFormProps, Service, Area } from "../types/index"
+import { ServiceFormProps, Service, Area } from "../../types/index"
 import { create, update } from "../services/services/service"
 import ServiceFormMainFields from "./serviceFormMainFields";
 import ServiceFormAdminFields from "./serviceFormAdminFields";
+import FormModalHeader from "../components/FormModalHeader";
 import { useAuth } from "../hooks/useAuth";
 
 const emptyService: Service = {
@@ -24,7 +25,7 @@ export default function ServiceForm(props: ServiceFormProps) {
     const [newService, setNewService] = useState<Service>(emptyService);
     const [previewImage, setPreviewImage] = useState<string>("");
     const [formError, setFormError] = useState<string>("");
-    const [formSuccess, setFormSuccess] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     // Mostrar modal automáticamente al montar
     useEffect(() => {
@@ -73,8 +74,10 @@ export default function ServiceForm(props: ServiceFormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
+        
+        if (isSubmitting) return;
+        
         setFormError("");
-        setFormSuccess("");
         if (!newService.name.trim() || !newService.description.trim()) {
             setFormError("Todos los campos obligatorios deben estar completos.");
             return;
@@ -83,6 +86,9 @@ export default function ServiceForm(props: ServiceFormProps) {
             setFormError("No hay sesión activa o el token expiró. Por favor, inicia sesión.");
             return;
         }
+        
+        setIsSubmitting(true);
+        
         try {
             let responseData;
             if (mode === "create") {
@@ -115,153 +121,149 @@ export default function ServiceForm(props: ServiceFormProps) {
                 props.setErrorMessage?.(responseData.message || responseData.error || "Error al guardar el servicio");
                 return;
             }
-            setFormSuccess(responseData.message || "Servicio guardado correctamente");
+            
             props.setSuccessMessage?.(responseData.message || "Servicio guardado correctamente");
-            // --- NUEVO: Llama a onClose para recargar la tabla ---
-            onClose?.();
-            closeDialog();
+            setTimeout(() => {
+                onClose?.();
+                closeDialog();
+            }, 100);
         } catch (error) {
             setFormError("Error inesperado al guardar el servicio. " + error);
             props.setErrorMessage?.("Error inesperado al guardar el servicio. " + error);
+        } finally {
+            setIsSubmitting(false);
         }
     }
+
     return (
         <dialog
             ref={dialogRef}
-            className="rounded-2xl shadow-2xl p-0 bg-white w-full max-w-4xl mx-auto border border-azul-cielo/20 backdrop-blur-sm"
+            className="rounded-xl shadow-2xl bg-gradient-to-br from-white via-beige-claro/20 to-azul-cielo/10 border border-azul-claro/20 w-full max-w-5xl mx-auto backdrop-blur-sm"
         >
-            <div className="bg-gradient-to-r from-primary to-azul-cielo p-6 rounded-t-2xl">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-white">
-                        {mode === "create" ? "✨ Crear Nuevo Servicio" : "✏️ Editar Servicio"}
-                    </h2>
-                    <button
-                        onClick={closeDialog}
-                        className="text-white hover:text-azul-cielo transition-colors p-2 rounded-lg hover:bg-white/20"
-                        type="button"
-                        aria-label="Cerrar"
-                    >
-                        <Image
-                            src="/images/ico-close.svg"
-                            alt="Cerrar"
-                            width={24}
-                            height={24}
-                            className="filter invert brightness-0"
-                        />
-                    </button>
-                </div>
-            </div>
+            {/* Header con gradiente */}
+            <FormModalHeader
+                mode={mode}
+                entityName="Servicio"
+                onClose={() => {
+                    onClose?.();
+                    closeDialog();
+                }}
+            />
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                <div className="flex flex-col lg:flex-row gap-6">
-                    <div className="flex-1 lg:w-2/3">
-                        <fieldset className="border-2 border-azul-cielo/30 rounded-xl p-4 bg-gradient-to-br from-white to-azul-cielo/5">
-                            <legend className="px-3 text-azul-oscuro font-semibold flex items-center">
-                                <span className="mr-2">📝</span>
-                                Información Principal
-                            </legend>
-                            <ServiceFormMainFields
+            {/* Contenido del formulario */}
+            <div className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <fieldset disabled={isSubmitting} className="space-y-6">
+                        {/* Layout responsivo para campos principales e imagen */}
+                        <div className="flex flex-col lg:flex-row gap-6">
+                            <div className="flex-1 lg:w-2/3">
+                                <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
+                                    <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
+                                        <span className="text-xl">📝</span>
+                                        Información Principal
+                                    </h3>
+                                    <ServiceFormMainFields
+                                        newService={newService}
+                                        handleInputChange={handleInputChange}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="lg:w-1/3">
+                                <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm h-fit">
+                                    <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
+                                        <span className="text-xl">🖼️</span>
+                                        Imagen del Servicio
+                                    </h3>
+                                    
+                                    {previewImage && (
+                                        <div className="mb-4 flex justify-center">
+                                            <div className="relative">
+                                                <Image
+                                                    src={previewImage}
+                                                    alt={`${newService.name} imagen`}
+                                                    width={120}
+                                                    height={120}
+                                                    className="w-32 h-32 rounded-xl object-cover border-2 border-azul-cielo/30 shadow-lg"
+                                                />
+                                                <div className="absolute -top-2 -right-2 bg-azul-claro text-white rounded-full p-2 shadow-md">
+                                                    <span className="text-sm">✓</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="w-full border border-azul-cielo/30 rounded-lg p-3 focus:ring-2 focus:ring-azul-claro focus:border-azul-claro outline-none transition-all duration-200 bg-white/70 backdrop-blur-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-azul-claro file:text-white file:font-medium file:hover:bg-azul-oscuro file:transition-colors file:cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Campos administrativos */}
+                        <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
+                            <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
+                                <span className="text-xl">⚙️</span>
+                                Datos Administrativos
+                            </h3>
+                            <ServiceFormAdminFields
                                 newService={newService}
+                                user={user}
                                 handleInputChange={handleInputChange}
                             />
-                        </fieldset>
-                    </div>
+                        </div>
+                    </fieldset>
                     
-                    <div className="lg:w-1/3">
-                        <fieldset className="border-2 border-success/30 rounded-xl p-4 bg-gradient-to-br from-white to-success/5 h-fit">
-                            <legend className="px-3 text-azul-oscuro font-semibold flex items-center">
-                                <span className="mr-2">🖼️</span>
-                                Imagen del Servicio
-                            </legend>
-                            {previewImage && (
-                                <div className="mb-4 flex justify-center">
-                                    <div className="relative">
-                                        <Image
-                                            src={previewImage}
-                                            alt={`${newService.name} imagen`}
-                                            width={120}
-                                            height={120}
-                                            className="w-30 h-30 rounded-xl object-cover border-2 border-azul-cielo/30 shadow-md"
-                                        />
-                                        <div className="absolute -top-2 -right-2 bg-success text-white rounded-full p-1">
-                                            <span className="text-xs">✓</span>
-                                        </div>
-                                    </div>
-                                </div>
+                    {/* Mensaje de error */}
+                    {formError && (
+                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-coral p-4 rounded-lg">
+                            <div className="flex items-center">
+                                <svg className="w-5 h-5 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                                    />
+                                </svg>
+                                <p className="text-coral font-medium">{formError}</p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Botones de acción */}
+                    <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                onClose?.();
+                                closeDialog();
+                            }}
+                            disabled={isSubmitting}
+                            className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-medium rounded-lg border border-gray-300 hover:from-gray-200 hover:to-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="px-6 py-3 bg-gradient-to-r from-azul-claro to-azul-oscuro text-white font-medium rounded-lg hover:from-azul-oscuro hover:to-azul-marino focus:outline-none focus:ring-2 focus:ring-azul-claro focus:ring-offset-2 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                        >
+                            {isSubmitting && (
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
                             )}
-                            <input
-                                type="file"
-                                name="file"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                className="
-                                    w-full border-2 border-azul-cielo/30 rounded-lg p-3 
-                                    focus:ring-2 focus:ring-primary focus:border-primary 
-                                    focus:outline-none transition-all duration-300
-                                    hover:border-primary/50 bg-white
-                                    file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0
-                                    file:bg-primary file:text-white file:font-medium
-                                    file:hover:bg-azul-oscuro file:transition-colors file:cursor-pointer
-                                "
-                            />
-                        </fieldset>
+                            {isSubmitting 
+                                ? (mode === "create" ? "Guardando..." : "Actualizando...")
+                                : (mode === "create" ? "Guardar Servicio" : "Actualizar Servicio")
+                            }
+                        </button>
                     </div>
-                </div>
-                
-                <fieldset className="border-2 border-warning/30 rounded-xl p-4 bg-gradient-to-br from-white to-warning/5">
-                    <legend className="px-3 text-azul-oscuro font-semibold flex items-center">
-                        <span className="mr-2">⚙️</span>
-                        Datos Administrativos
-                    </legend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <ServiceFormAdminFields
-                            newService={newService}
-                            user={user}
-                            handleInputChange={handleInputChange}
-                        />
-                    </div>
-                </fieldset>
-                
-                {formError && (
-                    <div className="bg-danger/10 border border-danger/30 text-danger rounded-xl p-4 text-center font-medium flex items-center justify-center">
-                        <span className="mr-2">❌</span>
-                        {formError}
-                    </div>
-                )}
-                {formSuccess && (
-                    <div className="bg-success/10 border border-success/30 text-success rounded-xl p-4 text-center font-medium flex items-center justify-center">
-                        <span className="mr-2">✅</span>
-                        {formSuccess}
-                    </div>
-                )}
-                
-                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-azul-cielo/20">
-                    <button
-                        type="button"
-                        onClick={closeDialog}
-                        className="
-                            px-6 py-3 bg-neutral hover:bg-beige-claro text-azul-oscuro 
-                            rounded-xl font-medium transition-all duration-300
-                            hover:shadow-md border border-azul-cielo/30
-                            order-2 sm:order-1
-                        "
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        className="
-                            px-6 py-3 bg-success hover:bg-verde-bosque text-white 
-                            rounded-xl font-medium transition-all duration-300
-                            hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2
-                            border border-success/30 order-1 sm:order-2
-                        "
-                    >
-                        <span>{mode === "create" ? "✨" : "💾"}</span>
-                        <span>{mode === "create" ? "Crear Servicio" : "Actualizar Servicio"}</span>
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </dialog>
     );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Service } from "../types/index";
+import { User, Service } from "../../types/index";
 
 interface Props {
   newService: Service;

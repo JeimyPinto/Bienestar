@@ -1,7 +1,7 @@
-import { useAuth } from "../hooks/useAuth";
-import { useServices } from "../hooks/useServices";
-import { useRequests } from "../hooks/useRequests";
-import { ROLES } from "../constants/roles";
+import { useAuth } from "../../hooks/useAuth";
+import { useServices } from "../../hooks/useServices";
+import { useRequests } from "../../hooks/useRequests";
+import { ROLES } from "../../constants/roles";
 
 export default function QuickStats() {
   const { user, token } = useAuth();

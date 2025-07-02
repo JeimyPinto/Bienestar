@@ -1,5 +1,5 @@
 import React from "react";
-import { Input } from "../../ui";
+import { Input } from "../../../ui";
 
 interface AuditLogTableFilterBarProps {
   filter: string;

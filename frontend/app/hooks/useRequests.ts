@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Request } from "../types/request";
-import { UseRequestsOptions, UseRequestsReturn } from "../types";
+import { Request } from "../../types/request";
+import { UseRequestsOptions, UseRequestsReturn } from "../../types";
 import { getByUserId as getRequestsByUserId } from "../services/services/request";
 
 export const useRequests = ({ token, userId, onError }: UseRequestsOptions): UseRequestsReturn<Request> => {

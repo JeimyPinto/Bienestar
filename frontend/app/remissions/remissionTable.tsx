@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Remission, RemissionTableProps } from "../types/remission";
+import { Remission, RemissionTableProps } from "../../types/remission";
 import RemissionForm from "./remissionForm";
 import RemissionTableDesktop from "./remissionTableDesktop";
 import RemissionCardMobile from "./remissionCardMobile";

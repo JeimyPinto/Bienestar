@@ -1,5 +1,5 @@
 import React from "react";
-import { GroupTableFilterBarProps } from "../types/index";
+import { GroupTableFilterBarProps } from "../../../types/index";
 
 
 const GroupTableFilterBar: React.FC<GroupTableFilterBarProps> = ({

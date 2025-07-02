@@ -3,8 +3,8 @@
 import React from "react"
 import UserTable from "./userTable"
 import UserForm from "./userForm"
-import ErrorMessage from "../ui/errorMessage";
-import SuccessMessage from "../ui/successMessage";
+import ErrorMessage from "../../ui/errorMessage";
+import SuccessMessage from "../../ui/successMessage";
 import IcoBack from "../components/icoBack";
 import { useAuth } from "../hooks/useAuth";
 import { useUsers } from "../hooks/useUsers";

@@ -1,5 +1,5 @@
 import React from "react";
-import { UserTableFilterBarProps } from "../types/user";
+import { UserTableFilterBarProps } from "../../types/user";
 
 const UserTableFilterBar: React.FC<UserTableFilterBarProps> = ({
   limit,

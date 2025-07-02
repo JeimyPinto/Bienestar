@@ -1,5 +1,5 @@
 import { ROLES } from "../constants/roles";
-import { RoleDisplayConfig } from "../types/components"
+import { RoleDisplayConfig } from "../../types/components"
 
 
 /**

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import ServiceForm from "./serviceForm";
-import { Service, ServiceTableProps } from "../types/service";
+import { Service, ServiceTableProps } from "../../types/service";
 import ServiceTableDesktop from "./serviceTableDesktop";
 import ServiceCardMobile from "./serviceCardMobile";
 

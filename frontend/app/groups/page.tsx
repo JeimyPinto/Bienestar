@@ -1,39 +1,30 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import SectionHeader from "../components/sectionHeader";
-import ErrorMessage from "../ui/errorMessage";
-import SuccessMessage from "../ui/successMessage";
-import GroupTable from "./groupTable";
-import { getAll} from "../services/services/group";
-import { Group } from "../types/group";
-import GroupForm from "./groupForm";
-import getToken from "../lib/getToken";
+import ErrorMessage from "../../ui/errorMessage";
+import SuccessMessage from "../../ui/successMessage";
+import GroupTable from "../components/group/groupTable";
+import { Group } from "../../types/group";
+import GroupForm from "../components/group/groupForm";
+import { useAuth } from "../hooks/useAuth";
+import { useGroups } from "../hooks/useGroups";
 
 export default function GroupPage() {
-    const [groups, setGroups] = useState<Group[]>([]);
+    const { token } = useAuth();
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
+
+    // Usar el hook useGroups para manejar el estado de grupos
+    const { groups, setGroups, refreshGroups } = useGroups({
+        token,
+        onError: (error) => setErrorMessage(error)
+    });
 
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [groupToEdit, setGroupToEdit] = useState<Group | undefined>(undefined);
-
-    useEffect(() => {
-        async function fetchGroups() {
-            const token = getToken();
-            const res = await getAll(token || undefined);
-            if (res.error) {
-                setErrorMessage(res.message);
-                setGroups([]);
-            } else {
-                setGroups(res.groups);
-                setErrorMessage("");
-            }
-        }
-        fetchGroups();
-    }, []);
 
     function openCreateDialog() {
         setMode("create");
@@ -42,23 +33,10 @@ export default function GroupPage() {
         setTimeout(() => dialogRef.current?.showModal(), 0);
     }
 
-    // Nueva función para recargar grupos tras crear/editar
-    async function reloadGroups() {
-        const token = getToken();
-        const res = await getAll(token || undefined);
-        if (res.error) {
-            setErrorMessage(res.message);
-            setGroups([]);
-        } else {
-            setGroups(res.groups);
-            setErrorMessage("");
-        }
-    }
-
     function handleFormClose() {
         setIsFormOpen(false);
         dialogRef.current?.close();
-        reloadGroups();
+        refreshGroups(); // Usar el hook para refrescar
     }
 
     return (

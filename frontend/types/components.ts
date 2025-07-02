@@ -1,4 +1,4 @@
-import { User, Service } from '../types';
+import { User, Service } from '.';
 
 export interface ErrorMessageProps {
   message: string;

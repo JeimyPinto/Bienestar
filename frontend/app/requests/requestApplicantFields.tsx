@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { RequestApplicantFieldsProps } from "../types/request";
-import Spinner from "../ui/spinner";
+import { RequestApplicantFieldsProps } from "../../types/request";
+import Spinner from "../../ui/spinner";
 import { ROLES } from "../constants/roles";
 import { getAllActive as getAllServices } from "../services/services/service";
 import { getAllByRole as getAllUsers } from "../services/services/user";
 import { ROLES as ROLES_CONST } from "../constants/roles";
-import { User, Service } from "../types";
+import { User, Service } from "../../types";
 
 const RequestApplicantFields: React.FC<RequestApplicantFieldsProps> = ({
   user,
