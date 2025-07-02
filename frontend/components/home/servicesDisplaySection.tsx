@@ -1,5 +1,5 @@
 import React from 'react';
-import ServicesGallery from '../../services/servicesGallery';
+import ServicesGallery from '../../app/services/servicesGallery';
 import { ServicesDisplaySectionProps } from '../../../interface/components';
 
 
