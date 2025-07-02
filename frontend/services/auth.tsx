@@ -1,6 +1,5 @@
-import { isValidEmail } from "../../../lib/isValidEmail"
-import { LoginParams } from "../../../interface/login"
-import { tokenManager } from "../../../lib/tokenManager"
+import  isValidEmail  from "../lib/isValidEmail"
+import { tokenManager } from "../lib/getToken"
 
 // Asegurar que la variable de entorno se lea correctamente
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -15,6 +14,12 @@ export async function verifyRecaptchaBackend(recaptchaToken: string) {
     const data = await response.json();
     return { success: response.ok, ...data };
 }
+
+type LoginParams = {
+    email: string;
+    password: string;
+    recaptchaToken: string;
+};
 
 export async function login({ email, password, recaptchaToken }: LoginParams) {
     if (!email || !password || !recaptchaToken) {

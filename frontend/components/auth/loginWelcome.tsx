@@ -1,6 +1,14 @@
 import Image from "next/image";
 
-export default function LoginWelcome() {
+interface LoginWelcomeProps {
+  title?: string;
+  message?: string;
+}
+
+export default function LoginWelcome({
+  title = "Bienvenido al Portal de Bienestar del Aprendiz",
+  message = "¡Hola! Para iniciar sesión, asegúrate de haber sido registrado previamente por el Área de Bienestar del Aprendiz.",
+}: LoginWelcomeProps) {
   return (
     <>
       {/* Logos institucionales */}
@@ -28,13 +36,20 @@ export default function LoginWelcome() {
       </div>
       
       <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-2 sm:mb-4 text-center text-white drop-shadow-lg animate-fade-in-up">
-        Bienvenido al Portal de Bienestar del Aprendiz
+        {title}
       </h1>
       <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 sm:p-5 md:p-6 shadow-lg border border-azul-cielo/20 w-full max-w-lg mt-2 sm:mt-4 hover:shadow-xl transition-all duration-300">
         <p className="text-sm sm:text-base md:text-lg text-azul-marino text-center mb-2">
-          ¡Hola! Para iniciar sesión, asegúrate de haber sido{" "}
-          <strong className="text-azul-oscuro font-bold">registrado previamente</strong>{" "}
-          por el Área de Bienestar del Aprendiz.
+          {message.split("registrado previamente").map((part, idx, arr) =>
+            idx < arr.length - 1 ? (
+              <span key={idx}>
+                {part}
+                <strong className="text-azul-oscuro font-bold">registrado previamente</strong>
+              </span>
+            ) : (
+              part
+            )
+          )}
         </p>
       </div>
     </>

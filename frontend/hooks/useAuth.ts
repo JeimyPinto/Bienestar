@@ -1,36 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import getToken from "../lib/getToken";
-import getUsertoken from "../lib/getUserToken";
-import isTokenExpired from "../lib/isTokenExpired";
-import { User } from "../../types";
+import { tokenManager } from "../lib/getToken";
+import { User } from "../interface/user";
 
 export function useAuth() {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
-  // Obtiene y decodifica el token
+  // Obtiene y valida el token y usuario
   const refresh = useCallback(async () => {
-    const t = getToken();
-    setToken(t);
-    if (t) {
-      setIsExpired(isTokenExpired(t));
-      try {
-        const userDecoded = await getUsertoken(t);
-        if (userDecoded && typeof userDecoded === "object" && "id" in userDecoded) {
-          setUser(userDecoded as User);
-        } else {
-          setUser(null);
-        }
-      } catch {
-        setUser(null);
-      }
-    } else {
-      setUser(null);
-      setIsExpired(true);
-    }
+    const validatedSession = tokenManager.validateSession();
+    
+    setToken(validatedSession.token);
+    setUser(validatedSession.user);
+    setIsExpired(!validatedSession.isValid);
   }, []);
 
   // Cargar al montar
@@ -38,9 +23,9 @@ export function useAuth() {
     refresh();
   }, [refresh]);
 
-  // Logout: borra token y usuario
+  // Logout: usa el tokenManager para limpiar todo
   const logout = useCallback(() => {
-    localStorage.removeItem("token");
+    tokenManager.clearSession();
     setToken(null);
     setUser(null);
     setIsExpired(true);

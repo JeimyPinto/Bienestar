@@ -5,7 +5,9 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useAuth } from "../../hooks/useAuth";
 import { useRecaptcha } from "../../hooks/useRecaptcha";
 import { useLoginForm } from "../../hooks/useLoginForm";
-import  LoginForm from "../../components/auth/loginForm"
+import LoginForm from "../../components/auth/loginForm";
+import LoginWelcome from "../../components/auth/loginWelcome";
+import ActiveSessionMessage from "../../components/auth/activeSessionMessage";
 
 export default function LoginPage() {
   const { token, logout } = useAuth();
@@ -53,4 +55,3 @@ export default function LoginPage() {
     </>
   );
 }
-
