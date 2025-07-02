@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Group } from "../../interface/group";
-import GroupTableFilterBar from "../../app/components/group/groupTableFilterBar";
-import GroupForm from "../../app/components/group/groupForm";
-import { filterGroupsByFichaPrograma } from "../../lib/filterHelpers";
+import GroupTableFilterBar from "./groupTableFilterBar";
+import GroupForm from "./groupForm";
+import { filterGroupsByFichaPrograma } from "../../helpers/filterHelpers";
 
 interface GroupTableProps {
   groups: Group[];

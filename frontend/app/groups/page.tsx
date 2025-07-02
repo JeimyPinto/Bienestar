@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import SectionHeader from "../components/sectionHeader";
+import SectionHeader from "../../ui/sectionHeader";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import GroupTable from "../components/group/groupTable";
 import { Group } from "../../interface/group";
-import GroupForm from "../components/group/groupForm";
+import GroupForm from "../../components/group/groupForm";
 import { useAuth } from "../../hooks/useAuth";
 import { useGroups } from "../../hooks/useGroups";
 

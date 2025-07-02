@@ -1,6 +1,6 @@
 import React from "react";
-import { AuditLog } from "../../../interface/auditLog";
-import Spinner from "../../../ui/spinner";
+import { AuditLog } from "../../interface/auditLog";
+import Spinner from "../../ui/spinner";
 
 interface AuditLogTableDesktopProps {
   auditLogs: AuditLog[];

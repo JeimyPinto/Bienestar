@@ -1,7 +1,11 @@
 import React from "react";
-import { SectionHeaderProps } from "../../interface/components";
 import IcoBack from "./icoBack";
 
+export interface SectionHeaderProps {
+  title: string;
+  buttonText?: string;
+  onButtonClick?: () => void;
+}
 
 export default function SectionHeader({ title, buttonText, onButtonClick }: SectionHeaderProps) {
   return (

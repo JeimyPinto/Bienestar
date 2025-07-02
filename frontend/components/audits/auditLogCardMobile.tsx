@@ -1,5 +1,5 @@
 import React from "react";
-import { AuditLog } from "../../../interface/auditLog";
+import { AuditLog } from "../../interface/auditLog";
 
 interface AuditLogCardMobileProps {
   auditLogs: AuditLog[];

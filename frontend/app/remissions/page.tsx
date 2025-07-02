@@ -5,7 +5,7 @@ import { Remission } from "../../interface/remission";
 import { ErrorMessage, SuccessMessage } from "../../ui";
 import RemissionTable from "./remissionTable";
 import RemissionForm from "./remissionForm";
-import SectionHeader from "../components/sectionHeader";
+import SectionHeader from "../../ui/sectionHeader";
 import { getAll } from "../../services/remission"
 import { useAuth } from "../../hooks/useAuth";
 

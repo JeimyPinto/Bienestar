@@ -5,7 +5,7 @@ import UserTable from "./userTable"
 import UserForm from "./userForm"
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
-import IcoBack from "../components/icoBack";
+import IcoBack from "../../ui/icoBack";
 import { useAuth } from "../../hooks/useAuth";
 import { useUsers } from "../../hooks/useUsers";
 import { useModal } from "../../hooks/useModal";

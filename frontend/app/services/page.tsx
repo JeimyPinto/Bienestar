@@ -6,7 +6,7 @@ import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import ServicesGallery from "./servicesGallery";
 import ServiceTable from "./serviceTable";
-import SectionHeader from "../components/sectionHeader";
+import SectionHeader from "../../ui/sectionHeader";
 import ServiceForm from "./serviceForm";
 import Spinner from "../../ui/spinner";
 import { useAuth } from "../../hooks/useAuth";
