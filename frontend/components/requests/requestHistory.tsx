@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
-import { RequestHistoryProps } from "../../interface/request"
+import { Request } from "../../interface/request"
 import RequestHistoryTable from "./requestHistoryTable";
 import RequestHistoryCard from "./requestHistoryCard";
+
+interface RequestHistoryProps {
+  requests: Request[];
+  loading: boolean;
+  errorMessage?: string;
+  successMessage?: string;
+  onCreateRequest: () => void;
+}
 
 export default function RequestHistory({
   requests,

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { areaColors } from '../../styles/areaColors';
-import { RequestHistoryTableProps } from '../../interface/request';
+import { Request } from '../../interface/request';
 import Spinner from '../../ui/spinner';
+
+interface RequestHistoryTableProps {
+    requests: Request[];
+    loading?: boolean;
+}
 
 const RequestHistoryTable: React.FC<RequestHistoryTableProps> = ({ requests, loading = false }) => {
     const [isMobile, setIsMobile] = useState(false);

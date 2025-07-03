@@ -1,6 +1,11 @@
 import React from "react";
-import { GroupTableFilterBarProps } from "../../../interface/index";
 
+interface GroupTableFilterBarProps {
+  limit: number;
+  setLimit: (limit: number) => void;
+  filter: string;
+  setFilter: (filter: string) => void;
+}
 
 const GroupTableFilterBar: React.FC<GroupTableFilterBarProps> = ({
   limit,

@@ -1,7 +1,13 @@
 import React from "react";
-import { RequestTableDesktopProps } from "../../interface/index";
+import { Request } from "../../interface/request";
 import Spinner from "../../ui/spinner";
 import { areaColors } from "../../styles/areaColors";
+
+interface RequestTableDesktopProps {
+  requests: Request[];
+  loading: boolean;
+  handleRowClick: (request: Request) => void;
+}
 
 export default function RequestTableDesktop({
   requests,

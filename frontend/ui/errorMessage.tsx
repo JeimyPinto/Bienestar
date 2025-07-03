@@ -1,5 +1,9 @@
 import React from "react";
-import { ErrorMessageProps } from "../interface/components";
+
+interface ErrorMessageProps {
+  message: string;
+  onRetry?: () => void;
+}
 
 export default function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
   return (

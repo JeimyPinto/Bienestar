@@ -1,7 +1,13 @@
 import React from "react";
-import { RequestCardMobileProps } from "../../interface/index";
 import Spinner from "../../ui/spinner";
 import { areaColors } from "../../styles/areaColors";
+import { Request } from "../../interface/request";
+
+interface RequestCardMobileProps {
+  requests: Request[];
+  loading: boolean;
+  handleRowClick: (request: Request) => void;
+}
 
 export default function RequestCardMobile({
   requests,

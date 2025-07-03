@@ -1,6 +1,9 @@
 import React from "react"
-import { RequestTableFilterBarProps } from "../../interface/index"
 
+interface RequestTableFilterBarProps {
+  filter: string;
+  setFilter: (value: string) => void;
+}
 
 export default function RequestTableFilterBar({ filter, setFilter }: RequestTableFilterBarProps) {
   return (

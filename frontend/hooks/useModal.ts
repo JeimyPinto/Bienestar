@@ -1,6 +1,17 @@
 import { useState, useRef } from "react";
 import { User } from "../interface/user";
-import { ModalMode, UseModalReturn } from "../interface";
+
+// Define the UseModalReturn type if not already defined elsewhere
+type ModalMode = "create" | "edit";
+type UseModalReturn<T> = {
+  dialogRef: React.RefObject<HTMLDialogElement>;
+  isFormOpen: boolean;
+  mode: ModalMode;
+  itemToEdit: T | undefined;
+  openCreateDialog: (onClearMessages?: () => void) => void;
+  openEditDialog: (item: T, onClearMessages?: () => void) => void;
+  closeDialog: () => void;
+};
 
 export const useModal = (): UseModalReturn<User> => {
   const dialogRef = useRef<HTMLDialogElement>(null);

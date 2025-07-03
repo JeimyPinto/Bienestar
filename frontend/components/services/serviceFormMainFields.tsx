@@ -1,5 +1,5 @@
 import React from "react";
-import { Service } from "../../interface/index";
+import { Service } from "../../interface/service";
 
 interface Props {
   newService: Service;
@@ -9,7 +9,7 @@ interface Props {
 const ServiceFormMainFields: React.FC<Props> = ({ newService, handleInputChange }) => (
   <div className="space-y-4">
     <div>
-      <label className="block text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
+      <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
         <span className="mr-2">📝</span>
         Nombre del Servicio
       </label>
@@ -30,7 +30,7 @@ const ServiceFormMainFields: React.FC<Props> = ({ newService, handleInputChange 
     </div>
     
     <div>
-      <label className="block text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
+      <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
         <span className="mr-2">📄</span>
         Descripción
       </label>
@@ -51,7 +51,7 @@ const ServiceFormMainFields: React.FC<Props> = ({ newService, handleInputChange 
     </div>
     
     <div>
-      <label className="block text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
+      <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
         <span className="mr-2">🏢</span>
         Área de Bienestar
       </label>

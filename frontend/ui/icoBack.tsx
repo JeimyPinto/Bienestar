@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { IcoBackProps } from "../../interface/components";
+
+interface IcoBackProps {
+  href?: string;
+  className?: string;
+}
 
 const IcoBack: React.FC<IcoBackProps> = ({ href = "/dashboard", className = "" }) => {
   return (
