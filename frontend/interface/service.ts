@@ -22,15 +22,6 @@ export interface Service {
   updatedAt: string;
   file?: File | null; // opcional para manejar archivos
 }
-export interface ServiceTableProps {
-  services: Service[];
-  loading: boolean;
-  setErrorMessage?: (msg: string) => void;
-  setSuccessMessage?: (msg: string) => void;
-  setServices?: (services: Service[]) => void;
-  onServiceUpdate?: () => void;
-  onEditService?: (service: Service) => void;
-}
 export interface ServiceCardMobileProps {
   services: Service[];
   loading: boolean;
@@ -41,4 +32,7 @@ export interface ServiceTableDesktopProps {
   services: Service[];
   loading: boolean;
   onRowClick: (service: Service) => void;
+  sortColumn?: string;
+  sortOrder?: "asc" | "desc";
+  handleSort?: (column: string) => void;
 }

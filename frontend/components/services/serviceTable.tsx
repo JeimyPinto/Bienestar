@@ -1,65 +1,87 @@
-import React, { useRef, useState } from "react";
-import ServiceForm from "./serviceForm";
-import { Service, ServiceTableProps } from "../../interface/service";
+import React from "react";
+import { Service } from "../../interface/service";
+import { useFilter } from "../../hooks/useFilter";
+import { useServiceColumnSorter } from "../../lib/useServiceColumnSorter";
 import ServiceTableDesktop from "./serviceTableDesktop";
 import ServiceCardMobile from "./serviceCardMobile";
+import ServiceTableFilterBar from "./serviceTableFilterBar";
+
+interface ServiceTableProps {
+  services: Service[];
+  loading: boolean;
+  setErrorMessage?: (msg: string) => void;
+  setSuccessMessage?: (msg: string) => void;
+  setServices?: (services: Service[]) => void;
+  onServiceUpdate?: () => void;
+  onEditService?: (service: Service) => void;
+}
 
 const ServiceTable: React.FC<ServiceTableProps> = ({
   services,
   loading,
-  setErrorMessage,
-  setSuccessMessage,
   onEditService,
 }) => {
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const serviceEditFormRef = useRef<HTMLDialogElement>(null);
+  // Hook para filtrado de servicios
+  const { filter, setFilter, filteredItems: filteredServices } = useFilter({
+    items: services,
+    filterFn: (services, filter) => {
+      if (!filter || !filter.trim()) {
+        return services;
+      }
+      
+      const searchTerm = filter.toLowerCase().trim();
+      
+      return services.filter(service =>
+        service.name.toLowerCase().includes(searchTerm) ||
+        (service.description && service.description.toLowerCase().includes(searchTerm)) ||
+        (service.area && service.area.toLowerCase().includes(searchTerm)) ||
+        (service.creator && 
+          `${service.creator.firstName} ${service.creator.lastName || ""}`.toLowerCase().includes(searchTerm)
+        )
+      );
+    }
+  });
+
+  // Hook para sorting de servicios
+  const { sortedData: sortedFilteredServices, handleSort, sortColumn, sortOrder } = 
+    useServiceColumnSorter(filteredServices, "name");
 
   // Handler para abrir el formulario de edición desde la tabla
   function handleRowClick(service: Service) {
     if (onEditService) {
       onEditService(service);
-    } else {
-      setSelectedService(service);
-      setIsFormOpen(true);
-      setTimeout(() => {
-        serviceEditFormRef.current?.showModal();
-      }, 0);
     }
   }
 
-  // Handler para cerrar el formulario de edición (solo si se usa localmente)
-  function handleFormClose() {
-    setIsFormOpen(false);
-    serviceEditFormRef.current?.close();
-  }
-
   return (
-    <section className="w-full max-w-8xl mx-auto px-2 sm:px-6 py-4 sm:py-10">
+    <section className="w-full max-w-full mx-auto">
       <div className="flex flex-col gap-6">
-        {/* Puedes mostrar mensajes de error globales aquí si lo deseas */}
-        <ServiceTableDesktop
-          services={services}
-          loading={loading}
-          onRowClick={handleRowClick}
+        {/* Barra de filtros */}
+        <ServiceTableFilterBar
+          filter={filter}
+          setFilter={setFilter}
         />
-        <ServiceCardMobile
-          services={services}
-          loading={loading}
-          onCardClick={handleRowClick}
-        />
-        {/* Si no se usa onEditService del padre, se usa el modal local */}
-        {isFormOpen && selectedService && !onEditService && (
-          <ServiceForm
-            dialogRef={serviceEditFormRef}
-            closeDialog={handleFormClose}
-            onClose={handleFormClose}
-            mode="edit"
-            serviceToEdit={selectedService}
-            setErrorMessage={setErrorMessage}
-            setSuccessMessage={setSuccessMessage}
+        
+        {/* Vista de escritorio */}
+        <div className="hidden lg:block">
+          <ServiceTableDesktop
+            services={sortedFilteredServices}
+            loading={loading}
+            onRowClick={handleRowClick}
+            sortColumn={sortColumn}
+            sortOrder={sortOrder}
+            handleSort={handleSort}
           />
-        )}
+        </div>
+        
+        {/* Vista móvil/tablet */}
+        <div className="lg:hidden">
+          <ServiceCardMobile
+            services={sortedFilteredServices}
+            loading={loading}
+            onCardClick={handleRowClick}
+          />
+        </div>
       </div>
     </section>
   );

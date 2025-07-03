@@ -1,23 +1,26 @@
 import React, { useRef, useState } from "react";
-import { Request, RequestTableProps } from "../../interface/index";
-import RequestForm from "./requestForm";
+import { Request } from "../../interface/request";
 import RequestTableDesktop from "./requestTableDesktop";
 import RequestCardMobile from "./requestCardMobile";
 import RequestTableFilterBar from "./requestTableFilterBar";
 
+interface RequestTableProps {
+  requests: Request[];
+  setErrorMessage: (msg: string) => void;
+  setSuccessMessage: (msg: string) => void;
+  loading?: boolean;
+  onRequestUpdate?: () => void;
+}
+
 export default function RequestTable({
   requests,
-  setErrorMessage,
-  setSuccessMessage,
   loading = false,
-  onRequestUpdate,
 }: RequestTableProps) {
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [filter, setFilter] = useState("");
   const requestEditFormRef = useRef<HTMLDialogElement>(null);
 
-  // Mostrar el modal cuando se selecciona una solicitud
   React.useEffect(() => {
     if (isFormOpen && selectedRequest && requestEditFormRef.current) {
       requestEditFormRef.current.showModal();
@@ -29,13 +32,12 @@ export default function RequestTable({
     setIsFormOpen(true);
   }
 
-  // Filtrado local por solicitante, servicio o descripción
   const filteredRequests = filter.trim()
     ? requests.filter(request =>
-    (request.applicant?.firstName?.toLowerCase().includes(filter.toLowerCase()) ||
-      request.applicant?.lastName?.toLowerCase().includes(filter.toLowerCase()) ||
-      request.service?.name?.toLowerCase().includes(filter.toLowerCase()) ||
-      request.description?.toLowerCase().includes(filter.toLowerCase()))
+      (request.applicant?.firstName?.toLowerCase().includes(filter.toLowerCase()) ||
+        request.applicant?.lastName?.toLowerCase().includes(filter.toLowerCase()) ||
+        request.service?.name?.toLowerCase().includes(filter.toLowerCase()) ||
+        request.description?.toLowerCase().includes(filter.toLowerCase()))
     )
     : requests;
 
@@ -60,22 +62,8 @@ export default function RequestTable({
               handleRowClick={handleRowClick}
             />
           </div>
-          {(isFormOpen && selectedRequest) && (
-            <RequestForm
-              dialogRef={requestEditFormRef}
-              onClose={() => {
-                setIsFormOpen(false);
-                if (onRequestUpdate) onRequestUpdate(); // Solo notifica que hubo cambio
-              }}
-              mode="edit"
-              requestToEdit={selectedRequest}
-              setErrorMessage={setErrorMessage}
-              setSuccessMessage={setSuccessMessage}
-            />
-          )}
         </div>
       </div>
     </section>
   );
 }
-

@@ -5,7 +5,6 @@ import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
 import PaginationControls from "./paginationControls"
 import { useColumnSorter } from "../../lib/useColumnSorter"
-import { filterUsers } from "../../helpers/filterHelpers"
 import { useFilter } from "../../hooks/useFilter"
 import { useUsers } from "../../hooks/useUsers"
 import { useAuth } from "../../hooks/useAuth"
@@ -43,7 +42,19 @@ export default function UserTable({
     // Hook para filtrado de usuarios
     const { filter, setFilter, filteredItems: filteredUsers } = useFilter({
         items: users,
-        filterFn: filterUsers
+        filterFn: (users, filter) => {
+            if (!filter || !filter.trim()) {
+                return users;
+            }
+            
+            const searchTerm = filter.toLowerCase().trim();
+            
+            return users.filter(user =>
+                user.firstName.toLowerCase().includes(searchTerm) ||
+                user.lastName.toLowerCase().includes(searchTerm) ||
+                user.documentNumber.toLowerCase().includes(searchTerm)
+            );
+        }
     });
 
     // Hook para ordenamiento de usuarios filtrados

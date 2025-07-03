@@ -24,10 +24,14 @@ const emptyRequest: Request = {
     creator: null,
 };
 interface RequestsFormProps {
-    dialogRef: React.RefObject<HTMLDialogElement>;
-    onClose?: (updatedRequest?: Request) => void;
-    mode: "create" | "edit";
-    requestToEdit?: Request;
+  dialogRef: React.RefObject<HTMLDialogElement>;
+  onClose?: (updatedRequest?: Request) => void;
+  mode: "create" | "edit";
+  requestToEdit?: Request;
+  successMessage?: string;
+  setSuccessMessage?: (msg: string) => void;
+  setErrorMessage?: (msg: string) => void;
+  errorMessage?: string;
 }
 export default function RequestsForm(props: RequestsFormProps) {
     const {
