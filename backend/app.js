@@ -110,6 +110,8 @@ app.use(morgan(customFormat));
 app.use("/api", routes);
 // Servir archivos estáticos desde el directorio "uploads"
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Servir imágenes públicas (logos para emails)
+app.use("/images", express.static(path.join(__dirname, "public", "images")));
 
 // =======================
 // Documentación Swagger protegida
