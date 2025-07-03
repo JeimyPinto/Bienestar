@@ -7,33 +7,54 @@ import PaginationControls from "./paginationControls"
 import { useColumnSorter } from "../../lib/useColumnSorter"
 import { filterUsers } from "../../helpers/filterHelpers"
 import { useFilter } from "../../hooks/useFilter"
+import { useUsers } from "../../hooks/useUsers"
+import { useAuth } from "../../hooks/useAuth"
 
 export default function UserTable({
-    users,
-    currentPage,
-    totalUsers,
-    totalPages,
-    limit,
-    setCurrentPage,
-    setLimit,
-    loading,
     onEditUser,
+    onError,
+    onRefreshUsers
 }: UserTableProps) {
+    const { token } = useAuth();
+
+    // Hook para manejo de usuarios
+    const {
+        users,
+        currentPage,
+        limit,
+        totalUsers,
+        totalPages,
+        loading,
+        setCurrentPage,
+        setLimit,
+        refreshUsers
+    } = useUsers({
+        token,
+        onError
+    });
+
+    // Pasar función de refresh al componente padre
+    React.useEffect(() => {
+        if (onRefreshUsers) {
+            onRefreshUsers(refreshUsers);
+        }
+    }, [onRefreshUsers, refreshUsers]);
+
     // Hook para filtrado de usuarios
     const { filter, setFilter, filteredItems: filteredUsers } = useFilter({
         items: users,
         filterFn: filterUsers
     });
 
+    // Hook para ordenamiento de usuarios filtrados
     const {
         handleSort,
         sortColumn,
         sortOrder,
-    } = useColumnSorter(users);
+        sortedData: sortedFilteredUsers
+    } = useColumnSorter(filteredUsers);
 
-    const sortedFilteredUsers = useColumnSorter(filteredUsers).sortedData;
-
-    function handleRowClick(user: UserTableProps['users'][0]) {
+    function handleRowClick(user: typeof users[0]) {
         onEditUser(user);
     }
 

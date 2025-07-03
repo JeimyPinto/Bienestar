@@ -56,10 +56,10 @@ export interface FilterProps {
 }
 
 // Props completas para UserTable
-export interface UserTableProps extends BaseUserTableProps, PaginationProps {
-  limit: number;
-  setLimit: (limit: number) => void;
+export interface UserTableProps {
   onEditUser: (user: User) => void;
+  onError?: (message?: string) => void;
+  onRefreshUsers?: (refreshFn: () => void) => void;
 }
 
 // Props para UserTableDesktop

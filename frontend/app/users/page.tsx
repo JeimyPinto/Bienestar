@@ -1,19 +1,17 @@
 "use client"
 
 import React from "react"
-import UserTable from "./userTable"
-import UserForm from "./userForm"
+import UserTable from "../../components/users/userTable"
+import UserForm from "../../components/users/userForm"
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import IcoBack from "../../ui/icoBack";
-import { useAuth } from "../../hooks/useAuth";
-import { useUsers } from "../../hooks/useUsers";
 import { useModal } from "../../hooks/useModal";
 import { useMessages } from "../../hooks/useMessages";
 
-export default function UsersPage() {
-    const { token } = useAuth();
+import { User } from "../../interface/user";
 
+export default function UsersPage() {
     const {
         successMessage,
         errorMessage,
@@ -22,22 +20,8 @@ export default function UsersPage() {
         setErrorMessage
     } = useMessages();
 
-    // Hook para manejo de usuarios
-    const {
-        users,
-        currentPage,
-        limit,
-        totalUsers,
-        totalPages,
-        loading,
-        setUsers,
-        setCurrentPage,
-        setLimit,
-        refreshUsers
-    } = useUsers({
-        token,
-        onError: setErrorMessage
-    });
+    // Referencia para la función de refresh de usuarios
+    const refreshUsersRef = React.useRef<(() => void) | null>(null);
 
     // Hook para manejo de modales
     const {
@@ -52,7 +36,9 @@ export default function UsersPage() {
 
     // Handler para éxito en UserForm
     const handleUserFormSuccess = () => {
-        refreshUsers();
+        if (refreshUsersRef.current) {
+            refreshUsersRef.current();
+        }
         setTimeout(() => {
             closeDialog();
         }, 2000);
@@ -63,8 +49,13 @@ export default function UsersPage() {
         openCreateDialog(clearMessages);
     };
 
-    const handleEditUser = (user: typeof users[0]) => {
+    const handleEditUser = (user: User) => {
         openEditDialog(user, clearMessages);
+    };
+
+    // Callback para recibir la función de refresh
+    const handleRefreshUsers = (refreshFn: () => void) => {
+        refreshUsersRef.current = refreshFn;
     };
 
     return (
@@ -121,17 +112,9 @@ export default function UsersPage() {
 
                 {/* Tabla de usuarios */}
                 <UserTable
-                    users={users}
-                    currentPage={currentPage}
-                    totalUsers={totalUsers}
-                    totalPages={totalPages}
-                    limit={limit}
-                    setCurrentPage={setCurrentPage}
-                    setLimit={setLimit}
-                    loading={loading}
-                    token={token}
-                    setUsers={setUsers}
                     onEditUser={handleEditUser}
+                    onError={setErrorMessage}
+                    onRefreshUsers={handleRefreshUsers}
                 />
 
                 {/* Modal de formulario */}

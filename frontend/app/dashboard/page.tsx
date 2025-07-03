@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { ROLES } from "../../constants/roles";
-import UserCard from "../users/userCard";
+import UserCard from "../../components/users/userCard";
 import DashboardRoleActions from "../../components/dashboard/dashboardRoleActions";
 import RequestForm from "../../components/requests/requestForm";
 import SuccessMessage from "../../ui/successMessage";
