@@ -1,9 +1,9 @@
-import { useAuth } from "../../hooks/useAuth";
 import { getCurrentTimeGreeting, getDayOfMonth, getAbbreviatedMonth } from "../../helpers/timeHelpers";
 import { getRoleDisplay } from "../../helpers/roleHelpers";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 export default function WelcomeBanner() {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   if (!user) return null;
 

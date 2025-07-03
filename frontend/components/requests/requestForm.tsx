@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useRequests } from "../../hooks/useRequests";
 import { Request } from "../../interface/request";
 import { ROLES } from "../../constants/roles";
@@ -41,7 +41,7 @@ export default function RequestsForm(props: RequestsFormProps) {
         mode,
         requestToEdit,
     } = props;
-    const { token, user } = useAuth();
+    const { token, user } = useAuthContext();
     const [newRequest, setNewRequest] = useState<Request>(emptyRequest);
     const [formError, setFormError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

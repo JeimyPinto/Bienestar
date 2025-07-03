@@ -3,7 +3,7 @@ import { Group } from "../../interface/group";
 import GroupTableFilterBar from "./groupTableFilterBar";
 import GroupForm from "./groupForm";
 import { filterGroupsByFichaPrograma } from "../../helpers/filterHelpers";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 interface GroupTableProps {
   groups: Group[];
@@ -18,7 +18,7 @@ export default function GroupTable({
   setSuccessMessage,
   setErrorMessage,
 }: GroupTableProps) {
-  const { token } = useAuth();
+  const { token } = useAuthContext();
   const [limit, setLimit] = useState<number>(10);
   const [filter, setFilter] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);

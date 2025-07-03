@@ -3,6 +3,7 @@ import "../styles/globals.css";
 import AppProviders from "../components/providers/AppProviders";
 import ClientHeader from "../components/home/ClientHeader"
 import Footer from "../components/home/footer";
+import ProtectedRoute from "../components/auth/protectedRoute";
 
 export const metadata = {
   title: "Portal de Bienestar al Aprendiz",
@@ -24,9 +25,11 @@ export default function RootLayout({
       </head>
       <body className="antialiased bg-blanco">
         <AppProviders>
-          <ClientHeader />
-          {children}
-          <Footer />
+          <ProtectedRoute>
+            <ClientHeader />
+            {children}
+            <Footer />
+          </ProtectedRoute>
         </AppProviders>
       </body>
     </html>

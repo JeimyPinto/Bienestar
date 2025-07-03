@@ -9,13 +9,13 @@ import ServiceTable from "../../components/services/serviceTable";
 import SectionHeader from "../../ui/sectionHeader";
 import ServiceForm from "../../components/services/serviceForm";
 import Spinner from "../../ui/spinner";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useServices } from "../../hooks/useServices";
 import { useMessages } from "../../hooks/useMessages";
 import { ROLES } from "../../constants/roles";
 
 export default function ServicePage() {
-    const { user, token } = useAuth();
+    const { user, token } = useAuthContext();
     const { successMessage, errorMessage, setErrorMessage, setSuccessMessage } = useMessages();
     
     // Determinar el modo según el rol del usuario

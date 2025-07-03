@@ -7,7 +7,7 @@ import SuccessMessage from "../../ui/successMessage";
 import RemissionTable from "../../components/remissions/remissionTable";
 import RemissionForm from "../../components/remissions/remissionForm";
 import SectionHeader from "../../ui/sectionHeader";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useRemissions } from "../../hooks/useRemissions";
 import { useMessages } from "../../hooks/useMessages";
 
@@ -17,7 +17,7 @@ export default function RemissiontPage() {
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [remissionToEdit, setRemissionToEdit] = useState<Remission | undefined>(undefined);
     
-    const { token } = useAuth();
+    const { token } = useAuthContext();
     const { errorMessage, setErrorMessage } = useMessages();
     const { remissions, loading, refreshRemissions } = useRemissions({
         token,

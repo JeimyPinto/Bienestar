@@ -7,11 +7,11 @@ import SuccessMessage from "../../ui/successMessage";
 import GroupTable from "../../components/group/groupTable";
 import { Group } from "../../interface/group";
 import GroupForm from "../../components/group/groupForm";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useGroups } from "../../hooks/useGroups";
 
 export default function GroupPage() {
-    const { token } = useAuth();
+    const { token } = useAuthContext();
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
 

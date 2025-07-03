@@ -5,7 +5,7 @@ import ServiceFormMainFields from "./serviceFormMainFields";
 import ServiceFormAdminFields from "./serviceFormAdminFields";
 import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useServices } from "../../hooks/useServices";
 
 const emptyService: Service = {
@@ -34,7 +34,7 @@ interface ServiceFormProps {
 
 export default function ServiceForm(props: ServiceFormProps) {
     const { dialogRef, closeDialog, onClose, mode, serviceToEdit } = props;
-    const { token, user, isExpired } = useAuth();
+    const { token, user, isAuthenticated } = useAuthContext();
     const [newService, setNewService] = useState<Service>(emptyService);
     const [previewImage, setPreviewImage] = useState<string>("");
     const [formError, setFormError] = useState<string>("");
@@ -103,8 +103,8 @@ export default function ServiceForm(props: ServiceFormProps) {
             setFormError("Todos los campos obligatorios deben estar completos.");
             return;
         }
-        if (!token || isExpired) {
-            setFormError("No hay sesión activa o el token expiró. Por favor, inicia sesión.");
+        if (!token || !isAuthenticated) {
+            setFormError("No hay sesión activa. Por favor, inicia sesión.");
             return;
         }
         

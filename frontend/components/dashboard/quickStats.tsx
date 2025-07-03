@@ -1,11 +1,11 @@
-import { useAuth } from "../../hooks/useAuth";
+import {useAuthContext} from "../../contexts/AuthContext";
 import { useServices } from "../../hooks/useServices";
 import { useRequests } from "../../hooks/useRequests";
 import { ROLES } from "../../constants/roles";
 import { getDashboardStats } from "../../constants/dashboardStats";
 
 export default function QuickStats() {
-  const { user, token } = useAuth();
+  const { user, token } = useAuthContext();
   
   const { services } = useServices({
     token,

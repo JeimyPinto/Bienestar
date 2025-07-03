@@ -1,9 +1,63 @@
 "use client"
 
 import Image from "next/image"
+import { useState } from "react"
+import { useAuthContext } from "../../contexts/AuthContext"
+import { useUsers } from "../../hooks/useUsers"
 import { User } from "../../interface/user"
 
-export default function UserCard({ user, onClick }: { user: User | null, onClick?: () => void }) {
+interface UserCardProps {
+    user?: User;  // Usuario opcional - si no se pasa, obtiene myProfile
+    onClick?: () => void;
+}
+
+export default function UserCard({ user: propUser, onClick }: UserCardProps) {
+    // Obtener token del contexto
+    const { token } = useAuthContext();
+    
+    // Estado para manejar errores
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    
+    // Solo hacer llamada a la API si NO se pasó un usuario como prop
+    const { users: [fetchedUser], loading } = useUsers({
+        token: propUser ? null : token, // Solo usar token si no hay propUser
+        mode: 'myProfile',
+        onError: (message) => setErrorMessage(message || "Error al cargar usuario")
+    });
+
+    // Usar el usuario de props o el obtenido de la API
+    const user = propUser || fetchedUser;
+
+    // Estado de carga (solo si estamos obteniendo el usuario de la API)
+    if (!propUser && loading) {
+        return (
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20 animate-pulse">
+                <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 bg-azul-cielo/20 rounded-full"></div>
+                    <div className="flex-1">
+                        <div className="h-4 bg-azul-cielo/20 rounded mb-2"></div>
+                        <div className="h-3 bg-azul-cielo/10 rounded mb-1"></div>
+                        <div className="h-3 bg-azul-cielo/10 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Estado de error (solo si estamos obteniendo el usuario de la API)
+    if (!propUser && errorMessage) {
+        return (
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-danger/20">
+                <div className="text-center">
+                    <span className="text-4xl mb-2 block">⚠️</span>
+                    <p className="text-danger">Error al cargar la información del usuario.</p>
+                    <p className="text-sm text-azul-marino/70 mt-2">{errorMessage}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Usuario no encontrado
     if (!user) {
         return (
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20">

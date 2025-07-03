@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { Request } from "../../interface/request";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useRequests } from "../../hooks/useRequests";
 import { useMessages } from "../../hooks/useMessages";
 import RequestForm from "../../components/requests/requestForm"
@@ -13,7 +13,7 @@ import SectionHeader from "../../ui/sectionHeader";
 import { ROLES } from "../../constants/roles";
 
 export default function RequestPage() {
-    const { user, token } = useAuth();
+    const { user, token } = useAuthContext();
     const { successMessage, errorMessage, clearSuccess, setErrorMessage, showSuccess } = useMessages();
     
     // Determinar modo y userId según el rol del usuario

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Group, ProgramType, FichaStatus } from "../../interface/group";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useGroups } from "../../hooks/useGroups";
 import { useUsers } from "../../hooks/useUsers";
 import FormModalHeader from "../../ui/FormModalHeader";
@@ -19,7 +19,7 @@ const GroupForm: React.FC<GroupFormProps> = ({
   mode,
   groupToEdit
 }) => {
-  const { token } = useAuth();
+  const { token } = useAuthContext();
   const { createGroup, updateGroup } = useGroups({ token });
   const { users } = useUsers({ token, role: 'INSTRUCTOR' });
 

@@ -5,12 +5,12 @@ import  AuditLogTable  from "../../components/audits/auditLogTable"
 import  SuccessMessage  from "../../ui/successMessage"
 import  ErrorMessage  from "../../ui/errorMessage"
 import  SectionHeader  from "../../ui/sectionHeader"
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useAudit } from "../../hooks/useAudit";
 import { useMessages } from "../../hooks/useMessages";
 
 export default function AuditPage() {
-    const { token } = useAuth();
+    const { token } = useAuthContext();
     const { successMessage, errorMessage, setErrorMessage, clearSuccess } = useMessages();
     const { auditLogs, loading } = useAudit({
         token,

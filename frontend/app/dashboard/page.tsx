@@ -6,19 +6,12 @@ import UserCard from "../../components/users/userCard";
 import DashboardRoleActions from "../../components/dashboard/dashboardRoleActions";
 import RequestForm from "../../components/requests/requestForm";
 import SuccessMessage from "../../ui/successMessage";
-import { useAuth } from "../../hooks/useAuth";
-import { useUsers } from "../../hooks/useUsers";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useMessages } from "../../hooks/useMessages";
 
 export default function DashboardPage() {
   const { successMessage, clearSuccess, showSuccess } = useMessages();
-  const { token } = useAuth();
-  
-  // Obtener el usuario completo desde la base de datos
-  const { users: [currentUser], loading: userLoading } = useUsers({
-    token,
-    mode: 'myProfile'
-  });
+  const { user } = useAuthContext();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -48,22 +41,10 @@ export default function DashboardPage() {
       )}
       <main className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-4 sm:py-6 lg:py-8 px-3 sm:px-4">
         <div className="container mx-auto max-w-8xl">
-          {userLoading ? (
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20 animate-pulse">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-azul-cielo/20 rounded-full"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-azul-cielo/20 rounded mb-2"></div>
-                  <div className="h-3 bg-azul-cielo/10 rounded mb-1"></div>
-                  <div className="h-3 bg-azul-cielo/10 rounded"></div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <UserCard user={currentUser || null} />
-          )}
+          <UserCard />
+
           {/* Sección de acciones rápidas para crear solicitudes */}
-            <div className="my-6 lg:my-8">
+          <div className="my-6 lg:my-8">
             <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex-1">
@@ -110,9 +91,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {!userLoading && currentUser &&
+          {user &&
             [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(
-              currentUser.role
+              user.role
             ) && (
               <div className="mt-6">
                 <DashboardRoleActions />

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Remission } from "../../interface/remission";
 import { Request } from "../../interface/request";
 import { ROLES } from "../../constants/roles";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useUsers } from "../../hooks/useUsers";
 import { useRequests } from "../../hooks/useRequests";
 import { useRemissions } from "../../hooks/useRemissions";
@@ -25,7 +25,7 @@ export default function RemissionForm({
   remissionToEdit,
   setSuccessMessages,
 }: RemissionFormProps) {
-  const { token } = useAuth();
+  const { token } = useAuthContext();
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(remissionToEdit?.requestId || null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [assignedUserId, setAssignedUserId] = useState<number | null>(remissionToEdit?.assignedUserId || null);

@@ -7,14 +7,14 @@ import PaginationControls from "./paginationControls"
 import { useColumnSorter } from "../../lib/useColumnSorter"
 import { useFilter } from "../../hooks/useFilter"
 import { useUsers } from "../../hooks/useUsers"
-import { useAuth } from "../../hooks/useAuth"
+import { useAuthContext } from "../../contexts/AuthContext"
 
 export default function UserTable({
     onEditUser,
     onError,
     onRefreshUsers
 }: UserTableProps) {
-    const { token } = useAuth();
+    const { token } = useAuthContext();
 
     // Hook para manejo de usuarios
     const {

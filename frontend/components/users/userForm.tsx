@@ -6,7 +6,7 @@ import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
 import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useGroups } from "../../hooks/useGroups";
 
 interface UserFormProps {
@@ -37,7 +37,7 @@ const emptyUser: User = {
 
 export default function UserForm(props: UserFormProps) {
     const { dialogRef, onClose, mode, setErrorMessage, setSuccessMessage, userToEdit } = props;
-    const { token } = useAuth();
+    const { token } = useAuthContext();
     const [formError, setFormError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [newUser, setNewUser] = useState<User>(emptyUser);
