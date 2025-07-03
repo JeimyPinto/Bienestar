@@ -1,6 +1,5 @@
 import { useAuth } from "../../hooks/useAuth";
 import ActionButtons from "./actionButtons";
-import UserServicesSection from "./userServicesSection";
 import QuickStats from "./quickStats";
 import WelcomeBanner from "./welcomeBanner";
 
@@ -12,7 +11,6 @@ export default function DashboardRoleActions() {
       <WelcomeBanner />
       <QuickStats />
       <ActionButtons user={user} />
-      <UserServicesSection />
     </>
   );
 }

@@ -64,7 +64,7 @@ export default function DashboardPage() {
             <UserCard user={currentUser || null} />
           )}
           {/* Sección de acciones rápidas para crear solicitudes */}
-          <div className="mb-6 lg:mb-8">
+            <div className="my-6 lg:my-8">
             <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex-1">
