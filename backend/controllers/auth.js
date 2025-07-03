@@ -16,6 +16,11 @@ class AuthController {
       const user = await User.findOne({
         where: { email },
         include: [
+          { 
+            association: "group",
+            required: false,
+            attributes: ["id", "programName", "fichaNumber", "programType", "fichaStatus"]
+          },
           { association: "services", required: false },
           { association: "requests", required: false },
         ],
@@ -44,9 +49,23 @@ class AuthController {
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
+          documentType: user.documentType,
+          documentNumber: user.documentNumber,
+          phone: user.phone,
           email: user.email,
           role: user.role,
-          status: user.status
+          status: user.status,
+          image: user.image,
+          groupId: user.groupId,
+          group: user.group ? {
+            id: user.group.id,
+            programName: user.group.programName,
+            fichaNumber: user.group.fichaNumber,
+            programType: user.group.programType,
+            fichaStatus: user.group.fichaStatus
+          } : null,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
         }
       };
 

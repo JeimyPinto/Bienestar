@@ -15,9 +15,6 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
         );
     }
 
-    // Log de depuración para ver todos los datos del usuario
-    console.log("UserCard - Datos del usuario:", user);
-
     return (
         <section
             className="
@@ -74,28 +71,35 @@ export default function UserCard({ user, onClick }: { user: User | null, onClick
                             <span className="mr-2">📧</span>
                             {user.email || "No especificado"}
                         </p>
-                        {user.phone && (
+                        <p className="flex items-center justify-center sm:justify-start break-words">
+                            <span className="mr-2">📱</span>
+                            {user.phone || "No especificado"}
+                        </p>
+                        <p className="flex items-center justify-center sm:justify-start break-words">
+                            <span className="mr-2">🆔</span>
+                            {user.documentType && user.documentNumber 
+                                ? `${user.documentType}: ${user.documentNumber}`
+                                : `Documento: ${user.documentType || "No especificado"} - ${user.documentNumber || "No especificado"}`
+                            }
+                        </p>
+                        <p className="flex items-center justify-center sm:justify-start break-words">
+                            <span className="mr-2">👥</span>
+                            Grupo: {user.group?.programName || user.groupId || "Sin Ficha asignada"}
+                        </p>
+                        {user.group?.fichaNumber && (
                             <p className="flex items-center justify-center sm:justify-start break-words">
-                                <span className="mr-2">📱</span>
-                                {user.phone}
-                            </p>
-                        )}
-                        {(user.documentType && user.documentNumber) && (
-                            <p className="flex items-center justify-center sm:justify-start break-words">
-                                <span className="mr-2">🆔</span>
-                                {user.documentType}: {user.documentNumber}
+                                <span className="mr-2">📋</span>
+                                Ficha: {user.group.fichaNumber}
                             </p>
                         )}
                         <p className="flex items-center justify-center sm:justify-start break-words">
-                            <span className="mr-2">👥</span>
-                            {user.group?.programName ?? "Sin Ficha asignada"}
+                            <span className="mr-2">🆔</span>
+                            ID: {user.id || "No especificado"}
                         </p>
-                        {user.id && (
-                            <p className="flex items-center justify-center sm:justify-start break-words">
-                                <span className="mr-2">🆔</span>
-                                ID: {user.id}
-                            </p>
-                        )}
+                        <p className="flex items-center justify-center sm:justify-start break-words">
+                            <span className="mr-2">📊</span>
+                            Estado: {user.status || "No especificado"}
+                        </p>
                     </div>
                 </div>
             </div>
