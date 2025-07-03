@@ -50,7 +50,7 @@ export const useMessages = (): UseMessagesReturn => {
   }, []);
 
   const setErrorMessage = useCallback((message?: string) => {
-    setErrorMessageState(message || "Error desconocido");
+    setErrorMessageState(message || "");
   }, []);
 
   return {

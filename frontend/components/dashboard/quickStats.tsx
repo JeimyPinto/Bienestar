@@ -1,36 +1,21 @@
 import {useAuthContext} from "../../contexts/AuthContext";
-import { useServices } from "../../hooks/useServices";
-import { useRequests } from "../../hooks/useRequests";
 import { ROLES } from "../../constants/roles";
-import { getDashboardStats } from "../../constants/dashboardStats";
+import { useDashboardStats } from "../../hooks/useDashboardStats";
 
 export default function QuickStats() {
   const { user, token } = useAuthContext();
   
-  const { services } = useServices({
+  // Obtener estadísticas usando el hook especializado
+  const stats = useDashboardStats({
     token,
     userId: user?.id,
-    mode: 'userServices',
-    onError: () => {}
-  });
-
-  const { requests } = useRequests({
-    token,
-    userId: user?.id,
-    onError: () => {}
+    userRole: user?.role || ''
   });
 
   // Solo mostrar para usuarios con permisos
   if (!user || user.role === ROLES.USER) {
     return null;
   }
-
-  // Obtener estadísticas usando la función centralizada
-  const stats = getDashboardStats({
-    requests,
-    services,
-    userRole: user.role
-  });
 
   return (
     <section className="mb-6">

@@ -2,6 +2,7 @@ const db = require("../models/index.js");
 const Service = db.Service;
 const User = db.User;
 const fs = require("fs");
+const chalk = require("chalk");
 
 async function getAllServices() {
   return await Service.findAll({
@@ -93,7 +94,7 @@ function removeUploadedFile(file) {
     try {
       fs.unlinkSync(file.path);
     } catch (err) {
-      console.warn("No se pudo eliminar el archivo subido tras error:", err.message);
+      console.warn(chalk.yellow.bold("⚠️  No se pudo eliminar el archivo subido tras error:"), chalk.yellow(err.message));
     }
   }
 }

@@ -26,7 +26,7 @@ router.get("/", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN)
 
 router.get("/active", serviceController.getAllActive);
 
-router.get("/user/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), serviceController.getByUserId);
+router.get("/user/:id", authenticateToken, authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN,ROLES.INSTRUCTOR), serviceController.getByUserId);
 
 router.get(":id", authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR), serviceController.getById);
 

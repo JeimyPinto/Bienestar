@@ -139,21 +139,25 @@ export default function RemissionForm({
   };
 
   return (
-    <dialog ref={dialogRef} className="rounded-lg shadow-xl bg-blanco w-full max-w-lg mx-auto overflow-hidden">
-      <FormModalHeader
-        mode={mode}
-        entityName="Remisión"
-        createTitle="Crear Nueva Remisión"
-        editTitle="Editar Remisión"
-        createDescription="Complete la información para crear una nueva remisión de servicio"
-        editDescription="Modifique los campos necesarios de la remisión"
-        onClose={() => onClose()}
-        icon={{
-          create: "M12 4v16m8-8H4",
-          edit: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-        }}
-      />
-      <form onSubmit={handleSubmit} className="space-y-6 p-6">
+    <dialog ref={dialogRef} className="modal">
+      <div className="modal-box max-w-2xl w-full mx-4 p-0 bg-white rounded-xl shadow-2xl max-h-[90vh] flex flex-col">
+        <FormModalHeader
+          mode={mode}
+          entityName="Remisión"
+          createTitle="Crear Nueva Remisión"
+          editTitle="Editar Remisión"
+          createDescription="Complete la información para crear una nueva remisión de servicio"
+          editDescription="Modifique los campos necesarios de la remisión"
+          onClose={() => onClose()}
+          icon={{
+            create: "M12 4v16m8-8H4",
+            edit: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          }}
+        />
+        
+        {/* Contenido scrolleable */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <form id="remission-form" onSubmit={handleSubmit} className="space-y-6">
         
         <FormErrorDisplay error={formError} />
         
@@ -219,24 +223,32 @@ export default function RemissionForm({
             className="w-full border rounded px-3 py-2"
           />
         </div>
-        <div className="flex justify-end gap-4 mt-6">
-          <button
-            type="button"
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-            onClick={() => onClose()}
-            disabled={loading}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="bg-cian text-white px-4 py-2 rounded hover:bg-azul"
-            disabled={loading}
-          >
-            {mode === "create" ? "Crear" : "Actualizar"}
-          </button>
+        
+          </form>
         </div>
-      </form>
+        
+        {/* Botones fijos en la parte inferior */}
+        <div className="border-t border-gray-200 p-6 bg-gray-50">
+          <div className="flex justify-end gap-4">
+            <button
+              type="button"
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              onClick={() => onClose()}
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              form="remission-form"
+              className="bg-cian text-white px-4 py-2 rounded hover:bg-azul"
+              disabled={loading}
+            >
+              {mode === "create" ? "Crear" : "Actualizar"}
+            </button>
+          </div>
+        </div>
+      </div>
     </dialog>
   );
 }

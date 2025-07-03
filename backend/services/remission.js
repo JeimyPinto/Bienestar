@@ -1,17 +1,17 @@
-const { Remission, Request, User, Service } = require('../models');
-const { createAuditLog } = require('./auditLog');
+const { Remission, Request, User, Service } = require("../models");
+const { createAuditLog } = require("./auditLog");
 
 class RemissionService {
   async createRemission(data, userId = null) {
-    // Verifica que la solicitud esté aprobada antes de crear la remisión
+    // Verifica que la solicitud no esté aprobada antes de crear la remisión
     const request = await Request.findByPk(data.requestId);
     if (!request) {
-      const error = new Error('Request not found');
+      const error = new Error("Solicitud no encontrada");
       error.status = 404;
       throw error;
     }
-    if (request.responseStatus !== 'aprobada') {
-      const error = new Error('Request must be approved to create a remission');
+    if (request.responseStatus === "aprobada") {
+      const error = new Error("La solicitud ya tiene una remisión asociada porque está aprobada");
       error.status = 400;
       throw error;
     }
@@ -21,15 +21,15 @@ class RemissionService {
     
     // Actualizar el status de la request a inactiva
     await request.update({
-      status: false, // inactiva
-      responseStatus: 'aprobada' // mantener como aprobada
+      status: false,
+      responseStatus: "aprobada"
     });
     
     // Crear log de auditoría para la remisión
     await createAuditLog({
-      entity_type: 'Remission',
+      entity_type: "Remission",
       entity_id: remission.id,
-      action: 'CREATE',
+      action: "CREATE",
       old_data: null,
       new_data: remission.toJSON(),
       changed_by: userId,
@@ -37,13 +37,13 @@ class RemissionService {
     
     // Crear log de auditoría para la actualización de la request
     await createAuditLog({
-      entity_type: 'Request',
+      entity_type: "Request",
       entity_id: request.id,
-      action: 'UPDATE',
+      action: "UPDATE",
       old_data: { status: true, responseStatus: request.responseStatus },
-      new_data: { status: false, responseStatus: 'aprobada' },
+      new_data: { status: false, responseStatus: "aprobada" },
       changed_by: userId,
-      description: 'Request updated to inactive after remission creation'
+      description: "Request updated to inactive after remission creation"
     });
     
     return remission;
@@ -52,10 +52,10 @@ class RemissionService {
   async getAllRemissions() {
     return await Remission.findAll({
       include: [
-        { model: Request, as: 'request' },
-        { model: User, as: 'referredUser' },
-        { model: User, as: 'assignedUser' },
-        { model: Service, as: 'service' },
+        { model: Request, as: "request" },
+        { model: User, as: "referredUser" },
+        { model: User, as: "assignedUser" },
+        { model: Service, as: "service" },
       ],
     });
   }
@@ -63,10 +63,10 @@ class RemissionService {
   async getRemissionById(id) {
     return await Remission.findByPk(id, {
       include: [
-        { model: Request, as: 'request' },
-        { model: User, as: 'referredUser' },
-        { model: User, as: 'assignedUser' },
-        { model: Service, as: 'service' },
+        { model: Request, as: "request" },
+        { model: User, as: "referredUser" },
+        { model: User, as: "assignedUser" },
+        { model: Service, as: "service" },
       ],
     });
   }
@@ -77,9 +77,9 @@ class RemissionService {
     const oldRemissionData = remission.get({ plain: true });
     await remission.update(data);
     await createAuditLog({
-      entity_type: 'Remission',
+      entity_type: "Remission",
       entity_id: remission.id,
-      action: 'UPDATE',
+      action: "UPDATE",
       old_data: oldRemissionData,
       new_data: remission.toJSON(),
       changed_by: userId,

@@ -5,11 +5,12 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const process = require("process");
+const chalk = require("chalk");
 const basename = path.basename(__filename);
 
 // Determinar el entorno desde las variables de entorno
 const env = process.env.NODE_ENV || "development";
-console.log("NODE_ENV detectado:", env);
+console.log(chalk.blue.bold("🔧 NODE_ENV detectado:"), chalk.cyan(env));
 
 // Configuración directa sin archivo JSON (más confiable para Render)
 const config = {
@@ -40,7 +41,7 @@ if (!dbConfig) {
   throw new Error(`No se encontró configuración para el entorno: ${env}`);
 }
 
-console.log("Entorno:", env, "| Base de datos configurada:", dbConfig);
+console.log(chalk.magenta.bold("⚙️  Entorno:"), chalk.cyan(env), chalk.magenta.bold("| Base de datos configurada:"), chalk.gray(JSON.stringify(dbConfig, null, 2)));
 
 const db = {};
 
@@ -50,7 +51,7 @@ if (dbConfig.use_env_variable) {
   if (!connectionString) {
     throw new Error(`Variable de entorno ${dbConfig.use_env_variable} no encontrada`);
   }
-  console.log("Usando variable de entorno para conexión:", dbConfig.use_env_variable);
+  console.log(chalk.green.bold("🔗 Usando variable de entorno para conexión:"), chalk.yellow(dbConfig.use_env_variable));
   sequelize = new Sequelize(connectionString, dbConfig);
 } else {
   sequelize = new Sequelize(

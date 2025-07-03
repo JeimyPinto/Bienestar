@@ -1,4 +1,4 @@
-const remissionService = require('../services/remission');
+const remissionService = require("../services/remission");
 
 const RemissionController = {
   async create(req, res, next) {
@@ -23,13 +23,13 @@ const RemissionController = {
     try {
       const remissions = await remissionService.getAllRemissions();
       if (!remissions || remissions.length === 0) {
-        const error = new Error('No se encontraron remisiones');
+        const error = new Error("No se encontraron remisiones");
         error.status = 404;
         error.details = { remissions: [] };
         throw error;
       }
       res.status(200).json({
-        message: 'Remisiones recuperadas con éxito',
+        message: "Remisiones recuperadas con éxito",
         remissions,
       });
     } catch (error) {
@@ -41,12 +41,12 @@ const RemissionController = {
     try {
       const remission = await remissionService.getRemissionById(req.params.id);
       if (!remission) {
-        const error = new Error('Remission not found');
+        const error = new Error("Remission not found");
         error.status = 404;
         throw error;
       }
       res.status(200).json({
-        message: 'Remisión recuperada con éxito',
+        message: "Remisión recuperada con éxito",
         remission,
       });
     } catch (error) {
@@ -60,12 +60,12 @@ const RemissionController = {
       const value = req.body;
       const remission = await remissionService.updateRemission(id, value, req.user?.id || null);
       if (!remission) {
-        const err = new Error('Remission not found');
+        const err = new Error("Remission not found");
         err.status = 404;
         throw err;
       }
       res.status(200).json({
-        message: 'Remisión actualizada con éxito',
+        message: "Remisión actualizada con éxito",
         remission,
       });
     } catch (error) {

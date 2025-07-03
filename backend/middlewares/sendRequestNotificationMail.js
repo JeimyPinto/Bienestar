@@ -1,5 +1,6 @@
 const { Service, User } = require("../models");
 const { sendRequestNotificationIfProd } = require("../services/mail");
+const chalk = require("chalk");
 
 const sendRequestNotificationMail = async (req, res, next) => {
   try {
@@ -18,7 +19,7 @@ const sendRequestNotificationMail = async (req, res, next) => {
       });
 
       if (!service || !service.creator || !service.creator.email) {
-        console.warn("No se pudo obtener el creador del servicio o su email");
+        console.warn(chalk.yellow.bold("⚠️  No se pudo obtener el creador del servicio o su email"));
         return next();
       }
 
@@ -28,7 +29,7 @@ const sendRequestNotificationMail = async (req, res, next) => {
       });
 
       if (!applicant) {
-        console.warn("No se pudo obtener los datos del solicitante");
+        console.warn(chalk.yellow.bold("⚠️  No se pudo obtener los datos del solicitante"));
         return next();
       }
 
@@ -41,7 +42,7 @@ const sendRequestNotificationMail = async (req, res, next) => {
       });
         }
       } catch (error) {
-        console.error("Error enviando correo de notificación de solicitud:", error);
+        console.error(chalk.red.bold("📧 Error enviando correo de notificación de solicitud:"), chalk.red(error.message || error));
     // No detener la ejecución si falla el envío del correo
   }
   

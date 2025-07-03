@@ -17,7 +17,7 @@ class RequestService {
 
   async getAllActiveRequests() {
     return await Request.findAll({
-      where: { status: "activo" },
+      where: { status: true },
       include: [
         { association: "applicant", model: User },
         { association: "service", model: Service },

@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
+const chalk = require("chalk");
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
-    console.error("Token no proporcionado");
+    console.error(chalk.yellow.bold("⚠️  Token no proporcionado"));
     return res.status(401).json({
       message: "No autorizado",
       details: "No se proporcionó un token de autenticación"
@@ -16,7 +17,7 @@ function authenticateToken(req, res, next) {
     req.user = decoded.user;
     next();
   } catch (error) {
-    console.error("Error de autenticación:", error);
+    console.error(chalk.red.bold("🔐 Error de autenticación:"), chalk.red(error.message));
     return res.status(403).json({
       message: "Token inválido o expirado / Invalid or expired token",
       details: error.message,

@@ -1,3 +1,5 @@
+const chalk = require("chalk");
+
 function errorHandler(err, req, res) {
   // Determinar mensaje legible
   let message = err.message;
@@ -31,7 +33,7 @@ function errorHandler(err, req, res) {
     });
   }
   // Otros errores
-  console.error(err);
+  console.error(chalk.red.bold("💥 Error interno del servidor:"), chalk.red(err.message || err));
   res.status(500).json({
     error: true,
     message: message || "Error interno del servidor",

@@ -105,7 +105,6 @@ export default function UserForm(props: UserFormProps) {
                     userToSend.file ? userToSend.file : undefined,
                     token || undefined
                 );
-                console.log("Respuesta del servicio create:", responseData);
                 if (responseData.error) {
                     const errorMsg = responseData.message || "Error desconocido";
                     setFormError(errorMsg);

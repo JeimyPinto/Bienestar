@@ -1,5 +1,6 @@
 const { Service, User, Request } = require("../models");
 const { sendRemissionNotificationIfProd } = require("../services/mail");
+const chalk = require("chalk");
 
 const sendRemissionNotificationMail = async (req, res, next) => {
   try {
@@ -18,7 +19,7 @@ const sendRemissionNotificationMail = async (req, res, next) => {
       });
 
       if (!request || !request.user) {
-        console.warn("No se pudo obtener la solicitud asociada o el solicitante");
+        console.warn(chalk.yellow.bold("⚠️  No se pudo obtener la solicitud asociada o el solicitante"));
         return next();
       }
 
@@ -33,7 +34,7 @@ const sendRemissionNotificationMail = async (req, res, next) => {
       });
 
       if (!service || !service.creator || !service.creator.email) {
-        console.warn("No se pudo obtener el creador del servicio o su email");
+        console.warn(chalk.yellow.bold("⚠️  No se pudo obtener el creador del servicio o su email"));
         return next();
       }
 
@@ -53,7 +54,7 @@ const sendRemissionNotificationMail = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.error("Error enviando correo de notificación de remisión:", error);
+    console.error(chalk.red.bold("📧 Error enviando correo de notificación de remisión:"), chalk.red(error.message || error));
   }
   
   next();

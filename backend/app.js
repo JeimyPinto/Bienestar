@@ -139,11 +139,11 @@ app.use(errorHandler);
 // Intenta conectar a la base de datos y, si tiene éxito, inicia el servidor
 connectDB(db.sequelize)
   .catch((error) => {
-    console.error("Error al conectar a la base de datos:", error.message);
+    console.error(chalk.red.bold("❌ Error al conectar a la base de datos:"), chalk.red(error.message));
   })
   .finally(() => {
     app.listen(PORT, () => {
-      console.log(`Servidor corriendo en: http://127.0.0.1:${PORT}`);
+      console.log(chalk.green.bold("🚀 Servidor corriendo en:"), chalk.cyan.underline(`http://127.0.0.1:${PORT}`));
     });
   });
 
