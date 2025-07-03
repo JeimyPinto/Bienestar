@@ -6,8 +6,8 @@ interface GroupFormProps {
   onClose: () => void;
   mode: "create" | "edit";
   groupToEdit?: Group;
-  setSuccessMessage: (message: string) => void;
-  setErrorMessage: (message: string) => void;
+  setSuccessMessage?: (message: string) => void;
+  setErrorMessage?: (message: string) => void;
 }
 
 const GroupForm: React.FC<GroupFormProps> = ({

@@ -3,6 +3,7 @@ import { Group } from "../../interface/group";
 import GroupTableFilterBar from "./groupTableFilterBar";
 import GroupForm from "./groupForm";
 import { filterGroupsByFichaPrograma } from "../../helpers/filterHelpers";
+import { useAuth } from "../../hooks/useAuth";
 
 interface GroupTableProps {
   groups: Group[];
@@ -17,6 +18,7 @@ export default function GroupTable({
   setSuccessMessage,
   setErrorMessage,
 }: GroupTableProps) {
+  const { token } = useAuth();
   const [limit, setLimit] = useState<number>(10);
   const [filter, setFilter] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -39,9 +41,7 @@ export default function GroupTable({
     setIsFormOpen(false);
     dialogRef.current?.close();
     // Recargar grupos después de crear/editar
-    const getToken = (await import("../../lib/getToken")).default;
     const { getAll } = await import("../../services/group");
-    const token = getToken();
     const res = await getAll(token || undefined);
     if (!res.error) {
       setGroups(res.groups);
@@ -59,59 +59,71 @@ export default function GroupTable({
         />
         {/* Desktop view */}
         <div className="hidden sm:block">
-          <div className="overflow-x-auto rounded-lg shadow-md border border-azul bg-blanco mt-4">
-            <table className="min-w-full divide-y divide-cian">
-              <thead className="bg-cian text-azul">
+          <div className="overflow-x-auto rounded-2xl shadow-lg border border-azul-cielo/20 bg-white mt-4">
+            <table className="min-w-full divide-y divide-azul-cielo/30">
+              <thead className="bg-gradient-to-r from-azul-cielo/20 to-primary/10">
                 <tr>
-                  <th className="px-2 py-3 text-xs font-semibold">ID</th>
-                  <th className="px-2 py-3 text-xs font-semibold">Ficha</th>
-                  <th className="px-2 py-3 text-xs font-semibold">Programa</th>
-                  <th className="px-2 py-3 text-xs font-semibold">Tipo</th>
-                  <th className="px-2 py-3 text-xs font-semibold">
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">ID</th>
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">Ficha</th>
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">Programa</th>
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">Tipo</th>
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">
                     Instructor
                   </th>
-                  <th className="px-2 py-3 text-xs font-semibold">
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">
                     Estado Ficha
                   </th>
-                  <th className="px-2 py-3 text-xs font-semibold">Creado</th>
-                  <th className="px-2 py-3 text-xs font-semibold">
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">Creado</th>
+                  <th className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro">
                     Actualizado
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-cian">
+              <tbody className="bg-white divide-y divide-azul-cielo/20">
                 {paginatedGroups.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-8 text-center text-azul">
-                      No hay fichas para mostrar.
+                    <td colSpan={8} className="py-12 text-center">
+                      <div className="flex flex-col items-center">
+                        <span className="text-6xl mb-4 opacity-50">📋</span>
+                        <span className="text-azul-oscuro font-semibold text-lg mb-2">No hay fichas para mostrar</span>
+                        <span className="text-azul-marino/70">Ajusta los filtros o crea nuevas fichas</span>
+                      </div>
                     </td>
                   </tr>
                 ) : (
                   paginatedGroups.map((group) => (
                     <tr
                       key={group.id}
-                      className="hover:bg-cian/10 cursor-pointer"
+                      className="hover:bg-azul-cielo/10 hover:scale-[1.005] transition-all duration-200 cursor-pointer border-l-4 border-transparent hover:border-primary"
                       onClick={() => handleRowClick(group)}
                     >
-                      <td className="px-2 py-2 text-center">{group.id}</td>
-                      <td className="px-2 py-2">{group.fichaNumber}</td>
-                      <td className="px-2 py-2">{group.programName}</td>
-                      <td className="px-2 py-2 capitalize">
+                      <td className="px-3 py-3 text-sm font-medium text-azul-oscuro text-center">{group.id}</td>
+                      <td className="px-3 py-3 text-sm text-azul-marino font-medium">{group.fichaNumber}</td>
+                      <td className="px-3 py-3 text-sm text-azul-marino/80">{group.programName}</td>
+                      <td className="px-3 py-3 text-sm text-azul-marino/80 capitalize">
                         {group.programType}
                       </td>
-                      <td className="px-2 py-2">
+                      <td className="px-3 py-3 text-sm text-azul-marino/80">
                         {group.instructor
                           ? `${group.instructor.firstName} ${group.instructor.lastName}`
-                          : group.instructorId}
+                          : group.instructorId || "-"}
                       </td>
-                      <td className="px-2 py-2 capitalize">
-                        {group.fichaStatus}
+                      <td className="px-3 py-3 text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          group.fichaStatus === "etapa lectiva" 
+                            ? "bg-success text-white" 
+                            : group.fichaStatus === "etapa practica"
+                            ? "bg-info text-white"
+                            : "bg-warning text-white"
+                        }`}>
+                          {group.fichaStatus}
+                        </span>
                       </td>
-                      <td className="px-2 py-2">
-                        {new Date(group.createdAt).toLocaleDateString()}
+                      <td className="px-3 py-3 text-sm text-azul-marino/70">
+                        {new Date(group.createdAt).toLocaleDateString("es-CO")}
                       </td>
-                      <td className="px-2 py-2">
-                        {new Date(group.updatedAt).toLocaleDateString()}
+                      <td className="px-3 py-3 text-sm text-azul-marino/70">
+                        {new Date(group.updatedAt).toLocaleDateString("es-CO")}
                       </td>
                     </tr>
                   ))
@@ -123,33 +135,68 @@ export default function GroupTable({
         {/* Mobile view */}
         <div className="sm:hidden flex flex-col gap-4">
           {paginatedGroups.length === 0 ? (
-            <div className="py-8 text-center text-azul">
-              No hay fichas para mostrar.
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-azul-cielo/20 text-center max-w-md">
+                <span className="text-6xl mb-4 block opacity-60">📋</span>
+                <h3 className="text-xl font-bold text-azul-oscuro mb-2">No hay fichas</h3>
+                <p className="text-azul-marino/70">
+                  No se encontraron fichas que coincidan con los criterios de búsqueda.
+                </p>
+              </div>
             </div>
           ) : (
             paginatedGroups.map((group) => (
               <div
                 key={group.id}
-                className="border border-cian rounded-lg p-4 shadow bg-white"
+                className="bg-white border-2 border-azul-cielo/20 rounded-2xl p-4 shadow-lg cursor-pointer hover:shadow-xl hover:border-primary/50 transition-all duration-300"
                 onClick={() => handleRowClick(group)}
               >
-                <div className="font-bold text-azul mb-2">
-                  Ficha: {group.fichaNumber}
+                <div className="flex items-center mb-3">
+                  <span className="text-2xl mr-3">📋</span>
+                  <div>
+                    <div className="font-bold text-azul-oscuro text-lg">
+                      Ficha: {group.fichaNumber}
+                    </div>
+                    <div className="text-azul-marino/70 text-sm">ID: {group.id}</div>
+                  </div>
                 </div>
-                <div>Programa: {group.programName}</div>
-                <div>Tipo: {group.programType}</div>
-                <div>
-                  Instructor:{" "}
-                  {group.instructor
-                    ? `${group.instructor.firstName} ${group.instructor.lastName}`
-                    : group.instructorId}
-                </div>
-                <div>Estado: {group.fichaStatus}</div>
-                <div>
-                  Creado: {new Date(group.createdAt).toLocaleDateString()}
-                </div>
-                <div>
-                  Actualizado: {new Date(group.updatedAt).toLocaleDateString()}
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-medium text-azul-oscuro">Programa:</span>
+                    <span className="text-azul-marino/80">{group.programName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-azul-oscuro">Tipo:</span>
+                    <span className="text-azul-marino/80 capitalize">{group.programType}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-azul-oscuro">Instructor:</span>
+                    <span className="text-azul-marino/80">
+                      {group.instructor
+                        ? `${group.instructor.firstName} ${group.instructor.lastName}`
+                        : group.instructorId || "-"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-azul-oscuro">Estado:</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      group.fichaStatus === "etapa lectiva" 
+                        ? "bg-success text-white" 
+                        : group.fichaStatus === "etapa practica"
+                        ? "bg-info text-white"
+                        : "bg-warning text-white"
+                    }`}>
+                      {group.fichaStatus}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs text-azul-marino/60 mt-3 pt-3 border-t border-azul-cielo/20">
+                    <span>
+                      <b>Creado:</b> {new Date(group.createdAt).toLocaleDateString("es-CO")}
+                    </span>
+                    <span>
+                      <b>Actualizado:</b> {new Date(group.updatedAt).toLocaleDateString("es-CO")}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))
@@ -159,7 +206,6 @@ export default function GroupTable({
         {isFormOpen && (
           <GroupForm
             dialogRef={dialogRef}
-            closeDialog={handleFormCloseAndReload}
             onClose={handleFormCloseAndReload}
             mode={formMode}
             groupToEdit={
