@@ -1,17 +1,112 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthContext } from "../contexts/AuthContext";
 import { tokenManager } from "../lib/tokenManager";
 import { login } from "../services/auth";
-import { User } from "../interface/user";
 
 export function useAuth() {
-  // Estados de sesión
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [isExpired, setIsExpired] = useState<boolean>(false);
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  // Obtener estado del contexto
+  const { token, user, isInitialized, isAuthenticated, setAuth, clearAuth } = useAuthContext();
+  
+  // Estados del formulario de login (locales a este hook)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  const router = useRouter();
+
+  // Logout: usa el contexto para limpiar y el tokenManager
+  const logout = useCallback(() => {
+    tokenManager.clearSession();
+    clearAuth();
+    // Limpiar también el formulario y mensajes
+    setEmail("");
+    setPassword("");
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  }, [clearAuth]);
+
+  // Refresh: obtiene y valida el token desde tokenManager y actualiza el contexto
+  const refresh = useCallback(async () => {
+    const validatedSession = tokenManager.validateSession();
+    setAuth(validatedSession.token, validatedSession.user);
+  }, [setAuth]);
+
+  // Manejo del submit del formulario de login
+  const handleLoginSubmit = useCallback(async (e: React.FormEvent, recaptchaToken: string, recaptchaValid: boolean) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    
+    try {
+      if (!recaptchaToken || !recaptchaValid) {
+        setErrorMessage("Por favor completa y valida el reCAPTCHA.");
+        return;
+      }
+
+      // Realizar login
+      const result = await login({ email, password, recaptchaToken });
+      
+      if (result.error) {
+        if (result.details) {
+          console.error("Error en login:", result.details);
+        }
+        setErrorMessage(result.message);
+        return;
+      }
+      
+      if (!result.token) {
+        setErrorMessage("No se recibió un token de autenticación");
+        return;
+      }
+      
+      // Limpiar formulario inmediatamente
+      setEmail("");
+      setPassword("");
+      setErrorMessage(null);
+      setSuccessMessage("Inicio de sesión exitoso. Redirigiendo...");
+      
+      // Actualizar el contexto con los nuevos datos
+      setAuth(result.token, result.user);
+      
+      // Forzar actualización del contexto
+      await refresh();
+      
+      // Redirigir inmediatamente
+      router.push("/dashboard");
+      
+    } catch (error) {
+      setErrorMessage("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
+      console.error("Error iniciando sesión:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [email, password, router, setAuth, refresh]);
+
+  return { 
+    // Estados de sesión del contexto
+    token, 
+    user, 
+    isExpired: !isAuthenticated, // Derived from context
+    logout, 
+    refresh, 
+    isInitialized,
+    // Estados y métodos del formulario de login
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    successMessage,
+    errorMessage,
+    handleLoginSubmit
+  };
+}
   
   // Estados del formulario de login
   const [email, setEmail] = useState("");

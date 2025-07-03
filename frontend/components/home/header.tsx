@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { useHeader } from "../../hooks/useHeader";
 import NavLink from "../header/NavLink";
 import UserDashboardLink from "../header/UserDashboardLink";
@@ -16,20 +16,17 @@ import MobileLogoutButton from "../header/MobileLogoutButton";
 import MobileLoginButton from "../header/MobileLoginButton";
 
 export default function Header() {
-  const { token, user, logout, isInitialized } = useAuth();
+  const { token, user, isInitialized, isAuthenticated, clearAuth } = useAuthContext();
   const { menuOpen, toggleMenu, closeMenu } = useHeader();
   const router = useRouter();
 
   // Función para manejar logout
   const handleLogout = useCallback(() => {
-    logout();
+    clearAuth();
     closeMenu();
     router.push("/auth");
-  }, [logout, closeMenu, router]);
+  }, [clearAuth, closeMenu, router]);
 
-  // Determinar si el usuario está autenticado
-  const isAuthenticated = Boolean(token && user);
-  
   // Mostrar loading hasta que la autenticación esté inicializada
   const showAuthButtons = isInitialized;
 

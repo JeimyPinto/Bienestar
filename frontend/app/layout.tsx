@@ -1,6 +1,7 @@
-  import React from "react";
+import React from "react";
 import "../styles/globals.css";
-import Header from "../components/home/header"
+import AppProviders from "../components/providers/AppProviders";
+import ClientHeader from "../components/home/ClientHeader"
 import Footer from "../components/home/footer";
 
 export const metadata = {
@@ -14,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <meta charSet="UTF-8" />
         <link rel="icon" href="/images/favicon.png" />
@@ -22,9 +23,11 @@ export default function RootLayout({
         <meta name="description" content={metadata.description} />
       </head>
       <body className="antialiased bg-blanco">
-        <Header />
-        {children}
-        <Footer />
+        <AppProviders>
+          <ClientHeader />
+          {children}
+          <Footer />
+        </AppProviders>
       </body>
     </html>
   );
