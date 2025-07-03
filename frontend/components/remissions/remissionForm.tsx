@@ -7,6 +7,8 @@ import { useUsers } from "../../hooks/useUsers";
 import { useRequests } from "../../hooks/useRequests";
 import { useRemissions } from "../../hooks/useRemissions";
 import FormModalHeader from "../../ui/FormModalHeader";
+import FormErrorDisplay from "../../ui/FormErrorDisplay";
+import RemissionRequestDetails from "./remissionRequestDetails";
 
 interface RemissionFormProps {
   dialogRef: React.RefObject<HTMLDialogElement>;
@@ -153,12 +155,7 @@ export default function RemissionForm({
       />
       <form onSubmit={handleSubmit} className="space-y-6 p-6">
         
-        {/* Mostrar error del formulario */}
-        {formError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
-            <p className="text-sm">{formError}</p>
-          </div>
-        )}
+        <FormErrorDisplay error={formError} />
         
         {/* Selección de solicitud */}
         <div>
@@ -178,26 +175,12 @@ export default function RemissionForm({
             ))}
           </select>
         </div>
-        {/* Usuario referido (solo lectura) */}
-        <div>
-          <label className="block font-semibold mb-1">Usuario referido</label>
-          <input
-            type="text"
-            value={selectedRequest?.applicant ? `${selectedRequest.applicant.firstName} ${selectedRequest.applicant.lastName}` : ""}
-            readOnly
-            className="w-full border rounded px-3 py-2 bg-gray-100"
-          />
-        </div>
-        {/* Servicio (solo lectura) */}
-        <div>
-          <label className="block font-semibold mb-1">Servicio</label>
-          <input
-            type="text"
-            value={selectedRequest?.service?.name || ""}
-            readOnly
-            className="w-full border rounded px-3 py-2 bg-gray-100"
-          />
-        </div>
+        
+        {/* Detalles de la solicitud seleccionada */}
+        <RemissionRequestDetails 
+          selectedRequest={selectedRequest}
+          loading={false}
+        />
         {/* Asignar responsable */}
         <div>
           <label className="block font-semibold mb-1">Responsable (ADMIN)</label>

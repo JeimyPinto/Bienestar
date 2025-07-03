@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User } from "../../interface/user"
 import { create, update } from "../../services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
 import FormModalHeader from "../../ui/FormModalHeader";
+import FormErrorDisplay from "../../ui/FormErrorDisplay";
 import { useAuth } from "../../hooks/useAuth";
 import { useGroups } from "../../hooks/useGroups";
-import { useFormInitialization } from "../../hooks/useFormInitialization";
 
 interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement>;
@@ -40,19 +40,31 @@ export default function UserForm(props: UserFormProps) {
     const { token } = useAuth();
     const [formError, setFormError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [newUser, setNewUser] = useState<User>(emptyUser);
+    const [previewImage, setPreviewImage] = useState<string | null>("");
 
-    // Hook para inicialización del formulario
-    const {
-        formData: newUser,
-        setFormData: setNewUser,
-        previewImage,
-        setPreviewImage,
-        resetForm
-    } = useFormInitialization({
-        mode,
-        userToEdit,
-        emptyUser
-    });
+    // Inicializar formulario según el modo
+    useEffect(() => {
+        if (mode === "edit" && userToEdit) {
+            setNewUser({ ...userToEdit });
+            // Mostrar imagen actual si existe
+            if (userToEdit.image) {
+                setPreviewImage(`${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${userToEdit.image}`);
+            } else {
+                setPreviewImage("");
+            }
+        } else if (mode === "create") {
+            setNewUser(emptyUser);
+            setPreviewImage("");
+        }
+    }, [mode, userToEdit]);
+
+    // Función para resetear el formulario
+    const resetForm = () => {
+        setNewUser(emptyUser);
+        setPreviewImage("");
+        setFormError("");
+    };
 
     // Hook para manejo de grupos
     const {
@@ -60,12 +72,12 @@ export default function UserForm(props: UserFormProps) {
         loading: groupsLoading
     } = useGroups({
         token,
-        onError: (error) => setFormError(error)
+        onError: (error: string) => setFormError(error)
     });
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e.target;
-        setNewUser((prevUser) => ({
+        setNewUser((prevUser: User) => ({
             ...prevUser,
             [name]: name === "groupId" && value !== "" ? Number(value) : value,
         }));
@@ -145,7 +157,7 @@ export default function UserForm(props: UserFormProps) {
             <FormModalHeader
                 mode={mode}
                 entityName="Usuario"
-                onClose={onClose}
+                onClose={onClose || (() => {})}
             />
 
             {/* Contenido del formulario */}
@@ -181,18 +193,7 @@ export default function UserForm(props: UserFormProps) {
                     </fieldset>
 
                     {/* Mensaje de error */}
-                    {formError && (
-                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-coral p-4 rounded-lg">
-                            <div className="flex items-center">
-                                <svg className="w-5 h-5 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
-                                    />
-                                </svg>
-                                <p className="text-coral font-medium">{formError}</p>
-                            </div>
-                        </div>
-                    )}
+                    <FormErrorDisplay error={formError} />
 
                     {/* Botones de acción */}
                     <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">

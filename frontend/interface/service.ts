@@ -22,18 +22,6 @@ export interface Service {
   updatedAt: string;
   file?: File | null; // opcional para manejar archivos
 }
-
-export interface ServiceFormProps {
-  dialogRef: React.RefObject<HTMLDialogElement>;
-  closeDialog: () => void;
-  onClose: () => void;
-  mode: "create" | "edit";
-  serviceToEdit?: Service;
-  successMessage?: string;
-  setSuccessMessage?: (msg: string) => void;
-  setErrorMessage?: (msg: string) => void;
-  errorMessage?: string;
-}
 export interface ServiceTableProps {
   services: Service[];
   loading: boolean;

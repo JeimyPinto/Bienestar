@@ -6,6 +6,7 @@ import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
 import FormModalHeader from "../../ui/FormModalHeader";
+import FormErrorDisplay from "../../ui/FormErrorDisplay";
 import  Spinner  from "../../ui/spinner";
 
 const emptyRequest: Request = {
@@ -190,18 +191,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                     </fieldset>
 
                     {/* Mensaje de error */}
-                    {formError && (
-                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-coral p-4 rounded-lg">
-                            <div className="flex items-center">
-                                <svg className="w-5 h-5 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
-                                    />
-                                </svg>
-                                <p className="text-coral font-medium">{formError}</p>
-                            </div>
-                        </div>
-                    )}
+                    <FormErrorDisplay error={formError} />
 
                     {/* Botones de acción */}
                     <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">

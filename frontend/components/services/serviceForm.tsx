@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { ServiceFormProps, Service, Area } from "../../interface/index"
-import { create, update } from "../../services/service"
+import { Service, Area } from "../../interface/service"
 import ServiceFormMainFields from "./serviceFormMainFields";
 import ServiceFormAdminFields from "./serviceFormAdminFields";
 import FormModalHeader from "../../ui/FormModalHeader";
+import FormErrorDisplay from "../../ui/FormErrorDisplay";
 import { useAuth } from "../../hooks/useAuth";
+import { useServices } from "../../hooks/useServices";
 
 const emptyService: Service = {
     id: "",
@@ -19,6 +20,18 @@ const emptyService: Service = {
     updatedAt: "",
 };
 
+interface ServiceFormProps {
+  dialogRef: React.RefObject<HTMLDialogElement>;
+  closeDialog: () => void;
+  onClose: () => void;
+  mode: "create" | "edit";
+  serviceToEdit?: Service;
+  successMessage?: string;
+  setSuccessMessage?: (msg: string) => void;
+  setErrorMessage?: (msg: string) => void;
+  errorMessage?: string;
+}
+
 export default function ServiceForm(props: ServiceFormProps) {
     const { dialogRef, closeDialog, onClose, mode, serviceToEdit } = props;
     const { token, user, isExpired } = useAuth();
@@ -26,6 +39,14 @@ export default function ServiceForm(props: ServiceFormProps) {
     const [previewImage, setPreviewImage] = useState<string>("");
     const [formError, setFormError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    // Usar hook useServices para operaciones CRUD
+    const { createService, updateService } = useServices({
+        token,
+        onError: (message) => {
+            setFormError(message || "Error en operaciones de servicio.");
+        }
+    });
 
     // Mostrar modal automáticamente al montar
     useEffect(() => {
@@ -90,39 +111,39 @@ export default function ServiceForm(props: ServiceFormProps) {
         setIsSubmitting(true);
         
         try {
-            let responseData;
+            let result;
             if (mode === "create") {
                 const { file, ...serviceData } = newService;
                 serviceData.creatorId = user?.id ? Number(user.id) : 0;
                 // No enviar image si está vacío o null
                 if (!newService.image) delete (serviceData as Partial<typeof newService>).image;
-                responseData = await create(
+                result = await createService(
                     serviceData,
-                    file ? file : undefined,
-                    token
+                    file ? file : undefined
                 );
             } else if (mode === "edit") {
                 // Solo enviar image si existe y no es null
                 const { ...serviceData } = newService;
                 if (!newService.image) delete (serviceData as Partial<typeof newService>).image;
-                responseData = await update(
+                result = await updateService(
                     newService.id,
                     serviceData,
-                    newService.file ? newService.file : undefined,
-                    token
+                    newService.file ? newService.file : undefined
                 );
             }
-            if (!responseData) {
+            
+            if (!result) {
                 setFormError("No se pudo procesar la solicitud. Intenta de nuevo.");
                 return;
             }
-            if (responseData.error) {
-                setFormError(responseData.message || responseData.error || "Error al guardar el servicio");
-                props.setErrorMessage?.(responseData.message || responseData.error || "Error al guardar el servicio");
+            
+            if (result.error) {
+                setFormError(result.message || "Error al guardar el servicio");
+                props.setErrorMessage?.(result.message || "Error al guardar el servicio");
                 return;
             }
             
-            props.setSuccessMessage?.(responseData.message || "Servicio guardado correctamente");
+            props.setSuccessMessage?.(result.message || "Servicio guardado correctamente");
             setTimeout(() => {
                 onClose?.();
                 closeDialog();
@@ -219,18 +240,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                     </fieldset>
                     
                     {/* Mensaje de error */}
-                    {formError && (
-                        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-coral p-4 rounded-lg">
-                            <div className="flex items-center">
-                                <svg className="w-5 h-5 text-coral mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
-                                    />
-                                </svg>
-                                <p className="text-coral font-medium">{formError}</p>
-                            </div>
-                        </div>
-                    )}
+                    <FormErrorDisplay error={formError} />
                     
                     {/* Botones de acción */}
                     <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">

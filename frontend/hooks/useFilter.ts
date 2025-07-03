@@ -12,23 +12,6 @@ interface UseFilterReturn<T> {
   filteredItems: T[];
   clearFilter: () => void;
 }
-
-/**
- * Hook personalizado para manejar filtrado de listas
- * @param items - Array de elementos a filtrar
- * @param filterFn - Función de filtrado personalizada
- * @param initialFilter - Valor inicial del filtro
- * @returns Estado y funciones de filtrado
- * 
- * @example
- * ```tsx
- * const { filter, setFilter, filteredItems, clearFilter } = useFilter({
- *   items: users,
- *   filterFn: filterUsers,
- *   initialFilter: ""
- * });
- * ```
- */
 export const useFilter = <T>({
   items,
   filterFn,

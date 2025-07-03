@@ -1,9 +1,18 @@
 import React, { useRef, useState } from "react";
-import { Remission, RemissionTableProps } from "../../interface/remission";
+import { Remission } from "../../interface/remission";
+import { useFilter } from "../../hooks/useFilter";
 import RemissionForm from "./remissionForm";
 import RemissionTableDesktop from "./remissionTableDesktop";
 import RemissionCardMobile from "./remissionCardMobile";
 import RemissionTableFilterBar from "./remissionTableFilterBar";
+
+export interface RemissionTableProps {
+  remissions: Remission[];
+  setRemissions?: (remissions: Remission[]) => void;
+  setSuccessMessages: (msgs: string[] | ((prev: string[]) => string[])) => void;
+  loading?: boolean;
+  onRemissionUpdate?: () => void;
+}
 
 export default function RemissionTable({
   remissions,
@@ -13,8 +22,38 @@ export default function RemissionTable({
 }: RemissionTableProps) {
   const [selectedRemission, setSelectedRemission] = useState<Remission | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [filter, setFilter] = useState("");
   const remissionEditFormRef = useRef<HTMLDialogElement>(null);
+
+  // Función de filtrado para remisiones
+  const filterRemissions = (remissions: Remission[], filter: string) => {
+    if (!filter.trim()) return remissions;
+    
+    return remissions.filter(remission => {
+      const referred = remission.referredUser 
+        ? `${remission.referredUser.firstName} ${remission.referredUser.lastName}`.toLowerCase() 
+        : "";
+      const assigned = remission.assignedUser 
+        ? `${remission.assignedUser.firstName} ${remission.assignedUser.lastName}`.toLowerCase() 
+        : "";
+      const service = remission.service 
+        ? remission.service.name.toLowerCase() 
+        : "";
+      
+      const filterLower = filter.toLowerCase();
+      return (
+        referred.includes(filterLower) ||
+        assigned.includes(filterLower) ||
+        service.includes(filterLower)
+      );
+    });
+  };
+
+  // Hook de filtrado
+  const { filter, setFilter, filteredItems: filteredRemissions } = useFilter({
+    items: remissions,
+    filterFn: filterRemissions,
+    initialFilter: ""
+  });
 
   // Mostrar el modal cuando se selecciona una remisión
   React.useEffect(() => {
@@ -27,20 +66,6 @@ export default function RemissionTable({
     setSelectedRemission(remission);
     setIsFormOpen(true);
   }
-
-  // Filtrado local por usuario, encargado o servicio
-  const filteredRemissions = filter.trim()
-    ? remissions.filter(remission => {
-        const referred = remission.referredUser ? `${remission.referredUser.firstName} ${remission.referredUser.lastName}`.toLowerCase() : "";
-        const assigned = remission.assignedUser ? `${remission.assignedUser.firstName} ${remission.assignedUser.lastName}`.toLowerCase() : "";
-        const service = remission.service ? remission.service.name.toLowerCase() : "";
-        return (
-          referred.includes(filter.toLowerCase()) ||
-          assigned.includes(filter.toLowerCase()) ||
-          service.includes(filter.toLowerCase())
-        );
-      })
-    : remissions;
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 py-8">

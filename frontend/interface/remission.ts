@@ -18,14 +18,6 @@ export interface Remission {
   assignedUser?: User | null;
   service?: Service;
 }
-
-export interface RemissionTableProps {
-  remissions: Remission[];
-  setRemissions?: (remissions: Remission[]) => void;
-  setSuccessMessages: (msgs: string[] | ((prev: string[]) => string[])) => void;
-  loading?: boolean;
-  onRemissionUpdate?: () => void;
-}
 export interface RemissionCardMobileProps {
   remissions: Remission[];
   loading?: boolean;
