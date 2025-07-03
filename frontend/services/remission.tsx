@@ -68,19 +68,3 @@ export async function update(id: string, remission: Remission, token?: string) {
   }
   return { error: false, ...data };
 }
-
-export async function deleteRemission(id: string, token?: string) {
-  const res = await fetch(`${url}/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-    credentials: "include",
-  });
-  const data = await res.json();
-  if (!res.ok || data.details) {
-    return { error: true, message: data.message, details: data.details };
-  }
-  return { error: false, ...data };
-}

@@ -7,19 +7,25 @@ import SuccessMessage from "../../ui/successMessage";
 import RemissionTable from "../../components/remissions/remissionTable";
 import RemissionForm from "../../components/remissions/remissionForm";
 import SectionHeader from "../../ui/sectionHeader";
-import { getAll } from "../../services/remission"
 import { useAuth } from "../../hooks/useAuth";
+import { useRemissions } from "../../hooks/useRemissions";
+import { useMessages } from "../../hooks/useMessages";
 
 export default function RemissiontPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [remissionToEdit, setRemissionToEdit] = useState<Remission | undefined>(undefined);
-    const [successMessages, setSuccessMessages] = useState<string[]>([]);
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [remissions, setRemissions] = useState<Remission[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    
     const { token } = useAuth();
+    const { errorMessage, setErrorMessage } = useMessages();
+    const { remissions, loading, refreshRemissions } = useRemissions({
+        token,
+        onError: (message) => setErrorMessage(message || "Error al cargar remisiones")
+    });
+
+    // Para manejar múltiples mensajes de éxito (como estaba antes)
+    const [successMessages, setSuccessMessages] = useState<string[]>([]);
 
     const openCreateDialog = () => {
         setMode("create");
@@ -33,30 +39,10 @@ export default function RemissiontPage() {
         dialogRef.current?.close();
     };
 
-    // Cargar remisiones
-    const fetchRemissions = React.useCallback(async () => {
-        setLoading(true);
-        const res = await getAll(token ?? undefined);
-        if (res.error) {
-            setErrorMessage(res.message);
-            setRemissions(res.remissions || []);
-        } else {
-            setErrorMessage(""); // Limpiar errores si todo va bien
-            setRemissions(res.remissions || []);
-        }
-        setLoading(false);
-    }, [token]);
-
-    React.useEffect(() => {
-        if (token) {
-            fetchRemissions();
-        }
-    }, [token, fetchRemissions]);
-
     // Handler para éxito en RemissionForm
     const handleRemissionFormSuccess = (msg?: string) => {
         if (msg) setSuccessMessages((prev) => [...prev, msg]);
-        fetchRemissions();
+        refreshRemissions();
         closeDialog();
     };
 
@@ -84,7 +70,7 @@ export default function RemissiontPage() {
                 remissions={remissions}
                 setSuccessMessages={setSuccessMessages}
                 loading={loading}
-                onRemissionUpdate={fetchRemissions}
+                onRemissionUpdate={refreshRemissions}
             />
             {isFormOpen && (
                 <RemissionForm

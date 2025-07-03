@@ -26,15 +26,6 @@ export interface RemissionTableProps {
   loading?: boolean;
   onRemissionUpdate?: () => void;
 }
-
-export interface RemissionFormProps {
-  dialogRef: React.RefObject<HTMLDialogElement>;
-  onClose: (msg?: string) => void;
-  mode: "create" | "edit";
-  remissionToEdit?: Remission;
-  setSuccessMessages: (msgs: string[] | ((prev: string[]) => string[])) => void;
-}
-
 export interface RemissionCardMobileProps {
   remissions: Remission[];
   loading?: boolean;

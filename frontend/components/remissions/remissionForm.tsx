@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Remission } from "../../interface/remission";
 import { Request } from "../../interface/request";
-import { User } from "../../interface/user";
-import { getAllActive, getById as getRequestById } from "../../services/request";
-import { getAllByRole } from "../../services/user";
-import { create, update } from "../../services/remission";
-import { ROLES } from "../constants/roles";
-import {RemissionFormProps} from "../../interface/remission";
+import { ROLES } from "../../constants/roles";
 import { useAuth } from "../../hooks/useAuth";
+import { useUsers } from "../../hooks/useUsers";
+import { useRequests } from "../../hooks/useRequests";
+import { useRemissions } from "../../hooks/useRemissions";
+import FormModalHeader from "../../ui/FormModalHeader";
 
+interface RemissionFormProps {
+  dialogRef: React.RefObject<HTMLDialogElement>;
+  onClose: (msg?: string) => void;
+  mode: "create" | "edit";
+  remissionToEdit?: Remission;
+  setSuccessMessages: (msgs: string[] | ((prev: string[]) => string[])) => void;
+}
 
 export default function RemissionForm({
   dialogRef,
@@ -18,50 +24,59 @@ export default function RemissionForm({
   setSuccessMessages,
 }: RemissionFormProps) {
   const { token } = useAuth();
-  const [requests, setRequests] = useState<Request[]>([]);
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(remissionToEdit?.requestId || null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
-  const [admins, setAdmins] = useState<User[]>([]);
   const [assignedUserId, setAssignedUserId] = useState<number | null>(remissionToEdit?.assignedUserId || null);
   const [endDate, setEndDate] = useState<string>(remissionToEdit?.endDate || "");
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string>("");
+  
+  // Usar hook useUsers para cargar administradores
+  const { users: admins } = useUsers({
+    token,
+    mode: 'byRole',
+    role: ROLES.ADMIN,
+    onError: (message) => {
+      setFormError(message || "No hay usuarios administradores disponibles para asignar a la remisión.");
+    }
+  });
+
+  // Usar hook useRequests para cargar requests activas
+  const { requests } = useRequests({
+    token,
+    mode: 'allActive',
+    onError: (message) => {
+      setFormError(message || "Error al cargar las solicitudes activas.");
+    }
+  });
+
+  // Usar hook useRequests para obtener request específica por ID
+  const { requests: selectedRequestArray } = useRequests({
+    token,
+    mode: 'byId',
+    requestId: selectedRequestId || undefined,
+    onError: (message) => {
+      setFormError(message || "Error al cargar los detalles de la solicitud.");
+    }
+  });
+
+  // Usar hook useRemissions para operaciones CRUD
+  const { createRemission, updateRemission } = useRemissions({
+    token,
+    onError: (message) => {
+      setFormError(message || "Error en operaciones de remisión.");
+    }
+  });
 
   // startDate: para crear es hoy, para editar es el de la remisión
   const startDate = remissionToEdit?.startDate || new Date().toISOString().slice(0, 10);
 
-  // Cargar requests activas
+  // Actualizar selectedRequest cuando cambie selectedRequestArray
   useEffect(() => {
-    if (token) {
-      getAllActive(token).then(res => {
-        if (res.requests) setRequests(res.requests);
-      });
+    if (selectedRequestArray && selectedRequestArray.length > 0) {
+      setSelectedRequest(selectedRequestArray[0]);
     }
-  }, [token]);
-
-  // Cargar admins
-  useEffect(() => {
-    if (token) {
-      getAllByRole(ROLES.ADMIN, token).then(res => {
-        if (res.users) {
-          setAdmins(res.users);
-          setFormError(""); // Limpiar error si se cargan usuarios correctamente
-        } else if (res.error) {
-          // Si no hay usuarios admin, mostrar error específico en el formulario
-          setFormError(res.message || "No hay usuarios administradores disponibles para asignar a la remisión.");
-        }
-      });
-    }
-  }, [token]);
-
-  // Cuando selecciona una request, obtener sus datos
-  useEffect(() => {
-    if (selectedRequestId && token) {
-      getRequestById(selectedRequestId, token).then(res => {
-        if (res.request) setSelectedRequest(res.request);
-      });
-    }
-  }, [selectedRequestId, token]);
+  }, [selectedRequestArray]);
 
   // Handler para guardar
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,9 +114,9 @@ export default function RemissionForm({
 
       let result;
       if (mode === "create") {
-        result = await create(remissionData, token || undefined);
+        result = await createRemission(remissionData);
       } else {
-        result = await update(remissionToEdit!.id!.toString(), remissionData, token || undefined);
+        result = await updateRemission(remissionToEdit!.id!.toString(), remissionData);
       }
 
       if (result.error) {
@@ -122,9 +137,21 @@ export default function RemissionForm({
   };
 
   return (
-    <dialog ref={dialogRef} className="rounded-lg shadow-xl p-6 bg-blanco w-full max-w-lg mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <h2 className="text-2xl font-bold mb-4">{mode === "create" ? "Crear Remisión" : "Editar Remisión"}</h2>
+    <dialog ref={dialogRef} className="rounded-lg shadow-xl bg-blanco w-full max-w-lg mx-auto overflow-hidden">
+      <FormModalHeader
+        mode={mode}
+        entityName="Remisión"
+        createTitle="Crear Nueva Remisión"
+        editTitle="Editar Remisión"
+        createDescription="Complete la información para crear una nueva remisión de servicio"
+        editDescription="Modifique los campos necesarios de la remisión"
+        onClose={() => onClose()}
+        icon={{
+          create: "M12 4v16m8-8H4",
+          edit: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+        }}
+      />
+      <form onSubmit={handleSubmit} className="space-y-6 p-6">
         
         {/* Mostrar error del formulario */}
         {formError && (
