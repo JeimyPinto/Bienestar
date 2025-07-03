@@ -117,19 +117,10 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                         </th>
                         <th 
                             className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro cursor-pointer select-none hover:bg-azul-cielo/30 transition-colors duration-200 group"
-                            onClick={() => handleSort("groupId")}
-                        >
-                            <div className="flex items-center">
-                                Grupo ID
-                                <SortIcon column="groupId" sortColumn={sortColumn} sortOrder={sortOrder} />
-                            </div>
-                        </th>
-                        <th 
-                            className="px-3 py-4 text-left text-xs font-semibold text-azul-oscuro cursor-pointer select-none hover:bg-azul-cielo/30 transition-colors duration-200 group"
                             onClick={() => handleSort("group")}
                         >
                             <div className="flex items-center">
-                                Nombre del Grupo
+                                Grupo
                                 <SortIcon column="group" sortColumn={sortColumn} sortOrder={sortOrder} />
                             </div>
                         </th>
@@ -138,7 +129,7 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                 <tbody className="bg-white divide-y divide-azul-cielo/20">
                     {loading ? (
                         <tr>
-                            <td colSpan={13} className="py-12 text-center">
+                            <td colSpan={12} className="py-12 text-center">
                                 <div className="flex flex-col items-center">
                                     <Spinner className="text-primary mb-3" />
                                     <span className="text-azul-marino/70 font-medium">Cargando usuarios...</span>
@@ -147,7 +138,7 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                         </tr>
                     ) : users.length === 0 ? (
                         <tr>
-                            <td colSpan={13} className="py-12 text-center">
+                            <td colSpan={12} className="py-12 text-center">
                                 <div className="flex flex-col items-center">
                                     <span className="text-6xl mb-4 opacity-50">👥</span>
                                     <span className="text-azul-oscuro font-semibold text-lg mb-2">No hay usuarios para mostrar</span>
@@ -189,13 +180,13 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                                     {user.email}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-azul-marino/80">
-                                    <span className="px-2 py-1 bg-info/10 text-info rounded-full text-xs font-medium">
-                                        {user.documentType === "CC" ? "C.C." :
-                                         user.documentType === "CE" ? "C.E." :
+                                    <span className="px-2 py-1 bg-azul-cielo/20 text-azul-oscuro rounded-full text-xs font-medium">
+                                        {user.documentType === "CC" ? "Cédula de Ciudadanía" :
+                                         user.documentType === "CE" ? "Cédula de Extranjería" :
                                          user.documentType === "PA" ? "Pasaporte" :
-                                         user.documentType === "RC" ? "R.C." :
-                                         user.documentType === "TI" ? "T.I." :
-                                         user.documentType === "PEP" ? "PEP" :
+                                         user.documentType === "RC" ? "Registro Civil" :
+                                         user.documentType === "TI" ? "Tarjeta de Identidad" :
+                                         user.documentType === "PEP" ? "Permiso Especial de Permanencia" :
                                          user.documentType}
                                     </span>
                                 </td>
@@ -207,10 +198,10 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                                 </td>
                                 <td className="px-3 py-3 text-sm">
                                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                        user.role === "admin" ? "bg-warning/20 text-warning" :
-                                        user.role === "instructor" ? "bg-info/20 text-info" :
-                                        user.role === "superadmin" ? "bg-danger/20 text-danger" :
-                                        "bg-primary/20 text-primary"
+                                        user.role === "admin" ? "bg-warning text-white" :
+                                        user.role === "instructor" ? "bg-info text-white" :
+                                        user.role === "superadmin" ? "bg-danger text-white" :
+                                        "bg-primary text-white"
                                     }`}>
                                         {user.role}
                                     </span>
@@ -218,8 +209,8 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                                 <td className="px-3 py-3 text-sm">
                                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                                         user.status === "activo" 
-                                            ? "bg-success/20 text-success" 
-                                            : "bg-danger/20 text-danger"
+                                            ? "bg-success text-white" 
+                                            : "bg-danger text-white"
                                     }`}>
                                         {user.status === "activo" ? "Activo" : "Inactivo"}
                                     </span>
@@ -229,9 +220,6 @@ const UserTableDesktop: React.FC<UserTableDesktopProps> = ({
                                 </td>
                                 <td className="px-3 py-3 text-sm text-azul-marino/70">
                                     {new Date(user.updatedAt).toLocaleDateString("es-CO")}
-                                </td>
-                                <td className="px-3 py-3 text-sm text-azul-marino/80 font-mono">
-                                    {user.groupId ?? "-"}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-azul-marino/80 max-w-xs truncate">
                                     {user.group?.programName ?? "-"}
