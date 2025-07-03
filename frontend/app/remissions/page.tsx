@@ -2,9 +2,10 @@
 
 import React, { useState, useRef } from "react";
 import { Remission } from "../../interface/remission";
-import { ErrorMessage, SuccessMessage } from "../../ui";
-import RemissionTable from "./remissionTable";
-import RemissionForm from "./remissionForm";
+import ErrorMessage from "../../ui/errorMessage";
+import SuccessMessage from "../../ui/successMessage";
+import RemissionTable from "../../components/remissions/remissionTable";
+import RemissionForm from "../../components/remissions/remissionForm";
 import SectionHeader from "../../ui/sectionHeader";
 import { getAll } from "../../services/remission"
 import { useAuth } from "../../hooks/useAuth";

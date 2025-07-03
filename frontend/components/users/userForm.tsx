@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserFormProps, User } from "../../interface/index"
+import { User } from "../../interface/user"
 import { create, update } from "../../services/user";
 import UserFormPersonalInfoFields from "./userFormPersonalInfoFields";
 import UserFormAdminFields from "./userFormAdminFields";
@@ -8,6 +8,15 @@ import FormModalHeader from "../../ui/FormModalHeader";
 import { useAuth } from "../../hooks/useAuth";
 import { useGroups } from "../../hooks/useGroups";
 import { useFormInitialization } from "../../hooks/useFormInitialization";
+
+interface UserFormProps {
+    dialogRef: React.RefObject<HTMLDialogElement>;
+    onClose?: () => void;
+    mode: "create" | "edit";
+    setErrorMessage?: (msg: string) => void;
+    setSuccessMessage?: (msg: string) => void;
+    userToEdit?: User;
+}
 
 const emptyUser: User = {
     id: 0,

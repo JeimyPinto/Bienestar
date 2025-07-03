@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import SectionHeader from "../../ui/sectionHeader";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
-import GroupTable from "../components/group/groupTable";
+import GroupTable from "../../components/group/groupTable";
 import { Group } from "../../interface/group";
 import GroupForm from "../../components/group/groupForm";
 import { useAuth } from "../../hooks/useAuth";
@@ -18,7 +18,7 @@ export default function GroupPage() {
     // Usar el hook useGroups para manejar el estado de grupos
     const { groups, setGroups, refreshGroups } = useGroups({
         token,
-        onError: (error) => setErrorMessage(error)
+        onError: (error: string) => setErrorMessage(error)
     });
 
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -59,7 +59,6 @@ export default function GroupPage() {
             {isFormOpen && (
                 <GroupForm
                     dialogRef={dialogRef}
-                    closeDialog={handleFormClose}
                     onClose={handleFormClose}
                     mode={mode}
                     groupToEdit={groupToEdit}

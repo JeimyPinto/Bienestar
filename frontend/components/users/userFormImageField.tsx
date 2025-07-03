@@ -1,6 +1,14 @@
 import React from "react";
 import Image from "next/image";
-import { UserFormImageFieldProps } from "../../interface/index";
+import { User } from "../../interface/user";
+
+interface UserFormImageFieldProps {
+  mode: "edit" | "create";
+  newUser: User;
+  previewImage: string | null;
+  setNewUser: React.Dispatch<React.SetStateAction<User>>;
+  setPreviewImage: React.Dispatch<React.SetStateAction<string | null>>;
+}
 
 export default function UserFormImageField({ mode, newUser, previewImage, setNewUser, setPreviewImage }: UserFormImageFieldProps) {
   return (
