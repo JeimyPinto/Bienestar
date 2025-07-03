@@ -2,7 +2,6 @@
 
 import HeroSection from "../components/home/heroSection";
 import ContactSection from "../components/home/contactSection";
-import ServicesDisplaySection from "../components/home/servicesDisplaySection";
 
 export default function Page() {
   return (
@@ -12,8 +11,6 @@ export default function Page() {
 
       {/* Contenido Principal */}
       <main className="container mx-auto px-4 py-8 space-y-16">
-        {/* Sección de Servicios - Destacada */}
-        <ServicesDisplaySection />
 
         {/* Sección de Contacto - Centrada y Destacada */}
         <ContactSection />
