@@ -7,14 +7,14 @@ export interface UseMessagesReturn {
   
   // Funciones
   showSuccess: (message: string) => void;
-  showError: (message: string) => void;
+  showError: (message?: string) => void;
   clearMessages: () => void;
   clearSuccess: () => void;
   clearError: () => void;
   
   // Para compatibilidad con código existente
   setSuccessMessage: (message: string) => void;
-  setErrorMessage: (message: string) => void;
+  setErrorMessage: (message?: string) => void;
 }
 
 export const useMessages = (): UseMessagesReturn => {
@@ -26,8 +26,8 @@ export const useMessages = (): UseMessagesReturn => {
     setErrorMessageState(""); // Limpiar error al mostrar éxito
   }, []);
 
-  const showError = useCallback((message: string) => {
-    setErrorMessageState(message);
+  const showError = useCallback((message?: string) => {
+    setErrorMessageState(message || "Error desconocido");
     setSuccessMessageState(""); // Limpiar éxito al mostrar error
   }, []);
 
@@ -49,8 +49,8 @@ export const useMessages = (): UseMessagesReturn => {
     setSuccessMessageState(message);
   }, []);
 
-  const setErrorMessage = useCallback((message: string) => {
-    setErrorMessageState(message);
+  const setErrorMessage = useCallback((message?: string) => {
+    setErrorMessageState(message || "Error desconocido");
   }, []);
 
   return {
