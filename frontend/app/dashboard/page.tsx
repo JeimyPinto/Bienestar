@@ -12,13 +12,12 @@ import { useMessages } from "../../hooks/useMessages";
 
 export default function DashboardPage() {
   const { successMessage, clearSuccess, showSuccess } = useMessages();
-  const { token, user: authUser } = useAuth();
+  const { token } = useAuth();
   
   // Obtener el usuario completo desde la base de datos
   const { users: [currentUser], loading: userLoading } = useUsers({
     token,
-    mode: 'byId',
-    userId: authUser?.id
+    mode: 'myProfile'
   });
 
   const [isFormOpen, setIsFormOpen] = useState(false);

@@ -212,3 +212,28 @@ export async function getById(id: number, token?: string) {
         };
     }
 }
+
+export async function getMyProfile(token?: string) {
+    try {
+        const res = await fetch(`${url}/me`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await res.json();
+        if (!res.ok || data.details) {
+            return { error: true, message: data.message, details: data.details };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        console.error("Error en la función getMyProfile:" + error)
+        return {
+            error: true,
+            message: "Error interno del servidor",
+            details: error
+        };
+    }
+}

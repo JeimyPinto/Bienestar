@@ -6,13 +6,14 @@ import {
   getAllPaginated, 
   getAllByRole, 
   getById, 
+  getMyProfile,
   create, 
   update 
 } from "../services/user";
 interface UseUsersOptions {
   token: string | null;
   initialLimit?: number;
-  mode?: 'all' | 'allActive' | 'paginated' | 'byRole' | 'byId';
+  mode?: 'all' | 'allActive' | 'paginated' | 'byRole' | 'byId' | 'myProfile';
   role?: string; // Requerido cuando mode es 'byRole'
   userId?: number; // Requerido cuando mode es 'byId'
   onError?: (message?: string) => void;
@@ -84,6 +85,13 @@ export const useUsers = ({
             res.users = [res.user];
           }
           break;
+        case 'myProfile':
+          res = await getMyProfile(token);
+          // Para myProfile, convertir el usuario único en un array
+          if (!res.error && res.user) {
+            res.users = [res.user];
+          }
+          break;
         default:
           return { error: true, message: "Modo no válido" };
       }
@@ -125,7 +133,8 @@ export const useUsers = ({
       (mode === 'allActive' && token) ||
       (mode === 'paginated' && token) ||
       (mode === 'byRole' && token && role) ||
-      (mode === 'byId' && token && userId);
+      (mode === 'byId' && token && userId) ||
+      (mode === 'myProfile' && token);
     
     if (shouldLoad) {
       loadUsers();

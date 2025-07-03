@@ -139,6 +139,32 @@ class UsuarioController {
       next(error);
     }
   }
+
+  async getMyProfile(req, res, next) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        const error = new Error("Usuario no autenticado");
+        error.status = 401;
+        throw error;
+      }
+
+      const user = await userService.getUserById(userId);
+      if (!user) {
+        const error = new Error("Usuario no encontrado");
+        error.status = 404;
+        error.details = { user: null };
+        throw error;
+      }
+
+      res.status(200).json({
+        message: "Perfil obtenido correctamente",
+        user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UsuarioController();

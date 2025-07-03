@@ -54,6 +54,13 @@ router.get(
     removeSensitiveFields
 );
 
+// Obtener información del usuario autenticado (perfil propio)
+router.get(
+    "/me",
+    userController.getMyProfile,
+    removeSensitiveFields
+);
+
 // Obtener usuario por ID
 router.get(
     "/:id",
