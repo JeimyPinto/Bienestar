@@ -92,10 +92,23 @@ export function useAuth() {
       setErrorMessage(null);
       setSuccessMessage("Inicio de sesión exitoso. Redirigiendo...");
       
+      // Asegurar que la sesión esté guardada (el servicio ya lo hace, pero por seguridad)
+      tokenManager.saveSession(result.token, result.user);
+      
       // Usar directamente los datos del resultado del login
       setToken(result.token);
       setUser(result.user);
       setIsExpired(false);
+      
+      // Actualizar estado de inicializado si no lo está
+      if (!isInitialized) {
+        setIsInitialized(true);
+      }
+      
+      // Forzar una actualización inmediata del estado
+      setTimeout(() => {
+        refresh();
+      }, 100);
       
       // Redirigir inmediatamente sin esperar
       router.push("/dashboard");
@@ -106,11 +119,22 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  }, [email, password, router]); // Remover refresh de dependencias
+  }, [email, password, router, isInitialized, refresh]); // Incluir todas las dependencias
 
-  // Cargar al montar
+  // Cargar al montar y escuchar cambios en localStorage
   useEffect(() => {
     refresh();
+    
+    // Escuchar cambios en localStorage para sincronizar pestañas
+    const handleStorageChange = () => {
+      refresh();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [refresh]);
 
   return { 

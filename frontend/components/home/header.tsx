@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,9 +16,33 @@ import MobileLogoutButton from "../header/MobileLogoutButton";
 import MobileLoginButton from "../header/MobileLoginButton";
 
 export default function Header() {
-  const { token, user, logout } = useAuth();
+  const { token, user, logout, isInitialized } = useAuth();
   const { menuOpen, toggleMenu, closeMenu } = useHeader();
   const router = useRouter();
+
+  // Función para manejar logout
+  const handleLogout = useCallback(() => {
+    logout();
+    closeMenu();
+    router.push("/auth");
+  }, [logout, closeMenu, router]);
+
+  // Determinar si el usuario está autenticado
+  const isAuthenticated = Boolean(token && user);
+  
+  // Mostrar loading hasta que la autenticación esté inicializada
+  const showAuthButtons = isInitialized;
+
+  // Función para debug del estado de auth
+  React.useEffect(() => {
+    console.log("Header Auth State:", { 
+      token: !!token, 
+      user: !!user, 
+      isAuthenticated, 
+      isInitialized,
+      showAuthButtons 
+    });
+  }, [token, user, isAuthenticated, isInitialized, showAuthButtons]);
 
   return (
     <header className="bg-gradient-corporate shadow-xl border-b border-azul-cielo/20 backdrop-blur-sm sticky top-0 z-30">
@@ -89,19 +113,17 @@ export default function Header() {
               🛠️ Servicios
             </NavLink>
 
-            {token ? (
-              <>
-                <UserDashboardLink user={user} onClick={closeMenu} />
-                <LogoutButton
-                  onClick={() => {
-                    logout();
-                    closeMenu();
-                    router.push("/auth");
-                  }}
-                />
-              </>
+            {showAuthButtons ? (
+              isAuthenticated ? (
+                <>
+                  <UserDashboardLink user={user} onClick={closeMenu} />
+                  <LogoutButton onClick={handleLogout} />
+                </>
+              ) : (
+                <LoginButton onClick={closeMenu} />
+              )
             ) : (
-              <LoginButton onClick={closeMenu} />
+              <div className="w-20 h-10 animate-pulse bg-white/10 rounded-lg" />
             )}
           </nav>
         </div>
@@ -142,16 +164,10 @@ export default function Header() {
                     Servicios
                   </MobileNavItem>
 
-                  {token ? (
+                  {isAuthenticated ? (
                     <>
                       <MobileUserDashboard user={user} onClick={closeMenu} />
-                      <MobileLogoutButton
-                        onClick={() => {
-                          logout();
-                          closeMenu();
-                          router.push("/auth");
-                        }}
-                      />
+                      <MobileLogoutButton onClick={handleLogout} />
                     </>
                   ) : (
                     <MobileLoginButton onClick={closeMenu} />

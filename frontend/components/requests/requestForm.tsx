@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useRequests } from "../../hooks/useRequests";
 import { Request } from "../../interface/request";
+import { ROLES } from "../../constants/roles";
 import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
@@ -56,9 +57,15 @@ export default function RequestsForm(props: RequestsFormProps) {
         if (mode === "edit" && requestToEdit) {
             setNewRequest(requestToEdit);
         } else if (mode === "create") {
-            setNewRequest(emptyRequest);
+            const initialRequest = { ...emptyRequest };
+            // Si es un usuario normal, establecer automáticamente su userId
+            if (user && user.role === ROLES.USER) {
+                initialRequest.userId = user.id;
+                initialRequest.createdBy = user.id;
+            }
+            setNewRequest(initialRequest);
         }
-    }, [mode, requestToEdit]);
+    }, [mode, requestToEdit, user]);
 
     // Mostrar loader si no hay token o user
     if (!token || !user) {
@@ -97,7 +104,7 @@ export default function RequestsForm(props: RequestsFormProps) {
         if (typeof requestData.status === "string") {
             requestData.status = requestData.status === "activo";
         }
-        if (user && user.role === "user") {
+        if (user && user.role === ROLES.USER) {
             requestData.userId = Number(user.id);
         }
         // Siempre asignar el creador de la solicitud
@@ -154,7 +161,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                         <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
                             <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
                                 <span className="text-xl">👤</span>
-                                {user.role === "user" ? "Seleccionar Servicio" : "Datos del Solicitante y Servicio"}
+                                {user.role === ROLES.USER ? "Seleccionar Servicio" : "Datos del Solicitante y Servicio"}
                             </h3>
                             <RequestApplicantFields
                                 user={user}
@@ -179,7 +186,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                         </div>
 
                         {/* Sección: Estado - Solo visible para administradores */}
-                        {user.role !== "user" && (
+                        {user.role !== ROLES.USER && (
                             <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
                                 <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
                                     <span className="text-xl">⚙️</span>

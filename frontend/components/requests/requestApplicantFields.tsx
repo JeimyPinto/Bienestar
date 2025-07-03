@@ -43,69 +43,70 @@ export default function RequestApplicantFields({
 
   // Determinar si el campo usuario debe ser solo lectura
   const isReadOnlyUser = mode === "edit";
+  
+  // Determinar si el usuario actual puede seleccionar otros usuarios
+  const canSelectOtherUsers = user && [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(user.role);
+  
   return (
     <>
-      {/* Usuario solicitante */}
-      {[ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR, ROLES.USER].includes(
-      user?.role || ""
-      ) ? (
-      <div className="col-span-1">
-        <label className="block text-sm font-medium text-azul">Usuario</label>
-        {loadingUsers ? (
-        <Spinner className="my-2" />
-        ) : isReadOnlyUser ? (
-        <input
-          type="text"
-          name="userId"
-          value={(() => {
-          if (editApplicant) {
-            return `${editApplicant.firstName} ${editApplicant.lastName}`;
-          }
-          const u = users.find((u) => u.id === newRequest.userId);
-          return u ? `${u.firstName} ${u.lastName}` : "";
-          })()}
-          readOnly
-          className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
-          data-userid={newRequest.userId}
-        />
-        ) : (
-        <select
-          name="userId"
-          value={newRequest.userId || ""}
-          onChange={(e) =>
-          setNewRequest({ ...newRequest, userId: Number(e.target.value) })
-          }
-          className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
-          required
-        >
-          <option value="">Seleccione un usuario</option>
-          {users.map((u) => (
-          <option key={u.id} value={u.id}>
-            {u.firstName} {u.lastName}
-          </option>
-          ))}
-        </select>
-        )}
-      </div>
-      ) : (
-      <div className="col-span-1">
-        <label className="block text-sm font-medium text-azul">Usuario</label>
-        <input
-        type="text"
-        name="userId"
-        value={(() => {
-          if (editApplicant) {
-          return `${editApplicant.firstName} ${editApplicant.lastName}`;
-          }
-          const u = users.find((u) => u.id === newRequest.userId) || user;
-          return u ? `${u.firstName} ${u.lastName}` : "";
-        })()}
-        readOnly
-        className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
-        data-userid={newRequest.userId || user?.id}
-        />
-      </div>
-      )}
+      {/* Usuario solicitante - Solo mostrar si puede seleccionar otros usuarios */}
+      {canSelectOtherUsers ? (
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-azul">Usuario</label>
+          {loadingUsers ? (
+            <Spinner className="my-2" />
+          ) : isReadOnlyUser ? (
+            <input
+              type="text"
+              name="userId"
+              value={(() => {
+                if (editApplicant) {
+                  return `${editApplicant.firstName} ${editApplicant.lastName}`;
+                }
+                const u = users.find((u) => u.id === newRequest.userId);
+                return u ? `${u.firstName} ${u.lastName}` : "";
+              })()}
+              readOnly
+              className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
+              data-userid={newRequest.userId}
+            />
+          ) : (
+            <select
+              name="userId"
+              value={newRequest.userId || ""}
+              onChange={(e) =>
+                setNewRequest({ ...newRequest, userId: Number(e.target.value) })
+              }
+              className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm focus:outline-none focus:ring-azul focus:border-azul"
+              required
+            >
+              <option value="">Seleccione un usuario</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.firstName} {u.lastName}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      ) : user?.role === ROLES.USER ? (
+        // Para usuarios normales, mostrar su información de forma automática (campo oculto)
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-azul">Solicitante</label>
+          <input
+            type="text"
+            value={`${user.firstName} ${user.lastName}`}
+            readOnly
+            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
+          />
+          {/* Campo oculto para enviar el userId */}
+          <input
+            type="hidden"
+            name="userId"
+            value={user.id}
+          />
+        </div>
+      ) : null}
       {/* Servicio */}
       <div className="col-span-1">
       <label className="block text-sm font-medium text-azul">Servicio</label>
