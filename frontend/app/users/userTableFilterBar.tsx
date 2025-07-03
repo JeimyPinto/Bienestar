@@ -1,7 +1,7 @@
 import React from "react";
-import { UserTableFilterBarProps } from "../../interface/user";
+import { FilterProps } from "../../interface/user";
 
-const UserTableFilterBar: React.FC<UserTableFilterBarProps> = ({
+const UserTableFilterBar: React.FC<FilterProps> = ({
   limit,
   setLimit,
   setCurrentPage,

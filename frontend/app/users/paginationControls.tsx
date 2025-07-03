@@ -1,8 +1,8 @@
 import React from "react";
-import { PaginationControlsProps } from "../../interface/components";
+import { PaginationProps } from "../../interface/user";
 
 
-const PaginationControls: React.FC<PaginationControlsProps> = ({ currentPage, totalPages, totalUsers, setCurrentPage }) => (
+const PaginationControls: React.FC<PaginationProps> = ({ currentPage, totalPages, totalUsers, setCurrentPage }) => (
   <nav className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 p-4 bg-white rounded-xl shadow-md border border-azul-cielo/20">
     <button
       onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}

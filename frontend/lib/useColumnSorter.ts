@@ -3,11 +3,11 @@ import { User } from "../interface/user";
 
 const dateColumns = ["createdAt", "updatedAt"];
 
-export function useColumnSorter(data: User[], defaultColumn: keyof User = "firstName") {
-    const [sortColumn, setSortColumn] = useState<keyof User>(defaultColumn);
+export function useColumnSorter(data: User[], defaultColumn: string = "firstName") {
+    const [sortColumn, setSortColumn] = useState<string>(defaultColumn);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-    const handleSort = (column: keyof User) => {
+    const handleSort = (column: string) => {
         if (sortColumn === column) {
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
         } else {
@@ -18,11 +18,11 @@ export function useColumnSorter(data: User[], defaultColumn: keyof User = "first
 
     const sortedData = useMemo(() => {
         return [...data].sort((a, b) => {
-            const aValue = a[sortColumn];
-            const bValue = b[sortColumn];
+            const aValue = a[sortColumn as keyof User];
+            const bValue = b[sortColumn as keyof User];
 
             // Si la columna es de fecha, convierte a Date SOLO para comparar
-            if (dateColumns.includes(sortColumn as string)) {
+            if (dateColumns.includes(sortColumn)) {
                 const aDate = new Date(aValue as string);
                 const bDate = new Date(bValue as string);
                 return sortOrder === "asc"

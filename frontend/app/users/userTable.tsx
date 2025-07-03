@@ -1,11 +1,11 @@
 import React from "react"
-import { User, UserTableProps } from "../../interface"
+import { UserTableProps } from "../../interface/user"
 import UserTableDesktop from "./userTableDesktop"
 import UserCardMobile from "./userCardMobile"
 import UserTableFilterBar from "./userTableFilterBar"
 import PaginationControls from "./paginationControls"
 import { useColumnSorter } from "../../lib/useColumnSorter"
-import { filterUsers } from "../../lib"
+import { filterUsers } from "../../helpers/filterHelpers"
 import { useFilter } from "../../hooks/useFilter"
 
 export default function UserTable({
@@ -33,7 +33,7 @@ export default function UserTable({
 
     const sortedFilteredUsers = useColumnSorter(filteredUsers).sortedData;
 
-    function handleRowClick(user: User) {
+    function handleRowClick(user: UserTableProps['users'][0]) {
         onEditUser(user);
     }
 
