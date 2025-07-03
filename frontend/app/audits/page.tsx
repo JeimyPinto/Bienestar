@@ -1,41 +1,21 @@
 "use client"
 
-import React, { useState } from "react"
-import { AuditLogTable } from "../components/audits"
-import { ErrorMessage, SuccessMessage } from "../../ui"
-import { SectionHeader } from "../components"
-import { AuditLog } from "../../interface/auditLog"
-import { getAll } from "../../services/auditLog";
+import React from "react"
+import  AuditLogTable  from "../../components/audits/auditLogTable"
+import  SuccessMessage  from "../../ui/successMessage"
+import  ErrorMessage  from "../../ui/errorMessage"
+import  SectionHeader  from "../../ui/sectionHeader"
 import { useAuth } from "../../hooks/useAuth";
+import { useAudit } from "../../hooks/useAudit";
+import { useMessages } from "../../hooks/useMessages";
 
 export default function AuditPage() {
-    const [successMessage, setSuccessMessage] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-    const [loading, setLoading] = useState(false);
     const { token } = useAuth();
-
-    React.useEffect(() => {
-        const fetchAuditLogs = async () => {
-            setLoading(true);
-            if (!token) {
-                setErrorMessage("No se pudo obtener el token de autenticación.");
-                setLoading(false);
-                return;
-            }
-            const res = await getAll(token);
-            if (res.error) {
-                setErrorMessage(res.message);
-                setAuditLogs([]);
-            } else {
-                setSuccessMessage(res.message || "");
-                setErrorMessage("");
-                setAuditLogs(res.logs || []);
-            }
-            setLoading(false);
-        };
-        fetchAuditLogs();
-    }, [token]);
+    const { successMessage, errorMessage, setErrorMessage, clearSuccess } = useMessages();
+    const { auditLogs, loading } = useAudit({
+        token,
+        onError: (message) => setErrorMessage(message || "Error al cargar auditorías")
+    });
 
     return (
         <>
@@ -44,13 +24,11 @@ export default function AuditPage() {
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
             {successMessage && (
-                <SuccessMessage message={successMessage} onClose={() => setSuccessMessage("")} />
+                <SuccessMessage message={successMessage} onClose={() => clearSuccess()} />
             )}
             <AuditLogTable
                 auditLogs={auditLogs}
                 loading={loading}
-                setSuccessMessage={setSuccessMessage}
-                setErrorMessage={setErrorMessage}
             />
         </>
     );

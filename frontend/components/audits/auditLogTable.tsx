@@ -1,8 +1,13 @@
 import React, { useState } from "react"
-import { AuditLogTableProps } from "../../interface/auditLog"
 import AuditLogTableDesktop from "./auditLogTableDesktop"
 import AuditLogCardMobile from "./auditLogCardMobile"
 import AuditLogTableFilterBar from "./auditLogTableFilterBar"
+import { AuditLog } from "../../interface/auditLog"
+
+interface AuditLogTableProps {
+    auditLogs: AuditLog[];
+    loading: boolean;
+}
 
 export default function AuditLogTable({
     auditLogs,
