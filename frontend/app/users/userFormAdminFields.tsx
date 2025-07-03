@@ -1,7 +1,17 @@
 import React from "react";
-import { UserFormAdminFieldsProps } from "../../interface/index";
-import { ROLES } from "../constants/roles";
+import { ROLES } from "../../constants/roles"
+import { User } from "../../interface/user";
 
+export interface UserFormAdminFieldsProps {
+  newUser: User;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  groups: Array<{
+    id: number;
+    fichaNumber: string | number;
+    programName: string;
+  }>;
+  groupsLoading: boolean;
+}
 export default function UserFormAdminFields({ newUser, handleInputChange, groups, groupsLoading }: UserFormAdminFieldsProps) {
   return (
     <fieldset className="border-2 border-warning/30 rounded-xl p-4 sm:p-6 bg-gradient-to-br from-white to-warning/5">
@@ -11,7 +21,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
       </legend>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         <div>
-          <label className="block text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
+          <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
             <span className="mr-2">👤</span>
             Rol del Usuario
           </label>
@@ -22,7 +32,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
             className="
               w-full px-4 py-3 border-2 border-azul-cielo/30 rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
-              transition-all duration-300 hover:border-primary/50
+              transition-all duration-300 hover:border-azul-cielo/50
               bg-white text-azul-oscuro cursor-pointer
             "
             required
@@ -36,7 +46,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
         </div>
         
         <div>
-          <label className="block text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
+          <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
             <span className="mr-2">🔄</span>
             Estado
           </label>
@@ -47,7 +57,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
             className="
               w-full px-4 py-3 border-2 border-azul-cielo/30 rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
-              transition-all duration-300 hover:border-primary/50
+              transition-all duration-300 hover:border-azul-cielo/50
               bg-white text-azul-oscuro cursor-pointer
             "
             required
@@ -58,7 +68,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
         </div>
         
         <div>
-          <label className="block text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
+          <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
             <span className="mr-2">👥</span>
             Grupo/Ficha
           </label>
@@ -69,7 +79,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
             className="
               w-full px-4 py-3 border-2 border-azul-cielo/30 rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
-              transition-all duration-300 hover:border-primary/50
+              transition-all duration-300 hover:border-azul-cielo/50
               bg-white text-azul-oscuro cursor-pointer
             "
           >
@@ -89,7 +99,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
         </div>
         
         <div>
-          <label className="block text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
+          <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
             <span className="mr-2">🔒</span>
             Contraseña
           </label>
@@ -102,7 +112,7 @@ export default function UserFormAdminFields({ newUser, handleInputChange, groups
             className="
               w-full px-4 py-3 border-2 border-azul-cielo/30 rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
-              transition-all duration-300 hover:border-primary/50
+              transition-all duration-300 hover:border-azul-cielo/50
               bg-white text-azul-oscuro placeholder-azul-marino/50
             "
           />
