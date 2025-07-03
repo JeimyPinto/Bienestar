@@ -1,6 +1,7 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Remission } from "../../interface/remission";
 import { useFilter } from "../../hooks/useFilter";
+import { useModal } from "../../hooks/useModal";
 import RemissionForm from "./remissionForm";
 import RemissionTableDesktop from "./remissionTableDesktop";
 import RemissionCardMobile from "./remissionCardMobile";
@@ -20,9 +21,15 @@ export default function RemissionTable({
   loading = false,
   onRemissionUpdate,
 }: RemissionTableProps) {
-  const [selectedRemission, setSelectedRemission] = useState<Remission | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const remissionEditFormRef = useRef<HTMLDialogElement>(null);
+  // Hook para manejo del modal de remisiones
+  const { 
+    dialogRef, 
+    isFormOpen, 
+    mode, 
+    itemToEdit: selectedRemission, 
+    openEditDialog, 
+    closeDialog 
+  } = useModal<Remission>();
 
   // Función de filtrado para remisiones
   const filterRemissions = (remissions: Remission[], filter: string) => {
@@ -55,17 +62,14 @@ export default function RemissionTable({
     initialFilter: ""
   });
 
-  // Mostrar el modal cuando se selecciona una remisión
-  React.useEffect(() => {
-    if (isFormOpen && selectedRemission && remissionEditFormRef.current) {
-      remissionEditFormRef.current.showModal();
-    }
-  }, [isFormOpen, selectedRemission]);
-
   function handleRowClick(remission: Remission) {
-    setSelectedRemission(remission);
-    setIsFormOpen(true);
+    openEditDialog(remission);
   }
+
+  const handleRemissionFormClose = () => {
+    closeDialog();
+    if (onRemissionUpdate) onRemissionUpdate();
+  };
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 py-8">
@@ -90,12 +94,9 @@ export default function RemissionTable({
           </div>
           {(isFormOpen && selectedRemission) && (
             <RemissionForm
-              dialogRef={remissionEditFormRef}
-              onClose={() => {
-                setIsFormOpen(false);
-                if (onRemissionUpdate) onRemissionUpdate();
-              }}
-              mode="edit"
+              dialogRef={dialogRef}
+              onClose={handleRemissionFormClose}
+              mode={mode}
               remissionToEdit={selectedRemission}
               setSuccessMessages={setSuccessMessages}
             />

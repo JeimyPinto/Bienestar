@@ -1,19 +1,21 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import SectionHeader from "../../ui/sectionHeader";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import GroupTable from "../../components/group/groupTable";
 import { Group } from "../../interface/group";
 import GroupForm from "../../components/group/groupForm";
+import PageLayout from "../../components/layout/pageLayout";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useGroups } from "../../hooks/useGroups";
+import { useModal } from "../../hooks/useModal";
+import { useMessages } from "../../hooks/useMessages";
 
 export default function GroupPage() {
     const { token } = useAuthContext();
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
+    const { errorMessage, successMessage, setErrorMessage, setSuccessMessage, clearMessages } = useMessages();
 
     // Usar el hook useGroups para manejar el estado de grupos
     const { groups, setGroups, refreshGroups } = useGroups({
@@ -21,30 +23,27 @@ export default function GroupPage() {
         onError: (error: string) => setErrorMessage(error)
     });
 
-    const dialogRef = useRef<HTMLDialogElement>(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [mode, setMode] = useState<"create" | "edit">("create");
-    const [groupToEdit, setGroupToEdit] = useState<Group | undefined>(undefined);
-
-    function openCreateDialog() {
-        setMode("create");
-        setGroupToEdit(undefined);
-        setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
-    }
+    // Hook para manejo del modal de grupos
+    const { 
+        dialogRef, 
+        isFormOpen, 
+        mode, 
+        itemToEdit: groupToEdit, 
+        openCreateDialog, 
+        closeDialog 
+    } = useModal<Group>();
 
     function handleFormClose() {
-        setIsFormOpen(false);
-        dialogRef.current?.close();
+        closeDialog();
         refreshGroups(); // Usar el hook para refrescar
-    }
+    };
 
     return (
-        <>
+        <PageLayout>
             <SectionHeader
                 title="Lista de Fichas"
                 buttonText="Añadir Ficha"
-                onButtonClick={openCreateDialog}
+                onButtonClick={() => openCreateDialog(clearMessages)}
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
             {successMessage && (
@@ -66,6 +65,6 @@ export default function GroupPage() {
                     setErrorMessage={setErrorMessage}
                 />
             )}
-        </>
+        </PageLayout>
     );
 }

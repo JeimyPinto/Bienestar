@@ -10,6 +10,7 @@ import RequestHistory from "../../components/requests/requestHistory";
 import RequestTable from "../../components/requests/requestTable";
 import SuccessMessage from "../../ui/successMessage";
 import SectionHeader from "../../ui/sectionHeader";
+import PageLayout from "../../components/layout/pageLayout";
 import { ROLES } from "../../constants/roles";
 
 export default function RequestPage() {
@@ -55,53 +56,51 @@ export default function RequestPage() {
         : "Historial de Solicitudes";
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-4 md:py-6">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-                {/* Header de la página */}
-                <SectionHeader 
-                    title={pageTitle}
-                    buttonText="Nueva Solicitud"
-                    onButtonClick={openCreateDialog}
+        <PageLayout className="py-4 md:py-6">
+            {/* Header de la página */}
+            <SectionHeader 
+                title={pageTitle}
+                buttonText="Nueva Solicitud"
+                onButtonClick={openCreateDialog}
+            />
+
+            {/* Mensajes */}
+            {successMessage && (
+                <div className="mb-6">
+                    <SuccessMessage
+                        message={successMessage}
+                        onClose={() => clearSuccess()}
+                    />
+                </div>
+            )}
+
+            {/* Componente de solicitudes - según rol del usuario */}
+            {user?.role === ROLES.USER ? (
+                <RequestHistory
+                    requests={requests}
+                    loading={loading}
+                    errorMessage={errorMessage}
+                    onCreateRequest={openCreateDialog}
                 />
+            ) : (
+                <RequestTable
+                    requests={requests}
+                    loading={loading}
+                    setErrorMessage={setErrorMessage}
+                    setSuccessMessage={showSuccess}
+                    onRequestUpdate={refreshRequests}
+                />
+            )}
 
-                {/* Mensajes */}
-                {successMessage && (
-                    <div className="mb-6">
-                        <SuccessMessage
-                            message={successMessage}
-                            onClose={() => clearSuccess()}
-                        />
-                    </div>
-                )}
-
-                {/* Componente de solicitudes - según rol del usuario */}
-                {user?.role === ROLES.USER ? (
-                    <RequestHistory
-                        requests={requests}
-                        loading={loading}
-                        errorMessage={errorMessage}
-                        onCreateRequest={openCreateDialog}
-                    />
-                ) : (
-                    <RequestTable
-                        requests={requests}
-                        loading={loading}
-                        setErrorMessage={setErrorMessage}
-                        setSuccessMessage={showSuccess}
-                        onRequestUpdate={refreshRequests}
-                    />
-                )}
-
-                {/* Modal de formulario */}
-                {isFormOpen && (
-                    <RequestForm
-                        dialogRef={dialogRef}
-                        onClose={closeDialog}
-                        mode={mode}
-                        requestToEdit={requestToEdit}
-                    />
-                )}
-            </div>
-        </div>
+            {/* Modal de formulario */}
+            {isFormOpen && (
+                <RequestForm
+                    dialogRef={dialogRef}
+                    onClose={closeDialog}
+                    mode={mode}
+                    requestToEdit={requestToEdit}
+                />
+            )}
+        </PageLayout>
     );
 }

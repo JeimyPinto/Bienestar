@@ -11,13 +11,17 @@ interface GroupFormProps {
   onClose: (createdGroup?: Group) => void;
   mode: "create" | "edit";
   groupToEdit?: Group;
+  setSuccessMessage?: (msg: string) => void;
+  setErrorMessage?: (msg: string) => void;
 }
 
 const GroupForm: React.FC<GroupFormProps> = ({
   dialogRef,
   onClose,
   mode,
-  groupToEdit
+  groupToEdit,
+  setSuccessMessage,
+  setErrorMessage: setExternalErrorMessage
 }) => {
   const { token } = useAuthContext();
   const { createGroup, updateGroup } = useGroups({ token });
@@ -61,21 +65,30 @@ const GroupForm: React.FC<GroupFormProps> = ({
     setLoading(true);
     setErrorMessage(null);
 
+    // Función helper para mostrar errores
+    const showError = (msg: string) => {
+      if (setExternalErrorMessage) {
+        setExternalErrorMessage(msg);
+      } else {
+        setErrorMessage(msg);
+      }
+    };
+
     // Validaciones
     if (!fichaNumber.trim()) {
-      setErrorMessage("El número de ficha es requerido");
+      showError("El número de ficha es requerido");
       setLoading(false);
       return;
     }
 
     if (!programName.trim()) {
-      setErrorMessage("El nombre del programa es requerido");
+      showError("El nombre del programa es requerido");
       setLoading(false);
       return;
     }
 
     if (!instructorId) {
-      setErrorMessage("Debe seleccionar un instructor");
+      showError("Debe seleccionar un instructor");
       setLoading(false);
       return;
     }
@@ -97,12 +110,26 @@ const GroupForm: React.FC<GroupFormProps> = ({
       }
 
       if (result && !result.error) {
+        const successMsg = mode === "create" ? "Ficha creada exitosamente" : "Ficha actualizada exitosamente";
+        if (setSuccessMessage) {
+          setSuccessMessage(successMsg);
+        }
         onClose(groupData as Group);
       } else {
-        setErrorMessage(result?.message || "Error al procesar la ficha");
+        const errorMsg = result?.message || "Error al procesar la ficha";
+        if (setExternalErrorMessage) {
+          setExternalErrorMessage(errorMsg);
+        } else {
+          setErrorMessage(errorMsg);
+        }
       }
     } catch (error) {
-      setErrorMessage("Error inesperado al procesar la ficha");
+      const errorMsg = "Error inesperado al procesar la ficha";
+      if (setExternalErrorMessage) {
+        setExternalErrorMessage(errorMsg);
+      } else {
+        setErrorMessage(errorMsg);
+      }
       console.error("Error en formulario de grupo:", error);
     } finally {
       setLoading(false);

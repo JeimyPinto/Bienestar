@@ -133,14 +133,6 @@ app.use((req, res, next) => {
 const errorHandler = require("./middlewares/errorHandler");
 app.use(errorHandler);
 
-// Middleware para forzar respuesta JSON en cualquier error no manejado
-app.use((err, res) => {
-  res.status(err.status || 500).json({
-    message: err.message || "Error interno del servidor",
-    details: err.details || null
-  });
-});
-
 // =======================
 // Conexión a la base de datos y arranque del servidor
 // =======================

@@ -1,30 +1,37 @@
 "use client";
 
-import { useState, useRef } from "react";
 import { ROLES } from "../../constants/roles";
+import { Request } from "../../interface/request";
 import UserCard from "../../components/users/userCard";
 import DashboardRoleActions from "../../components/dashboard/dashboardRoleActions";
 import RequestForm from "../../components/requests/requestForm";
 import SuccessMessage from "../../ui/successMessage";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useMessages } from "../../hooks/useMessages";
+import { useModal } from "../../hooks/useModal";
 
 export default function DashboardPage() {
-  const { successMessage, clearSuccess, showSuccess } = useMessages();
+  const { successMessage, clearSuccess, showSuccess, errorMessage, setErrorMessage } = useMessages();
   const { user } = useAuthContext();
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  // Hook para manejo del modal de solicitudes
+  const { 
+    dialogRef, 
+    isFormOpen, 
+    mode, 
+    itemToEdit: requestToEdit, 
+    openCreateDialog, 
+    closeDialog 
+  } = useModal<Request>();
 
-  const openRequestForm = () => {
-    setIsFormOpen(true);
-    setTimeout(() => dialogRef.current?.showModal(), 0);
+  // Función para limpiar mensajes
+  const clearMessages = () => {
+    setErrorMessage("");
+    clearSuccess();
   };
 
-  const closeRequestForm = (createdRequest?: unknown) => {
-    setIsFormOpen(false);
-    dialogRef.current?.close();
-
+  const handleRequestFormSuccess = (createdRequest?: Request) => {
+    closeDialog();
     // Si se creó una request exitosamente, mostrar mensaje
     if (createdRequest) {
       showSuccess("Solicitud creada exitosamente");
@@ -58,7 +65,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                   <button
-                    onClick={openRequestForm}
+                    onClick={() => openCreateDialog(clearMessages)}
                     className="
                       bg-success hover:bg-verde-bosque text-white 
                       px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base
@@ -102,8 +109,11 @@ export default function DashboardPage() {
           {isFormOpen && (
             <RequestForm
               dialogRef={dialogRef}
-              onClose={closeRequestForm}
-              mode="create"
+              onClose={handleRequestFormSuccess}
+              mode={mode}
+              requestToEdit={requestToEdit}
+              setErrorMessage={setErrorMessage}
+              errorMessage={errorMessage}
             />
           )}
         </div>

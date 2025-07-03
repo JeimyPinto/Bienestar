@@ -3,6 +3,13 @@ const chalk = require("chalk");
 
 module.exports = async function sendWelcomeMail(req, res, next) {
   console.log(chalk.blue("🎯 Middleware sendWelcomeMail ejecutado"));
+  
+  // Si no hay usuario en res.locals, significa que hubo un error antes
+  // En este caso, pasar al siguiente middleware sin hacer nada
+  if (!res.locals.user) {
+    return next();
+  }
+  
   try {
     const user = res.locals.user;
     const plainPassword = req.body.password && req.body.password.trim() !== "" ? req.body.password : req.body.documentNumber;

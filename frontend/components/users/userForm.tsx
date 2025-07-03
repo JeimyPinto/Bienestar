@@ -105,9 +105,11 @@ export default function UserForm(props: UserFormProps) {
                     userToSend.file ? userToSend.file : undefined,
                     token || undefined
                 );
+                console.log("Respuesta del servicio create:", responseData);
                 if (responseData.error) {
-                    setFormError(responseData.message || "Error desconocido");
-                    setErrorMessage?.(responseData.message);
+                    const errorMsg = responseData.message || "Error desconocido";
+                    setFormError(errorMsg);
+                    setErrorMessage?.(errorMsg);
                     return;
                 } else {
                     setSuccessMessage?.("Usuario creado exitosamente");

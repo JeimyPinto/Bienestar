@@ -13,7 +13,7 @@ export async function getAll(token?: string) {
             credentials: "include",
         });
         const data = await res.json();
-        if (!res.ok || data.details) {
+        if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -38,7 +38,7 @@ export async function getAllActive(token?: string) {
             credentials: "include",
         });
         const data = await res.json();
-        if (!res.ok || data.details) {
+        if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -63,7 +63,7 @@ export async function getAllPaginated(page = 1, limit = 10, token?: string) {
             }, credentials: "include",
         });
         const data = await res.json();
-        if (!res.ok || data.details) {
+        if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -104,8 +104,29 @@ export async function create(user: User, file?: File, token?: string) {
             body,
             credentials: "include",
         });
+        
+        console.log("Respuesta del servidor (create):", { 
+            status: res.status, 
+            statusText: res.statusText,
+            contentType: res.headers.get('content-type')
+        });
+        
+        // Verificar si la respuesta es JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const textResponse = await res.text();
+            console.error("Respuesta no es JSON:", textResponse.substring(0, 500));
+            return {
+                error: true,
+                message: `Error del servidor (${res.status}): Respuesta no válida`,
+                details: { status: res.status, contentType, response: textResponse.substring(0, 200) }
+            };
+        }
+        
         const data = await res.json();
-        if (!res.ok || data.details) {
+        console.log("Datos JSON recibidos:", data);
+        
+        if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -147,7 +168,7 @@ export async function update(id: number, user: User, file?: File, token?: string
             credentials: "include",
         });
         const data = await res.json();
-        if (!res.ok || data.details) {
+        if (!res.ok || data.error) {
             console.error("Error al actualizar usuario:", data.details);
             return { error: true, message: data.message, details: data.details };
         }
@@ -174,7 +195,7 @@ export async function getAllByRole(role: string, token?: string) {
             credentials: "include",
         });
         const data = await res.json();
-        if (!res.ok || data.details) {
+        if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -199,7 +220,7 @@ export async function getById(id: number, token?: string) {
             credentials: "include",
         });
         const data = await res.json();
-        if (!res.ok || data.details) {
+        if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };
@@ -224,7 +245,7 @@ export async function getMyProfile(token?: string) {
             credentials: "include",
         });
         const data = await res.json();
-        if (!res.ok || data.details) {
+        if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
         return { error: false, ...data };

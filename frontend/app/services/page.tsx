@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef } from "react";
+import React from "react";
 import { Service } from "../../interface/service";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
@@ -9,9 +9,11 @@ import ServiceTable from "../../components/services/serviceTable";
 import SectionHeader from "../../ui/sectionHeader";
 import ServiceForm from "../../components/services/serviceForm";
 import Spinner from "../../ui/spinner";
+import PageLayout from "../../components/layout/pageLayout";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useServices } from "../../hooks/useServices";
 import { useMessages } from "../../hooks/useMessages";
+import { useModal } from "../../hooks/useModal";
 import { ROLES } from "../../constants/roles";
 
 export default function ServicePage() {
@@ -29,27 +31,27 @@ export default function ServicePage() {
         onError: (message) => setErrorMessage(message)
     });
 
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [mode, setMode] = useState<"create" | "edit">("create");
-    const [serviceToEdit, setServiceToEdit] = useState<Service | undefined>(undefined);
-    const dialogRef = useRef<HTMLDialogElement>(null);
+    // Hook para manejo del modal
+    const { 
+        dialogRef, 
+        isFormOpen, 
+        mode, 
+        itemToEdit: serviceToEdit, 
+        openCreateDialog, 
+        openEditDialog, 
+        closeDialog 
+    } = useModal<Service>();
+
+    // Función para limpiar mensajes
+    const clearMessages = () => {
+        setErrorMessage("");
+        setSuccessMessage("");
+    };
 
     // Handler para éxito en ServiceForm
     const handleServiceFormSuccess = () => {
         refreshServices();
         closeDialog();
-    };
-
-    const openCreateDialog = () => {
-        setMode("create");
-        setServiceToEdit(undefined);
-        setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
-    };
-
-    const closeDialog = () => {
-        setIsFormOpen(false);
-        dialogRef.current?.close();
     };
     return (
         <>
@@ -91,56 +93,49 @@ export default function ServicePage() {
                     </div>
                 </main>
             ) : (
-                <div className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/5 py-6">
-                    <div className="container mx-auto px-4 max-w-7xl">
-                        <SectionHeader
-                            title="Listado de Servicios"
-                            buttonText="Añadir Nuevo Servicio"
-                            onButtonClick={openCreateDialog}
-                        />
-                        
-                        {/* Mensajes */}
-                        {errorMessage && (
-                            <div className="mb-6">
-                                <ErrorMessage message={errorMessage} />
-                            </div>
-                        )}
-                        {successMessage && (
-                            <div className="mb-6">
-                                <SuccessMessage 
-                                    message={successMessage} 
-                                    onClose={() => setSuccessMessage("")} 
-                                />
-                            </div>
-                        )}
-                        
-                        <ServiceTable
-                            services={services}
-                            loading={loading}
+                <PageLayout>
+                    <SectionHeader
+                        title="Listado de Servicios"
+                        buttonText="Añadir Nuevo Servicio"
+                        onButtonClick={() => openCreateDialog(clearMessages)}
+                    />
+                    
+                    {/* Mensajes */}
+                    {errorMessage && (
+                        <div className="mb-6">
+                            <ErrorMessage message={errorMessage} />
+                        </div>
+                    )}
+                    {successMessage && (
+                        <div className="mb-6">
+                            <SuccessMessage 
+                                message={successMessage} 
+                                onClose={() => setSuccessMessage("")} 
+                            />
+                        </div>
+                    )}
+                    
+                    <ServiceTable
+                        services={services}
+                        loading={loading}
+                        setErrorMessage={setErrorMessage}
+                        setSuccessMessage={setSuccessMessage}
+                        onServiceUpdate={refreshServices}
+                        onEditService={(service) => openEditDialog(service, clearMessages)}
+                    />
+                    
+                    {isFormOpen && (
+                        <ServiceForm
+                            dialogRef={dialogRef}
+                            closeDialog={closeDialog}
+                            onClose={handleServiceFormSuccess}
+                            mode={mode}
+                            serviceToEdit={serviceToEdit}
                             setErrorMessage={setErrorMessage}
                             setSuccessMessage={setSuccessMessage}
-                            onServiceUpdate={refreshServices}
-                            onEditService={(service) => {
-                                setMode("edit");
-                                setServiceToEdit(service);
-                                setIsFormOpen(true);
-                                setTimeout(() => dialogRef.current?.showModal(), 0);
-                            }}
                         />
-                        
-                        {isFormOpen && (
-                            <ServiceForm
-                                dialogRef={dialogRef}
-                                closeDialog={closeDialog}
-                                onClose={handleServiceFormSuccess}
-                                mode={mode}
-                                serviceToEdit={serviceToEdit}
-                                setErrorMessage={setErrorMessage}
-                                setSuccessMessage={setSuccessMessage}
-                            />
-                        )}
-                    </div>
-                </div>
+                    )}
+                </PageLayout>
             )}
         </>
     );

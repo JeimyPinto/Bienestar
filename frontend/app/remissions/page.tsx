@@ -1,21 +1,28 @@
 "use client"
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Remission } from "../../interface/remission";
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import RemissionTable from "../../components/remissions/remissionTable";
 import RemissionForm from "../../components/remissions/remissionForm";
 import SectionHeader from "../../ui/sectionHeader";
+import PageLayout from "../../components/layout/pageLayout";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useRemissions } from "../../hooks/useRemissions";
 import { useMessages } from "../../hooks/useMessages";
+import { useModal } from "../../hooks/useModal";
 
 export default function RemissiontPage() {
-    const dialogRef = useRef<HTMLDialogElement>(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [mode, setMode] = useState<"create" | "edit">("create");
-    const [remissionToEdit, setRemissionToEdit] = useState<Remission | undefined>(undefined);
+    // Hook para manejo del modal de remisiones
+    const { 
+        dialogRef, 
+        isFormOpen, 
+        mode, 
+        itemToEdit: remissionToEdit, 
+        openCreateDialog, 
+        closeDialog 
+    } = useModal<Remission>();
     
     const { token } = useAuthContext();
     const { errorMessage, setErrorMessage } = useMessages();
@@ -27,16 +34,10 @@ export default function RemissiontPage() {
     // Para manejar múltiples mensajes de éxito (como estaba antes)
     const [successMessages, setSuccessMessages] = useState<string[]>([]);
 
-    const openCreateDialog = () => {
-        setMode("create");
-        setRemissionToEdit(undefined);
-        setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
-    };
-
-    const closeDialog = () => {
-        setIsFormOpen(false);
-        dialogRef.current?.close();
+    // Función para limpiar mensajes
+    const clearMessages = () => {
+        setErrorMessage("");
+        setSuccessMessages([]);
     };
 
     // Handler para éxito en RemissionForm
@@ -52,11 +53,11 @@ export default function RemissiontPage() {
     };
 
     return (
-        <>
+        <PageLayout>
             <SectionHeader
                 title="Listado de Remisiones"
                 buttonText="Añadir Nueva Remisión"
-                onButtonClick={openCreateDialog}
+                onButtonClick={() => openCreateDialog(clearMessages)}
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
             {successMessages.map((msg, idx) => (
@@ -81,6 +82,6 @@ export default function RemissiontPage() {
                     setSuccessMessages={setSuccessMessages}
                 />
             )}
-        </>
+        </PageLayout>
     );
 }

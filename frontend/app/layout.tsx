@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/globals.css";
-import AppProviders from "../components/providers/AppProviders";
-import ClientHeader from "../components/home/ClientHeader"
+import AppProviders from "../components/providers/appProviders";
+import ClientHeader from "../components/home/clientHeader"
 import Footer from "../components/home/footer";
 import ProtectedRoute from "../components/auth/protectedRoute";
 

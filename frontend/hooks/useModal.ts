@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { User } from "../interface/user";
 
 // Define the UseModalReturn type if not already defined elsewhere
 type ModalMode = "create" | "edit";
@@ -13,11 +12,11 @@ type UseModalReturn<T> = {
   closeDialog: () => void;
 };
 
-export const useModal = (): UseModalReturn<User> => {
+export const useModal = <T>(): UseModalReturn<T> => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [mode, setMode] = useState<ModalMode>("create");
-  const [itemToEdit, setItemToEdit] = useState<User | undefined>(undefined);
+  const [itemToEdit, setItemToEdit] = useState<T | undefined>(undefined);
 
   const openCreateDialog = (onClearMessages?: () => void) => {
     setMode("create");
@@ -27,9 +26,9 @@ export const useModal = (): UseModalReturn<User> => {
     setTimeout(() => dialogRef.current?.showModal(), 0);
   };
 
-  const openEditDialog = (user: User, onClearMessages?: () => void) => {
+  const openEditDialog = (item: T, onClearMessages?: () => void) => {
     setMode("edit");
-    setItemToEdit(user);
+    setItemToEdit(item);
     onClearMessages?.();
     setIsFormOpen(true);
     setTimeout(() => dialogRef.current?.showModal(), 0);
