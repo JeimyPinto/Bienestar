@@ -66,14 +66,38 @@ const app = express();
 // =======================
 // Solo permite solicitudes desde los orígenes definidos
 const corsOptions = {
-  origin: [
-    "http://localhost:3000", // Desarrollo local
-    "https://bienestar-t7js.onrender.com", // Tu frontend en Render
-    "https://bienestarcpic.onrender.com" // Si tienes otro dominio
-  ],
+  origin: function (origin, callback) {
+    // Permitir requests sin origin (por ejemplo, aplicaciones móviles)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      "http://localhost:3000", // Desarrollo local
+      "https://bienestar-t7js.onrender.com", // Tu frontend en Render
+      "https://bienestarcpic.onrender.com", // Si tienes otro dominio
+      "https://bienestar-backend.onrender.com" // Dominio del backend
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log(chalk.yellow(`🚫 CORS: Origen no permitido: ${origin}`));
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: [
+    "Content-Type", 
+    "Authorization", 
+    "Origin", 
+    "X-Requested-With", 
+    "Accept",
+    "Access-Control-Request-Method",
+    "Access-Control-Request-Headers"
+  ],
+  exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
+  preflightContinue: false,
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
