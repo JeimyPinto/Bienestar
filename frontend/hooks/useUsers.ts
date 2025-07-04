@@ -8,7 +8,9 @@ import {
   getById, 
   getMyProfile,
   create, 
-  update 
+  update,
+  bulkUpload,
+  downloadBulkTemplate
 } from "../services/user";
 interface UseUsersOptions {
   token: string | null;
@@ -33,6 +35,22 @@ interface UseUsersReturn<T> {
   // Métodos CRUD
   createUser: (user: User, file?: File) => Promise<{ error: boolean; message?: string }>;
   updateUser: (id: number, user: User, file?: File) => Promise<{ error: boolean; message?: string }>;
+  // Métodos para carga masiva
+  bulkUploadUsers: (file: File) => Promise<{ error: boolean; message?: string; report?: {
+    summary: {
+      total: number;
+      created: number;
+      duplicates: number;
+      errors: number;
+      successRate: string;
+    };
+    details?: {
+      successful: Array<{ row: number; userId: number; email: string; password: string }>;
+      duplicates: Array<{ row: number; email: string; documentNumber: string }>;
+      errors: Array<{ row: number; error: string; data: object }>;
+    };
+  } }>;
+  downloadTemplate: () => Promise<{ error: boolean; message?: string }>;
 }
 export const useUsers = ({ 
   token, 
@@ -187,6 +205,58 @@ export const useUsers = ({
     }
   }, [token, fetchUsers]);
 
+  // Métodos para carga masiva
+  const bulkUploadUsers = useCallback(async (file: File): Promise<{ error: boolean; message?: string; report?: {
+    summary: {
+      total: number;
+      created: number;
+      duplicates: number;
+      errors: number;
+      successRate: string;
+    };
+    details?: {
+      successful: Array<{ row: number; userId: number; email: string; password: string }>;
+      duplicates: Array<{ row: number; email: string; documentNumber: string }>;
+      errors: Array<{ row: number; error: string; data: object }>;
+    };
+  } }> => {
+    if (!token) return { error: true, message: "Token requerido para carga masiva" };
+    
+    try {
+      const res = await bulkUpload(file, token);
+      if (res.error) {
+        onErrorRef.current?.(res.message);
+        return { error: true, message: res.message };
+      } else {
+        // Refrescar la lista después de la carga masiva
+        await fetchUsers();
+        return { error: false, message: res.message, report: res.report };
+      }
+    } catch {
+      const errorMsg = "Error en la carga masiva de usuarios";
+      onErrorRef.current?.(errorMsg);
+      return { error: true, message: errorMsg };
+    }
+  }, [token, fetchUsers]);
+
+  const downloadTemplate = useCallback(async (): Promise<{ error: boolean; message?: string }> => {
+    if (!token) return { error: true, message: "Token requerido para descargar plantilla" };
+    
+    try {
+      const res = await downloadBulkTemplate(token);
+      if (res.error) {
+        onErrorRef.current?.(res.message);
+        return { error: true, message: res.message };
+      } else {
+        return { error: false, message: res.message };
+      }
+    } catch {
+      const errorMsg = "Error al descargar la plantilla";
+      onErrorRef.current?.(errorMsg);
+      return { error: true, message: errorMsg };
+    }
+  }, [token]);
+
   return {
     // Estado
     users,
@@ -206,5 +276,9 @@ export const useUsers = ({
     refreshUsers,
     createUser,
     updateUser,
+    
+    // Funciones para carga masiva
+    bulkUploadUsers,
+    downloadTemplate,
   };
 };

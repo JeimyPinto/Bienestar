@@ -10,7 +10,8 @@ Aplicación web completa para la gestión integral de servicios de bienestar, us
 - 🎯 **Gestión de servicios** organizados por áreas de bienestar con códigos de color
 - 📝 **Sistema completo de solicitudes** y remisiones con seguimiento de estado
 - 👤 **Gestión avanzada de usuarios** con validación y protección de datos sensibles
-- 📊 **Sistema de auditoría completo** de todas las acciones
+- 📊 **Carga masiva de usuarios** desde archivos Excel con correos de bienvenida automáticos
+- 📋 **Sistema de auditoría completo** de todas las acciones
 - 📱 **Interfaz totalmente responsiva** con vistas desktop (tablas) y mobile (cards)
 - 🎨 **UI moderna** con Tailwind CSS y esquemas de color consistentes
 - 📚 **Documentación API completa** con Swagger
@@ -63,6 +64,7 @@ Bienestar/
 │   ├── controllers/              # Lógica de controladores
 │   │   ├── auth.js               # Autenticación y login
 │   │   ├── user.js               # Gestión de usuarios
+│   │   ├── bulkUser.js           # Carga masiva de usuarios
 │   │   ├── service.js            # Gestión de servicios
 │   │   ├── request.js            # Gestión de solicitudes
 │   │   ├── remission.js          # Gestión de remisiones
@@ -95,6 +97,7 @@ Bienestar/
 │   ├── services/                 # Lógica de negocio
 │   │   ├── mail.js               # Servicio de correos
 │   │   ├── user.js               # Lógica de usuarios
+│   │   ├── bulkUser.js           # Lógica de carga masiva
 │   │   ├── service.js            # Lógica de servicios
 │   │   └── auditLog.js           # Lógica de auditoría
 │   ├── uploads/                  # Archivos subidos
@@ -114,6 +117,11 @@ Bienestar/
 │   │   ├── audits/               # Auditoría del sistema
 │   │   ├── hooks/                # Hooks personalizados
 │   │   │   └── useAuth.ts        # Hook de autenticación
+│   │   ├── components/           # Componentes reutilizables
+│   │   │   └── users/            # Componentes específicos de usuarios
+│   │   │       ├── userTable.tsx         # Tabla de usuarios
+│   │   │       ├── userForm.tsx          # Formulario de usuarios
+│   │   │       └── bulkUploadInstructionsModal.tsx # Modal de instrucciones para carga masiva
 │   │   ├── lib/                  # Utilidades y configuración
 │   │   │   ├── roles.ts          # Constantes de roles
 │   │   │   ├── getToken.ts       # Obtención de tokens
@@ -294,6 +302,36 @@ La aplicación estará disponible en `http://localhost:3000`
 4. **Sistema** envía notificaciones automáticas por correo
 5. **Auditoría** registra todas las acciones importantes
 
+### Carga Masiva de Usuarios (Solo Administradores)
+
+La funcionalidad de carga masiva permite a los administradores crear múltiples usuarios de forma eficiente:
+
+#### Proceso de Carga Masiva:
+
+1. **Descargar Plantilla**: Obtener el archivo Excel con el formato correcto
+2. **Completar Datos**: Llenar la plantilla con la información de los usuarios:
+   - `firstName`: Nombres del usuario
+   - `lastName`: Apellidos del usuario  
+   - `documentType`: Tipo de documento (CC, CE, PA, RC, TI, PEP)
+   - `documentNumber`: Número de documento único
+   - `phone`: Número de teléfono
+   - `email`: Correo electrónico único
+3. **Subir Archivo**: Cargar el Excel completado al sistema
+4. **Revisión de Resultados**: El sistema procesa los datos y genera un reporte con:
+   - Usuarios creados exitosamente
+   - Registros duplicados (email o documento ya existe)
+   - Errores de validación con detalles específicos
+
+#### Características del Sistema de Carga Masiva:
+
+- ✅ **Validación Automática**: Verifica formato de emails, tipos de documento válidos
+- ✅ **Detección de Duplicados**: Evita crear usuarios con emails o documentos existentes
+- ✅ **Correos Automáticos**: Envía credenciales de bienvenida a cada usuario creado
+- ✅ **Contraseña Temporal**: Usa el número de documento como contraseña inicial
+- ✅ **Reporte Detallado**: Muestra estadísticas completas del proceso
+- ✅ **Tolerancia a Errores**: Continúa procesando aunque algunos registros fallen
+- ✅ **Auditoría Completa**: Registra todas las acciones en el log de auditoría
+
 ### Características Especiales
 
 - **Interfaz Responsiva**: Tablas en desktop, cards en mobile
@@ -301,6 +339,14 @@ La aplicación estará disponible en `http://localhost:3000`
 - **Notificaciones**: Correos automáticos para acciones importantes
 - **Protección de Datos**: Campos sensibles nunca se exponen en respuestas API
 - **Validación Robusta**: Todos los inputs son validados y sanitizados
+- **Carga Masiva de Usuarios**: Importación de usuarios desde Excel con las siguientes características:
+  - Plantilla Excel descargable con formato predefinido
+  - Validación automática de datos (emails únicos, tipos de documento válidos)
+  - Envío automático de correos de bienvenida con credenciales
+  - Reporte detallado de resultados (creados, duplicados, errores)
+  - Instrucciones claras y guiadas para el usuario administrador
+  - Contraseña temporal basada en número de documento
+  - Logs detallados del proceso de importación
 
 ## 📚 Documentación y API
 
@@ -324,6 +370,8 @@ La aplicación estará disponible en `http://localhost:3000`
 - `POST /users` - Crear usuario (Admin+)
 - `PUT /users/:id` - Actualizar usuario
 - `DELETE /users/:id` - Eliminar usuario (Admin+)
+- `POST /bulk-users/upload` - Carga masiva desde Excel (Admin+)
+- `GET /bulk-users/template` - Descargar plantilla Excel (Admin+)
 
 #### Servicios
 
@@ -424,6 +472,12 @@ const areaColors = {
 5. **Correos no se envían**: Verificar configuración SMTP en variables `EMAIL_*`
 6. **Archivos no se suben**: Verificar permisos de la carpeta `uploads/`
 7. **reCAPTCHA falla**: Verificar claves en variables `RECAPTCHA_*` y dominios permitidos
+8. **Carga masiva falla**: 
+   - Verificar formato del archivo Excel (.xlsx o .xls)
+   - Comprobar que los encabezados coincidan exactamente: `firstName`, `lastName`, `documentType`, `documentNumber`, `phone`, `email`
+   - Validar que los tipos de documento sean válidos (CC, CE, PA, RC, TI, PEP)
+   - Verificar que emails y números de documento sean únicos
+9. **Correos de bienvenida no llegan**: Verificar configuración de correo y revisar logs del servidor
 
 ### Logs y Debugging
 

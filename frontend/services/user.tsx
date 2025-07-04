@@ -258,3 +258,119 @@ export async function getMyProfile(token?: string) {
         };
     }
 }
+
+// Carga masiva de usuarios desde Excel (ADMIN, SUPERADMIN)
+export async function bulkUpload(file: File, token?: string) {
+    try {
+        const formData = new FormData();
+        formData.append("excel", file);
+
+        const headers: Record<string, string> = {};
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bulk-users/upload`, {
+            method: "POST",
+            headers,
+            body: formData,
+            credentials: "include",
+        });
+
+        console.log("Respuesta del servidor (bulkUpload):", { 
+            status: res.status, 
+            statusText: res.statusText,
+            contentType: res.headers.get('content-type')
+        });
+
+        // Verificar si la respuesta es JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const textResponse = await res.text();
+            console.error("Respuesta no es JSON:", textResponse.substring(0, 500));
+            return {
+                error: true,
+                message: `Error del servidor (${res.status}): Respuesta no válida`,
+                details: { status: res.status, contentType, response: textResponse.substring(0, 200) }
+            };
+        }
+
+        const data = await res.json();
+        console.log("Datos JSON recibidos (bulkUpload):", data);
+
+        if (!res.ok || data.error) {
+            return { error: true, message: data.message, details: data.details };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        console.error("Error en bulkUpload:", error);
+        return {
+            error: true,
+            message: "Error al procesar la carga masiva",
+            details: error,
+        };
+    }
+}
+
+// Descargar plantilla Excel para carga masiva (ADMIN, SUPERADMIN)
+export async function downloadBulkTemplate(token?: string) {
+    try {
+        const headers: Record<string, string> = {};
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bulk-users/template`, {
+            method: "GET",
+            headers,
+            credentials: "include",
+        });
+
+        console.log("Respuesta del servidor (downloadTemplate):", { 
+            status: res.status, 
+            statusText: res.statusText,
+            contentType: res.headers.get('content-type')
+        });
+
+        if (!res.ok) {
+            // Si hay error, intentar obtener mensaje JSON
+            try {
+                const errorData = await res.json();
+                return {
+                    error: true,
+                    message: errorData.message || "Error al descargar plantilla",
+                    details: errorData.details
+                };
+            } catch {
+                return {
+                    error: true,
+                    message: `Error del servidor (${res.status}): ${res.statusText}`,
+                    details: { status: res.status }
+                };
+            }
+        }
+
+        // Si la respuesta es exitosa, devolver el blob para descarga
+        const blob = await res.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = 'plantilla_usuarios.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        return { 
+            error: false, 
+            message: "Plantilla descargada exitosamente" 
+        };
+    } catch (error) {
+        console.error("Error en downloadBulkTemplate:", error);
+        return {
+            error: true,
+            message: "Error al descargar la plantilla",
+            details: error,
+        };
+    }
+}

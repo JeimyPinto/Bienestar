@@ -17,6 +17,7 @@ const requestRoutes = require("./request.js");
 const auditLogRoutes = require("./audit_log.js");
 const groupRoutes = require("./group.js");
 const remissionsRoutes = require("./remission.js");
+const bulkUserRoutes = require("./bulkUser.js");
 // =======================
 // Middlewares / Utilidades
 // =======================
@@ -64,6 +65,12 @@ router.use(
   authenticateToken,
   authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
   remissionsRoutes
+);
+
+// Rutas de carga masiva de usuarios (requiere autenticación y roles ADMIN o SUPERADMIN)
+router.use(
+  "/bulk-users",
+  bulkUserRoutes
 );
 
 module.exports = router;

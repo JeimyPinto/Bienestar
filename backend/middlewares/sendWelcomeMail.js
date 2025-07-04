@@ -1,9 +1,7 @@
 const { sendWelcomeMailIfProd } = require("../services/mail.js");
 const chalk = require("chalk");
 
-module.exports = async function sendWelcomeMail(req, res, next) {
-  console.log(chalk.blue("🎯 Middleware sendWelcomeMail ejecutado"));
-  
+module.exports = async function sendWelcomeMail(req, res, next) {  
   // Si no hay usuario en res.locals, significa que hubo un error antes
   // En este caso, pasar al siguiente middleware sin hacer nada
   if (!res.locals.user) {
@@ -14,10 +12,8 @@ module.exports = async function sendWelcomeMail(req, res, next) {
     const user = res.locals.user;
     const plainPassword = req.body.password && req.body.password.trim() !== "" ? req.body.password : req.body.documentNumber;
     
-    // Enviar correo
     await sendWelcomeMailIfProd(user, plainPassword);
     
-    // Preparar respuesta para el siguiente middleware
     res.locals.statusCode = 201;
     res.locals.responseData = {
       message: res.locals.createMessage,

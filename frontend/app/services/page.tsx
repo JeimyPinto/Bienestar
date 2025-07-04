@@ -59,23 +59,14 @@ export default function ServicePage() {
                 <main className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/10 py-6">
                     <div className="container mx-auto px-4 max-w-7xl">
                         {/* Header de la página para usuarios */}
-                        <div className="mb-8">
-                            <div className="bg-white rounded-2xl shadow-lg p-6 border border-azul-cielo/20 text-center">
-                                <div className="flex items-center justify-center mb-4">
-                                    <div className="bg-gradient-to-r from-primary to-azul-cielo p-3 rounded-full">
-                                        <span className="text-3xl">🛠️</span>
-                                    </div>
-                                </div>
-                                <h1 className="text-3xl font-bold text-azul-oscuro mb-3">
-                                    Servicios Disponibles
-                                </h1>
-                                <p className="text-azul-marino/70 max-w-4xl mx-auto leading-relaxed">
-                                    Si no encuentras el servicio que buscas en este listado, puede ser porque actualmente no se está prestando. 
-                                    Algunos servicios solo están disponibles por convocatoria (Ejemplo: Monitorias, subsidio de alimentación, apoyo socioeconómico), 
-                                    mientras que otros están disponibles todo el tiempo.
-                                </p>
-                            </div>
-                        </div>
+                        <SectionHeader
+                            title="Servicios Disponibles"
+                            description="Si no encuentras el servicio que buscas en este listado, puede ser porque actualmente no se está prestando. Algunos servicios solo están disponibles por convocatoria (Ejemplo: Monitorias, subsidio de alimentación, apoyo socioeconómico), mientras que otros están disponibles todo el tiempo."
+                            icon="🛠️"
+                            showBackButton={false}
+                            centerContent={true}
+                            size="lg"
+                        />
 
                         {/* Contenido principal */}
                         {loading ? (
@@ -96,7 +87,10 @@ export default function ServicePage() {
                 <PageLayout>
                     <SectionHeader
                         title="Listado de Servicios"
+                        description="Gestiona todos los servicios del sistema de bienestar"
+                        icon="🛠️"
                         buttonText="Añadir Nuevo Servicio"
+                        buttonShortText="Añadir"
                         onButtonClick={() => openCreateDialog(clearMessages)}
                     />
                     
