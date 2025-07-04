@@ -15,10 +15,10 @@ const generateEmailHeader = (title, gradientColors = "#667eea 0%, #764ba2 100%")
     <div style="background: linear-gradient(135deg, ${gradientColors}); padding: 20px; text-align: center; position: relative;">
       <!-- Logos en las esquinas -->
       <div style="position: absolute; top: 15px; left: 20px;">
-        <img src="${baseURL}/images/email/logo-sena.png" alt="SENA" style="height: 40px; width: auto;" />
+        <img src="${baseURL}/public/images/email/logo-sena.png" alt="SENA" style="height: 40px; width: auto;" />
       </div>
       <div style="position: absolute; top: 15px; right: 20px;">
-        <img src="${baseURL}/images/email/logo-bienestar.jpeg" alt="Bienestar" style="height: 40px; width: auto;" />
+        <img src="${baseURL}/public/images/email/logo-bienestar.jpeg" alt="Bienestar" style="height: 40px; width: auto;" />
       </div>
       
       <!-- Título centrado -->

@@ -59,12 +59,16 @@ class BulkUserService {
             continue;
           }
           
+          // Convertir documentNumber a string para evitar errores de tipo en PostgreSQL
+          const documentNumberStr = rowData.documentNumber?.toString().trim();
+          const emailStr = rowData.email?.trim().toLowerCase();
+          
           // Verificar si el usuario ya existe
           const existingUser = await User.findOne({
             where: {
               [Op.or]: [
-                { email: rowData.email },
-                { documentNumber: rowData.documentNumber }
+                { email: emailStr },
+                { documentNumber: documentNumberStr }
               ]
             }
           });
@@ -72,23 +76,23 @@ class BulkUserService {
           if (existingUser) {
             results.duplicates.push({
               row: rowNumber,
-              email: rowData.email,
-              documentNumber: rowData.documentNumber
+              email: emailStr,
+              documentNumber: documentNumberStr
             });
             continue;
           }
           
           // Generar contraseña usando documentNumber
-          const hashedPassword = await bcrypt.hash(rowData.documentNumber.toString().trim(), 10);
+          const hashedPassword = await bcrypt.hash(documentNumberStr, 10);
           
           // Crear usuario con valores por defecto
           const userData = {
             firstName: rowData.firstName?.trim(),
             lastName: rowData.lastName?.trim(),
             documentType: rowData.documentType?.trim().toUpperCase() || "CC",
-            documentNumber: rowData.documentNumber?.toString().trim(),
+            documentNumber: documentNumberStr,
             phone: rowData.phone?.toString().trim(),
-            email: rowData.email?.trim().toLowerCase(),
+            email: emailStr,
             password: hashedPassword,
             role: "USER", // Siempre USER
             status: "activo", // Siempre activo
@@ -98,7 +102,7 @@ class BulkUserService {
           const newUser = await User.create(userData);
           
           // Enviar correo de bienvenida automáticamente
-          const plainPassword = rowData.documentNumber.toString().trim();
+          const plainPassword = documentNumberStr;
           try {
             await sendWelcomeMailIfProd(newUser, plainPassword);
             console.log(chalk.blue(`📧 Correo de bienvenida enviado a: ${newUser.email}`));
@@ -122,7 +126,7 @@ class BulkUserService {
             row: rowNumber,
             userId: newUser.id,
             email: newUser.email,
-            password: rowData.documentNumber.toString().trim() // Contraseña = documentNumber
+            password: documentNumberStr // Contraseña = documentNumber
           });
           
           console.log(chalk.green(`✅ Usuario creado: ${newUser.email} (fila ${rowNumber})`));
