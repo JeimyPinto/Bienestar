@@ -1,51 +1,6 @@
 const nodemailer = require("nodemailer");
 const chalk = require("chalk");
 
-// URLs base para las imágenes (ajustar según el entorno)
-const getBaseURL = () => {
-  return process.env.NODE_ENV === "production" 
-    ? process.env.PUBLIC_URL || "https://bienestarcpic.onrender.com"
-    : "http://localhost:4000";
-};
-
-// Helper para generar el header con logos
-const generateEmailHeader = (title, gradientColors = "#667eea 0%, #764ba2 100%") => {
-  const baseURL = getBaseURL();
-  return `
-    <div style="background: linear-gradient(135deg, ${gradientColors}); padding: 20px; text-align: center; position: relative;">
-      <!-- Logos en las esquinas -->
-      <div style="position: absolute; top: 15px; left: 20px;">
-        <img src="${baseURL}/images/email/logo-sena.png" alt="SENA" style="height: 40px; width: auto;" />
-      </div>
-      <div style="position: absolute; top: 15px; right: 20px;">
-        <img src="${baseURL}/images/email/logo-bienestar.jpeg" alt="Bienestar" style="height: 40px; width: auto;" />
-      </div>
-      
-      <!-- Título centrado -->
-      <h1 style="color: white; margin: 0; padding-top: 10px;">${title}</h1>
-    </div>
-  `;
-};
-
-// Helper para generar el footer con logos
-const generateEmailFooter = () => {
-  const baseURL = getBaseURL();
-  return `
-    <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-top: 1px solid #eee;">
-      <div style="margin-bottom: 15px;">
-        <img src="${baseURL}/images/email/logo-sena.png" alt="SENA" style="height: 30px; margin: 0 10px;" />
-        <img src="${baseURL}/images/email/logo-bienestar.jpeg" alt="Bienestar" style="height: 30px; margin: 0 10px;" />
-      </div>
-      <p style="color: #999; font-size: 12px; margin: 5px 0;">
-        Sistema de Gestión de Bienestar - SENA
-      </p>
-      <p style="color: #999; font-size: 12px; margin: 0;">
-        Este es un correo automático. Por favor, no responder a este correo.
-      </p>
-    </div>
-  `;
-};
-
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587,
@@ -59,7 +14,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-async function sendUserCreatedMail({ to, firstName }) {
+async function sendUserCreatedMail({ to, firstName, password }) {
   const isDevelopment = process.env.NODE_ENV === "development";
   const developmentWarning = isDevelopment ? `
     <div style="background: #fff3cd; border: 2px solid #ffeaa7; border-radius: 6px; padding: 16px; margin: 20px 0;">
@@ -81,16 +36,14 @@ async function sendUserCreatedMail({ to, firstName }) {
       <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 30px;">
         <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 30px;">
           ${developmentWarning}
-          ${generateEmailHeader("Bienvenido a Bienestar")}
           <h2 style="color: #2a7ae2; margin-top: 0;">¡Bienvenido/a, ${firstName}!</h2>
           <p style="font-size: 16px; color: #333;">Tu usuario ha sido creado exitosamente en la plataforma de <b>Bienestar</b>.</p>
           <div style="background: #f0f6ff; border-radius: 6px; padding: 16px; margin: 20px 0;">
             <p style="margin: 0 0 8px 0;"><b>Usuario (correo electrónico):</b> <span style="color: #2a7ae2;">${to}</span></p>
-            <p style="margin: 0;"><b>Contraseña:</b> Es tu número de documento de identificación (escríbelo sin espacios ni puntos).</p>
+            <p style="margin: 0;"><b>Contraseña:</b> <span style="color: #2a7ae2;">${password}</span></p>
           </div>
           <p style="font-size: 15px; color: #555;">Puedes ingresar con estos datos en la plataforma.</p>
           <p style="font-size: 15px; color: #555;">Intenta iniciar sesión en el siguiente enlace: <a href="${process.env.PUBLIC_URL}/auth" style="color: #2a7ae2;">${process.env.PUBLIC_URL}/auth</a></p>
-          ${generateEmailFooter()}
         </div>
       </div>
     `,
@@ -120,12 +73,10 @@ async function sendUserUpdatedMail({ to, firstName }) {
       <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 30px;">
         <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 30px;">
           ${developmentWarning}
-          ${generateEmailHeader("Actualización de Usuario")}
           <h2 style="color: #2a7ae2; margin-top: 0;">¡Hola, ${firstName}!</h2>
           <p style="font-size: 16px; color: #333;">Tu usuario ha sido actualizado exitosamente en la plataforma de <b>Bienestar</b>.</p>
           <p style="font-size: 15px; color: #555;">Puedes ingresar con tus datos actualizados en la plataforma.</p>
           <p style="font-size: 15px; color: #555;">Intenta iniciar sesión en el siguiente enlace: <a href="${process.env.PUBLIC_URL}/auth" style="color: #2a7ae2;">${process.env.PUBLIC_URL}/auth</a></p>
-          ${generateEmailFooter()}
         </div>
       </div>
     `,
@@ -170,7 +121,9 @@ async function sendRequestNotificationMail({ serviceCreator, applicant, request,
     subject: isDevelopment ? `[PRUEBA] Nueva solicitud de remisión para el servicio: ${service.name}` : `Nueva solicitud de remisión para el servicio: ${service.name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        ${generateEmailHeader("Nueva Solicitud de Remisión")}
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">Nueva Solicitud de Remisión</h1>
+        </div>
         
         <div style="padding: 30px; background-color: #f8f9fa;">
           ${developmentWarning}
@@ -270,7 +223,9 @@ async function sendRemissionNotificationMail({ serviceCreator, applicant, assign
     subject: isDevelopment ? `[PRUEBA] Remisión creada para el servicio: ${service.name}` : `Remisión creada para el servicio: ${service.name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        ${generateEmailHeader("Remisión Creada")}
+        <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">Remisión Creada</h1>
+        </div>
         
         <div style="padding: 30px; background-color: #f8f9fa;">
           ${developmentWarning}

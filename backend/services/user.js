@@ -61,7 +61,7 @@ async function createUser(userData, file, creatorRole) {
     throw error;
   }
   // Validación de unicidad de documento
-  const existingUser = await User.findOne({ where: { documentNumber: userData.documentNumber?.toString() } });
+  const existingUser = await User.findOne({ where: { documentNumber: userData.documentNumber } });
   if (existingUser) {
     const error = new Error("Ya existe un usuario con ese número de documento");
     error.status = 409;
@@ -84,7 +84,7 @@ async function createUser(userData, file, creatorRole) {
     firstName: userData.firstName,
     lastName: userData.lastName,
     documentType: userData.documentType,
-    documentNumber: userData.documentNumber?.toString(),
+    documentNumber: userData.documentNumber,
     phone: userData.phone,
     email: userData.email,
     password: hashedPassword,

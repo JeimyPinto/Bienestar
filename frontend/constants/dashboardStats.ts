@@ -25,18 +25,18 @@ export const getDashboardStats = ({ requests, services, userRole }: StatParams):
     {
       title: "Solicitudes Pendientes",
       value: activeRequests,
-      icon: STAT_ICONS.PENDING,
-      color: STAT_COLORS.WARNING,
+      icon: "⏳",
+      color: "bg-warning/10 text-warning border-warning/20 hover:bg-warning/20",
       description: "Requieren atención",
       href: "/requests?filter=pendiente"
     },
     {
       title: "Solicitudes Aprobadas",
       value: completedRequests,
-      icon: STAT_ICONS.COMPLETED,
-      color: STAT_COLORS.SUCCESS,
+      icon: "✅",
+      color: "bg-success/10 text-success border-success/20 hover:bg-success/20",
       description: "Finalizadas exitosamente",
-      href: "/requests?filter=aprobada"
+      href: "/requests?filter=completada"
     }
   ];
 
@@ -47,8 +47,8 @@ export const getDashboardStats = ({ requests, services, userRole }: StatParams):
     baseStats.unshift({
       title: "Mis Servicios",
       value: services.length,
-      icon: STAT_ICONS.SERVICES,
-      color: STAT_COLORS.PRIMARY,
+      icon: "🛠️",
+      color: "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20",
       description: "Servicios creados",
       href: "/services"
     });
