@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useServices } from "./useServices";
 import { useRequests } from "./useRequests";
 import { ROLES } from "../constants/roles";
-import { DashboardStat, STAT_COLORS, STAT_ICONS } from "../constants/dashboardStats";
+import { DashboardStat, getDashboardStats } from "../constants/dashboardStats";
 
 interface UseDashboardStatsOptions {
   token: string | null;
@@ -23,7 +23,7 @@ export const useDashboardStats = ({
   const { services } = useServices({
     token,
     userId: isAdmin ? userId : undefined,
-    mode: isAdmin ? 'userServices' : 'allActive',
+    mode: isAdmin ? 'userServices' : 'all',
     onError: () => {}
   });
 
@@ -35,44 +35,14 @@ export const useDashboardStats = ({
     onError: () => {}
   });
 
-  // Calcular estadísticas usando useMemo para optimización
+  // Calcular estadísticas usando la función reutilizable
   const stats = useMemo((): DashboardStat[] => {
-    const pendingRequests = requests.filter(r => r.responseStatus === 'pendiente').length;
-    const approvedRequests = requests.filter(r => r.responseStatus === 'aprobada').length;
-    
-    const baseStats: DashboardStat[] = [
-      {
-        title: "Solicitudes Pendientes",
-        value: pendingRequests,
-        icon: STAT_ICONS.PENDING,
-        color: STAT_COLORS.WARNING,
-        description: "Requieren atención",
-        href: "/requests?filter=pendiente"
-      },
-      {
-        title: "Solicitudes Aprobadas",
-        value: approvedRequests,
-        icon: STAT_ICONS.COMPLETED,
-        color: STAT_COLORS.SUCCESS,
-        description: "Finalizadas exitosamente",
-        href: "/requests?filter=aprobada"
-      }
-    ];
-
-    // Agregar estadística de servicios solo para admins
-    if (isAdmin) {
-      baseStats.unshift({
-        title: "Mis Servicios",
-        value: services.length,
-        icon: STAT_ICONS.SERVICES,
-        color: STAT_COLORS.PRIMARY,
-        description: "Servicios creados",
-        href: "/services"
-      });
-    }
-
-    return baseStats;
-  }, [requests, services, isAdmin]);
+    return getDashboardStats({
+      requests,
+      services,
+      userRole
+    });
+  }, [requests, services, userRole]);
 
   return stats;
 };
