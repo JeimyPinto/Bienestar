@@ -18,8 +18,8 @@ export interface StatParams {
 }
 
 export const getDashboardStats = ({ requests, services, userRole }: StatParams): DashboardStat[] => {
-  const activeRequests = requests.filter((r: Request) => r.responseStatus === 'pendiente').length;
-  const completedRequests = requests.filter((r: Request) => r.responseStatus === 'aprobada').length;
+  const activeRequests = requests.filter((r: Request) => r.status === true).length;
+  const completedRequests = requests.filter((r: Request) => r.status === false).length;
   
   const baseStats: DashboardStat[] = [
     {
@@ -28,7 +28,7 @@ export const getDashboardStats = ({ requests, services, userRole }: StatParams):
       icon: "⏳",
       color: "bg-warning/10 text-warning border-warning/20 hover:bg-warning/20",
       description: "Requieren atención",
-      href: "/requests?filter=pendiente"
+      href: "/requests"
     },
     {
       title: "Solicitudes Aprobadas",

@@ -75,3 +75,23 @@ body.overflow-hidden {
   overflow: hidden;
 }
 
+/* Focus personalizado para mejor accesibilidad */
+.focus-visible-custom:focus-visible {
+  outline: 2px solid var(--azul-cielo);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+/* Estilos adicionales para mejorar contraste en footer */
+.footer-text-primary {
+  color: var(--blanco);
+}
+
+.footer-text-secondary {
+  color: var(--azul-cielo);
+}
+
+.footer-text-muted {
+  color: rgba(130, 222, 240, 0.7); /* azul-cielo/70 */
+}
+

@@ -6,6 +6,7 @@ import UserCard from "../../components/users/userCard";
 import DashboardRoleActions from "../../components/dashboard/dashboardRoleActions";
 import RequestForm from "../../components/requests/requestForm";
 import SuccessMessage from "../../ui/successMessage";
+import ServicesGallery from "../../components/services/servicesGallery"
 import { useAuthContext } from "../../contexts/authContext";
 import { useMessages } from "../../hooks/useMessages";
 import { useModal } from "../../hooks/useModal";
@@ -116,6 +117,7 @@ export default function DashboardPage() {
               errorMessage={errorMessage}
             />
           )}
+          <ServicesGallery/>
         </div>
       </main>
     </>

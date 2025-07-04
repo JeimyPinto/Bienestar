@@ -30,7 +30,7 @@ export default function CentralLogo({
         />
       </div>
       
-      <div className="flex items-center gap-3 text-azul-cielo/80 group">
+      <div className="flex items-center gap-3 text-azul-cielo group">
         <div className="p-1.5 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors duration-200">
           <Image
             src="/images/ico-copyright.svg"
@@ -40,7 +40,7 @@ export default function CentralLogo({
             priority={false}
           />
         </div>
-        <p className="text-sm font-medium group-hover:text-white transition-colors duration-200">
+        <p className="text-sm font-medium text-azul-cielo/90 group-hover:text-white transition-colors duration-200">
           {new Date().getFullYear()} - Todos los derechos reservados
         </p>
       </div>

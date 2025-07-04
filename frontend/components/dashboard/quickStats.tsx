@@ -7,7 +7,7 @@ export default function QuickStats() {
   
   // Obtener estadísticas usando el hook especializado
   const stats = useDashboardStats({
-    token,
+    token: token || undefined,
     userId: user?.id,
     userRole: user?.role || ''
   });

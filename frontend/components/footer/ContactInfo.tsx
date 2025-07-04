@@ -50,7 +50,7 @@ export default function ContactInfo({
           <a
             href={`mailto:${email}`}
             className="
-              text-sm text-azul-cielo hover:text-warning 
+              text-sm text-azul-cielo hover:text-amarillo 
               transition-colors duration-200 
               underline underline-offset-2 hover:underline-offset-4 
               break-all font-medium

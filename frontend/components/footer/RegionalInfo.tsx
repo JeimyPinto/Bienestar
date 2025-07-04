@@ -24,17 +24,17 @@ export default function RegionalInfo({
         <h3 className="text-xl font-bold text-white">{regionName}</h3>
       </div>
       
-      <div className="space-y-3 text-azul-cielo/90">
+      <div className="space-y-3 text-white/90">
         <div className="flex items-start space-x-2 group">
           <span className="text-lg mt-0.5 group-hover:scale-110 transition-transform duration-200">🏭</span>
-          <p className="text-sm leading-relaxed group-hover:text-white transition-colors duration-200">
+          <p className="text-sm leading-relaxed text-azul-cielo/90 group-hover:text-white transition-colors duration-200">
             {centerName}
           </p>
         </div>
         
         <div className="flex items-start space-x-2 group">
           <span className="text-lg mt-0.5 group-hover:scale-110 transition-transform duration-200">📍</span>
-          <p className="text-sm leading-relaxed group-hover:text-white transition-colors duration-200">
+          <p className="text-sm leading-relaxed text-azul-cielo/90 group-hover:text-white transition-colors duration-200">
             {address}
           </p>
         </div>
@@ -42,8 +42,8 @@ export default function RegionalInfo({
         <div className="flex items-start space-x-2 group">
           <span className="text-lg mt-0.5 group-hover:scale-110 transition-transform duration-200">🕐</span>
           <div className="text-sm leading-relaxed group-hover:text-white transition-colors duration-200">
-            <p className="font-medium">{scheduleTitle}</p>
-            <p className="text-xs text-azul-cielo/70 group-hover:text-white/80">
+            <p className="font-medium text-white">{scheduleTitle}</p>
+            <p className="text-xs text-azul-cielo/80 group-hover:text-white/90">
               {schedule}
             </p>
           </div>
