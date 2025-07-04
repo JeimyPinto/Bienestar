@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuthContext } from "../contexts/authContext";
 import { login } from "../services/auth";
 
 /**

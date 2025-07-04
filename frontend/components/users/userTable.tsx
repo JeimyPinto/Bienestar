@@ -7,7 +7,7 @@ import PaginationControls from "./paginationControls"
 import { useColumnSorter } from "../../lib/useColumnSorter"
 import { useFilter } from "../../hooks/useFilter"
 import { useUsers } from "../../hooks/useUsers"
-import { useAuthContext } from "../../contexts/AuthContext"
+import { useAuthContext } from "../../contexts/authContext"
 
 export default function UserTable({
     onEditUser,

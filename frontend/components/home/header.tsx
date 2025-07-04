@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useHeader } from "../../hooks/useHeader";
 import NavLink from "../header/NavLink";
 import UserDashboardLink from "../header/UserDashboardLink";

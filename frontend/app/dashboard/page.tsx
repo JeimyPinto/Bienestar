@@ -6,7 +6,7 @@ import UserCard from "../../components/users/userCard";
 import DashboardRoleActions from "../../components/dashboard/dashboardRoleActions";
 import RequestForm from "../../components/requests/requestForm";
 import SuccessMessage from "../../ui/successMessage";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useMessages } from "../../hooks/useMessages";
 import { useModal } from "../../hooks/useModal";
 

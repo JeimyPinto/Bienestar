@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { Request } from "../../interface/request";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useRequests } from "../../hooks/useRequests";
 import { useMessages } from "../../hooks/useMessages";
 import RequestForm from "../../components/requests/requestForm"

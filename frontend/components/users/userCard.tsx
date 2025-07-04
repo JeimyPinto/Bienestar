@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { useState } from "react"
-import { useAuthContext } from "../../contexts/AuthContext"
+import { useAuthContext } from "../../contexts/authContext"
 import { useUsers } from "../../hooks/useUsers"
 import { User } from "../../interface/user"
 

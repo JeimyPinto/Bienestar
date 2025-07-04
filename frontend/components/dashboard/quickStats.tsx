@@ -1,4 +1,4 @@
-import {useAuthContext} from "../../contexts/AuthContext";
+import {useAuthContext} from "../../contexts/authContext";
 import { ROLES } from "../../constants/roles";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
 

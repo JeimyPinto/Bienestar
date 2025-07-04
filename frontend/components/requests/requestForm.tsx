@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useRequests } from "../../hooks/useRequests";
 import { Request } from "../../interface/request";
 import { ROLES } from "../../constants/roles";

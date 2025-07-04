@@ -6,7 +6,7 @@ import UserFormAdminFields from "./userFormAdminFields";
 import UserFormImageField from "./userFormImageField";
 import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useGroups } from "../../hooks/useGroups";
 
 interface UserFormProps {

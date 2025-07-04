@@ -3,7 +3,7 @@ import { Group } from "../../interface/group";
 import GroupTableFilterBar from "./groupTableFilterBar";
 import GroupForm from "./groupForm";
 import { filterGroupsByFichaPrograma } from "../../helpers/filterHelpers";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 
 interface GroupTableProps {
   groups: Group[];

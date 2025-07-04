@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 
 type ActiveSessionMessageProps = {
   onLogout: () => void;

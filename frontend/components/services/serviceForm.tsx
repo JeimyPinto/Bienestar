@@ -5,7 +5,7 @@ import ServiceFormMainFields from "./serviceFormMainFields";
 import ServiceFormAdminFields from "./serviceFormAdminFields";
 import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useServices } from "../../hooks/useServices";
 
 const emptyService: Service = {

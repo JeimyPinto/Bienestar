@@ -1,4 +1,4 @@
-import {useAuthContext} from "../../contexts/AuthContext";
+import {useAuthContext} from "../../contexts/authContext";
 import ActionButtons from "./actionButtons";
 import QuickStats from "./quickStats";
 import WelcomeBanner from "./welcomeBanner";

@@ -8,7 +8,7 @@ import RemissionTable from "../../components/remissions/remissionTable";
 import RemissionForm from "../../components/remissions/remissionForm";
 import SectionHeader from "../../ui/sectionHeader";
 import PageLayout from "../../components/layout/pageLayout";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useRemissions } from "../../hooks/useRemissions";
 import { useMessages } from "../../hooks/useMessages";
 import { useModal } from "../../hooks/useModal";

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Remission } from "../../interface/remission";
 import { Request } from "../../interface/request";
 import { ROLES } from "../../constants/roles";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useUsers } from "../../hooks/useUsers";
 import { useRequests } from "../../hooks/useRequests";
 import { useRemissions } from "../../hooks/useRemissions";

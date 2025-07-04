@@ -10,7 +10,7 @@ import SectionHeader from "../../ui/sectionHeader";
 import ServiceForm from "../../components/services/serviceForm";
 import Spinner from "../../ui/spinner";
 import PageLayout from "../../components/layout/pageLayout";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 import { useServices } from "../../hooks/useServices";
 import { useMessages } from "../../hooks/useMessages";
 import { useModal } from "../../hooks/useModal";

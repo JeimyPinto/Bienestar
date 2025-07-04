@@ -1,6 +1,6 @@
 import { getCurrentTimeGreeting, getDayOfMonth, getAbbreviatedMonth } from "../../helpers/timeHelpers";
 import { getRoleDisplay } from "../../helpers/roleHelpers";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 
 export default function WelcomeBanner() {
   const { user } = useAuthContext();

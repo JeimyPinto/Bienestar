@@ -11,7 +11,7 @@ import PageLayout from "../../components/layout/pageLayout";
 import { useModal } from "../../hooks/useModal";
 import { useMessages } from "../../hooks/useMessages";
 import { useUsers } from "../../hooks/useUsers";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../contexts/authContext";
 
 import { User } from "../../interface/user";
 
