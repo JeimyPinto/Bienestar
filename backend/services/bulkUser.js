@@ -94,7 +94,7 @@ class BulkUserService {
             phone: rowData.phone?.toString().trim(),
             email: emailStr,
             password: hashedPassword,
-            role: "USER", // Siempre USER
+            role: "user", // Siempre USER
             status: "activo", // Siempre activo
             groupId: null // Siempre null
           };
