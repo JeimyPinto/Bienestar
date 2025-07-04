@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -18,6 +18,5 @@ module.exports = {
   async down (queryInterface) {
     await queryInterface.removeColumn("Requests", "responseStatus");
     await queryInterface.removeColumn("Requests", "responseMessage");
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Requests_responseStatus";');
   }
 };

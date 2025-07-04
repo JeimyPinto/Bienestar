@@ -59,7 +59,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-async function sendUserCreatedMail({ to, firstName, password }) {
+async function sendUserCreatedMail({ to, firstName }) {
   const isDevelopment = process.env.NODE_ENV === "development";
   const developmentWarning = isDevelopment ? `
     <div style="background: #fff3cd; border: 2px solid #ffeaa7; border-radius: 6px; padding: 16px; margin: 20px 0;">
