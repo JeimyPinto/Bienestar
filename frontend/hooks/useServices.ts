@@ -107,7 +107,7 @@ export const useServices = ({
         
         // Log de depuración con detalles si están disponibles
         if (res.details) {
-          console.error(`Error en fetchServices (modo: ${mode}):`, {
+          console.log(`Error en fetchServices (modo: ${mode}):`, {
             message: res.message,
             details: res.details,
             mode,
@@ -116,7 +116,7 @@ export const useServices = ({
             serviceId
           });
         } else {
-          console.error(`Error en fetchServices (modo: ${mode}):`, res.message);
+          console.log(`Error en fetchServices (modo: ${mode}):`, res.message);
         }
         
         onErrorRef.current?.(res.message);
@@ -132,7 +132,7 @@ export const useServices = ({
       setErrorMessage(errorMsg);
       
       // Log detallado del error de excepción
-      console.error(`Excepción en fetchServices (modo: ${mode}):`, {
+      console.log(`Excepción en fetchServices (modo: ${mode}):`, {
         error,
         mode,
         token: token ? "presente" : "ausente",
@@ -186,14 +186,14 @@ export const useServices = ({
         
         // Log de depuración con detalles si están disponibles
         if (res.details) {
-          console.error("Error en createService:", {
+          console.log("Error en createService:", {
             message: res.message,
             details: res.details,
             service,
             hasFile: !!file
           });
         } else {
-          console.error("Error en createService:", res.message);
+          console.log("Error en createService:", res.message);
         }
         
         onErrorRef.current?.(res.message);
@@ -209,7 +209,7 @@ export const useServices = ({
       setErrorMessage(errorMsg);
       
       // Log detallado del error de excepción
-      console.error("Excepción en createService:", {
+      console.log("Excepción en createService:", {
         error,
         service,
         hasFile: !!file
@@ -235,7 +235,7 @@ export const useServices = ({
         
         // Log de depuración con detalles si están disponibles
         if (res.details) {
-          console.error("Error en updateService:", {
+          console.log("Error en updateService:", {
             message: res.message,
             details: res.details,
             id,
@@ -243,7 +243,7 @@ export const useServices = ({
             hasFile: !!file
           });
         } else {
-          console.error("Error en updateService:", res.message);
+          console.log("Error en updateService:", res.message);
         }
         
         onErrorRef.current?.(res.message);
@@ -259,7 +259,7 @@ export const useServices = ({
       setErrorMessage(errorMsg);
       
       // Log detallado del error de excepción
-      console.error("Excepción en updateService:", {
+      console.log("Excepción en updateService:", {
         error,
         id,
         service,

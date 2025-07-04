@@ -1,24 +1,163 @@
 import Image from "next/image"
 import { areaColors } from "../../styles/areaColors"
-import { Service } from "../../interface/service"
 import { formatDate } from "../../lib/formateDate"
-import EmptyState from "../../components/home/emptyState"
+import { useServices } from "../../hooks/useServices"
 
-export default function ServicesGallery(props: { services?: Service[]; message?: string }) {
-  const { services, message } = props;
+interface ServicesGalleryProps {
+  token?: string | null;
+  userId?: number;
+  mode?: 'all' | 'allActive' | 'byId' | 'userServices';
+  serviceId?: number;
+  onError?: (message?: string) => void;
+  showLoadingState?: boolean;
+}
+
+export default function ServicesGallery({ 
+  token, 
+  userId, 
+  mode = 'allActive',
+  serviceId,
+  onError,
+  showLoadingState = true
+}: ServicesGalleryProps) {
+  const { services, loading, errorMessage } = useServices({
+    token,
+    userId,
+    mode,
+    serviceId,
+    onError
+  });
+
+  if (loading && showLoadingState) {
+    return (
+      <section aria-label="Galería de servicios" className="w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, index) => (
+            <div key={index} className="bg-white shadow-lg rounded-2xl overflow-hidden border border-azul-cielo/20 animate-pulse">
+              <div className="w-full h-48 bg-azul-cielo/20"></div>
+              <div className="p-5">
+                <div className="h-6 bg-azul-cielo/30 rounded mb-2"></div>
+                <div className="h-4 bg-azul-cielo/20 rounded mb-3 w-20"></div>
+                <div className="h-4 bg-azul-marino/20 rounded mb-2"></div>
+                <div className="h-4 bg-azul-marino/20 rounded mb-2"></div>
+                <div className="h-4 bg-azul-marino/20 rounded w-3/4"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   if (!services || services.length === 0) {
+    // Función para procesar el mensaje de error y hacerlo más amigable
+    const getDisplayMessage = () => {
+      if (!errorMessage) {
+        return "Actualmente no hay servicios disponibles para mostrar. Los servicios aparecerán aquí una vez que sean publicados.";
+      }
+      
+      // Log del error original para debugging (solo en desarrollo)
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Error original en ServicesGallery:', errorMessage);
+      }
+      
+      // Detectar diferentes tipos de errores y mostrar mensajes amigables
+      if (errorMessage.includes("SyntaxError") || errorMessage.includes("Unexpected token")) {
+        return "Temporalmente no podemos cargar los servicios. Por favor, inténtalo de nuevo en unos momentos.";
+      }
+      
+      if (errorMessage.includes("Server error") || errorMessage.includes("Error en el servidor")) {
+        return "Estamos experimentando problemas técnicos. Nuestro equipo está trabajando para solucionarlo.";
+      }
+      
+      if (errorMessage.includes("Network") || errorMessage.includes("fetch")) {
+        return "Problemas de conexión. Verifica tu conexión a internet e inténtalo nuevamente.";
+      }
+      
+      if (errorMessage.includes("No se encontraron servicios") || errorMessage.includes("No hay servicios")) {
+        return "No hay servicios disponibles en este momento.";
+      }
+      
+      // Para otros errores, mostrar un mensaje genérico amigable
+      return "No pudimos cargar los servicios en este momento. Por favor, inténtalo más tarde.";
+    };
+
+    const displayMessage = getDisplayMessage();
+    const hasError = !!errorMessage;
+
     return (
-      <EmptyState 
-        title="No hay servicios disponibles"
-        message={message || "Actualmente no hay servicios disponibles para mostrar."}
-        icon="🔍"
-      />
+      <section aria-label="Galería de servicios" className="w-full my-8">
+        <div className={`border rounded-2xl p-8 text-center ${
+          hasError 
+            ? "bg-gradient-to-br from-coral/10 to-amarillo/5 border-coral/30" 
+            : "bg-gradient-to-br from-azul-cielo/10 to-azul-oscuro/5 border-azul-cielo/30"
+        }`}>
+          <div className="flex flex-col items-center space-y-4">
+            {/* Icono principal - cambia según si hay error o no */}
+            <div className={`w-20 h-20 rounded-full flex items-center justify-center border-2 ${
+              hasError 
+                ? "bg-coral/20 border-coral/40" 
+                : "bg-azul-cielo/20 border-azul-cielo/40"
+            }`}>
+              <span className="text-4xl">{hasError ? "⚠️" : "🔍"}</span>
+            </div>
+            
+            {/* Título */}
+            <h3 className={`text-2xl font-bold ${hasError ? "text-coral" : "text-azul-oscuro"}`}>
+              {hasError ? "Oops! Algo salió mal" : "No hay servicios disponibles"}
+            </h3>
+            
+            {/* Mensaje */}
+            <p className="text-azul-marino/70 max-w-md text-base leading-relaxed">
+              {displayMessage}
+            </p>
+            
+            {/* Banner informativo adicional - solo si no hay error grave */}
+            {!hasError && (
+              <div className="bg-amarillo/20 border border-amarillo/40 rounded-lg p-4 max-w-lg">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">💡</span>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-azul-oscuro">
+                      ¿Eres instructor o administrador?
+                    </p>
+                    <p className="text-xs text-azul-marino/80 mt-1">
+                      Puedes crear nuevos servicios desde el panel de administración para que aparezcan aquí.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Botón de reintento si hay error */}
+            {hasError && (
+              <button 
+                onClick={() => window.location.reload()}
+                className="
+                  bg-primary hover:bg-azul-cielo 
+                  text-white font-medium px-6 py-3 rounded-lg 
+                  transition-colors duration-200 
+                  focus:outline-none focus:ring-2 focus:ring-primary/50
+                "
+              >
+                🔄 Intentar de nuevo
+              </button>
+            )}
+            
+            {/* Decoración */}
+            <div className="flex space-x-2 mt-4">
+              <div className={`w-2 h-2 rounded-full animate-pulse ${hasError ? "bg-coral" : "bg-azul-cielo"}`}></div>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${hasError ? "bg-amarillo" : "bg-primary"}`} style={{ animationDelay: '0.2s' }}></div>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${hasError ? "bg-coral/70" : "bg-success"}`} style={{ animationDelay: '0.4s' }}></div>
+            </div>
+          </div>
+        </div>
+      </section>
     );
   }
 
   return (
-    <section aria-label="Galería de servicios" className="w-full">
+    <section aria-label="Galería de servicios" className="w-full my-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {services.map((service) => (
           <div
