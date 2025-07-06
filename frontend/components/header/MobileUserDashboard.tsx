@@ -24,7 +24,7 @@ export default function MobileUserDashboard({
         onClick={onClick}
         className="
           block p-4 rounded-xl
-          bg-gradient-to-r from-success to-verde-bosque
+          bg-gradient-to-r from-success to-azul-oscuro
           text-white border border-success/30
           transition-all duration-300
           hover:shadow-xl hover:scale-105 hover:translate-x-2

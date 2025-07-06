@@ -12,7 +12,7 @@ export default function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
       role="alert"
       aria-live="assertive"
     >
-      <strong className="font-bold">¡Error!</strong>
+      <strong className="font-bold">¡Error!</strong>{""}
       <span className="block sm:inline ml-2">{message}</span>
       {onRetry && (
         <button

@@ -22,7 +22,7 @@ export default function UserDashboardLink({
       href="/dashboard"
       onClick={onClick}
       className="
-        px-4 py-2 bg-success hover:bg-verde-bosque 
+        px-4 py-2 bg-azul-oscuro hover:bg-cian
         text-white rounded-lg font-medium text-sm
         transition-all duration-300 
         hover:shadow-lg hover:scale-105
