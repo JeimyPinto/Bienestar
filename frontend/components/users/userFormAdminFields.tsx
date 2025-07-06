@@ -1,15 +1,12 @@
 import React from "react";
 import { ROLES } from "../../constants/roles"
 import { User } from "../../interface/user";
+import { Group } from "../../interface/group";
 
 export interface UserFormAdminFieldsProps {
   newUser: User;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  groups: Array<{
-    id: number;
-    fichaNumber: string | number;
-    programName: string;
-  }>;
+  groups: Array<Group>;
   groupsLoading: boolean;
 }
 export default function UserFormAdminFields({ newUser, handleInputChange, groups, groupsLoading }: UserFormAdminFieldsProps) {

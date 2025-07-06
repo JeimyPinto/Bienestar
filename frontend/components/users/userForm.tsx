@@ -79,7 +79,9 @@ export default function UserForm(props: UserFormProps) {
         const { name, value } = e.target;
         setNewUser((prevUser: User) => ({
             ...prevUser,
-            [name]: name === "groupId" && value !== "" ? Number(value) : value,
+            [name]: name === "groupId" 
+                ? (value !== "" ? Number(value) : null)
+                : value,
         }));
     }
 
@@ -91,9 +93,15 @@ export default function UserForm(props: UserFormProps) {
         setIsSubmitting(true); // Iniciar loading
         setFormError("");
         const userToSend = { ...newUser };
+        
         // Eliminar image si no hay archivo nuevo ni imagen previa
         if (!userToSend.file && !userToSend.image) {
             delete userToSend.image;
+        }
+        
+        // Eliminar groupId si no tiene un valor válido
+        if (!userToSend.groupId || userToSend.groupId === 0) {
+            delete userToSend.groupId;
         }
 
         try {
