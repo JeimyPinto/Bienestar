@@ -17,6 +17,7 @@ export interface Service {
   creator?: User;
   area: Area;
   image?: string;
+  detailUrl?: string;
   status: ServiceStatus;
   createdAt: string;
   updatedAt: string;

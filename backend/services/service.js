@@ -4,6 +4,20 @@ const User = db.User;
 const fs = require("fs");
 const chalk = require("chalk");
 
+// Helper function to generate service detail URL
+function generateServiceDetailUrl(area, id) {
+  const areaSlugMap = {
+    "Salud": "salud",
+    "Arte y Cultura": "arte-cultura",
+    "Deporte y Recreación": "deporte-recreacion",
+    "Apoyo Socioeconomico y Reconocimiento a la Excelencia": "apoyo-socioeconomico",
+    "Apoyo Psicosocial": "apoyo-psicosocial"
+  };
+  
+  const areaSlug = areaSlugMap[area] || area.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+  return `/${areaSlug}/${id}`;
+}
+
 async function getAllServices() {
   return await Service.findAll({
     include: {
@@ -47,10 +61,17 @@ async function createService(serviceData, file) {
     ...serviceData,
     image: null,
   });
+  
+  // Generate detailUrl automatically
+  const detailUrl = generateServiceDetailUrl(serviceData.area, service.id);
+  
+  // Update service with image and detailUrl
+  const updateData = { detailUrl };
   if (file) {
-    service.image = file.filename;
-    await service.update({ image: service.image });
+    updateData.image = file.filename;
   }
+  
+  await service.update(updateData);
   return service;
 }
 
@@ -62,11 +83,18 @@ async function updateService(serviceId, serviceData, file) {
     error.details = { service: null };
     throw error;
   }
+  
   let updatedFields = { ...serviceData };
+  
+  // If area changed, regenerate detailUrl
+  if (serviceData.area && serviceData.area !== service.area) {
+    updatedFields.detailUrl = generateServiceDetailUrl(serviceData.area, serviceId);
+  }
+  
   if (file) {
-    await service.update({ image: file.filename });
     updatedFields.image = file.filename;
   }
+  
   await service.update(updatedFields);
   return { service, updatedFields };
 }
@@ -79,12 +107,19 @@ async function updateServiceWithAudit(serviceId, serviceData, file) {
     error.details = { service: null };
     throw error;
   }
+  
   const oldService = service.toJSON();
   let updatedFields = { ...serviceData };
+  
+  // If area changed, regenerate detailUrl
+  if (serviceData.area && serviceData.area !== service.area) {
+    updatedFields.detailUrl = generateServiceDetailUrl(serviceData.area, serviceId);
+  }
+  
   if (file) {
-    await service.update({ image: file.filename });
     updatedFields.image = file.filename;
   }
+  
   await service.update(updatedFields);
   return { oldService, updatedService: service.toJSON() };
 }

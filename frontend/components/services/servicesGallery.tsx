@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { areaColors } from "../../styles/areaColors"
 import { formatDate } from "../../lib/formateDate"
 import { useServices } from "../../hooks/useServices"
@@ -197,6 +198,19 @@ export default function ServicesGallery({
               <p className="text-azul-marino/70 text-sm mb-4 line-clamp-3 flex-1">
                 {service.description}
               </p>
+              
+              {/* Botón de detalle si existe detailUrl */}
+              {service.detailUrl && (
+                <div className="mb-4">
+                  <Link
+                    href={`/services${service.detailUrl}`}
+                    className="inline-flex items-center justify-center w-full px-4 py-2 bg-gradient-to-r from-azul-claro to-azul-oscuro text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105 text-sm"
+                  >
+                    🔍 Ver Detalles Completos
+                  </Link>
+                </div>
+              )}
+              
               <div className="mt-auto flex flex-col gap-2 text-xs text-azul-marino/60 border-t border-azul-cielo/20 pt-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-primary">📅</span>

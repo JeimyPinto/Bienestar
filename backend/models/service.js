@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         ],
       },
       image: DataTypes.STRING,
+      detailUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "URL personalizada para la página de detalle del servicio"
+      },
       status: {
         type: DataTypes.ENUM("activo", "inactivo"),
         allowNull: false,

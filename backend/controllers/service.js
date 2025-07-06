@@ -1,6 +1,5 @@
 const serviceService = require("../services/service.js");
 const { createAuditLog } = require("../services/auditLog.js");
-const { serviceSchema } = require("../schemas/service.js");
 
 class ServiceController {
   async getAll(req, res, next) {
