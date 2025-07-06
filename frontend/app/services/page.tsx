@@ -79,7 +79,7 @@ export default function ServicePage() {
                                 </div>
                             </div>
                         ) : (
-                            <ServicesGallery services={services} />
+                            <ServicesGallery/>
                         )}
                     </div>
                 </main>

@@ -62,10 +62,10 @@ async function createService(serviceData, file) {
     image: null,
   });
   
-  // Generate detailUrl automatically
+  // Generar detailUrl dinamicamente
   const detailUrl = generateServiceDetailUrl(serviceData.area, service.id);
   
-  // Update service with image and detailUrl
+  // Actualizar el servicio con la URL generada
   const updateData = { detailUrl };
   if (file) {
     updateData.image = file.filename;
@@ -84,34 +84,9 @@ async function updateService(serviceId, serviceData, file) {
     throw error;
   }
   
-  let updatedFields = { ...serviceData };
-  
-  // If area changed, regenerate detailUrl
-  if (serviceData.area && serviceData.area !== service.area) {
-    updatedFields.detailUrl = generateServiceDetailUrl(serviceData.area, serviceId);
-  }
-  
-  if (file) {
-    updatedFields.image = file.filename;
-  }
-  
-  await service.update(updatedFields);
-  return { service, updatedFields };
-}
-
-async function updateServiceWithAudit(serviceId, serviceData, file) {
-  const service = await Service.findByPk(serviceId);
-  if (!service) {
-    const error = new Error("Servicio no encontrado");
-    error.status = 404;
-    error.details = { service: null };
-    throw error;
-  }
-  
   const oldService = service.toJSON();
   let updatedFields = { ...serviceData };
   
-  // If area changed, regenerate detailUrl
   if (serviceData.area && serviceData.area !== service.area) {
     updatedFields.detailUrl = generateServiceDetailUrl(serviceData.area, serviceId);
   }
@@ -141,6 +116,5 @@ module.exports = {
   getServicesByUserId,
   createService,
   updateService,
-  updateServiceWithAudit,
   removeUploadedFile,
 };

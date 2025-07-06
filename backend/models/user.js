@@ -40,7 +40,11 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.STRING,
     role: DataTypes.STRING,
     image: DataTypes.STRING,
-    groupId: DataTypes.INTEGER
+    groupId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null
+    }
   }, {
     sequelize,
     modelName: "User",

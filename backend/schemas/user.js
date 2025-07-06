@@ -34,7 +34,14 @@ const createSchema = z
       ROLES.SUPERADMIN
     ], { message: "Role must be one of: user, instructor, admin, superadmin / El rol debe ser uno de: user, instructor, admin, superadmin" }),
     image: z.string().optional(), // nombre del archivo, si lo quieres guardar
-    groupId: z.number().int().nullable().optional(),
+    groupId: z.preprocess(
+      (val) => {
+        if (val === "" || val === "null" || val === undefined || val === null) return null;
+        const num = Number(val);
+        return isNaN(num) ? null : num;
+      },
+      z.number().int().nullable().optional()
+    ),
   })
   .transform((data) => ({
     ...data,
@@ -66,7 +73,14 @@ const updateSchema = z.object({
     .optional(),
   image: z.string().optional(),
   updatedAt: z.string().optional(),
-  groupId: z.number().int().nullable().optional(),
+  groupId: z.preprocess(
+    (val) => {
+      if (val === "" || val === "null" || val === undefined || val === null) return null;
+      const num = Number(val);
+      return isNaN(num) ? null : num;
+    },
+    z.number().int().nullable().optional()
+  ),
 });
 
 /**

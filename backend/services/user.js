@@ -101,21 +101,52 @@ async function createUser(userData, file, creatorRole) {
 }
 
 async function updateUser(userId, reqUser, body, file) {
+  console.log("🔍 Actualizando usuario:", { userId, body, userRole: reqUser?.role });
+  
   const user = await User.findByPk(userId);
   if (!user) {
     const error = new Error("Usuario no encontrado");
     error.status = 404;
     throw error;
   }
+  
   let updateFields = getAllowedUpdateFields(reqUser?.role, body);
+  console.log("📝 Campos permitidos para actualizar:", updateFields);
+  
+  // Procesar groupId especialmente
+  if (updateFields.hasOwnProperty("groupId")) {
+    // Convertir string vacío o "null" a null
+    if (updateFields.groupId === "" || updateFields.groupId === "null" || updateFields.groupId === undefined) {
+      updateFields.groupId = null;
+    } else if (updateFields.groupId !== null) {
+      // Asegurar que sea un número válido
+      const groupIdNum = parseInt(updateFields.groupId);
+      updateFields.groupId = isNaN(groupIdNum) ? null : groupIdNum;
+    }
+  }
+  
+  // Procesar password
   updateFields.password = await hashPassword(updateFields.password, user.password);
+  
+  // Manejo de archivo de imagen
   if (file && file.filename) {
     user.image = file.filename;
     await user.update({ image: user.image });
     updateFields.image = file.filename;
   }
+  
+  // Eliminar campos undefined para evitar errores de SQL
+  Object.keys(updateFields).forEach(key => {
+    if (updateFields[key] === undefined) {
+      delete updateFields[key];
+    }
+  });
+  
+  console.log("🔄 Campos finales a actualizar:", updateFields);
+  
   const oldUserData = user.get({ plain: true });
   await user.update(updateFields);
+  
   return { user, oldUserData };
 }
 

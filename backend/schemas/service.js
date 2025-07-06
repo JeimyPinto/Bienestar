@@ -24,9 +24,33 @@ const serviceSchema = z.object({
     errorMap: () => ({ message: "Invalid area / Área inválida" }),
   }),
   image: z.string().optional(),
+  detailUrl: z.string().url().optional().or(z.literal("")).transform(val => val === "" ? null : val),
   status: z.enum(["activo", "inactivo"]).default("activo"),
+});
+
+/**
+ * Esquema para actualización de servicios (todos los campos opcionales excepto validaciones específicas)
+ */
+const updateServiceSchema = z.object({
+  name: z.string().nonempty({
+    message: "Name is required / El nombre es obligatorio",
+  }).optional(),
+  description: z.string().optional(),
+  area: z.enum([
+    "Salud",
+    "Arte y Cultura",
+    "Deporte y Recreación",
+    "Apoyo Socioeconomico y Reconocimiento a la Excelencia",
+    "Apoyo Psicosocial"
+  ], {
+    errorMap: () => ({ message: "Invalid area / Área inválida" }),
+  }).optional(),
+  image: z.string().optional(),
+  detailUrl: z.string().url().optional().or(z.literal("")).transform(val => val === "" ? null : val),
+  status: z.enum(["activo", "inactivo"]).optional(),
 });
 
 module.exports = {
   serviceSchema,
+  updateServiceSchema,
 };

@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = {
-    up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
     // Obtén el primer usuario como creador
     const [user] = await queryInterface.sequelize.query(
       "SELECT id FROM Users ORDER BY id ASC LIMIT 1;",
@@ -13,39 +13,37 @@ module.exports = {
     }
 
     const now = new Date();
+    const area = "Salud";
 
+    // Insertar el servicio
     await queryInterface.bulkInsert("Services", [
       {
         name: "Servicio de Prueba",
         image: null,
         description: "Primer servicio de prueba.",
         creatorId: user.id,
-        area: "Salud",
-        status: "inactivo",
+        area: area,
+        detailUrl: null, // Se actualizará después
+        status: "activo",
         createdAt: now,
         updatedAt: now,
-      },
-      {
-        name: "Servicio de Arte",
-        image: null,
-        description: "Servicio relacionado con arte y cultura.",
-        creatorId: user.id,
-        area: "Arte y Cultura",
-        status: "inactivo",
-        createdAt: now,
-        updatedAt: now,
-      },
-      {
-        name: "Servicio Deportivo",
-        image: null,
-        description: "Servicio de deporte y recreación.",
-        creatorId: user.id,
-        area: "Deporte y Recreación",
-        status: "inactivo",
-        createdAt: now,
-        updatedAt: now,
-      },
+      }
     ]);
+
+    // Obtener el ID del servicio insertado
+    const [insertedService] = await queryInterface.sequelize.query(
+      "SELECT id FROM Services WHERE name = 'Servicio de Prueba' ORDER BY id DESC LIMIT 1;",
+      { type: Sequelize.QueryTypes.SELECT }
+    );
+
+    // Actualizar con la URL dinámica
+    if (insertedService) {
+      const detailUrl = "/" + area.toLowerCase().replace(/\s+/g, "-") + "/" + insertedService.id;
+      await queryInterface.bulkUpdate("Services", 
+        { detailUrl: detailUrl },
+        { id: insertedService.id }
+      );
+    }
   },
 
   down: async (queryInterface) => {

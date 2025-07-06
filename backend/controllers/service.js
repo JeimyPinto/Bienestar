@@ -79,7 +79,7 @@ class ServiceController {
 
   async update(req, res, next) {
     try {
-      const { oldService, updatedService } = await serviceService.updateServiceWithAudit(req.params.id, req.body, req.file);
+      const { oldService, updatedService } = await serviceService.updateService(req.params.id, req.body, req.file);
       await createAuditLog({
         entity_type: "Service",
         entity_id: updatedService.id,
