@@ -34,12 +34,7 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
             body: JSON.stringify({ email, password, recaptchaToken }),
         });
 
-        let data;
-        try {
-            data = await response.json();
-        } catch (jsonError) {
-            return { error: "Error inesperado del servidor.", token: null, details: jsonError };
-        }
+        const data = await response.json();
 
         if (!response.ok || data.details) {
             return { error: true, message: data.message, details: data.details };
@@ -54,11 +49,7 @@ export async function login({ email, password, recaptchaToken }: LoginParams) {
             }
 
             // Retornar datos exitosos
-            return {
-                token: data.token,
-                user: data.user,
-                message: data.message
-            };
+            return data;
         } else {
             return { error: "No se recibió token del servidor.", token: null };
         }

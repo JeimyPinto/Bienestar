@@ -21,19 +21,19 @@ const emptyService: Service = {
 };
 
 interface ServiceFormProps {
-  dialogRef: React.RefObject<HTMLDialogElement>;
-  closeDialog: () => void;
-  onClose: () => void;
-  mode: "create" | "edit";
-  serviceToEdit?: Service;
-  successMessage?: string;
-  setSuccessMessage?: (msg: string) => void;
-  setErrorMessage?: (msg: string) => void;
-  errorMessage?: string;
+    dialogRef: React.RefObject<HTMLDialogElement>;
+    closeDialog: () => void;
+    onClose: () => void;
+    mode: "create" | "edit";
+    serviceToEdit?: Service;
+    successMessage?: string;
+    setSuccessMessage?: (msg: string) => void;
+    setErrorMessage?: (msg: string) => void;
+    errorMessage?: string;
 }
 
 export default function ServiceForm(props: ServiceFormProps) {
-    const { dialogRef, closeDialog, onClose, mode, serviceToEdit } = props;
+    const { dialogRef, closeDialog, onClose, mode, serviceToEdit, setSuccessMessage, setErrorMessage } = props;
     const { token, user, isAuthenticated } = useAuthContext();
     const [newService, setNewService] = useState<Service>(emptyService);
     const [previewImage, setPreviewImage] = useState<string>("");
@@ -95,9 +95,9 @@ export default function ServiceForm(props: ServiceFormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        
+
         if (isSubmitting) return;
-        
+
         setFormError("");
         if (!newService.name.trim() || !newService.description.trim()) {
             setFormError("Todos los campos obligatorios deben estar completos.");
@@ -107,9 +107,9 @@ export default function ServiceForm(props: ServiceFormProps) {
             setFormError("No hay sesión activa. Por favor, inicia sesión.");
             return;
         }
-        
+
         setIsSubmitting(true);
-        
+
         try {
             let result;
             if (mode === "create") {
@@ -131,19 +131,19 @@ export default function ServiceForm(props: ServiceFormProps) {
                     newService.file ? newService.file : undefined
                 );
             }
-            
+
             if (!result) {
                 setFormError("No se pudo procesar la solicitud. Intenta de nuevo.");
                 return;
             }
-            
+
             if (result.error) {
-                setFormError(result.message || "Error al guardar el servicio");
-                props.setErrorMessage?.(result.message || "Error al guardar el servicio");
+                if (result.message) setFormError(result.message);
+                setErrorMessage?.(result.message || "Error al guardar el servicio");
                 return;
             }
-            
-            props.setSuccessMessage?.(result.message || "Servicio guardado correctamente");
+
+            if (result.message) setSuccessMessage?.(result.message);
             setTimeout(() => {
                 onClose?.();
                 closeDialog();
@@ -170,7 +170,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                     closeDialog();
                 }}
             />
-            
+
             {/* Contenido del formulario */}
             <div className="p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -189,14 +189,14 @@ export default function ServiceForm(props: ServiceFormProps) {
                                     />
                                 </div>
                             </div>
-                            
+
                             <div className="lg:w-1/3">
                                 <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm h-fit">
                                     <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
                                         <span className="text-xl">🖼️</span>
                                         Imagen del Servicio
                                     </h3>
-                                    
+
                                     {previewImage && (
                                         <div className="mb-4 flex justify-center">
                                             <div className="relative">
@@ -213,7 +213,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                                             </div>
                                         </div>
                                     )}
-                                    
+
                                     <input
                                         type="file"
                                         name="file"
@@ -224,7 +224,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* Campos administrativos */}
                         <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
                             <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
@@ -238,10 +238,10 @@ export default function ServiceForm(props: ServiceFormProps) {
                             />
                         </div>
                     </fieldset>
-                    
+
                     {/* Mensaje de error */}
                     <FormErrorDisplay error={formError} />
-                    
+
                     {/* Botones de acción */}
                     <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">
                         <button
@@ -266,7 +266,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
                             )}
-                            {isSubmitting 
+                            {isSubmitting
                                 ? (mode === "create" ? "Guardando..." : "Actualizando...")
                                 : (mode === "create" ? "Guardar Servicio" : "Actualizar Servicio")
                             }

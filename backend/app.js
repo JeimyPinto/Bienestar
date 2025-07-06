@@ -74,7 +74,8 @@ const corsOptions = {
       "http://localhost:3000", // Desarrollo local
       "https://bienestar-t7js.onrender.com", // Tu frontend en Render
       "https://bienestarcpic.onrender.com", // Si tienes otro dominio
-      "https://bienestar-backend.onrender.com" // Dominio del backend
+      "https://bienestar-backend.onrender.com", // Dominio del backend
+      "https://03phlgf1-3000.use2.devtunnels.ms"
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1) {

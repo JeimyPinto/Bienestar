@@ -5,7 +5,7 @@ import { useGroups } from "../../hooks/useGroups";
 import { useUsers } from "../../hooks/useUsers";
 import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
-
+import {ROLES} from "../../constants/roles";
 interface GroupFormProps {
   dialogRef: React.RefObject<HTMLDialogElement>;
   onClose: (createdGroup?: Group) => void;
@@ -25,8 +25,7 @@ const GroupForm: React.FC<GroupFormProps> = ({
 }) => {
   const { token } = useAuthContext();
   const { createGroup, updateGroup } = useGroups({ token });
-  const { users } = useUsers({ token, role: 'INSTRUCTOR' });
-
+  const { users } = useUsers({ token, mode: "byRole", role: ROLES.INSTRUCTOR});
   // Estados del formulario
   const [fichaNumber, setFichaNumber] = useState("");
   const [programName, setProgramName] = useState("");
@@ -147,8 +146,8 @@ const GroupForm: React.FC<GroupFormProps> = ({
   };
 
   return (
-    <dialog ref={dialogRef} className="modal">
-      <div className="modal-box max-w-2xl w-full mx-4 p-0 bg-white rounded-xl shadow-2xl">
+    <dialog ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+      <div className="w-full max-w-3xl mx-2 md:mx-0 p-0 bg-white rounded-2xl shadow-2xl border border-azul-cielo/10">
         <FormModalHeader
           mode={mode}
           entityName="Ficha"
@@ -159,7 +158,7 @@ const GroupForm: React.FC<GroupFormProps> = ({
           }}
         />
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
           {errorMessage && (
             <FormErrorDisplay error={errorMessage} />
           )}
@@ -265,11 +264,11 @@ const GroupForm: React.FC<GroupFormProps> = ({
           </div>
 
           {/* Botones */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-azul-cielo/20">
+          <div className="flex justify-end gap-3 pt-4 border-t border-azul-cielo/10">
             <button
               type="button"
               onClick={handleClose}
-              className="px-6 py-2 text-azul-oscuro border border-azul-cielo/30 rounded-lg hover:bg-azul-cielo/10 transition-all duration-200"
+              className="px-6 py-2 text-azul-oscuro border border-azul-cielo/20 rounded-lg hover:bg-azul-cielo/10 transition-all duration-200"
               disabled={loading}
             >
               Cancelar

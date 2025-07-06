@@ -46,7 +46,7 @@ export default function UserForm(props: UserFormProps) {
     // Inicializar formulario según el modo
     useEffect(() => {
         if (mode === "edit" && userToEdit) {
-            setNewUser({ ...userToEdit });
+            setNewUser({ ...userToEdit, password: "" }); // Siempre password vacío en edición
             // Mostrar imagen actual si existe
             if (userToEdit.image) {
                 setPreviewImage(`${process.env.NEXT_PUBLIC_URL_FILE_STATIC?.replace(/\/$/, "")}/users/${userToEdit.image}`);
@@ -102,6 +102,11 @@ export default function UserForm(props: UserFormProps) {
         // Eliminar groupId si no tiene un valor válido
         if (!userToSend.groupId || userToSend.groupId === 0) {
             delete userToSend.groupId;
+        }
+
+        // Eliminar password si está vacío (solo en edición)
+        if (mode === "edit" && (!userToSend.password || userToSend.password.trim() === "")) {
+            delete userToSend.password;
         }
 
         try {

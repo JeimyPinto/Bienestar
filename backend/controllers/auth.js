@@ -28,16 +28,19 @@ class AuthController {
 
       if (!user) {
         return res.status(404).json({
+          error: true,
+          status: 404,
           message: "No existe un usuario registrado con ese email.",
-         details: { field: "email" }
+          details: { field: "email" }
         });
       }
       if (!await bcrypt.compare(password, user.password)) {
-        throw new Error(
-          401,
-          "Correo electrónico o contraseña incorrectos",
-          { field: "password" }
-        );
+        return res.status(401).json({
+          error: true,
+          status: 401,
+          message: "Correo electrónico o contraseña incorrectos",
+          details: { field: "password" }
+        });
       }
       const token = createToken(user);
 

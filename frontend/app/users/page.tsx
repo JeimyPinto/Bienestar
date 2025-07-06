@@ -73,7 +73,7 @@ export default function UsersPage() {
         }
         setTimeout(() => {
             closeDialog();
-        }, 2000);
+        }, 1000);
     };
 
     // Handlers con limpieza de mensajes

@@ -52,7 +52,7 @@ export function useAuth() {
         if (result.details) {
           console.error("Error en login:", result.details);
         }
-        setErrorMessage(result.message);
+        setErrorMessage(result.message || (typeof result.error === 'string' ? result.error : "Error al iniciar sesión"));
         return;
       }
       

@@ -53,12 +53,12 @@ export default function Header() {
           >
             <div className="relative overflow-hidden rounded-xl p-2 transition-all duration-300 group-hover:bg-white/10 bg-white/5 backdrop-blur-sm border border-white/10">
               <Image
-                src="/images/icono.png"
-                priority={false}
-                alt="Logo Bienestar al Aprendiz"
-                width={48}
-                height={48}
-                className="transition-transform duration-300 group-hover:scale-105 object-contain"
+              src={`${process.env.FRONTEND_URL || ""}/images/icono.png`}
+              priority={false}
+              alt="Logo Bienestar al Aprendiz"
+              width={48}
+              height={48}
+              className="transition-transform duration-300 group-hover:scale-105 object-contain"
               />
             </div>
             <div className="hidden sm:block">
