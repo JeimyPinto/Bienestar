@@ -14,19 +14,11 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const developmentWarningBlock = require("../constants/developmentWarning");
+
 async function sendUserCreatedMail({ to, firstName, password }) {
   const isDevelopment = process.env.NODE_ENV === "development";
-  const developmentWarning = isDevelopment ? `
-    <div style="background: #fff3cd; border: 2px solid #ffeaa7; border-radius: 6px; padding: 16px; margin: 20px 0;">
-      <p style="margin: 0; color: #856404; font-weight: bold; text-align: center;">
-        ⚠️ MENSAJE DE PRUEBA - IGNORAR ⚠️
-      </p>
-      <p style="margin: 8px 0 0 0; color: #856404; font-size: 14px; text-align: center;">
-        Este correo ha sido enviado desde el aplicativo de pruebas y no representa algo serio. 
-        Por favor, ignore este mensaje.
-      </p>
-    </div>
-  ` : "";
+  const developmentWarning = isDevelopment ? developmentWarningBlock : "";
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -53,17 +45,7 @@ async function sendUserCreatedMail({ to, firstName, password }) {
 
 async function sendUserUpdatedMail({ to, firstName }) {
   const isDevelopment = process.env.NODE_ENV === "development";
-  const developmentWarning = isDevelopment ? `
-    <div style="background: #fff3cd; border: 2px solid #ffeaa7; border-radius: 6px; padding: 16px; margin: 20px 0;">
-      <p style="margin: 0; color: #856404; font-weight: bold; text-align: center;">
-        ⚠️ MENSAJE DE PRUEBA - IGNORAR ⚠️
-      </p>
-      <p style="margin: 8px 0 0 0; color: #856404; font-size: 14px; text-align: center;">
-        Este correo ha sido enviado desde el aplicativo de pruebas y no representa algo serio. 
-        Por favor, ignore este mensaje.
-      </p>
-    </div>
-  ` : "";
+  const developmentWarning = isDevelopment ? developmentWarningBlock : "";
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -84,7 +66,12 @@ async function sendUserUpdatedMail({ to, firstName }) {
   await transporter.sendMail(mailOptions);
 }
 
-async function sendWelcomeMailIfProd(user, plainPassword) {
+
+/**
+ * Envia un correo de bienvenida a un usuario. Siempre añade el warning si es desarrollo.
+ * Devuelve true si se envió correctamente, false si hubo error.
+ */
+async function sendWelcomeMail(user, plainPassword) {
   try {
     console.log(chalk.blue("📧 Enviando correo de bienvenida a:"), chalk.cyan(user.email));
     await sendUserCreatedMail({
@@ -103,17 +90,7 @@ async function sendWelcomeMailIfProd(user, plainPassword) {
 
 async function sendRequestNotificationMail({ serviceCreator, applicant, request, service }) {
   const isDevelopment = process.env.NODE_ENV === "development";
-  const developmentWarning = isDevelopment ? `
-    <div style="background: #fff3cd; border: 2px solid #ffeaa7; border-radius: 6px; padding: 16px; margin: 20px 0;">
-      <p style="margin: 0; color: #856404; font-weight: bold; text-align: center;">
-        ⚠️ MENSAJE DE PRUEBA - IGNORAR ⚠️
-      </p>
-      <p style="margin: 8px 0 0 0; color: #856404; font-size: 14px; text-align: center;">
-        Este correo ha sido enviado desde el aplicativo de pruebas y no representa algo serio. 
-        Por favor, ignore este mensaje.
-      </p>
-    </div>
-  ` : "";
+  const developmentWarning = isDevelopment ? developmentWarningBlock : "";
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -171,7 +148,11 @@ async function sendRequestNotificationMail({ serviceCreator, applicant, request,
   await transporter.sendMail(mailOptions);
 }
 
-async function sendUpdateMailIfProd(user) {
+/**
+ * Envia un correo de actualización de usuario. Siempre añade el warning si es desarrollo.
+ * Devuelve true si se envió correctamente, false si hubo error.
+ */
+async function sendUpdateMail(user) {
   try {
     console.log(chalk.blue("📧 Enviando correo de actualización de usuario a:"), chalk.cyan(user.email));
     await sendUserUpdatedMail({
@@ -186,7 +167,11 @@ async function sendUpdateMailIfProd(user) {
   }
 }
 
-async function sendRequestNotificationIfProd({ serviceCreator, applicant, request, service }) {
+/**
+ * Envía notificación de solicitud. Siempre añade el warning si es desarrollo.
+ * Devuelve true si se envió correctamente, false si hubo error.
+ */
+async function sendRequestNotification({ serviceCreator, applicant, request, service }) {
   try {
     console.log(chalk.magenta("📨 Enviando notificación de solicitud a:"), chalk.cyan(serviceCreator.email));
     await sendRequestNotificationMail({
@@ -205,17 +190,7 @@ async function sendRequestNotificationIfProd({ serviceCreator, applicant, reques
 
 async function sendRemissionNotificationMail({ serviceCreator, applicant, assignedUser, remission, request, service }) {
   const isDevelopment = process.env.NODE_ENV === "development";
-  const developmentWarning = isDevelopment ? `
-    <div style="background: #fff3cd; border: 2px solid #ffeaa7; border-radius: 6px; padding: 16px; margin: 20px 0;">
-      <p style="margin: 0; color: #856404; font-weight: bold; text-align: center;">
-        ⚠️ MENSAJE DE PRUEBA - IGNORAR ⚠️
-      </p>
-      <p style="margin: 8px 0 0 0; color: #856404; font-size: 14px; text-align: center;">
-        Este correo ha sido enviado desde el aplicativo de pruebas y no representa algo serio. 
-        Por favor, ignore este mensaje.
-      </p>
-    </div>
-  ` : "";
+  const developmentWarning = isDevelopment ? developmentWarningBlock : "";
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -278,7 +253,11 @@ async function sendRemissionNotificationMail({ serviceCreator, applicant, assign
   await transporter.sendMail(mailOptions);
 }
 
-async function sendRemissionNotificationIfProd({ serviceCreator, applicant, assignedUser, remission, request, service }) {
+/**
+ * Envía notificación de remisión. Siempre añade el warning si es desarrollo.
+ * Devuelve true si se envió correctamente, false si hubo error.
+ */
+async function sendRemissionNotification({ serviceCreator, applicant, assignedUser, remission, request, service }) {
   try {
     console.log(chalk.green("📋 Enviando notificación de remisión a:"), chalk.cyan(serviceCreator.email));
     await sendRemissionNotificationMail({
@@ -301,9 +280,9 @@ module.exports = {
   sendUserCreatedMail,
   sendUserUpdatedMail,
   sendRequestNotificationMail,
-  sendWelcomeMailIfProd,
-  sendUpdateMailIfProd,
-  sendRequestNotificationIfProd,
+  sendWelcomeMail,
+  sendUpdateMail,
+  sendRequestNotification,
   sendRemissionNotificationMail,
-  sendRemissionNotificationIfProd,
+  sendRemissionNotification,
 };

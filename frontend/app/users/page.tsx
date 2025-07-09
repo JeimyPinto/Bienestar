@@ -3,7 +3,6 @@
 import React, { useState } from "react"
 import UserTable from "../../components/users/userTable"
 import UserForm from "../../components/users/userForm"
-import BulkUploadInstructionsModal from "../../components/users/bulkUploadInstructionsModal"
 import ErrorMessage from "../../ui/errorMessage";
 import SuccessMessage from "../../ui/successMessage";
 import SectionHeader from "../../ui/sectionHeader";
@@ -12,8 +11,10 @@ import { useModal } from "../../hooks/useModal";
 import { useMessages } from "../../hooks/useMessages";
 import { useUsers } from "../../hooks/useUsers";
 import { useAuthContext } from "../../contexts/authContext";
-
 import { User } from "../../interface/user";
+import BulkUploadSection from "../../components/users/bulkUploadSection"
+import BulkUploadInstructionsModal from "../../components/users/bulkUploadInstructionsModal"
+import BulkUploadReportCard from "../../components/users/bulkUploadReportCard"
 
 // Tipo para el reporte de carga masiva
 type BulkUploadReport = {
@@ -156,107 +157,55 @@ export default function UsersPage() {
                 onButtonClick={handleOpenCreate}
             />
 
+
             {/* Sección de Carga Masiva */}
-            <div className="mb-8">
-                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                        <div className="flex-1">
-                            <h2 className="text-xl sm:text-2xl font-bold text-azul-oscuro mb-2 flex items-center">
-                                <span className="mr-2">📂</span>
-                                Carga Masiva de Usuarios
-                            </h2>
-                            <p className="text-sm sm:text-base text-azul-marino/70 mb-4">
-                                Sube un archivo Excel con múltiples usuarios para crearlos automáticamente. 
-                                Los campos requeridos son: Nombres, Apellidos, Tipo de documento, Número de documento, telefono, correo eléctrónico.
-                            </p>
-                            
-                            {/* Botones de acción */}
-                            <div className="flex flex-col sm:flex-row gap-3">
-                                <button
-                                    onClick={handleDownloadTemplate}
-                                    className="
-                                        bg-primary hover:bg-azul-cielo text-white 
-                                        px-4 py-2.5 rounded-xl font-semibold transition-all duration-300
-                                        hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2
-                                        border border-primary/30
-                                    "
-                                >
-                                    <span>📥</span>
-                                    <span>Descargar Plantilla</span>
-                                </button>
-                                
-                                <button
-                                    onClick={() => setShowInstructions(true)}
-                                    className="
-                                        bg-warning hover:bg-orange-600 text-white 
-                                        px-4 py-2.5 rounded-xl font-semibold transition-all duration-300
-                                        hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2
-                                        border border-warning/30
-                                    "
-                                >
-                                    <span>📋</span>
-                                    <span>Ver Instrucciones</span>
-                                </button>
-                                
-                                <label className="
-                                    bg-success hover:bg-verde-bosque text-white 
-                                    px-4 py-2.5 rounded-xl font-semibold transition-all duration-300
-                                    hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2
-                                    border border-success/30 cursor-pointer
-                                    disabled:opacity-50 disabled:cursor-not-allowed
-                                ">
-                                    <span>📤</span>
-                                    <span>{isUploading ? 'Procesando...' : 'Subir Archivo Excel'}</span>
-                                    <input
-                                        type="file"
-                                        accept=".xlsx,.xls"
-                                        onChange={handleFileUpload}
-                                        disabled={isUploading}
-                                        className="hidden"
-                                    />
-                                </label>
-                            </div>
-                        </div>
-                        
-                        {/* Reporte de carga masiva */}
-                        {bulkUploadReport && (
-                            <div className="lg:w-80 bg-gradient-to-br from-verde-claro/10 to-success/10 p-4 rounded-xl border border-success/20">
-                                <h3 className="font-bold text-azul-oscuro mb-3 flex items-center">
-                                    <span className="mr-2">📊</span>
-                                    Último Reporte
-                                </h3>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-azul-marino/70">Total procesados:</span>
-                                        <span className="font-semibold">{bulkUploadReport.summary.total}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-azul-marino/70">Creados:</span>
-                                        <span className="font-semibold text-success">{bulkUploadReport.summary.created}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-azul-marino/70">Duplicados:</span>
-                                        <span className="font-semibold text-warning">{bulkUploadReport.summary.duplicates}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-azul-marino/70">Errores:</span>
-                                        <span className="font-semibold text-danger">{bulkUploadReport.summary.errors}</span>
-                                    </div>
-                                    <div className="flex justify-between border-t border-success/30 pt-2 mt-2">
-                                        <span className="text-azul-marino/70">Tasa de éxito:</span>
-                                        <span className="font-bold text-success">{bulkUploadReport.summary.successRate}</span>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setBulkUploadReport(null)}
-                                    className="w-full mt-3 text-xs text-azul-marino/50 hover:text-azul-marino transition-colors"
-                                >
-                                    Ocultar reporte
-                                </button>
-                            </div>
-                        )}
-                    </div>
+            <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+                <div className="flex-1">
+            <BulkUploadSection
+                isUploading={isUploading}
+                onDownloadTemplate={handleDownloadTemplate}
+                onFileUpload={async (event) => {
+                    await handleFileUpload(event);
+                    // handleFileUpload ya maneja el estado y retorna el reporte
+                    // pero ahora debe retornar el reporte para que BulkUploadSection lo muestre
+                    const file = event.target.files?.[0];
+                    if (!file) return null;
+                    const allowedTypes = [
+                        'application/vnd.ms-excel',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    ];
+                    if (!allowedTypes.includes(file.type)) return null;
+                    setIsUploading(true);
+                    clearMessages();
+                    try {
+                        const result = await bulkUploadUsers(file);
+                        setIsUploading(false);
+                        event.target.value = '';
+                        if (!result.error && result.report) {
+                            setBulkUploadReport(result.report);
+                            setSuccessMessage(
+                                `Carga masiva completada: ${result.report.summary.created} usuarios creados de ${result.report.summary.total} registros`
+                            );
+                            if (refreshUsersRef.current) {
+                                refreshUsersRef.current();
+                            }
+                            return result.report;
+                        }
+                    } catch {
+                        setIsUploading(false);
+                        setErrorMessage("Error durante la carga masiva");
+                    }
+                    return null;
+                }}
+            />
                 </div>
+                {/* Reporte de carga masiva */}
+                {bulkUploadReport && (
+                    <BulkUploadReportCard
+                        report={bulkUploadReport}
+                        onHide={() => setBulkUploadReport(null)}
+                    />
+                )}
             </div>
 
             {/* Mensajes */}

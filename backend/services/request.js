@@ -44,6 +44,27 @@ class RequestService {
       new_data: request.toJSON(),
       changed_by: userId,
     });
+
+    // Enviar notificación por correo al creador del servicio
+    const { sendRequestNotification } = require("./mail");
+    // Obtener el servicio y su creador
+    const service = await db.Service.findByPk(request.serviceId, {
+      include: [{ model: db.User, as: "creator" }]
+    });
+    if (service && service.creator && service.creator.email) {
+      // Obtener datos del solicitante
+      const applicant = await db.User.findByPk(request.userId, {
+        attributes: ["firstName", "lastName", "email", "documentNumber"]
+      });
+      if (applicant) {
+        await sendRequestNotification({
+          serviceCreator: service.creator,
+          applicant,
+          request,
+          service
+        });
+      }
+    }
     return request;
   }
 

@@ -7,12 +7,10 @@ const userController = require("../controllers/user.js");
 
 // ===================== MIDDLEWARES =====================
 const { uploadUser } = require("../middlewares/fileUpload.js");
-const { authorizeRoles } = require("../middlewares");
+const  authorizeRoles  = require("../middlewares/authorizeRoles.js");
 const validateRequestSchema = require("../middlewares/validateSchema.js");
 const sanitizeRequestBody = require("../middlewares/sanitizeInput.js");
 const removeSensitiveFields = require("../middlewares/removeSensitiveFields.js");
-const sendWelcomeMail = require("../middlewares/sendWelcomeMail.js");
-const sendUpdateMail = require("../middlewares/sendUpdateMail.js");
 
 // ===================== CONSTANTES =====================
 const ROLES = require("../constants/roles");
@@ -76,7 +74,6 @@ router.post(
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     validateRequestSchema(createSchema),
     userController.create,
-    sendWelcomeMail,
     removeSensitiveFields
 );
 
@@ -88,7 +85,6 @@ router.put(
     sanitizeRequestBody,
     validateRequestSchema(updateSchema),
     userController.update,
-    sendUpdateMail,
     removeSensitiveFields
 );
 

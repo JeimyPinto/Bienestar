@@ -34,12 +34,46 @@ const BulkUserController = {
         req.user?.id || null
       );
 
-      // Generar reporte
-      const report = bulkUserService.generateReport(results);
+
+      // Generar reporte y adaptarlo a la estructura esperada por el frontend
+      const rawReport = bulkUserService.generateReport(results);
+
+      // Adaptar nombres y estructura
+      const summary = {
+        total: rawReport.total ?? 0,
+        created: rawReport.creados ?? 0,
+        duplicates: rawReport.duplicados ?? 0,
+        errors: rawReport.errores ?? 0,
+        successRate: rawReport.total && rawReport.creados !== undefined
+          ? `${((rawReport.creados / rawReport.total) * 100).toFixed(1)}%`
+          : "0%"
+      };
+      // Separar detalles por tipo
+      const details = {
+        successful: (rawReport.detalles || []).filter(r => r.status === "creado").map(r => ({
+          row: r.row,
+          userId: r.userId,
+          email: r.data?.email,
+          password: r.data?.documentNumber
+        })),
+        duplicates: (rawReport.detalles || []).filter(r => r.status === "duplicado").map(r => ({
+          row: r.row,
+          email: r.data?.email,
+          documentNumber: r.data?.documentNumber
+        })),
+        errors: (rawReport.detalles || []).filter(r => r.status === "error").map(r => ({
+          row: r.row,
+          error: r.error,
+          data: r.data
+        }))
+      };
+
+      const report = { summary, details };
 
       console.log(chalk.green("✅ Carga masiva completada"));
 
       res.status(200).json({
+        error: false,
         message: "Carga masiva de usuarios completada",
         report
       });
