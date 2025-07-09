@@ -6,24 +6,24 @@ import Image from 'next/image';
 
 export default function ServicioSaludDetallePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-verde-claro/10 via-white to-verde-bosque/5">
+    <div className="min-h-screen bg-gradient-to-br from-azul-cielo/10 via-blanco to-verde-bosque/10">
       {/* Breadcrumb */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-verde-claro/20">
+      <div className="bg-white/90 backdrop-blur-xs shadow-sm border-b border-azul-cielo/20">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center space-x-2 text-sm">
-            <Link href="/" className="text-verde-bosque hover:text-verde-claro transition-colors">
+            <Link href="/" className="text-azul-marino hover:text-azul-cielo transition-colors">
               🏠 Inicio
             </Link>
             <span className="text-gray-400">/</span>
-            <Link href="/services" className="text-verde-bosque hover:text-verde-claro transition-colors">
+            <Link href="/services" className="text-azul-marino hover:text-azul-cielo transition-colors">
               🛠️ Servicios
             </Link>
             <span className="text-gray-400">/</span>
-            <Link href="/services/salud" className="text-verde-bosque hover:text-verde-claro transition-colors">
+            <Link href="/services/salud" className="text-azul-marino hover:text-azul-cielo transition-colors">
               💊 Salud
             </Link>
             <span className="text-gray-400">/</span>
-            <span className="text-gray-600 font-medium">Servicio de Prueba</span>
+            <span className="text-azul-oscuro font-medium">Servicio de Prueba</span>
           </nav>
         </div>
       </div>
@@ -32,29 +32,34 @@ export default function ServicioSaludDetallePage() {
       <section className="relative py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="inline-flex items-center px-4 py-2 bg-verde-claro/10 rounded-full border border-verde-claro/20">
-                <span className="text-verde-bosque font-medium">💊 Servicio de Salud</span>
+            <div className="space-y-8">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full bg-azul-cielo/20 border-2 border-azul-cielo/30 shadow-md">
+                  <span className="text-4xl">💊</span>
+                </div>
+                <div>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-azul-oscuro leading-tight mb-1">
+                    Consulta Médica General
+                  </h1>
+                  <span className="inline-block bg-azul-cielo/10 text-azul-cielo px-3 py-1 rounded-full text-xs font-semibold tracking-wide border border-azul-cielo/20">Salud</span>
+                </div>
               </div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-azul-oscuro leading-tight">
-                Consulta Médica General
-              </h1>
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="text-lg text-azul-marino leading-relaxed max-w-2xl">
                 Atención médica integral para diagnóstico y tratamiento de patologías comunes. Nuestro equipo médico está disponible para brindarte la mejor atención durante tu formación en el SENA.
               </p>
-              <ul className="space-y-2 text-base text-gray-600">
-                <li className="flex items-center"><span className="text-verde-claro mr-2">✓</span>Consulta presencial</li>
-                <li className="flex items-center"><span className="text-verde-claro mr-2">✓</span>Expedición de certificados</li>
-                <li className="flex items-center"><span className="text-verde-claro mr-2">✓</span>Valoraciones médicas</li>
-              </ul>
+              <div className="flex flex-wrap gap-3 mb-2">
+                <span className="inline-flex items-center gap-2 bg-azul-cielo/10 text-azul-cielo px-4 py-2 rounded-lg font-medium text-base shadow-sm border border-azul-cielo/20"><span className="text-xl">🏥</span>Consulta presencial</span>
+                <span className="inline-flex items-center gap-2 bg-azul-cielo/10 text-azul-cielo px-4 py-2 rounded-lg font-medium text-base shadow-sm border border-azul-cielo/20"><span className="text-xl">📄</span>Expedición de certificados</span>
+                <span className="inline-flex items-center gap-2 bg-azul-cielo/10 text-azul-cielo px-4 py-2 rounded-lg font-medium text-base shadow-sm border border-azul-cielo/20"><span className="text-xl">🩺</span>Valoraciones médicas</span>
+              </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/requests"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-verde-claro to-verde-bosque text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-azul-cielo to-verde-bosque text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   📋 Solicitar Cita Médica
                 </Link>
-                <button className="inline-flex items-center justify-center px-8 py-4 border-2 border-verde-claro text-verde-bosque font-semibold rounded-xl hover:bg-verde-claro/10 transition-all duration-300">
+                <button className="inline-flex items-center justify-center px-8 py-4 border-2 border-azul-cielo text-azul-cielo font-semibold rounded-xl hover:bg-azul-cielo/10 transition-all duration-300">
                   📞 Contactar Enfermería
                 </button>
               </div>

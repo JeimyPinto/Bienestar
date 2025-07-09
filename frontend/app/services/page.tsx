@@ -56,7 +56,7 @@ export default function ServicePage() {
     return (
         <>
             {(!user || user?.role === ROLES.USER) ? (
-                <main className="min-h-screen bg-gradient-to-br from-beige-claro via-white to-azul-cielo/10 py-6">
+                <main className="min-h-screen bg-gradient-to-br from-azul-cielo/10 via-blanco to-verde-bosque/10 py-6">
                     <div className="container mx-auto px-4 max-w-7xl">
                         {/* Header de la página para usuarios */}
                         <SectionHeader
@@ -71,9 +71,9 @@ export default function ServicePage() {
                         {/* Contenido principal */}
                         {loading ? (
                             <div className="flex flex-col items-center justify-center py-20">
-                                <div className="bg-white rounded-2xl shadow-lg p-8 border border-azul-cielo/20">
+                                <div className="bg-blanco rounded-2xl shadow-lg p-8 border border-azul-cielo/20">
                                     <Spinner size="lg" color="primary" />
-                                    <p className="text-primary text-lg mt-4 font-medium">
+                                    <p className="text-azul-cielo text-lg mt-4 font-medium">
                                         Cargando servicios disponibles...
                                     </p>
                                 </div>
