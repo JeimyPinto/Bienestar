@@ -20,13 +20,13 @@ export default function MobileNavItem({
         href={href}
         onClick={onClick}
         className="
-          flex items-center space-x-4 p-4 rounded-xl
-          text-white/90 hover:text-white
-          bg-white/5 hover:bg-white/15
-          border border-white/10 hover:border-white/25
+          flex items-center space-x-4 p-5 rounded-2xl
+          text-white hover:text-azul-cielo
+          bg-white/5 hover:bg-white/10
+          border border-white/10 hover:border-azul-cielo/30
           transition-all duration-300
-          hover:shadow-lg hover:translate-x-2
-          backdrop-blur-sm animate-fade-in-up
+          hover:translate-x-2
+          font-display font-semibold
           focus-visible-custom
         "
       >

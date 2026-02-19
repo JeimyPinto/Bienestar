@@ -165,6 +165,22 @@ class UsuarioController {
       next(error);
     }
   }
+
+  async search(req, res, next) {
+    try {
+      const query = req.query.q || "";
+      if (query.length < 2) {
+        return res.status(200).json({ users: [] });
+      }
+      const users = await userService.searchUsers(query);
+      res.status(200).json({
+        message: "Resultados de búsqueda",
+        users,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UsuarioController();

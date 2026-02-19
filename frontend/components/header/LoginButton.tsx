@@ -12,11 +12,11 @@ export default function LoginButton({ onClick }: LoginButtonProps) {
       href="/auth"
       onClick={onClick}
       className="
-        px-4 py-2 bg-warning hover:bg-amarillo 
-        text-azul-oscuro rounded-lg font-bold text-sm
+        px-5 py-2.5 bg-warning hover:bg-amarillo 
+        text-azul-oscuro rounded-xl font-display font-bold text-sm
         transition-all duration-300 
-        hover:shadow-lg hover:scale-105
-        border border-warning/50 hover:border-warning/80
+        shadow-lg hover:shadow-warning/20 hover:scale-[1.05] active:scale-95
+        border border-white/20
         flex items-center space-x-2
         focus-visible-custom
       "

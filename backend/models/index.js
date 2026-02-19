@@ -15,9 +15,9 @@ console.log(chalk.blue.bold("🔧 NODE_ENV detectado:"), chalk.cyan(env));
 // Configuración directa sin archivo JSON (más confiable para Render)
 const config = {
   development: {
-    username: process.env.DEV_DB_USER || "bienestar_app",
-    password: process.env.DEV_DB_PASSWORD || "$vvgD?78f0Li",
-    database: process.env.DEV_DB_NAME || "bienestar_app",
+    username: process.env.DEV_DB_USER !== undefined ? process.env.DEV_DB_USER : "root",
+    password: process.env.DEV_DB_PASSWORD !== undefined ? process.env.DEV_DB_PASSWORD : "",
+    database: process.env.DEV_DB_NAME !== undefined ? process.env.DEV_DB_NAME : "bienestar_app",
     host: process.env.DEV_DB_HOST || "127.0.0.1",
     dialect: "mysql",
     port: 3306

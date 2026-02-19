@@ -88,7 +88,11 @@ class AuthController {
       const { verifyRecaptcha } = require("../helpers/verifyRecaptcha");
       const responseRecaptcha = await verifyRecaptcha(recaptchaToken);
       if (!responseRecaptcha || !responseRecaptcha.success) {
-        return res.status(400).json({ success: false, message: "Token de reCAPTCHA inválido" });
+        return res.status(400).json({ 
+          success: false, 
+          message: "Token de reCAPTCHA inválido",
+          details: responseRecaptcha["error-codes"] || []
+        });
       }
       return res.json({ success: true, message: "reCAPTCHA válido" });
     } catch (error) {

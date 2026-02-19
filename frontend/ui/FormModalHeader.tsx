@@ -38,31 +38,32 @@ const FormModalHeader: React.FC<FormModalHeaderProps> = ({
     };
 
     return (
-        <div className="bg-gradient-to-r from-azul-claro to-azul-oscuro px-6 py-4 rounded-t-xl">
+        <div className="bg-gradient-to-r from-azul-oscuro to-azul-marino px-6 py-5 rounded-t-2xl border-b border-white/10">
             <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                strokeWidth={2} 
-                                d={mode === "create" ? icon.create : icon.edit} 
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 shadow-inner group overflow-hidden relative">
+                        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <svg className="w-6 h-6 text-azul-claro relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d={mode === "create" ? icon.create : icon.edit}
                             />
                         </svg>
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-white">
+                        <h2 className="text-xl md:text-2xl font-display font-bold text-white tracking-tight">
                             {mode === "create" ? defaultTitles.create : defaultTitles.edit}
                         </h2>
-                        <p className="text-azul-cielo/80 text-sm">
+                        <p className="text-white/60 text-xs md:text-sm font-sans">
                             {mode === "create" ? defaultDescriptions.create : defaultDescriptions.edit}
                         </p>
                     </div>
                 </div>
                 <button
                     onClick={onClose}
-                    className="text-white/80 hover:text-white hover:bg-white/20 transition-all duration-200 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30"
+                    className="text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 p-2.5 rounded-xl border border-transparent hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
                     aria-label="Cerrar"
                     type="button"
                 >

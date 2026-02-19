@@ -17,49 +17,53 @@ export default function ContactInfo({
   imageAlt = "Bienestar al Aprendiz",
 }: ContactInfoProps) {
   return (
-    <div className="flex flex-col items-center md:items-end space-y-4">
-      <div className="group">
+    <div className="flex flex-col items-center md:items-end space-y-6">
+      <div className="relative group">
+        <div className="absolute -inset-2 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <Image
           src={imageSrc}
           alt={imageAlt}
-          width={120}
-          height={120}
-          className="transition-transform duration-300 group-hover:scale-105 drop-shadow-lg hover:-translate-y-1 hover:shadow-xl"
+          width={100}
+          height={100}
+          className="relative transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3"
           priority={false}
           style={{ height: "auto" }}
         />
       </div>
-      
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2 mb-3">
-          <span className="text-xl">📞</span>
-          <h4 className="text-lg font-semibold text-white">Contacto</h4>
+
+      <div className="space-y-4 w-full flex flex-col items-center md:items-end">
+        <div className="flex items-center gap-3 md:flex-row-reverse">
+          <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10">
+            <span className="text-xl">📞</span>
+          </div>
+          <h4 className="text-lg font-display font-bold text-white tracking-tight">Contacto</h4>
         </div>
-        
-        <div className="flex items-center space-x-3 group">
-          <div className="p-2 bg-white/10 rounded-lg group-hover:bg-success/20 transition-colors duration-200">
+
+        <a
+          href={`mailto:${email}`}
+          className="
+            group flex items-center gap-3 p-3 rounded-2xl
+            bg-white/5 hover:bg-white/10
+            border border-white/10 hover:border-primary/30
+            transition-all duration-300
+            focus-visible-custom
+            md:flex-row-reverse
+          "
+        >
+          <div className="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300 p-2">
             <Image
               src={iconSrc}
               alt={iconAlt}
-              width={20}
-              height={20}
+              width={16}
+              height={16}
               priority={false}
-              style={{ height: "auto" }}
+              className="brightness-0 invert"
             />
           </div>
-          <a
-            href={`mailto:${email}`}
-            className="
-              text-sm text-azul-cielo hover:text-amarillo 
-              transition-colors duration-200 
-              underline underline-offset-2 hover:underline-offset-4 
-              break-all font-medium
-              focus-visible-custom
-            "
-          >
+          <span className="text-xs font-sans text-white/70 group-hover:text-white transition-colors duration-300 break-all text-center md:text-right">
             {email}
-          </a>
-        </div>
+          </span>
+        </a>
       </div>
     </div>
   );

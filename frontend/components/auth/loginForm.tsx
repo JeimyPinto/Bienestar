@@ -30,7 +30,7 @@ export default function LoginForm({
   recaptchaRef,
 }: LoginFormProps) {
   return (
-    <div className="w-full max-w-md mt-6 bg-gradient-to-br from-white to-azul-cielo/5 rounded-2xl shadow-2xl p-8 border border-azul-cielo/20 backdrop-blur-sm animate-fade-in-up">
+    <div className="w-full max-w-md mt-6 glass-card rounded-2xl p-8 border border-white/20 animate-fade-in-up">
       <form
         autoComplete="on"
         onSubmit={handleSubmit}
@@ -39,19 +39,19 @@ export default function LoginForm({
       >
         {/* Mensajes de éxito y error */}
         {successMessage && (
-          <div className="bg-success/10 border border-success/20 text-success px-4 py-3 rounded-lg flex items-center gap-2">
+          <div className="bg-success/10 border border-success/20 text-success px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in">
             <span className="text-lg">✅</span>
             <span className="text-sm font-medium">{successMessage}</span>
           </div>
         )}
         {error && (
-          <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-lg flex items-center gap-2">
+          <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in">
             <span className="text-lg">⚠️</span>
             <span className="text-sm font-medium">{error}</span>
           </div>
         )}
         {recaptchaError && (
-          <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-lg flex items-center gap-2">
+          <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in">
             <span className="text-lg">⚠️</span>
             <span className="text-sm font-medium">{recaptchaError}</span>
           </div>
@@ -59,9 +59,9 @@ export default function LoginForm({
 
         {/* Campo de Email */}
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-semibold text-azul-oscuro flex items-center gap-2">
+          <label htmlFor="email" className="text-sm font-display font-semibold text-azul-oscuro flex items-center gap-2">
             <span>📧</span>
-            Email
+            Correo Electrónico
           </label>
           <input
             type="email"
@@ -71,13 +71,13 @@ export default function LoginForm({
             required
             autoComplete="email"
             placeholder="ejemplo@correo.com"
-            className="w-full px-4 py-3 border border-azul-cielo/30 rounded-lg bg-white/80 text-azul-oscuro placeholder-azul-marino/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 hover:border-azul-cielo/50"
+            className="w-full px-4 py-3 border border-azul-cielo/30 rounded-xl bg-white/50 text-azul-oscuro placeholder-azul-marino/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 hover:bg-white"
           />
         </div>
 
         {/* Campo de Contraseña */}
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-semibold text-azul-oscuro flex items-center gap-2">
+          <label htmlFor="password" className="text-sm font-display font-semibold text-azul-oscuro flex items-center gap-2">
             <span>🔒</span>
             Contraseña
           </label>
@@ -88,13 +88,13 @@ export default function LoginForm({
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="current-password"
-            placeholder="Tu contraseña"
-            className="w-full px-4 py-3 border border-azul-cielo/30 rounded-lg bg-white/80 text-azul-oscuro placeholder-azul-marino/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 hover:border-azul-cielo/50"
+            placeholder="••••••••"
+            className="w-full px-4 py-3 border border-azul-cielo/30 rounded-xl bg-white/50 text-azul-oscuro placeholder-azul-marino/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 hover:bg-white"
           />
         </div>
 
         {/* ReCAPTCHA */}
-        <div className="flex items-center justify-center mt-2 sm:mt-4 p-3 bg-gradient-to-r from-azul-cielo/10 to-beige-claro/20 rounded-lg border border-azul-cielo/20">
+        <div className="flex items-center justify-center mt-2 p-4 bg-white/30 rounded-2xl border border-white/40 shadow-inner">
           <ReCAPTCHA
             ref={recaptchaRef}
             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
@@ -106,30 +106,29 @@ export default function LoginForm({
         <button
           type="submit"
           disabled={loading || !recaptchaValid}
-          className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-300 mt-3 ${
-            loading || !recaptchaValid
-              ? 'bg-neutral cursor-not-allowed opacity-70'
-              : 'bg-gradient-to-r from-primary to-azul-cielo hover:from-azul-cielo hover:to-primary hover:scale-105 hover:shadow-xl active:scale-95'
-          } ${loading ? 'flex items-center justify-center gap-2' : ''}`}
+          className={`w-full py-4 px-6 rounded-2xl font-display font-bold text-white transition-all duration-300 shadow-lg ${loading || !recaptchaValid
+              ? 'bg-neutral/50 text-azul-marino/30 cursor-not-allowed shadow-none'
+              : 'bg-gradient-to-r from-primary to-azul-cielo hover:shadow-primary/30 hover:scale-[1.02] active:scale-95'
+            } ${loading ? 'flex items-center justify-center gap-2' : ''}`}
         >
           {loading ? (
             <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              Cargando...
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Verificando...
             </>
           ) : (
-            'Iniciar sesión'
+            'Ingresar al Portal'
           )}
         </button>
 
         {/* Enlace de ayuda */}
-        <div className="text-center mt-4 p-3 bg-gradient-to-r from-beige-claro/30 to-azul-cielo/20 rounded-lg border border-azul-cielo/20">
+        <div className="text-center mt-2">
           <a
             href="mailto:bienestarregionalcaldascpic@gmail.com"
-            className="text-azul-oscuro underline text-sm hover:text-primary transition-colors duration-300 font-medium flex items-center justify-center gap-2"
+            className="text-azul-marino/60 text-xs hover:text-primary transition-colors duration-300 font-medium inline-flex items-center gap-2 group"
           >
-            <span className="w-2 h-2 bg-info rounded-full"></span>
-            ¿Necesitas ayuda? Contáctanos
+            <span className="w-1.5 h-1.5 bg-azul-cielo rounded-full group-hover:scale-150 transition-transform"></span>
+            ¿Tienes problemas para ingresar?
           </a>
         </div>
       </form>

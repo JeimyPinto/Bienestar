@@ -19,6 +19,13 @@ const ROLES = require("../constants/roles");
 const { createSchema, updateSchema } = require("../schemas/user.js");
 
 // ===================== RUTAS =====================
+// Buscar usuarios (nombre, documento, email)
+router.get(
+    "/search",
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
+    userController.search,
+    removeSensitiveFields
+);
 
 // Obtener todos los usuarios
 router.get(

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Group, ProgramType, FichaStatus } from "../../interface/group";
 import { useAuthContext } from "../../contexts/authContext";
 import { useGroups } from "../../hooks/useGroups";
 import { useUsers } from "../../hooks/useUsers";
 import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
-import {ROLES} from "../../constants/roles";
+import { ROLES } from "../../constants/roles";
 interface GroupFormProps {
   dialogRef: React.RefObject<HTMLDialogElement>;
   onClose: (createdGroup?: Group) => void;
@@ -25,7 +26,7 @@ const GroupForm: React.FC<GroupFormProps> = ({
 }) => {
   const { token } = useAuthContext();
   const { createGroup, updateGroup } = useGroups({ token });
-  const { users } = useUsers({ token, mode: "byRole", role: ROLES.INSTRUCTOR});
+  const { users } = useUsers({ token, mode: "byRole", role: ROLES.INSTRUCTOR });
   // Estados del formulario
   const [fichaNumber, setFichaNumber] = useState("");
   const [programName, setProgramName] = useState("");
@@ -146,8 +147,8 @@ const GroupForm: React.FC<GroupFormProps> = ({
   };
 
   return (
-    <dialog ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="w-full max-w-3xl mx-2 md:mx-0 p-0 bg-white rounded-2xl shadow-2xl border border-azul-cielo/10">
+    <dialog ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-azul-oscuro/40 backdrop-blur-md px-4">
+      <div className="w-full max-w-4xl bg-white rounded-[2rem] shadow-premium overflow-hidden border border-white/20 animate-scale-in">
         <FormModalHeader
           mode={mode}
           entityName="Ficha"
@@ -158,23 +159,26 @@ const GroupForm: React.FC<GroupFormProps> = ({
           }}
         />
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="p-8 md:p-10 space-y-8 bg-gradient-to-b from-white to-neutral/10">
           {errorMessage && (
-            <FormErrorDisplay error={errorMessage} />
+            <div className="mb-6">
+              <FormErrorDisplay error={errorMessage} />
+            </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Número de Ficha */}
-            <div>
-              <label htmlFor="fichaNumber" className="block text-sm font-medium text-azul-oscuro mb-2">
-                Número de Ficha *
+            <div className="space-y-2.5">
+              <label htmlFor="fichaNumber" className="text-sm font-display font-semibold text-azul-marino flex items-center gap-2 ml-1">
+                <Image src="/images/ico-number.svg" alt="" width={18} height={18} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                Número de Ficha
               </label>
               <input
                 type="text"
                 id="fichaNumber"
                 value={fichaNumber}
                 onChange={(e) => setFichaNumber(e.target.value)}
-                className="w-full px-4 py-3 border border-azul-cielo/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-azul-claro focus:border-transparent transition-all duration-200"
+                className="w-full px-5 py-4 border border-azul-cielo/30 rounded-2xl bg-white shadow-sm placeholder-azul-marino/30 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 hover:border-azul-claro"
                 placeholder="Ej: 2691851"
                 disabled={loading}
                 required
@@ -182,16 +186,17 @@ const GroupForm: React.FC<GroupFormProps> = ({
             </div>
 
             {/* Nombre del Programa */}
-            <div>
-              <label htmlFor="programName" className="block text-sm font-medium text-azul-oscuro mb-2">
-                Nombre del Programa *
+            <div className="space-y-2.5">
+              <label htmlFor="programName" className="text-sm font-display font-semibold text-azul-marino flex items-center gap-2 ml-1">
+                <Image src="/images/ico-mail.svg" alt="" width={18} height={18} className="opacity-60 grayscale group-hover:opacity-100 transition-opacity" />
+                Nombre del Programa
               </label>
               <input
                 type="text"
                 id="programName"
                 value={programName}
                 onChange={(e) => setProgramName(e.target.value)}
-                className="w-full px-4 py-3 border border-azul-cielo/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-azul-claro focus:border-transparent transition-all duration-200"
+                className="w-full px-5 py-4 border border-azul-cielo/30 rounded-2xl bg-white shadow-sm placeholder-azul-marino/30 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 hover:border-azul-claro"
                 placeholder="Ej: Análisis y Desarrollo de Software"
                 disabled={loading}
                 required
@@ -199,92 +204,133 @@ const GroupForm: React.FC<GroupFormProps> = ({
             </div>
 
             {/* Tipo de Programa */}
-            <div>
-              <label htmlFor="programType" className="block text-sm font-medium text-azul-oscuro mb-2">
-                Tipo de Programa *
+            <div className="space-y-2.5">
+              <label htmlFor="programType" className="text-sm font-display font-semibold text-azul-marino flex items-center gap-2 ml-1">
+                <Image src="/images/ico-copyright.svg" alt="" width={18} height={18} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                Tipo de Programa
               </label>
-              <select
-                id="programType"
-                value={programType}
-                onChange={(e) => setProgramType(e.target.value as ProgramType)}
-                className="w-full px-4 py-3 border border-azul-cielo/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-azul-claro focus:border-transparent transition-all duration-200"
-                disabled={loading}
-                required
-              >
-                {programTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative group">
+                <select
+                  id="programType"
+                  value={programType}
+                  onChange={(e) => setProgramType(e.target.value as ProgramType)}
+                  className="w-full px-5 py-4 border border-azul-cielo/30 rounded-2xl bg-white shadow-sm focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 appearance-none hover:border-azul-claro cursor-pointer"
+                  disabled={loading}
+                  required
+                >
+                  {programTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-azul-marino/40 group-hover:text-primary transition-colors">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             {/* Instructor */}
-            <div>
-              <label htmlFor="instructor" className="block text-sm font-medium text-azul-oscuro mb-2">
-                Instructor *
+            <div className="space-y-2.5">
+              <label htmlFor="instructor" className="text-sm font-display font-semibold text-azul-marino flex items-center gap-2 ml-1">
+                <Image src="/images/ico-login.svg" alt="" width={18} height={18} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                Instructor Asignado
               </label>
-              <select
-                id="instructor"
-                value={instructorId}
-                onChange={(e) => setInstructorId(e.target.value ? Number(e.target.value) : "")}
-                className="w-full px-4 py-3 border border-azul-cielo/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-azul-claro focus:border-transparent transition-all duration-200"
-                disabled={loading}
-                required
-              >
-                <option value="">Seleccionar instructor</option>
-                {users.map((instructor) => (
-                  <option key={instructor.id} value={instructor.id}>
-                    {instructor.firstName} {instructor.lastName}
-                  </option>
-                ))}
-              </select>
+              <div className="relative group">
+                <select
+                  id="instructor"
+                  value={instructorId}
+                  onChange={(e) => setInstructorId(e.target.value ? Number(e.target.value) : "")}
+                  className="w-full px-5 py-4 border border-azul-cielo/30 rounded-2xl bg-white shadow-sm focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 appearance-none hover:border-azul-claro cursor-pointer"
+                  disabled={loading}
+                  required
+                >
+                  <option value="">Seleccionar instructor</option>
+                  {users.map((instructor) => (
+                    <option key={instructor.id} value={instructor.id}>
+                      {instructor.firstName} {instructor.lastName}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-azul-marino/40 group-hover:text-primary transition-colors">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             {/* Estado de la Ficha */}
-            <div className="md:col-span-2">
-              <label htmlFor="fichaStatus" className="block text-sm font-medium text-azul-oscuro mb-2">
-                Estado de la Ficha *
+            <div className="md:col-span-2 space-y-2.5">
+              <label htmlFor="fichaStatus" className="text-sm font-display font-semibold text-azul-marino flex items-center gap-2 ml-1">
+                <Image src="/images/ico-eye-visibility-on.svg" alt="" width={18} height={18} className="opacity-70" />
+                Etapa Actual
               </label>
-              <select
-                id="fichaStatus"
-                value={fichaStatus}
-                onChange={(e) => setFichaStatus(e.target.value as FichaStatus)}
-                className="w-full px-4 py-3 border border-azul-cielo/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-azul-claro focus:border-transparent transition-all duration-200"
-                disabled={loading}
-                required
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {fichaStatusOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
+                  <label
+                    key={option.value}
+                    className={`
+                      relative flex items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300
+                      ${fichaStatus === option.value
+                        ? 'border-primary bg-primary/5 text-primary shadow-md'
+                        : 'border-azul-cielo/20 bg-white text-azul-marino/60 hover:border-azul-claro/40 hover:bg-neutral/5'
+                      }
+                    `}
+                  >
+                    <input
+                      type="radio"
+                      name="fichaStatus"
+                      value={option.value}
+                      checked={fichaStatus === option.value}
+                      onChange={(e) => setFichaStatus(e.target.value as FichaStatus)}
+                      className="absolute opacity-0"
+                    />
+                    <span className="font-display font-bold text-sm tracking-wide">{option.label}</span>
+                    {fichaStatus === option.value && (
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center text-[10px] shadow-lg animate-bounce-soft">
+                        ✓
+                      </span>
+                    )}
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
 
-          {/* Botones */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-azul-cielo/10">
+          {/* Botones de Acción */}
+          <div className="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-azul-cielo/10">
             <button
               type="button"
               onClick={handleClose}
-              className="px-6 py-2 text-azul-oscuro border border-azul-cielo/20 rounded-lg hover:bg-azul-cielo/10 transition-all duration-200"
+              className="px-8 py-4 text-azul-marino/60 font-display font-bold rounded-2xl hover:bg-danger/10 hover:text-danger transition-all duration-300 active:scale-95"
               disabled={loading}
             >
-              Cancelar
+              Cerrar Formulario
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-azul-claro text-white rounded-lg hover:bg-azul-oscuro transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className={`
+                px-10 py-4 rounded-2xl font-display font-bold text-white transition-all duration-300 shadow-lg flex items-center justify-center gap-3
+                ${loading
+                  ? 'bg-neutral/50 cursor-not-allowed opacity-70'
+                  : 'bg-gradient-to-r from-primary to-azul-claro hover:shadow-primary/30 hover:scale-[1.02] active:scale-95'
+                }
+              `}
               disabled={loading}
             >
-              {loading && (
-                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Procesando...</span>
+                </>
+              ) : (
+                <>
+                  <span>{mode === "create" ? "✨ Crear Ficha" : "💾 Guardar Cambios"}</span>
+                </>
               )}
-              {mode === "create" ? "Crear Ficha" : "Guardar Cambios"}
             </button>
           </div>
         </form>

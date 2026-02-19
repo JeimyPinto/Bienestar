@@ -104,13 +104,13 @@ export async function create(user: User, file?: File, token?: string) {
             body,
             credentials: "include",
         });
-        
-        console.log("Respuesta del servidor (create):", { 
-            status: res.status, 
+
+        console.log("Respuesta del servidor (create):", {
+            status: res.status,
             statusText: res.statusText,
             contentType: res.headers.get('content-type')
         });
-        
+
         // Verificar si la respuesta es JSON
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
@@ -122,10 +122,10 @@ export async function create(user: User, file?: File, token?: string) {
                 details: { status: res.status, contentType, response: textResponse.substring(0, 200) }
             };
         }
-        
+
         const data = await res.json();
         console.log("Datos JSON recibidos:", data);
-        
+
         if (!res.ok || data.error) {
             return { error: true, message: data.message, details: data.details };
         }
@@ -277,8 +277,8 @@ export async function bulkUpload(file: File, token?: string) {
             credentials: "include",
         });
 
-        console.log("Respuesta del servidor (bulkUpload):", { 
-            status: res.status, 
+        console.log("Respuesta del servidor (bulkUpload):", {
+            status: res.status,
             statusText: res.statusText,
             contentType: res.headers.get('content-type')
         });
@@ -326,8 +326,8 @@ export async function downloadBulkTemplate(token?: string) {
             credentials: "include",
         });
 
-        console.log("Respuesta del servidor (downloadTemplate):", { 
-            status: res.status, 
+        console.log("Respuesta del servidor (downloadTemplate):", {
+            status: res.status,
             statusText: res.statusText,
             contentType: res.headers.get('content-type')
         });
@@ -361,9 +361,9 @@ export async function downloadBulkTemplate(token?: string) {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(downloadUrl);
 
-        return { 
-            error: false, 
-            message: "Plantilla descargada exitosamente" 
+        return {
+            error: false,
+            message: "Plantilla descargada exitosamente"
         };
     } catch (error) {
         console.error("Error en downloadBulkTemplate:", error);
@@ -371,6 +371,32 @@ export async function downloadBulkTemplate(token?: string) {
             error: true,
             message: "Error al descargar la plantilla",
             details: error,
+        };
+    }
+}
+
+// Buscar usuarios por query (nombre, documento, email)
+export async function searchUsers(query: string, token?: string) {
+    try {
+        const res = await fetch(`${url}/search?q=${encodeURIComponent(query)}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            return { error: true, message: data.message, details: data.details };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        console.error("Error en la función searchUsers:" + error)
+        return {
+            error: true,
+            message: "Error interno del servidor",
+            details: error
         };
     }
 }

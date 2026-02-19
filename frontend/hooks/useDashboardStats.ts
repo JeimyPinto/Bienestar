@@ -11,9 +11,18 @@ interface UseDashboardStatsParams {
   userRole: string;
 }
 
-export const useDashboardStats = ({ token, userId, userRole }: UseDashboardStatsParams): DashboardStat[] => {
+interface UseDashboardStatsReturn {
+  stats: DashboardStat[];
+  loading: boolean;
+  refresh: () => void;
+}
+
+export const useDashboardStats = ({ token, userId, userRole }: UseDashboardStatsParams): UseDashboardStatsReturn => {
   const [stats, setStats] = useState<DashboardStat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const refresh = () => setRefreshTrigger(prev => prev + 1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,16 +66,11 @@ export const useDashboardStats = ({ token, userId, userRole }: UseDashboardStats
     };
 
     fetchData();
-  }, [token, userId, userRole]);
+  }, [token, userId, userRole, refreshTrigger]);
 
-  // Si está cargando, devolver estadísticas con valores 0
-  if (loading) {
-    return getDashboardStats({
-      requests: [],
-      services: [],
-      userRole
-    });
-  }
-
-  return stats;
+  return {
+    stats: stats.length > 0 || !loading ? stats : getDashboardStats({ requests: [], services: [], userRole }),
+    loading,
+    refresh
+  };
 };

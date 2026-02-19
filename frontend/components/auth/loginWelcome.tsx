@@ -11,40 +11,46 @@ export default function LoginWelcome({
 }: LoginWelcomeProps) {
   return (
     <>
-      {/* Logos institucionales */}
-      <div className="flex items-center justify-center gap-6 sm:gap-8 mb-4 sm:mb-6 animate-fade-in-up">
-        <div className="flex flex-col items-center">
+      {/* Logo Container */}
+      <div className="flex items-center justify-center gap-8 mb-8 animate-fade-in-up">
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary to-azul-cielo rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
           <Image
             src="/images/icono.png"
             alt="Icono institucional"
-            width={80}
-            height={80}
-            className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+            width={100}
+            height={100}
+            className="relative w-20 h-20 sm:w-24 sm:h-24 object-contain transition-transform duration-500 hover:rotate-6"
             priority
           />
         </div>
-        <div className="flex flex-col items-center">
+        <div className="h-12 w-[1px] bg-white/30 hidden sm:block"></div>
+        <div className="relative group">
           <Image
             src="/images/logo-sena.png"
             alt="Logo SENA"
-            width={120}
-            height={80}
-            className="w-20 h-14 sm:w-28 sm:h-20 md:w-32 md:h-22 object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+            width={140}
+            height={100}
+            className="w-24 h-16 sm:w-32 sm:h-22 object-contain drop-shadow-2xl transition-transform duration-500 hover:-rotate-6"
             priority
           />
         </div>
       </div>
-      
-      <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-2 sm:mb-4 text-center text-white drop-shadow-lg animate-fade-in-up">
+
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-extrabold mb-6 text-center text-white leading-tight animate-fade-in-up">
         {title}
       </h1>
-      <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 sm:p-5 md:p-6 shadow-lg border border-azul-cielo/20 w-full max-w-lg mt-2 sm:mt-4 hover:shadow-xl transition-all duration-300">
-        <p className="text-sm sm:text-base md:text-lg text-azul-marino text-center mb-2">
+
+      <div className="glass-card rounded-2xl p-6 sm:p-8 w-full max-w-xl mt-4 animate-fade-in-up hover:shadow-primary/10 transition-all duration-500">
+        <p className="text-base sm:text-lg md:text-xl text-azul-marino leading-relaxed text-center">
           {message.split("registrado previamente").map((part, idx, arr) =>
             idx < arr.length - 1 ? (
-              <span key={idx}>
+              <span key={idx} className="inline">
                 {part}
-                <strong className="text-azul-oscuro font-bold">registrado previamente</strong>
+                <span className="text-primary font-bold relative inline-block mx-1">
+                  registrado previamente
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary/30 rounded-full"></span>
+                </span>
               </span>
             ) : (
               part

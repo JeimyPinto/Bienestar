@@ -7,9 +7,14 @@ const path = require("path");
 // =======================
 // Variables de entorno
 // =======================
-// Carga las variables de entorno desde el archivo adecuado
+// Carga las variables de entorno
 if (process.env.NODE_ENV === "development") {
-  require("dotenv").config({ path: ".env_local" });
+  const fs = require("fs");
+  if (fs.existsSync(".env_local")) {
+    require("dotenv").config({ path: ".env_local" });
+  } else {
+    require("dotenv").config();
+  }
 } else {
   require("dotenv").config(); 
 }

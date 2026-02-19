@@ -9,11 +9,11 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
     <button
       onClick={onClick}
       className="
-        px-4 py-2 bg-danger hover:bg-coral 
-        text-white rounded-lg font-medium text-sm
+        px-4 py-2 bg-white/5 hover:bg-danger/10 
+        text-white/70 hover:text-danger rounded-xl font-display font-semibold text-sm
         transition-all duration-300 
-        hover:shadow-lg hover:scale-105
-        border border-danger/30 hover:border-danger/50
+        hover:scale-[1.05] active:scale-95
+        border border-white/10 hover:border-danger/30
         flex items-center space-x-2
         focus-visible-custom
       "

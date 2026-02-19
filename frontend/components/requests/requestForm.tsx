@@ -8,7 +8,7 @@ import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
 import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
-import  Spinner  from "../../ui/spinner";
+import Spinner from "../../ui/spinner";
 
 const emptyRequest: Request = {
     userId: 0,
@@ -25,14 +25,14 @@ const emptyRequest: Request = {
     creator: null,
 };
 interface RequestsFormProps {
-  dialogRef: React.RefObject<HTMLDialogElement>;
-  onClose?: (updatedRequest?: Request) => void;
-  mode: "create" | "edit";
-  requestToEdit?: Request;
-  successMessage?: string;
-  setSuccessMessage?: (msg: string) => void;
-  setErrorMessage?: (msg: string) => void;
-  errorMessage?: string;
+    dialogRef: React.RefObject<HTMLDialogElement>;
+    onClose?: (updatedRequest?: Request) => void;
+    mode: "create" | "edit";
+    requestToEdit?: Request;
+    successMessage?: string;
+    setSuccessMessage?: (msg: string) => void;
+    setErrorMessage?: (msg: string) => void;
+    errorMessage?: string;
 }
 export default function RequestsForm(props: RequestsFormProps) {
     const {
@@ -93,13 +93,13 @@ export default function RequestsForm(props: RequestsFormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        
+
         if (isSubmitting) return;
         if (!token) return;
-        
+
         setIsSubmitting(true);
         setFormError("");
-        
+
         const requestData = { ...newRequest };
         if (typeof requestData.status === "string") {
             requestData.status = requestData.status === "activo";
@@ -115,7 +115,7 @@ export default function RequestsForm(props: RequestsFormProps) {
         if (requestData.responseMessage == null || requestData.responseMessage === "") {
             delete requestData.responseMessage;
         }
-        
+
         try {
             let response;
             if (mode === "create") {
@@ -123,12 +123,12 @@ export default function RequestsForm(props: RequestsFormProps) {
             } else if (mode === "edit" && requestToEdit) {
                 response = await updateRequest(requestToEdit.id as number, requestData);
             }
-            
+
             if (response?.error) {
                 setFormError(response.message || "Error desconocido");
                 return;
             }
-            
+
             setNewRequest(emptyRequest);
             setTimeout(() => {
                 onClose?.(undefined); // El hook ya refrescará la lista automáticamente
@@ -185,8 +185,8 @@ export default function RequestsForm(props: RequestsFormProps) {
                             />
                         </div>
 
-                        {/* Sección: Estado - Solo visible para administradores */}
-                        {user.role !== ROLES.USER && (
+                        {/* Sección: Estado - Solo visible para administradores en modo edición */}
+                        {mode === "edit" && user.role !== ROLES.USER && (
                             <div className="bg-white/70 border border-azul-cielo/30 rounded-xl p-6 backdrop-blur-sm shadow-sm">
                                 <h3 className="text-lg font-semibold text-azul-oscuro mb-4 flex items-center gap-2">
                                     <span className="text-xl">⚙️</span>
@@ -225,7 +225,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
                             )}
-                            {isSubmitting 
+                            {isSubmitting
                                 ? (mode === "create" ? "Guardando..." : "Actualizando...")
                                 : (mode === "create" ? "Guardar Solicitud" : "Actualizar Solicitud")
                             }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ROLES } from "../../constants/roles";
 import { Request } from "../../interface/request";
 import UserCard from "../../components/users/userCard";
@@ -14,15 +15,16 @@ import { useModal } from "../../hooks/useModal";
 export default function DashboardPage() {
   const { successMessage, clearSuccess, showSuccess, errorMessage, setErrorMessage } = useMessages();
   const { user } = useAuthContext();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Hook para manejo del modal de solicitudes
-  const { 
-    dialogRef, 
-    isFormOpen, 
-    mode, 
-    itemToEdit: requestToEdit, 
-    openCreateDialog, 
-    closeDialog 
+  const {
+    dialogRef,
+    isFormOpen,
+    mode,
+    itemToEdit: requestToEdit,
+    openCreateDialog,
+    closeDialog
   } = useModal<Request>();
 
   // Función para limpiar mensajes
@@ -33,9 +35,10 @@ export default function DashboardPage() {
 
   const handleRequestFormSuccess = (createdRequest?: Request) => {
     closeDialog();
-    // Si se creó una request exitosamente, mostrar mensaje
+    // Si se creó una request exitosamente, mostrar mensaje y actualizar dashboard
     if (createdRequest) {
       showSuccess("Solicitud creada exitosamente");
+      setRefreshTrigger(prev => prev + 1);
     }
   };
 
@@ -55,19 +58,19 @@ export default function DashboardPage() {
           <div className="my-6 lg:my-8">
             <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1">
-            <h2 className="text-lg sm:text-xl font-bold text-azul-oscuro mb-2 flex items-center">
-              <span className="mr-2 text-xl sm:text-2xl">🎯</span>
-              <span>Acciones Rápidas</span>
-            </h2>
-            <p className="text-sm sm:text-base text-azul-marino/70">
-              Gestiona tus solicitudes de manera eficiente
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <button
-              onClick={() => openCreateDialog(clearMessages)}
-              className="
+                <div className="flex-1">
+                  <h2 className="text-lg sm:text-xl font-bold text-azul-oscuro mb-2 flex items-center">
+                    <span className="mr-2 text-xl sm:text-2xl">🎯</span>
+                    <span>Acciones Rápidas</span>
+                  </h2>
+                  <p className="text-sm sm:text-base text-azul-marino/70">
+                    Gestiona tus solicitudes de manera eficiente
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button
+                    onClick={() => openCreateDialog(clearMessages)}
+                    className="
                 bg-success hover:bg-verde-bosque text-white 
                 px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base
                 transition-all duration-300 hover:shadow-lg hover:scale-105 
@@ -75,14 +78,14 @@ export default function DashboardPage() {
                 border border-success/30 w-full sm:w-auto
                 focus:outline-none focus:ring-4 focus:ring-success/20
               "
-            >
-              <span className="text-lg">➕</span>
-              <span>Nueva Solicitud</span>
-            </button>
+                  >
+                    <span className="text-lg">➕</span>
+                    <span>Nueva Solicitud</span>
+                  </button>
 
-            <button
-              onClick={() => (window.location.href = "/requests")}
-              className="
+                  <button
+                    onClick={() => (window.location.href = "/requests")}
+                    className="
                 bg-primary hover:bg-azul-cielo text-white 
                 px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base
                 transition-all duration-300 hover:shadow-lg hover:scale-105 
@@ -90,11 +93,11 @@ export default function DashboardPage() {
                 border border-primary/30 w-full sm:w-auto
                 focus:outline-none focus:ring-4 focus:ring-primary/20
               "
-            >
-              <span className="text-lg">📋</span>
-              <span>Ver Historial</span>
-            </button>
-          </div>
+                  >
+                    <span className="text-lg">📋</span>
+                    <span>Ver Historial</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -104,7 +107,7 @@ export default function DashboardPage() {
               user.role
             ) && (
               <div className="mt-6">
-          <DashboardRoleActions />
+                <DashboardRoleActions refreshTrigger={refreshTrigger} />
               </div>
             )}
 
@@ -129,7 +132,7 @@ export default function DashboardPage() {
               Aquí puedes consultar todos los servicios que tenemos disponibles para ti.
             </p>
           </div>
-          <ServicesGallery/>
+          <ServicesGallery />
         </div>
       </main>
     </>

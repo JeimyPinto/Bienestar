@@ -10,7 +10,8 @@ import {
   create, 
   update,
   bulkUpload,
-  downloadBulkTemplate
+  downloadBulkTemplate,
+  searchUsers as searchUsersService
 } from "../services/user";
 interface UseUsersOptions {
   token: string | null;
@@ -51,6 +52,7 @@ interface UseUsersReturn<T> {
     };
   } }>;
   downloadTemplate: () => Promise<{ error: boolean; message?: string }>;
+  searchUsers: (query: string) => Promise<{ error: boolean; message?: string; users?: User[] }>;
 }
 export const useUsers = ({ 
   token, 
@@ -257,6 +259,21 @@ export const useUsers = ({
     }
   }, [token]);
 
+  const searchUsers = useCallback(async (query: string): Promise<{ error: boolean; message?: string; users?: User[] }> => {
+    if (!token) return { error: true, message: "Token requerido para buscar usuarios" };
+    
+    try {
+      const res = await searchUsersService(query, token);
+      if (res.error) {
+        return { error: true, message: res.message };
+      } else {
+        return { error: false, users: res.users };
+      }
+    } catch {
+      return { error: true, message: "Error al buscar usuarios" };
+    }
+  }, [token]);
+
   return {
     // Estado
     users,
@@ -280,5 +297,8 @@ export const useUsers = ({
     // Funciones para carga masiva
     bulkUploadUsers,
     downloadTemplate,
+    
+    // Búsqueda
+    searchUsers,
   };
 };

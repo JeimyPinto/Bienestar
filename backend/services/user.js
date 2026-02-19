@@ -164,9 +164,39 @@ function removeUploadedFile(file) {
     }
   }
 }
+
 async function getUsersByRole(role) {
   return await User.findAll({
     where: { role },
+  });
+}
+
+async function searchUsers(query) {
+  const { Op } = db.Sequelize;
+  const terms = query.split(' ').filter(t => t.length > 0);
+  
+  // Si no hay términos, devolver vacío
+  if (terms.length === 0) return [];
+
+  // Crear condiciones: cada palabra debe coincidir con alguno de los campos
+  const conditions = terms.map(term => ({
+    [Op.or]: [
+      { firstName: { [Op.like]: `%${term}%` } },
+      { lastName: { [Op.like]: `%${term}%` } },
+      { documentNumber: { [Op.like]: `%${term}%` } },
+      { email: { [Op.like]: `%${term}%` } },
+    ]
+  }));
+
+  return await User.findAll({
+    where: {
+      [Op.and]: conditions,
+      status: "activo",
+    },
+    limit: 10,
+    include: [
+      { association: "group", required: false },
+    ],
   });
 }
 
@@ -179,5 +209,5 @@ module.exports = {
   createUser,
   updateUser,
   removeUploadedFile,
-  getUsersByRole,
+  searchUsers,
 };

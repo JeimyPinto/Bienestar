@@ -22,11 +22,11 @@ export default function UserDashboardLink({
       href="/dashboard"
       onClick={onClick}
       className="
-        px-4 py-2 bg-azul-oscuro hover:bg-cian
-        text-white rounded-lg font-medium text-sm
+        px-4 py-2 bg-white/5 hover:bg-white/10
+        text-white rounded-xl font-display font-semibold text-sm
         transition-all duration-300 
-        hover:shadow-lg hover:scale-105
-        border border-success/30 hover:border-success/50
+        shadow-sm hover:shadow-lg hover:scale-[1.05] active:scale-95
+        border border-white/10
         flex items-center space-x-2
         focus-visible-custom
       "

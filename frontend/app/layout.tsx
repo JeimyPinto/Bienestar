@@ -20,6 +20,9 @@ export default function RootLayout({
       <head>
         <meta charSet="UTF-8" />
         <link rel="icon" href="/images/favicon.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
       </head>

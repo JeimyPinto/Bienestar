@@ -1,16 +1,28 @@
-import {useAuthContext} from "../../contexts/authContext";
+import { useState, useEffect } from "react";
+import { useAuthContext } from "../../contexts/authContext";
 import { ROLES } from "../../constants/roles";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
 
-export default function QuickStats() {
+interface QuickStatsProps {
+  refreshTrigger?: number;
+}
+
+export default function QuickStats({ refreshTrigger = 0 }: QuickStatsProps) {
   const { user, token } = useAuthContext();
-  
+
   // Obtener estadísticas usando el hook especializado
-  const stats = useDashboardStats({
+  const { stats, loading, refresh } = useDashboardStats({
     token: token || undefined,
     userId: user?.id,
     userRole: user?.role || ''
   });
+
+  // Efecto para refrescar cuando el prop cambie
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      refresh();
+    }
+  }, [refreshTrigger, refresh]);
 
   // Solo mostrar para usuarios con permisos
   if (!user || user.role === ROLES.USER) {
@@ -42,7 +54,7 @@ export default function QuickStats() {
                 {stat.icon}
               </div>
             </div>
-            
+
             {/* Indicador de navegación */}
             <div className="mt-3 flex items-center justify-end opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-2 group-hover:translate-x-0">
               <span className="text-xs text-azul-marino/70 mr-1">Ver detalles</span>

@@ -32,95 +32,83 @@ export default function Header() {
 
   // Función para debug del estado de auth
   React.useEffect(() => {
-    console.log("Header Auth State:", { 
-      token: !!token, 
-      user: !!user, 
-      isAuthenticated, 
+    console.log("Header Auth State:", {
+      token: !!token,
+      user: !!user,
+      isAuthenticated,
       isInitialized,
-      showAuthButtons 
+      showAuthButtons
     });
   }, [token, user, isAuthenticated, isInitialized, showAuthButtons]);
 
   return (
-    <header className="bg-gradient-corporate shadow-xl border-b border-azul-cielo/20 backdrop-blur-sm sticky top-0 z-30">
-      <div className="container mx-auto px-4 py-3 md:px-6 md:py-4">
+    <header className="sticky top-0 z-40 w-full bg-azul-oscuro border-b border-white/10 shadow-premium transition-all duration-300">
+      <div className="container mx-auto px-4 py-3 md:px-6">
         <div className="flex justify-between items-center">
-          {/* Logo mejorado */}
+          {/* Brand/Logo Section (Integrated Rectangular Design) */}
           <Link
             href="/"
-            tabIndex={0}
-            className="group flex items-center space-x-3"
+            className="group flex items-center transition-all duration-300 active:scale-95"
           >
-            <div className="relative overflow-hidden rounded-xl p-2 transition-all duration-300 group-hover:bg-white/10 bg-white/5 backdrop-blur-sm border border-white/10">
-              <Image
-              src={`${process.env.FRONTEND_URL || ""}/images/icono.png`}
-              priority={false}
-              alt="Logo Bienestar al Aprendiz"
-              width={48}
-              height={48}
-              className="transition-transform duration-300 group-hover:scale-105 object-contain"
-              />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-white text-lg md:text-xl font-bold leading-tight">
-                Sistema de Bienestar al Aprendiz
-              </h1>
-              <p className="text-azul-cielo/80 text-xs md:text-sm">
-                SENA - Formación Integral
-              </p>
+            <div className="flex items-center bg-white/95 backdrop-blur-sm p-1.5 pr-6 rounded-2xl border border-white/20 shadow-lg group-hover:bg-white transition-all duration-300">
+              <div className="bg-azul-oscuro p-1 rounded-xl shadow-inner group-hover:rotate-3 transition-transform duration-500">
+                <Image
+                  src="/images/logo-sena.png"
+                  alt="SENA Logo"
+                  width={35}
+                  height={35}
+                  className="w-7 h-7 object-contain brightness-0 invert"
+                />
+              </div>
+
+              <div className="h-6 w-[1.5px] bg-azul-oscuro/10 mx-3"></div>
+
+              <div className="flex flex-col">
+                <h1 className="text-azul-oscuro font-display font-bold text-base md:text-lg tracking-tight leading-none">
+                  Bienestar <span className="text-azul-claro">Aprendiz</span>
+                </h1>
+                <p className="text-azul-oscuro/50 text-[9px] uppercase tracking-wider font-bold mt-0.5">
+                  Regional Caldas
+                </p>
+              </div>
             </div>
           </Link>
 
-          {/* Botón hamburguesa mejorado */}
+          {/* Botón hamburguesa (Moderna) */}
           <button
-            className="md:hidden relative z-50 p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 active:scale-95"
+            className="md:hidden p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 transition-all duration-300 text-white"
             onClick={(e) => {
               e.preventDefault();
-              e.stopPropagation();
-              console.log("Hamburger button clicked"); // Debug
               toggleMenu();
             }}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-            aria-expanded={menuOpen}
-            aria-controls="main-menu"
-            type="button"
           >
-            <div className="flex flex-col justify-center items-center w-6 h-6">
-              <span
-                className={`block w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${
-                  menuOpen ? "rotate-45 translate-y-1.5" : ""
-                }`}
-              />
-              <span
-                className={`block w-6 h-0.5 bg-white rounded-full transition-all duration-300 my-1 ${
-                  menuOpen ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`block w-6 h-0.5 bg-white rounded-full transition-all duration-300 ${
-                  menuOpen ? "-rotate-45 -translate-y-1.5" : ""
-                }`}
-              />
+            <div className="flex flex-col justify-center items-center w-6 h-5 gap-1.5">
+              <span className={`block w-6 h-0.5 bg-current rounded-full transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+              <span className={`block w-6 h-0.5 bg-current rounded-full transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
+              <span className={`block w-6 h-0.5 bg-current rounded-full transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
             </div>
           </button>
 
-          {/* Navegación de escritorio */}
-          <nav className="hidden md:flex items-center space-x-1">
+          {/* Navegación de escritorio (Limpia) */}
+          <nav className="hidden md:flex items-center gap-2">
             <NavLink href="/services" onClick={closeMenu}>
-              🛠️ Servicios
+              Servicios
             </NavLink>
 
             {showAuthButtons ? (
               isAuthenticated ? (
-                <>
+                <div className="flex items-center gap-3 ml-2 border-l border-white/10 pl-5">
                   <UserDashboardLink user={user} onClick={closeMenu} />
                   <LogoutButton onClick={handleLogout} />
-                </>
+                </div>
               ) : (
-                <LoginButton onClick={closeMenu} />
+                <div className="ml-4">
+                  <LoginButton onClick={closeMenu} />
+                </div>
               )
             ) : (
-              <div className="w-20 h-10 animate-pulse bg-white/10 rounded-lg" />
+              <div className="w-24 h-10 bg-white/5 animate-pulse rounded-xl ml-4" />
             )}
           </nav>
         </div>
@@ -128,9 +116,8 @@ export default function Header() {
 
       {/* Menú móvil mejorado */}
       <div
-        className={`md:hidden fixed inset-0 z-40 transition-all duration-300 ${
-          menuOpen ? "visible opacity-100" : "invisible opacity-0"
-        }`}
+        className={`md:hidden fixed inset-0 z-40 transition-all duration-300 ${menuOpen ? "visible opacity-100" : "invisible opacity-0"
+          }`}
       >
         {/* Overlay */}
         <div
@@ -147,9 +134,8 @@ export default function Header() {
         <nav
           id="main-menu"
           aria-label="Menú principal"
-          className={`absolute top-0 right-0 mobile-menu-height w-80 max-w-[85%] sm:max-w-sm bg-gradient-to-b from-azul-oscuro to-azul-marino shadow-2xl transform transition-transform duration-300 mobile-menu-safe-area ${
-            menuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`absolute top-0 right-0 mobile-menu-height w-80 max-w-[85%] sm:max-w-sm bg-gradient-to-b from-azul-oscuro to-azul-marino shadow-2xl transform transition-transform duration-300 mobile-menu-safe-area ${menuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex flex-col h-full">
