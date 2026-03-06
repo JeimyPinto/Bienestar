@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 // Define the UseModalReturn type if not already defined elsewhere
 type ModalMode = "create" | "edit";
 type UseModalReturn<T> = {
-  dialogRef: React.RefObject<HTMLDialogElement>;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
   isFormOpen: boolean;
   mode: ModalMode;
   itemToEdit: T | undefined;
@@ -13,7 +13,7 @@ type UseModalReturn<T> = {
 };
 
 export const useModal = <T>(): UseModalReturn<T> => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [mode, setMode] = useState<ModalMode>("create");
   const [itemToEdit, setItemToEdit] = useState<T | undefined>(undefined);

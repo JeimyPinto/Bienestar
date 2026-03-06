@@ -58,6 +58,13 @@ router.put(
     requestController.update
 );
 
+router.patch(
+    "/:id/resolve",
+    authenticateToken,
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    requestController.resolve
+);
+
 router.get(
     "/user/:id",
     authenticateToken,

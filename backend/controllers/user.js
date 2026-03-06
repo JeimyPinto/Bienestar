@@ -76,8 +76,7 @@ class UsuarioController {
   async create(req, res, next) {
     try {
       const user = await userService.createUser(req.body, req.file, req.user?.role);
-      res.locals.user = user;
-      res.locals.createMessage = "Usuario creado correctamente";
+      const createMessage = "Usuario creado correctamente";
       
       // Auditoría de creación
       await createAuditLog({
@@ -89,8 +88,10 @@ class UsuarioController {
         changed_by: req.user?.id || null,
       });
       
-      // No enviar respuesta aquí, dejar que los middlewares se ejecuten
-      next();
+      res.status(201).json({
+        message: createMessage,
+        user
+      });
     } catch (error) {
       userService.removeUploadedFile(req.file);
       next(error);
@@ -100,9 +101,7 @@ class UsuarioController {
   async update(req, res, next) {
     try {
       const { user, oldUserData } = await userService.updateUser(req.params.id, req.user, req.body, req.file);
-      res.locals.user = user;
-      res.locals.oldUserData = oldUserData;
-      res.locals.updateMessage = `Usuario actualizado correctamente por ${req.user.firstName} ${req.user.lastName}`;
+      const updateMessage = `Usuario actualizado correctamente por ${req.user.firstName} ${req.user.lastName}`;
       
       // Auditoría de actualización
       await createAuditLog({
@@ -114,8 +113,10 @@ class UsuarioController {
         changed_by: req.user?.id || null,
       });
       
-      // No enviar respuesta aquí, dejar que los middlewares se ejecuten
-      next();
+      res.status(200).json({
+        message: updateMessage,
+        user
+      });
     } catch (error) {
       userService.removeUploadedFile(req.file);
       next(error);

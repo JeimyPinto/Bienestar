@@ -25,7 +25,7 @@ const emptyRequest: Request = {
     creator: null,
 };
 interface RequestsFormProps {
-    dialogRef: React.RefObject<HTMLDialogElement>;
+    dialogRef: React.RefObject<HTMLDialogElement | null>;
     onClose?: (updatedRequest?: Request) => void;
     mode: "create" | "edit";
     requestToEdit?: Request;

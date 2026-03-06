@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuthContext } from "../../contexts/authContext";
 import { useHeader } from "../../hooks/useHeader";
+import { useNavigation } from "../../hooks/useNavigation";
 import NavLink from "../header/NavLink";
 import UserDashboardLink from "../header/UserDashboardLink";
 import LogoutButton from "../header/LogoutButton";
@@ -18,6 +19,7 @@ import MobileLoginButton from "../header/MobileLoginButton";
 export default function Header() {
   const { token, user, isInitialized, isAuthenticated, clearAuth } = useAuthContext();
   const { menuOpen, toggleMenu, closeMenu } = useHeader();
+  const { links } = useNavigation(user?.role);
   const router = useRouter();
 
   // Función para manejar logout
@@ -92,9 +94,11 @@ export default function Header() {
 
           {/* Navegación de escritorio (Limpia) */}
           <nav className="hidden md:flex items-center gap-2">
-            <NavLink href="/services" onClick={closeMenu}>
-              Servicios
-            </NavLink>
+            {links.map((link) => (
+              <NavLink key={link.path} href={link.path} icon={link.icon} onClick={closeMenu}>
+                {link.name}
+              </NavLink>
+            ))}
 
             {showAuthButtons ? (
               isAuthenticated ? (
@@ -143,9 +147,11 @@ export default function Header() {
             <div className="flex-1 pt-16 sm:pt-20 pb-4 overflow-y-auto mobile-menu-scroll">
               <div className="px-4 sm:px-6 mobile-menu-compact">
                 <ul className="space-y-3 mobile-menu-short mobile-touch-target">
-                  <MobileNavItem href="/services" icon="🛠️" onClick={closeMenu}>
-                    Servicios
-                  </MobileNavItem>
+                  {links.map((link) => (
+                    <MobileNavItem key={link.path} href={link.path} icon={link.icon} onClick={closeMenu}>
+                      {link.name}
+                    </MobileNavItem>
+                  ))}
 
                   {isAuthenticated ? (
                     <>

@@ -122,6 +122,28 @@ class RequestController {
             next(error);
         }
     }
+
+    async resolve(req, res, next) {
+        try {
+            const { id } = req.params;
+            const { responseStatus, responseMessage } = req.body;
+            
+            const result = await requestService.resolveRequest(id, { responseStatus, responseMessage }, req.user?.id || null);
+            
+            if (!result) {
+                const error = new Error("Solicitud no encontrada");
+                error.status = 404;
+                throw error;
+            }
+
+            res.status(200).json({
+                message: `Solicitud ${responseStatus} con éxito`,
+                data: result
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports = new RequestController();

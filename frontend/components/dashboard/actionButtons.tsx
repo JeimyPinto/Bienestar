@@ -1,16 +1,25 @@
 import { useRouter } from "next/navigation";
 import { getAvailableActionCards } from "../../lib/actionCards";
 import { User } from "../../interface/user";
+import * as LucideIcons from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface ActionButtonsProps {
   user: User | null;
 }
+
 export default function ActionButtons({ user }: ActionButtonsProps) {
   const router = useRouter();
 
   if (!user) return null;
 
   const availableCards = getAvailableActionCards(user.role);
+
+  // Helper to render icon dynamically
+  const Icon = ({ name }: { name: string }) => {
+    const LucideIcon = (LucideIcons as any)[name];
+    return LucideIcon ? <LucideIcon size={32} /> : null;
+  };
 
   return (
     <section className="bg-gradient-card backdrop-blur-sm shadow-xl rounded-2xl p-6 mt-6 border border-azul-cielo/20 hover:shadow-2xl transition-all duration-300">
@@ -46,16 +55,16 @@ export default function ActionButtons({ user }: ActionButtonsProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-10 transform -skew-x-12 transition-all duration-500 translate-x-[-100%] group-hover:translate-x-[100%]"></div>
 
             <div className="relative z-10">
-              <div className="text-3xl mb-3">{card.icon}</div>
+              <div className="mb-3 text-white">
+                <Icon name={card.icon} />
+              </div>
               <h3 className="font-bold text-lg mb-2">{card.title}</h3>
               <p className="text-sm opacity-90 leading-relaxed">{card.description}</p>
             </div>
 
             {/* Indicador de flecha */}
             <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-200">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              <ArrowRight size={20} />
             </div>
           </div>
         ))}
@@ -65,7 +74,7 @@ export default function ActionButtons({ user }: ActionButtonsProps) {
       <div className="mt-6 pt-4 border-t border-azul-cielo/30">
         <div className="flex items-center text-sm text-azul-marino/80">
           <div className="w-2 h-2 bg-success rounded-full mr-2 animate-pulse"></div>
-          <span>Conectado como: <span className="font-medium text-azul-oscuro">{user.role}</span></span>
+          <span>Conectado como: <span className="font-medium text-azul-oscuro uppercase">{user.role}</span></span>
         </div>
       </div>
     </section>

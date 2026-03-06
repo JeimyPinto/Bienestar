@@ -5,6 +5,20 @@ import { useState } from "react"
 import { useAuthContext } from "../../contexts/authContext"
 import { useUsers } from "../../hooks/useUsers"
 import { User } from "../../interface/user"
+import {
+    Mail,
+    Phone,
+    CreditCard,
+    Users,
+    ClipboardList,
+    BarChart,
+    Calendar,
+    RefreshCcw,
+    Check,
+    X,
+    HelpCircle,
+    AlertTriangle
+} from "lucide-react";
 
 interface UserCardProps {
     user?: User;  // Usuario opcional - si no se pasa, obtiene myProfile
@@ -14,10 +28,10 @@ interface UserCardProps {
 export default function UserCard({ user: propUser, onClick }: UserCardProps) {
     // Obtener token del contexto
     const { token } = useAuthContext();
-    
+
     // Estado para manejar errores
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    
+
     // Solo hacer llamada a la API si NO se pasó un usuario como prop
     const { users: [fetchedUser], loading } = useUsers({
         token: propUser ? null : token, // Solo usar token si no hay propUser
@@ -96,16 +110,16 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                         className="w-20 h-20 rounded-full object-cover border-2 border-azul-cielo/30 group-hover:border-primary transition-colors duration-300"
                     />
                     <div className={`
-                        absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                        ${user.status === "activo" 
-                            ? "bg-success text-white" 
+                        absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center
+                        ${user.status === "activo"
+                            ? "bg-success text-white"
                             : "bg-danger text-white"
                         }
                     `}>
-                        {user.status === "activo" ? "✓" : "✕"}
+                        {user.status === "activo" ? <Check size={14} /> : <X size={14} />}
                     </div>
                 </div>
-                
+
                 <div className="text-center sm:text-left w-full min-w-0">
                     <h2 className="text-lg font-bold text-azul-oscuro break-words group-hover:text-primary transition-colors duration-300">
                         {`${user.firstName} ${user.lastName}`}
@@ -114,20 +128,20 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                         <span className={`
                             inline-block px-2 py-1 text-xs font-semibold rounded-full
                             ${user.role === "admin" ? "bg-warning/20 text-azul-oscuro" :
-                              user.role === "instructor" ? "bg-info/20 text-azul-oscuro" :
-                              "bg-primary/20 text-azul-oscuro"}
+                                user.role === "instructor" ? "bg-info/20 text-azul-oscuro" :
+                                    "bg-primary/20 text-azul-oscuro"}
                         `}>
                             {user.role}
                         </span>
                     </div>
-                    
+
                     <div className="space-y-1 text-sm text-azul-marino/70">
                         <p className="flex items-center justify-center sm:justify-start break-words">
-                            <span className="mr-2">📧</span>
+                            <Mail size={14} className="mr-2 text-primary/60" />
                             {user.email || "No especificado"}
                         </p>
                         <p className="flex items-center justify-center sm:justify-start break-words">
-                            <span className="mr-2">📱</span>
+                            <Phone size={14} className="mr-2 text-primary/60" />
                             {user.phone || "No especificado"}
                         </p>
                     </div>
@@ -152,16 +166,16 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                                 className="w-20 h-20 rounded-full object-cover border-2 border-azul-cielo/30 group-hover:border-primary transition-colors duration-300"
                             />
                             <div className={`
-                                absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                                ${user.status === "activo" 
-                                    ? "bg-success text-white" 
+                                absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center
+                                ${user.status === "activo"
+                                    ? "bg-success text-white"
                                     : "bg-danger text-white"
                                 }
                             `}>
-                                {user.status === "activo" ? "✓" : "✕"}
+                                {user.status === "activo" ? <Check size={14} /> : <X size={14} />}
                             </div>
                         </div>
-                        
+
                         <div>
                             <h2 className="text-xl font-bold text-azul-oscuro group-hover:text-primary transition-colors duration-300">
                                 {`${user.firstName} ${user.lastName}`}
@@ -170,8 +184,8 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                                 <span className={`
                                     inline-block px-3 py-1 text-sm font-semibold rounded-full
                                     ${user.role === "admin" ? "bg-warning/20 text-azul-oscuro" :
-                                      user.role === "instructor" ? "bg-info/20 text-azul-oscuro" :
-                                      "bg-primary/20 text-azul-oscuro"}
+                                        user.role === "instructor" ? "bg-info/20 text-azul-oscuro" :
+                                            "bg-primary/20 text-azul-oscuro"}
                                 `}>
                                     {user.role}
                                 </span>
@@ -189,18 +203,18 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                                 Información Personal
                             </h3>
                             <p className="flex items-center text-sm text-azul-marino/70">
-                                <span className="mr-2 w-4">📧</span>
+                                <Mail size={14} className="mr-2 text-primary/60" />
                                 {user.email || "No especificado"}
                             </p>
                             <p className="flex items-center text-sm text-azul-marino/70">
-                                <span className="mr-2 w-4">📱</span>
+                                <Phone size={14} className="mr-2 text-primary/60" />
                                 {user.phone || "No especificado"}
                             </p>
                             <p className="flex items-center text-sm text-azul-marino/70">
-                                <span className="mr-2 w-4">🆔</span>
-                                {user.documentType && user.documentNumber 
+                                <CreditCard size={14} className="mr-2 text-primary/60" />
+                                {user.documentType && user.documentNumber
                                     ? `${user.documentType}: ${user.documentNumber}`
-                                    : "Documento no especificado"
+                                    : "No especificado"
                                 }
                             </p>
                         </div>
@@ -210,17 +224,17 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                                 Información Académica
                             </h3>
                             <p className="flex items-center text-sm text-azul-marino/70">
-                                <span className="mr-2 w-4">👥</span>
-                                {user.group?.programName || "Sin programa asignado"}
+                                <Users size={14} className="mr-2 text-primary/60" />
+                                {user.group?.programName || "Sin programa"}
                             </p>
                             {user.group?.fichaNumber && (
                                 <p className="flex items-center text-sm text-azul-marino/70">
-                                    <span className="mr-2 w-4">📋</span>
+                                    <ClipboardList size={14} className="mr-2 text-primary/60" />
                                     Ficha: {user.group.fichaNumber}
                                 </p>
                             )}
                             <p className="flex items-center text-sm text-azul-marino/70">
-                                <span className="mr-2 w-4">📊</span>
+                                <BarChart size={14} className="mr-2 text-primary/60" />
                                 Estado: {user.status || "No especificado"}
                             </p>
                         </div>
@@ -232,33 +246,37 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                             Registro
                         </h3>
                         {user.createdAt && (
-                            <p className="text-xs text-azul-marino/60 mb-1">
-                                <span className="block">� Creado</span>
-                                {new Date(user.createdAt).toLocaleDateString("es-CO")}
-                            </p>
+                            <div className="text-xs text-azul-marino/60 mb-1 flex flex-col items-end">
+                                <span className="flex items-center gap-1">
+                                    <Calendar size={12} className="text-primary/40" /> Creado
+                                </span>
+                                <span>{new Date(user.createdAt).toLocaleDateString("es-CO")}</span>
+                            </div>
                         )}
                         {user.updatedAt && (
-                            <p className="text-xs text-azul-marino/60">
-                                <span className="block">🔄 Actualizado</span>
-                                {new Date(user.updatedAt).toLocaleDateString("es-CO")}
-                            </p>
+                            <div className="text-xs text-azul-marino/60 flex flex-col items-end">
+                                <span className="flex items-center gap-1">
+                                    <RefreshCcw size={12} className="text-primary/40" /> Actualizado
+                                </span>
+                                <span>{new Date(user.updatedAt).toLocaleDateString("es-CO")}</span>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
 
             {/* Footer solo en móvil */}
-            <div className="mt-4 pt-3 border-t border-azul-cielo/20 flex flex-col sm:flex-row gap-2 sm:justify-between text-xs text-azul-marino/60 lg:hidden">
+            <div className="mt-4 pt-3 border-t border-azul-cielo/20 flex flex-col sm:flex-row gap-2 sm:justify-between text-xs text-azul-marino/60 lg:hidden font-sans">
                 {user.createdAt && (
-                    <div className="flex items-center justify-center sm:justify-start">
-                        <span className="mr-1">📅</span>
-                        Creado: {new Date(user.createdAt).toLocaleDateString("es-CO")}
+                    <div className="flex items-center justify-center sm:justify-start gap-1.5">
+                        <Calendar size={12} className="text-primary/40" />
+                        <span>Creado: {new Date(user.createdAt).toLocaleDateString("es-CO")}</span>
                     </div>
                 )}
                 {user.updatedAt && (
-                    <div className="flex items-center justify-center sm:justify-start">
-                        <span className="mr-1">🔄</span>
-                        Actualizado: {new Date(user.updatedAt).toLocaleDateString("es-CO")}
+                    <div className="flex items-center justify-center sm:justify-start gap-1.5">
+                        <RefreshCcw size={12} className="text-primary/40" />
+                        <span>Actualizado: {new Date(user.updatedAt).toLocaleDateString("es-CO")}</span>
                     </div>
                 )}
             </div>

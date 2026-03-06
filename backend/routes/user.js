@@ -19,59 +19,55 @@ const ROLES = require("../constants/roles");
 const { createSchema, updateSchema } = require("../schemas/user.js");
 
 // ===================== RUTAS =====================
+// Aplicar limpieza de campos sensibles a todas las rutas de este router
+router.use(removeSensitiveFields);
+
 // Buscar usuarios (nombre, documento, email)
 router.get(
     "/search",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
-    userController.search,
-    removeSensitiveFields
+    userController.search
 );
 
 // Obtener todos los usuarios
 router.get(
     "/",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
-    userController.getAll,
-    removeSensitiveFields
+    userController.getAll
 );
 
 // Obtener todos los usuarios activos
 router.get(
     "/active",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
-    userController.getAllActive,
-    removeSensitiveFields
+    userController.getAllActive
 );
 
 // Obtener usuarios paginados
 router.get(
     "/paginated",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
-    userController.getAllPaginated,
-    removeSensitiveFields
+    userController.getAllPaginated
 );
 
 // Obtener usuarios por rol
 router.get(
     "/role/:role",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
-    userController.getAllByRole,
-    removeSensitiveFields
+    userController.getAllByRole
 );
 
 // Obtener información del usuario autenticado (perfil propio)
 router.get(
     "/me",
-    userController.getMyProfile,
-    removeSensitiveFields
+    userController.getMyProfile
 );
 
 // Obtener usuario por ID
 router.get(
     "/:id",
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR),
-    userController.getById,
-    removeSensitiveFields
+    userController.getById
 );
 // Crear usuario
 router.post(
@@ -80,8 +76,7 @@ router.post(
     sanitizeRequestBody,
     authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
     validateRequestSchema(createSchema),
-    userController.create,
-    removeSensitiveFields
+    userController.create
 );
 
 // Actualizar usuario
@@ -91,8 +86,7 @@ router.put(
     uploadUser.single("file"),
     sanitizeRequestBody,
     validateRequestSchema(updateSchema),
-    userController.update,
-    removeSensitiveFields
+    userController.update
 );
 
 

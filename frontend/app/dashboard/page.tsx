@@ -11,6 +11,8 @@ import ServicesGallery from "../../components/services/servicesGallery"
 import { useAuthContext } from "../../contexts/authContext";
 import { useMessages } from "../../hooks/useMessages";
 import { useModal } from "../../hooks/useModal";
+import RoleGate from "../../components/auth/RoleGate";
+import { Target, Plus, List, FolderOpen } from "lucide-react";
 
 export default function DashboardPage() {
   const { successMessage, clearSuccess, showSuccess, errorMessage, setErrorMessage } = useMessages();
@@ -54,62 +56,62 @@ export default function DashboardPage() {
         <div className="container mx-auto max-w-8xl">
           <UserCard />
 
-          {/* Sección de acciones rápidas para crear solicitudes */}
-          <div className="my-6 lg:my-8">
-            <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-azul-oscuro mb-2 flex items-center">
-                    <span className="mr-2 text-xl sm:text-2xl">🎯</span>
-                    <span>Acciones Rápidas</span>
-                  </h2>
-                  <p className="text-sm sm:text-base text-azul-marino/70">
-                    Gestiona tus solicitudes de manera eficiente
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  <button
-                    onClick={() => openCreateDialog(clearMessages)}
-                    className="
-                bg-success hover:bg-verde-bosque text-white 
-                px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base
-                transition-all duration-300 hover:shadow-lg hover:scale-105 
-                flex items-center justify-center space-x-2
-                border border-success/30 w-full sm:w-auto
-                focus:outline-none focus:ring-4 focus:ring-success/20
-              "
-                  >
-                    <span className="text-lg">➕</span>
-                    <span>Nueva Solicitud</span>
-                  </button>
+          {/* Sección de acciones rápidas para crear solicitudes (Solo Aprendices e Instructores) */}
+          <RoleGate allowedRoles={[ROLES.USER, ROLES.INSTRUCTOR, ROLES.SUPERADMIN]}>
+            <div className="my-6 lg:my-8">
+              <div className="bg-white rounded-xl lg:rounded-2xl shadow-lg p-4 sm:p-6 border border-azul-cielo/20">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex-1">
+                    <h2 className="text-lg sm:text-xl font-bold text-azul-oscuro mb-2 flex items-center">
+                      <Target className="mr-2 text-primary" size={24} />
+                      <span>Acciones Rápidas</span>
+                    </h2>
+                    <p className="text-sm sm:text-base text-azul-marino/70">
+                      Gestiona tus solicitudes de manera eficiente
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <button
+                      onClick={() => openCreateDialog(clearMessages)}
+                      className="
+                  bg-success hover:bg-verde-bosque text-white 
+                  px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base
+                  transition-all duration-300 hover:shadow-lg hover:scale-105 
+                  flex items-center justify-center space-x-2
+                  border border-success/30 w-full sm:w-auto
+                  focus:outline-none focus:ring-4 focus:ring-success/20
+                "
+                    >
+                      <Plus size={20} />
+                      <span>Nueva Solicitud</span>
+                    </button>
 
-                  <button
-                    onClick={() => (window.location.href = "/requests")}
-                    className="
-                bg-primary hover:bg-azul-cielo text-white 
-                px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base
-                transition-all duration-300 hover:shadow-lg hover:scale-105 
-                flex items-center justify-center space-x-2
-                border border-primary/30 w-full sm:w-auto
-                focus:outline-none focus:ring-4 focus:ring-primary/20
-              "
-                  >
-                    <span className="text-lg">📋</span>
-                    <span>Ver Historial</span>
-                  </button>
+                    <button
+                      onClick={() => (window.location.href = "/requests")}
+                      className="
+                  bg-primary hover:bg-azul-cielo text-white 
+                  px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base
+                  transition-all duration-300 hover:shadow-lg hover:scale-105 
+                  flex items-center justify-center space-x-2
+                  border border-primary/30 w-full sm:w-auto
+                  focus:outline-none focus:ring-4 focus:ring-primary/20
+                "
+                    >
+                      <List size={20} />
+                      <span>Ver Mis Solicitudes</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </RoleGate>
 
-          {user &&
-            [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR].includes(
-              user.role
-            ) && (
-              <div className="mt-6">
-                <DashboardRoleActions refreshTrigger={refreshTrigger} />
-              </div>
-            )}
+          {/* Sección Administrativa (Instructores, Admins y SuperAdmins) */}
+          <RoleGate allowedRoles={[ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR]}>
+            <div className="mt-6">
+              <DashboardRoleActions refreshTrigger={refreshTrigger} />
+            </div>
+          </RoleGate>
 
           {isFormOpen && (
             <RequestForm
@@ -125,7 +127,7 @@ export default function DashboardPage() {
           {/* Catálogo de servicios */}
           <div className="mt-10 mb-6">
             <h2 className="text-2xl font-bold text-azul-oscuro mb-2 flex items-center">
-              <span className="mr-2 text-3xl">🗂️</span>
+              <FolderOpen className="mr-2 text-primary" size={28} />
               Catálogo de Servicios Disponibles
             </h2>
             <p className="text-base text-azul-marino/70 mb-4">

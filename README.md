@@ -50,6 +50,21 @@ Aplicación web completa para la gestión integral de servicios de bienestar, us
 
 ```plaintext
 Bienestar/
+├── backend/               # Servidor Express.js & API REST
+│   ├── config/            # Configuración de BD y variables
+│   ├── controllers/       # Lógica de negocio por módulo
+│   ├── middleware/        # Seguridad, roles y validaciones
+│   ├── models/            # Modelos de Sequelize (PostgreSQL)
+│   ├── routes/            # Definición de endpoints
+│   └── utils/             # Servicios de email, logs y archivos
+├── frontend/              # Cliente Next.js 14 (App Router)
+│   ├── src/app/           # Páginas y layout del sistema
+│   ├── src/components/    # UI components y elementos comunes
+│   ├── src/hooks/         # Gestión de estado y auth
+│   └── src/services/      # Comunicación con el backend
+└── docs/                  # Documentación y recursos adicionales
+```
+Bienestar/
 ├── backend/
 │   ├── app.js                    # Servidor principal Express
 │   ├── swagger.yaml              # Documentación API

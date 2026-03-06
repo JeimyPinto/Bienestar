@@ -1,9 +1,10 @@
 import React, { ReactNode, MouseEvent } from 'react';
 import Link from 'next/link';
+import { LucideIcon } from 'lucide-react';
 
 interface MobileNavItemProps {
   href: string;
-  icon: ReactNode;
+  icon: LucideIcon | string | ReactNode;
   children: ReactNode;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
@@ -30,7 +31,13 @@ export default function MobileNavItem({
           focus-visible-custom
         "
       >
-        <span className="text-2xl">{icon}</span>
+        <span className="text-2xl flex items-center justify-center">
+          {typeof icon === 'function' || (typeof icon === 'object' && icon !== null) ? (
+            React.createElement(icon as any, { size: 24 })
+          ) : (
+            icon
+          )}
+        </span>
         <span className="font-medium">{children}</span>
       </Link>
     </li>

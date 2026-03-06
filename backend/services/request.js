@@ -93,6 +93,44 @@ class RequestService {
       ],
     });
   }
+
+  async resolveRequest(id, { responseStatus, responseMessage }, userId = null) {
+    const remissionService = require("./remission.js");
+    const request = await Request.findByPk(id);
+    if (!request) return null;
+
+    const oldData = request.get({ plain: true });
+
+    // Si se aprueba, automáticamente crear remisión
+    if (responseStatus === "aprobada") {
+      // La lógica de creación de remisión ya actualiza la request a inactiva y aprobada
+      return await remissionService.createRemission({
+        requestId: request.id,
+        referredUserId: request.userId,
+        serviceId: request.serviceId,
+        startDate: new Date(), // Fecha de inicio por defecto hoy
+      }, userId);
+    }
+
+    // Si se rechaza, solo actualizar la request
+    await request.update({
+      responseStatus,
+      responseMessage,
+      status: false // Se marca como inactiva al ser resuelta (aunque sea rechazada)
+    });
+
+    await auditLogService.createAuditLog({
+      entity_type: "Request",
+      entity_id: request.id,
+      action: "UPDATE",
+      old_data: oldData,
+      new_data: request.toJSON(),
+      changed_by: userId,
+      description: `Request ${responseStatus} by admin`
+    });
+
+    return request;
+  }
 }
 
 module.exports = new RequestService();

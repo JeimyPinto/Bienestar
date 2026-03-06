@@ -6,10 +6,10 @@ class ServiceController {
     try {
       const services = await serviceService.getAllServices();
       if (services.length === 0) {
-        const error = new Error("No se encontraron servicios");
-        error.status = 404;
-        error.details = { services: null };
-        throw error;
+        return res.status(200).json({
+          message: "No se encontraron servicios",
+          services: [],
+        });
       }
       res.status(200).json({
         message: "Servicios recuperados con éxito",
@@ -24,10 +24,10 @@ class ServiceController {
     try {
       const services = await serviceService.getAllActiveServices();
       if (services.length === 0) {
-        const error = new Error("No se encontraron servicios activos");
-        error.status = 404;
-        error.details = { services: [] };
-        throw error;
+        return res.status(200).json({
+          message: "No se encontraron servicios activos",
+          services: [],
+        });
       }
       res.status(200).json({
         message: "Servicios activos recuperados con éxito",
@@ -103,10 +103,10 @@ class ServiceController {
       const userId = req.params.id;
       const services = await serviceService.getServicesByUserId(userId);
       if (services.length === 0) {
-        const error = new Error("No se encontraron servicios para este usuario");
-        error.status = 404;
-        error.details = { services: [] };
-        throw error;
+        return res.status(200).json({
+          message: "No se encontraron servicios para este usuario",
+          services: [],
+        });
       }
       res.status(200).json({
         message: "Servicios recuperados con éxito para el usuario",

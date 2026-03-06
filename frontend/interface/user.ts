@@ -53,6 +53,10 @@ export interface FilterProps {
   setCurrentPage: (page: number) => void;
   filter: string;
   setFilter: (filter: string) => void;
+  roleFilter: string;
+  setRoleFilter: (role: string) => void;
+  statusFilter: string;
+  setStatusFilter: (status: string) => void;
 }
 
 // Props completas para UserTable

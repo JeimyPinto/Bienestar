@@ -1,5 +1,6 @@
 import React from "react";
 import { AuditLog } from "../../interface/auditLog";
+import { ClipboardList, Tag, User, Calendar, Search } from "lucide-react";
 
 interface AuditLogCardMobileProps {
   auditLogs: AuditLog[];
@@ -24,8 +25,8 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
   if (!auditLogs.length) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="p-8 border border-azul-cielo/20 bg-white rounded-lg shadow-md text-center max-w-md">
-          <span className="text-6xl mb-4 block">📋</span>
+        <div className="p-8 border border-azul-cielo/20 bg-white rounded-lg shadow-md text-center max-w-md flex flex-col items-center">
+          <ClipboardList className="text-azul-marino/20 mb-4" size={60} />
           <h3 className="text-xl font-bold text-azul-oscuro mb-2">Sin registros</h3>
           <p className="text-azul-marino/70">
             No hay registros de auditoría disponibles.
@@ -58,7 +59,8 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
         >
           {/* Header del card */}
           <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-bold text-primary">
+            <span className="text-sm font-bold text-primary flex items-center gap-1">
+              <Tag size={14} />
               #{auditLog.id}
             </span>
             <span className={`px-2 py-1 text-xs font-semibold rounded border ${getActionBadgeStyles(auditLog.action)}`}>
@@ -69,20 +71,30 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
           {/* Información principal */}
           <div className="space-y-2 text-sm text-azul-marino">
             <div className="flex items-center gap-2">
-              <span className="text-azul-oscuro font-semibold">🏷️ Entidad:</span>
+              <span className="text-azul-oscuro font-semibold flex items-center gap-1">
+                <Tag size={14} className="text-azul-marino/40" /> Entidad:
+              </span>
               <span>{auditLog.entity_type}</span>
               <span className="px-2 py-1 text-xs bg-neutral/10 text-neutral border border-neutral/20 rounded">
                 ID: {auditLog.entity_id}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2">
-              <span className="text-azul-oscuro font-semibold">👤 Modificado por:</span>
-              <span>{auditLog.changed_by || "-"}</span>
+              <span className="text-azul-oscuro font-semibold flex items-center gap-1">
+                <User size={14} className="text-azul-marino/40" /> Modificado por:
+              </span>
+              <span className="font-medium">
+                {auditLog.user
+                  ? `${auditLog.user.firstName} ${auditLog.user.lastName}`
+                  : auditLog.changed_by || "Sistema"}
+              </span>
             </div>
-            
+
             <div className="flex items-center gap-2">
-              <span className="text-azul-oscuro font-semibold">📅 Fecha:</span>
+              <span className="text-azul-oscuro font-semibold flex items-center gap-1">
+                <Calendar size={14} className="text-azul-marino/40" /> Fecha:
+              </span>
               <span>{auditLog.changed_at ? new Date(auditLog.changed_at).toLocaleString() : "-"}</span>
             </div>
           </div>
@@ -90,7 +102,7 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
           {/* Detalles de cambio */}
           <details className="mt-4">
             <summary className="cursor-pointer text-sm text-primary font-semibold hover:text-azul-claro transition-colors flex items-center gap-2">
-              <span>🔍</span>
+              <Search size={16} />
               Ver detalles de cambio
             </summary>
             <div className="mt-3 space-y-3">
@@ -106,7 +118,7 @@ export default function AuditLogCardMobile({ auditLogs, handleRowClick, loading 
                   <span className="italic text-azul-marino/50 text-xs">Sin datos anteriores</span>
                 )}
               </div>
-              
+
               <div>
                 <span className="text-xs font-bold text-azul-oscuro block mb-1">
                   📥 Datos nuevos:

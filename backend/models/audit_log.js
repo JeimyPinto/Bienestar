@@ -4,6 +4,13 @@ const {
 } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class audit_log extends Model {
+    static associate(models) {
+      audit_log.belongsTo(models.User, {
+        foreignKey: "changed_by",
+        targetKey: "id",
+        as: "user"
+      });
+    }
   }
   audit_log.init({
     entity_type: DataTypes.STRING,

@@ -10,7 +10,7 @@ import { useAuthContext } from "../../contexts/authContext";
 import { useGroups } from "../../hooks/useGroups";
 
 interface UserFormProps {
-    dialogRef: React.RefObject<HTMLDialogElement>;
+    dialogRef: React.RefObject<HTMLDialogElement | null>;
     onClose?: () => void;
     mode: "create" | "edit";
     setErrorMessage?: (msg: string) => void;
@@ -79,7 +79,7 @@ export default function UserForm(props: UserFormProps) {
         const { name, value } = e.target;
         setNewUser((prevUser: User) => ({
             ...prevUser,
-            [name]: name === "groupId" 
+            [name]: name === "groupId"
                 ? (value !== "" ? Number(value) : null)
                 : value,
         }));
@@ -93,15 +93,15 @@ export default function UserForm(props: UserFormProps) {
         setIsSubmitting(true); // Iniciar loading
         setFormError("");
         const userToSend = { ...newUser };
-        
+
         // Eliminar image si no hay archivo nuevo ni imagen previa
         if (!userToSend.file && !userToSend.image) {
             delete userToSend.image;
         }
-        
-        // Eliminar groupId si no tiene un valor válido
-        if (!userToSend.groupId || userToSend.groupId === 0) {
-            delete userToSend.groupId;
+
+        // Manejar groupId
+        if (userToSend.groupId === 0) {
+            userToSend.groupId = null;
         }
 
         // Eliminar password si está vacío (solo en edición)
@@ -125,7 +125,7 @@ export default function UserForm(props: UserFormProps) {
                     return;
                 } else {
                     setSuccessMessage?.("Usuario creado exitosamente");
-                    resetForm(); 
+                    resetForm();
                     // Delay para que se vea el mensaje antes de notificar al padre
                     setTimeout(() => {
                         onClose?.();
@@ -171,7 +171,7 @@ export default function UserForm(props: UserFormProps) {
             <FormModalHeader
                 mode={mode}
                 entityName="Usuario"
-                onClose={onClose || (() => {})}
+                onClose={onClose || (() => { })}
             />
 
             {/* Contenido del formulario */}
@@ -211,16 +211,16 @@ export default function UserForm(props: UserFormProps) {
 
                     {/* Botones de acción */}
                     <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-200">
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={onClose}
                             disabled={isSubmitting}
                             className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-medium rounded-lg border border-gray-300 hover:from-gray-200 hover:to-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Cancelar
                         </button>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={isSubmitting}
                             className="px-6 py-3 bg-gradient-to-r from-azul-claro to-azul-oscuro text-white font-medium rounded-lg hover:from-azul-oscuro hover:to-azul-marino focus:outline-none focus:ring-2 focus:ring-azul-claro focus:ring-offset-2 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                         >
@@ -230,7 +230,7 @@ export default function UserForm(props: UserFormProps) {
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
                             )}
-                            {isSubmitting 
+                            {isSubmitting
                                 ? (mode === "create" ? "Guardando..." : "Actualizando...")
                                 : (mode === "create" ? "Guardar Usuario" : "Actualizar Usuario")
                             }

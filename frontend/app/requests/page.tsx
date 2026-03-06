@@ -16,11 +16,11 @@ import { ROLES } from "../../constants/roles";
 export default function RequestPage() {
     const { user, token } = useAuthContext();
     const { successMessage, errorMessage, clearSuccess, setErrorMessage, showSuccess } = useMessages();
-    
+
     // Determinar modo y userId según el rol del usuario
     const requestMode = user?.role === ROLES.USER ? 'byUserId' : 'all';
     const requestUserId = user?.role === ROLES.USER ? user?.id : undefined;
-    
+
     const { requests, loading, refreshRequests } = useRequests({
         token,
         userId: requestUserId,
@@ -28,7 +28,7 @@ export default function RequestPage() {
         onError: (message) => setErrorMessage(message)
     });
 
-    const dialogRef = useRef<HTMLDialogElement>(null);
+    const dialogRef = useRef<HTMLDialogElement | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [requestToEdit, setRequestToEdit] = useState<Request | undefined>(undefined);
@@ -43,7 +43,7 @@ export default function RequestPage() {
     const closeDialog = (createdRequest?: unknown) => {
         setIsFormOpen(false);
         dialogRef.current?.close();
-        
+
         if (createdRequest) {
             refreshRequests();
             showSuccess("Solicitud procesada exitosamente");
@@ -51,14 +51,14 @@ export default function RequestPage() {
     };
 
     // Determinar el título según el rol del usuario
-    const pageTitle = user?.role === ROLES.USER 
-        ? "Mis Solicitudes" 
+    const pageTitle = user?.role === ROLES.USER
+        ? "Mis Solicitudes"
         : "Historial de Solicitudes";
 
     return (
         <PageLayout className="py-4 md:py-6">
             {/* Header de la página */}
-            <SectionHeader 
+            <SectionHeader
                 title={pageTitle}
                 buttonText="Nueva Solicitud"
                 onButtonClick={openCreateDialog}

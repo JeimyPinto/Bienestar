@@ -6,16 +6,45 @@ const remissionSchema = require('../schemas/remission.js');
 const sanitizeRequestBody = require("../middlewares/sanitizeInput.js");
 const sendRemissionNotificationMail = require('../middlewares/sendRemissionNotificationMail.js');
 
-// Obtener todas las remisiones (admin/superadmin)
-router.get('/', RemissionController.getAll);
+const authenticateToken = require("../middlewares/authenticateToken.js");
+const authorizeRoles = require("../middlewares/authorizeRoles.js");
+const ROLES = require("../constants/roles");
 
-// Obtener una remisión por id (admin/superadmin)
-router.get('/:id',RemissionController.getById);
+// Obtener todas las remisiones (admin/superadmin/instructor)
+router.get(
+    '/', 
+    authenticateToken, 
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR), 
+    RemissionController.getAll
+);
 
-// Crear una remisión (admin/superadmin)
-router.post('/', sanitizeRequestBody, validacionRemission(remissionSchema), RemissionController.create, sendRemissionNotificationMail);
+// Obtener una remisión por id (admin/superadmin/instructor)
+router.get(
+    '/:id', 
+    authenticateToken, 
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.INSTRUCTOR), 
+    RemissionController.getById
+);
 
-// Actualizar una remisión (admin/superadmin)
-router.put('/:id', sanitizeRequestBody, validacionRemission(remissionSchema), RemissionController.update);
+// Crear una remisión (solo admin/superadmin)
+router.post(
+    '/', 
+    authenticateToken, 
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), 
+    sanitizeRequestBody, 
+    validacionRemission(remissionSchema), 
+    RemissionController.create, 
+    sendRemissionNotificationMail
+);
+
+// Actualizar una remisión (solo admin/superadmin)
+router.put(
+    '/:id', 
+    authenticateToken, 
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN), 
+    sanitizeRequestBody, 
+    validacionRemission(remissionSchema), 
+    RemissionController.update
+);
 
 module.exports = router;

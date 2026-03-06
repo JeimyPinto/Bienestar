@@ -2,8 +2,13 @@ function removeSensitiveFields(req, res, next) {
   // Función auxiliar para limpiar un usuario
   const cleanUser = (user) => {
     if (user && typeof user === "object") {
-      // eslint-disable-next-line no-unused-vars
-      const { password: _, ...rest } = user;
+      // Si es una instancia de Sequelize, convertirla a objeto plano primero
+      const plainUser = (typeof user.get === "function") 
+        ? user.get({ plain: true }) 
+        : { ...user };
+        
+      // Eliminar campos sensibles
+      const { password: _, ...rest } = plainUser;
       return rest;
     }
     return user;

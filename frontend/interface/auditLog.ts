@@ -7,6 +7,12 @@ export interface AuditLog {
     new_data: Record<string, unknown> | null;
     changed_by: string | null;
     changed_at?: string; // ISO date string
+    user?: {
+        id: number | string;
+        firstName: string;
+        lastName: string;
+        email: string;
+    } | null;
 }
 
 export interface AuditLogTableProps {

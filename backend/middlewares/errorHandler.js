@@ -1,6 +1,6 @@
 const chalk = require("chalk");
 
-function errorHandler(err, req, res) {
+function errorHandler(err, req, res, next) {
   // Determinar mensaje legible
   let message = err.message;
   if (!message || message === "null") {

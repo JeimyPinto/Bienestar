@@ -39,23 +39,37 @@ export default function UserTable({
         }
     }, [onRefreshUsers, refreshUsers]);
 
+    // Estados para filtros adicionales
+    const [roleFilter, setRoleFilter] = React.useState("all");
+    const [statusFilter, setStatusFilter] = React.useState("all");
+
     // Hook para filtrado de usuarios
-    const { filter, setFilter, filteredItems: filteredUsers } = useFilter({
+    const { filter, setFilter, filteredItems: filteredBySearch } = useFilter({
         items: users,
         filterFn: (users, filter) => {
             if (!filter || !filter.trim()) {
                 return users;
             }
-            
+
             const searchTerm = filter.toLowerCase().trim();
-            
+
             return users.filter(user =>
                 user.firstName.toLowerCase().includes(searchTerm) ||
                 user.lastName.toLowerCase().includes(searchTerm) ||
-                user.documentNumber.toLowerCase().includes(searchTerm)
+                user.documentNumber.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm)
             );
         }
     });
+
+    // Filtrado por Rol y Estado (encadenado)
+    const filteredUsers = React.useMemo(() => {
+        return filteredBySearch.filter(user => {
+            const matchesRole = roleFilter === "all" || user.role.toLowerCase() === roleFilter.toLowerCase();
+            const matchesStatus = statusFilter === "all" || user.status.toLowerCase() === statusFilter.toLowerCase();
+            return matchesRole && matchesStatus;
+        });
+    }, [filteredBySearch, roleFilter, statusFilter]);
 
     // Hook para ordenamiento de usuarios filtrados
     const {
@@ -79,8 +93,12 @@ export default function UserTable({
                     setCurrentPage={setCurrentPage}
                     filter={filter}
                     setFilter={setFilter}
+                    roleFilter={roleFilter}
+                    setRoleFilter={setRoleFilter}
+                    statusFilter={statusFilter}
+                    setStatusFilter={setStatusFilter}
                 />
-                
+
                 {/* Vista de escritorio */}
                 <div className="hidden lg:block">
                     <UserTableDesktop
@@ -96,7 +114,7 @@ export default function UserTable({
                         setCurrentPage={setCurrentPage}
                     />
                 </div>
-                
+
                 {/* Vista móvil/tablet */}
                 <div className="lg:hidden">
                     <UserCardMobile
@@ -104,7 +122,7 @@ export default function UserTable({
                         handleRowClick={handleRowClick}
                         loading={loading}
                     />
-                    
+
                     {/* Paginación para móvil */}
                     {!loading && sortedFilteredUsers.length > 0 && (
                         <PaginationControls

@@ -1,4 +1,5 @@
 import React from 'react';
+import { LogOut } from 'lucide-react';
 
 interface LogoutButtonProps {
   onClick: () => void;
@@ -18,7 +19,7 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
         focus-visible-custom
       "
     >
-      <span>🚪</span>
+      <LogOut size={16} />
       <span>Cerrar Sesión</span>
     </button>
   );

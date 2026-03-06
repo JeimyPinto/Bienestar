@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { Phone } from 'lucide-react';
 
 export interface ContactInfoProps {
   email?: string;
@@ -33,8 +34,8 @@ export default function ContactInfo({
 
       <div className="space-y-4 w-full flex flex-col items-center md:items-end">
         <div className="flex items-center gap-3 md:flex-row-reverse">
-          <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10">
-            <span className="text-xl">📞</span>
+          <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 text-white">
+            <Phone size={24} />
           </div>
           <h4 className="text-lg font-display font-bold text-white tracking-tight">Contacto</h4>
         </div>
