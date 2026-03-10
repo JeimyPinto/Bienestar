@@ -11,48 +11,64 @@ const { createAuditLog } = require("./auditLog");
  */
 async function processExcelFile(buffer, creatorId = null) {
   const workbook = XLSX.read(buffer, { type: "buffer" });
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  
+  // Buscar la hoja de datos por nombre o usar la segunda si existe
+  const sheetName = workbook.SheetNames.includes("Carga_Usuarios") 
+    ? "Carga_Usuarios" 
+    : workbook.SheetNames[0]; // Fallback al primero por si suben un archivo sin el nombre esperado
+    
+  const sheet = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
   const results = [];
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    const result = { row: i + 2, data: row, status: "", error: null };
+    
+    // Mapeo selectivo de nombres en español a campos del modelo
+    const userData = {
+      firstName: row["Nombres"],
+      lastName: row["Apellidos"],
+      documentType: row["Tipo de Documento"],
+      documentNumber: row["Número de Documento"]?.toString(),
+      phone: row["Teléfono"]?.toString(),
+      email: row["Correo Electrónico"]
+    };
+
+    const result = { row: i + 2, data: userData, status: "", error: null };
+    
     try {
-      // Validaciones básicas
-      if (!row.firstName || !row.lastName || !row.documentType || !row.documentNumber || !row.phone || !row.email) {
+      // Validaciones básicas con los nuevos nombres
+      if (!userData.firstName || !userData.lastName || !userData.documentType || !userData.documentNumber || !userData.email) {
         result.status = "error";
-        result.error = "Faltan campos obligatorios";
+        result.error = "Faltan campos obligatorios (Nombres, Apellidos, Documento, Email)";
         results.push(result);
         continue;
       }
+      
       // Verificar duplicados por email
-      const existsEmail = await User.findOne({ where: { email: row.email } });
+      const existsEmail = await User.findOne({ where: { email: userData.email } });
       if (existsEmail) {
         result.status = "duplicado";
         result.error = "Email ya registrado";
         results.push(result);
         continue;
       }
+      
       // Verificar duplicados por documento
-      const existsDoc = await User.findOne({ where: { documentNumber: row.documentNumber.toString() } });
+      const existsDoc = await User.findOne({ where: { documentNumber: userData.documentNumber } });
       if (existsDoc) {
         result.status = "duplicado";
-        result.error = "Documento ya registrado";
+        result.error = "Número de documento ya registrado";
         results.push(result);
         continue;
       }
+
       // Crear usuario
-      const password = row.documentNumber.toString();
+      const password = userData.documentNumber;
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await User.create({
-        firstName: row.firstName,
-        lastName: row.lastName,
-        documentType: row.documentType,
-        documentNumber: row.documentNumber.toString(),
-        phone: row.phone,
-        email: row.email,
+        ...userData,
         password: hashedPassword,
         status: "activo",
         role: "user",

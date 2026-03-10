@@ -141,6 +141,29 @@ class UsuarioController {
     }
   }
 
+  async resetPassword(req, res, next) {
+    try {
+      const user = await userService.resetPassword(req.params.id);
+      
+      // Auditoría de reestablecimiento
+      await createAuditLog({
+        entity_type: "User",
+        entity_id: user.id,
+        action: "UPDATE",
+        old_data: { info: "Password Reset Triggered" },
+        new_data: { info: "Password set to documentNumber, mustChangePassword: true" },
+        changed_by: req.user?.id || null,
+      });
+
+      res.status(200).json({
+        message: "Contraseña reestablecida correctamente al número de documento del usuario.",
+        user
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getMyProfile(req, res, next) {
     try {
       const userId = req.user?.id;

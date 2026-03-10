@@ -89,6 +89,13 @@ router.put(
     userController.update
 );
 
+// Reestablecer contraseña (Solo Admin/SuperAdmin)
+router.post(
+    "/:id/reset-password",
+    authorizeRoles(ROLES.ADMIN, ROLES.SUPERADMIN),
+    userController.resetPassword
+);
+
 
 
 module.exports = router;

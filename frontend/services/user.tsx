@@ -376,6 +376,32 @@ export async function downloadBulkTemplate(token?: string) {
 }
 
 // Buscar usuarios por query (nombre, documento, email)
+// Reestablecer contraseña (ADMIN, SUPERADMIN)
+export async function resetPassword(id: number, token?: string) {
+    try {
+        const res = await fetch(`${url}/${id}/reset-password`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            credentials: "include",
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            return { error: true, message: data.message, details: data.details };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        console.error("Error en resetPassword:" + error)
+        return {
+            error: true,
+            message: "Error interno del servidor",
+            details: error
+        };
+    }
+}
+
 export async function searchUsers(query: string, token?: string) {
     try {
         const res = await fetch(`${url}/search?q=${encodeURIComponent(query)}`, {

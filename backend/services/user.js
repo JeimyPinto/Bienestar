@@ -165,6 +165,30 @@ function removeUploadedFile(file) {
   }
 }
 
+async function resetPassword(id) {
+  const user = await User.findByPk(id);
+  if (!user) {
+    const error = new Error("Usuario no encontrado");
+    error.status = 404;
+    throw error;
+  }
+
+  // La nueva contraseña es el número de documento
+  const newPassword = user.documentNumber;
+  const hashedPassword = await hashPassword(newPassword);
+
+  await user.update({
+    password: hashedPassword,
+    mustChangePassword: true
+  });
+
+  // Enviar correo de notificación
+  const { sendPasswordResetMail } = require("./mail");
+  await sendPasswordResetMail(user, newPassword);
+
+  return user;
+}
+
 async function getUsersByRole(role) {
   return await User.findAll({
     where: { role },
@@ -208,6 +232,7 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  resetPassword,
   removeUploadedFile,
   searchUsers,
 };

@@ -8,7 +8,7 @@ import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
 import { ROLES } from "../../constants/roles";
 interface GroupFormProps {
-  dialogRef: React.RefObject<HTMLDialogElement>;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
   onClose: (createdGroup?: Group) => void;
   mode: "create" | "edit";
   groupToEdit?: Group;

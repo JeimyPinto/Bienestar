@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Group } from "../../interface/group";
 import GroupTableFilterBar from "./groupTableFilterBar";
 import GroupForm from "./groupForm";
-import { filterGroupsByFichaPrograma } from "../../helpers/filterHelpers";
 import { useAuthContext } from "../../contexts/authContext";
 
 interface GroupTableProps {
@@ -21,13 +20,24 @@ export default function GroupTable({
   const { token } = useAuthContext();
   const [limit, setLimit] = useState<number>(10);
   const [filter, setFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
-  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  const dialogRef = React.useRef<HTMLDialogElement | null>(null);
 
-  // Filtrado local usando helper
-  const filteredGroups = filterGroupsByFichaPrograma(groups, filter);
+  // Filtrado local enriquecido
+  const filteredGroups = groups.filter(group => {
+    const matchesSearch = filter.trim() === "" ||
+      group.fichaNumber.toLowerCase().includes(filter.toLowerCase()) ||
+      group.programName.toLowerCase().includes(filter.toLowerCase());
+
+    const matchesStatus = statusFilter === "all" || group.fichaStatus === statusFilter;
+    const matchesType = typeFilter === "all" || group.programType === typeFilter;
+
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
   const paginatedGroups = filteredGroups.slice(0, limit);
 
@@ -56,6 +66,10 @@ export default function GroupTable({
           setLimit={setLimit}
           filter={filter}
           setFilter={setFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          typeFilter={typeFilter}
+          setTypeFilter={setTypeFilter}
         />
         {/* Desktop view */}
         <div className="hidden sm:block">
@@ -109,13 +123,12 @@ export default function GroupTable({
                           : group.instructorId || "-"}
                       </td>
                       <td className="px-3 py-3 text-sm">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          group.fichaStatus === "etapa lectiva" 
-                            ? "bg-success text-white" 
-                            : group.fichaStatus === "etapa practica"
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${group.fichaStatus === "etapa lectiva"
+                          ? "bg-success text-white"
+                          : group.fichaStatus === "etapa practica"
                             ? "bg-info text-white"
                             : "bg-warning text-white"
-                        }`}>
+                          }`}>
                           {group.fichaStatus}
                         </span>
                       </td>
@@ -179,13 +192,12 @@ export default function GroupTable({
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="font-medium text-azul-oscuro">Estado:</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      group.fichaStatus === "etapa lectiva" 
-                        ? "bg-success text-white" 
-                        : group.fichaStatus === "etapa practica"
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${group.fichaStatus === "etapa lectiva"
+                      ? "bg-success text-white"
+                      : group.fichaStatus === "etapa practica"
                         ? "bg-info text-white"
                         : "bg-warning text-white"
-                    }`}>
+                      }`}>
                       {group.fichaStatus}
                     </span>
                   </div>

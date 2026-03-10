@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthContext } from "../../contexts/authContext";
 import { PROTECTED_ROUTES } from "../../constants/protectedRoutes";
+import MustChangePasswordModal from "./mustChangePasswordModal";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -58,6 +59,12 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
+
   // Si llegamos aquí, mostrar el contenido
-  return <>{children}</>;
+  return (
+    <>
+      <MustChangePasswordModal />
+      {children}
+    </>
+  );
 }

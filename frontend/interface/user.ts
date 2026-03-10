@@ -22,6 +22,7 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     file?: File | null;
+    mustChangePassword?: boolean;
 }
 
 // Props base para componentes de tabla de usuarios

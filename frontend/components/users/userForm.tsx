@@ -8,6 +8,7 @@ import FormModalHeader from "../../ui/FormModalHeader";
 import FormErrorDisplay from "../../ui/FormErrorDisplay";
 import { useAuthContext } from "../../contexts/authContext";
 import { useGroups } from "../../hooks/useGroups";
+import { useUsers } from "../../hooks/useUsers";
 
 interface UserFormProps {
     dialogRef: React.RefObject<HTMLDialogElement | null>;
@@ -40,8 +41,12 @@ export default function UserForm(props: UserFormProps) {
     const { token } = useAuthContext();
     const [formError, setFormError] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [isResettingPassword, setIsResettingPassword] = useState<boolean>(false);
     const [newUser, setNewUser] = useState<User>(emptyUser);
     const [previewImage, setPreviewImage] = useState<string | null>("");
+
+    // Hook de usuarios para reset password
+    const { resetUserPassword } = useUsers({ token, mode: 'paginated' });
 
     // Inicializar formulario según el modo
     useEffect(() => {
@@ -83,6 +88,32 @@ export default function UserForm(props: UserFormProps) {
                 ? (value !== "" ? Number(value) : null)
                 : value,
         }));
+    }
+
+    async function handleResetPassword() {
+        if (!newUser.id || isResettingPassword) return;
+
+        const confirmReset = window.confirm(
+            "¿Estás seguro de reestablecer la contraseña? Se enviará un correo al usuario y la nueva contraseña será su número de documento."
+        );
+
+        if (!confirmReset) return;
+
+        setIsResettingPassword(true);
+        setFormError("");
+
+        try {
+            const result = await resetUserPassword(newUser.id);
+            if (result.error) {
+                setFormError(result.message || "Error al reestablecer contraseña");
+            } else {
+                setSuccessMessage?.("Contraseña reestablecida correctamente y notificada por correo.");
+            }
+        } catch (error) {
+            setFormError("Error inesperado al reestablecer contraseña.");
+        } finally {
+            setIsResettingPassword(false);
+        }
     }
 
     async function handleSubmit(event: React.FormEvent) {
@@ -203,6 +234,9 @@ export default function UserForm(props: UserFormProps) {
                             handleInputChange={handleInputChange}
                             groups={groups}
                             groupsLoading={groupsLoading}
+                            mode={mode}
+                            onResetPassword={handleResetPassword}
+                            isResettingPassword={isResettingPassword}
                         />
                     </fieldset>
 

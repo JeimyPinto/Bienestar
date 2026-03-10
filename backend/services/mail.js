@@ -66,6 +66,32 @@ async function sendUserUpdatedMail({ to, firstName }) {
   await transporter.sendMail(mailOptions);
 }
 
+async function sendUserPasswordResetMail({ to, firstName, newPassword }) {
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const developmentWarning = isDevelopment ? developmentWarningBlock : "";
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to,
+    subject: isDevelopment ? "[PRUEBA] Tu contraseña ha sido reestablecida" : "Tu contraseña ha sido reestablecida",
+    html: `
+      <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 30px;">
+        <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 30px;">
+          ${developmentWarning}
+          <h2 style="color: #e67e22; margin-top: 0;">¡Hola, ${firstName}!</h2>
+          <p style="font-size: 16px; color: #333;">Un administrador ha reestablecido tu contraseña en la plataforma de <b>Bienestar</b>.</p>
+          <div style="background: #fff8f0; border-radius: 6px; padding: 16px; margin: 20px 0; border-left: 4px solid #e67e22;">
+            <p style="margin: 0 0 8px 0;"><b>Nueva Contraseña Temporal:</b> <span style="color: #e67e22; font-family: monospace; font-size: 18px;">${newPassword}</span></p>
+          </div>
+          <p style="font-size: 15px; color: #555;">Por seguridad, el sistema te solicitará cambiar esta contraseña la próxima vez que inicies sesión.</p>
+          <p style="font-size: 15px; color: #555;">Ingresa aquí: <a href="${process.env.PUBLIC_URL || 'http://localhost:3000'}/auth" style="color: #2a7ae2;">Portal de Bienestar</a></p>
+        </div>
+      </div>
+    `,
+  };
+  await transporter.sendMail(mailOptions);
+}
+
 
 /**
  * Envia un correo de bienvenida a un usuario. Siempre añade el warning si es desarrollo.
@@ -276,6 +302,25 @@ async function sendRemissionNotification({ serviceCreator, applicant, assignedUs
   }
 }
 
+/**
+ * Envía correo de reestablecimiento de contraseña.
+ */
+async function sendPasswordResetMail(user, newPassword) {
+  try {
+    console.log(chalk.blue("📧 Enviando correo de reestablecimiento a:"), chalk.cyan(user.email));
+    await sendUserPasswordResetMail({
+      to: user.email,
+      firstName: user.firstName,
+      newPassword: newPassword
+    });
+    console.log(chalk.green("✅ Correo de reestablecimiento enviado exitosamente"));
+    return true;
+  } catch (mailError) {
+    console.warn(chalk.red("⚠️ Contraseña reestablecida, pero error enviando correo:"), chalk.yellow(mailError.message));
+    return false;
+  }
+}
+
 module.exports = {
   sendUserCreatedMail,
   sendUserUpdatedMail,
@@ -285,4 +330,5 @@ module.exports = {
   sendRequestNotification,
   sendRemissionNotificationMail,
   sendRemissionNotification,
+  sendPasswordResetMail,
 };

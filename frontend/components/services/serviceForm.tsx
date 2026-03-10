@@ -21,7 +21,7 @@ const emptyService: Service = {
 };
 
 interface ServiceFormProps {
-    dialogRef: React.RefObject<HTMLDialogElement>;
+    dialogRef: React.RefObject<HTMLDialogElement | null>;
     closeDialog: () => void;
     onClose: () => void;
     mode: "create" | "edit";

@@ -80,3 +80,24 @@ export async function logout() {
         tokenManager.clearSession();
     }
 }
+
+export async function changePassword(newPassword: string, token: string) {
+    try {
+        const response = await fetch(`${url}/change-password`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ newPassword }),
+        });
+
+        const data = await response.json();
+        if (!response.ok || data.error) {
+            return { error: true, message: data.message || "Error al cambiar la contraseña." };
+        }
+        return { error: false, ...data };
+    } catch (error) {
+        return { error: true, message: "Error de red al cambiar la contraseña." };
+    }
+}

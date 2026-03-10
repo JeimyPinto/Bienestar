@@ -1,5 +1,6 @@
 const bulkUserService = require("../services/bulkUser");
 const chalk = require("chalk");
+const XLSX = require("xlsx");
 
 const BulkUserController = {
   /**
@@ -89,35 +90,57 @@ const BulkUserController = {
    */
   async downloadTemplate(req, res, next) {
     try {
-      const XLSX = require("xlsx");
-      
-      // Crear solo los encabezados - nombres técnicos en inglés
+      // Crear solo los encabezados - nombres descriptivos en español
       const headers = [
-        "firstName",
-        "lastName", 
-        "documentType",
-        "documentNumber",
-        "phone",
-        "email"
+        "Nombres",
+        "Apellidos", 
+        "Tipo de Documento",
+        "Número de Documento",
+        "Teléfono",
+        "Correo Electrónico"
       ];
 
-      // Crear workbook con solo una fila de encabezados
+      // Crear workbook
       const wb = XLSX.utils.book_new();
+
+      // --- Hoja 1: Instrucciones ---
+      const instructionsData = [
+        ["IMPORTANTE: INSTRUCCIONES PARA LA CARGA MASIVA"],
+        [""],
+        ["1. No elimine ni modifique la primera fila (los encabezados) de la hoja 'Carga_Usuarios'."],
+        ["2. Los encabezados son esenciales para el funcionamiento correcto de la plantilla."],
+        ["3. Llene los datos a partir de la segunda fila."],
+        ["4. El formato de documento debe ser texto o número sin puntos ni guiones."],
+        ["5. Asegúrese de que el correo electrónico tenga un formato válido."],
+        [""],
+        ["CAMPOS OBLIGATORIOS:"],
+        ["- Nombres"],
+        ["- Apellidos"],
+        ["- Tipo de Documento (CC, CE, PA, TI, etc.)"],
+        ["- Número de Documento"],
+        ["- Teléfono"],
+        ["- Correo Electrónico"]
+      ];
+      const wsInstructions = XLSX.utils.aoa_to_sheet(instructionsData);
+      wsInstructions["!cols"] = [{ wch: 80 }]; // Ancho para instrucciones
+      XLSX.utils.book_append_sheet(wb, wsInstructions, "INSTRUCCIONES");
+
+      // --- Hoja 2: Plantilla de Usuarios ---
       const ws = XLSX.utils.aoa_to_sheet([headers]);
 
       // Configurar el ancho de las columnas para mejor visualización
       const columnWidths = [
-        { wch: 15 }, // firstName
-        { wch: 15 }, // lastName
-        { wch: 15 }, // documentType
-        { wch: 18 }, // documentNumber
-        { wch: 15 }, // phone
-        { wch: 25 }  // email
+        { wch: 15 }, // Nombres
+        { wch: 15 }, // Apellidos
+        { wch: 20 }, // Tipo de Documento
+        { wch: 20 }, // Número de Documento
+        { wch: 15 }, // Teléfono
+        { wch: 30 }  // Correo Electrónico
       ];
       ws["!cols"] = columnWidths;
 
       // Añadir la hoja al workbook
-      XLSX.utils.book_append_sheet(wb, ws, "Plantilla_Usuarios");
+      XLSX.utils.book_append_sheet(wb, ws, "Carga_Usuarios");
 
       // Generar buffer
       const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });

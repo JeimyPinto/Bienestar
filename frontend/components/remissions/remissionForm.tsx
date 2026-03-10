@@ -11,7 +11,7 @@ import FormErrorDisplay from "../../ui/FormErrorDisplay";
 import RemissionRequestDetails from "./remissionRequestDetails";
 
 interface RemissionFormProps {
-  dialogRef: React.RefObject<HTMLDialogElement>;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
   onClose: (msg?: string) => void;
   mode: "create" | "edit";
   remissionToEdit?: Remission;
@@ -32,7 +32,7 @@ export default function RemissionForm({
   const [endDate, setEndDate] = useState<string>(remissionToEdit?.endDate || "");
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string>("");
-  
+
   // Usar hook useUsers para cargar administradores
   const { users: admins } = useUsers({
     token,
@@ -85,7 +85,7 @@ export default function RemissionForm({
     e.preventDefault();
     setLoading(true);
     setFormError(""); // Limpiar errores previos
-    
+
     // Validaciones básicas
     if (!selectedRequestId || !selectedRequest) {
       setFormError("Debes seleccionar una solicitud válida.");
@@ -128,7 +128,7 @@ export default function RemissionForm({
         onClose(result.message);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error 
+      const errorMessage = error instanceof Error
         ? `Error inesperado al procesar la remisión: ${error.message}`
         : "Error inesperado al procesar la remisión";
       setFormError(errorMessage);
@@ -154,79 +154,79 @@ export default function RemissionForm({
             edit: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
           }}
         />
-        
+
         {/* Contenido scrolleable */}
         <div className="flex-1 overflow-y-auto p-6">
           <form id="remission-form" onSubmit={handleSubmit} className="space-y-6">
-        
-        <FormErrorDisplay error={formError} />
-        
-        {/* Selección de solicitud */}
-        <div>
-          <label className="block font-semibold mb-1">Solicitud</label>
-          <select
-            value={selectedRequestId ?? ""}
-            onChange={e => setSelectedRequestId(Number(e.target.value))}
-            disabled={mode === "edit"}
-            className="w-full border rounded px-3 py-2"
-            required
-          >
-            <option value="">Selecciona una solicitud</option>
-            {requests.map(req => (
-              <option key={req.id} value={req.id}>
-                #{req.id} - {req.applicant?.firstName} {req.applicant?.lastName} - {req.service?.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        
-        {/* Detalles de la solicitud seleccionada */}
-        <RemissionRequestDetails 
-          selectedRequest={selectedRequest}
-          loading={false}
-        />
-        {/* Asignar responsable */}
-        <div>
-          <label className="block font-semibold mb-1">Responsable (ADMIN)</label>
-          <select
-            value={assignedUserId ?? ""}
-            onChange={e => setAssignedUserId(Number(e.target.value))}
-            className="w-full border rounded px-3 py-2"
-            required
-          >
-            <option value="">Selecciona un responsable</option>
-            {admins.map(admin => (
-              <option key={admin.id} value={admin.id}>
-                {admin.firstName} {admin.lastName}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* Fecha de inicio (solo lectura) */}
-        <div>
-          <label className="block font-semibold mb-1">Fecha de inicio</label>
-          <input
-            type="date"
-            value={startDate}
-            readOnly
-            className="w-full border rounded px-3 py-2 bg-gray-100"
-          />
-        </div>
-        {/* Fecha de finalización */}
-        <div>
-          <label className="block font-semibold mb-1">Fecha de finalización</label>
-          <input
-            type="date"
-            value={endDate}
-            min={startDate}
-            onChange={e => setEndDate(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
-        
+
+            <FormErrorDisplay error={formError} />
+
+            {/* Selección de solicitud */}
+            <div>
+              <label className="block font-semibold mb-1">Solicitud</label>
+              <select
+                value={selectedRequestId ?? ""}
+                onChange={e => setSelectedRequestId(Number(e.target.value))}
+                disabled={mode === "edit"}
+                className="w-full border rounded px-3 py-2"
+                required
+              >
+                <option value="">Selecciona una solicitud</option>
+                {requests.map(req => (
+                  <option key={req.id} value={req.id}>
+                    #{req.id} - {req.applicant?.firstName} {req.applicant?.lastName} - {req.service?.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Detalles de la solicitud seleccionada */}
+            <RemissionRequestDetails
+              selectedRequest={selectedRequest}
+              loading={false}
+            />
+            {/* Asignar responsable */}
+            <div>
+              <label className="block font-semibold mb-1">Responsable (ADMIN)</label>
+              <select
+                value={assignedUserId ?? ""}
+                onChange={e => setAssignedUserId(Number(e.target.value))}
+                className="w-full border rounded px-3 py-2"
+                required
+              >
+                <option value="">Selecciona un responsable</option>
+                {admins.map(admin => (
+                  <option key={admin.id} value={admin.id}>
+                    {admin.firstName} {admin.lastName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Fecha de inicio (solo lectura) */}
+            <div>
+              <label className="block font-semibold mb-1">Fecha de inicio</label>
+              <input
+                type="date"
+                value={startDate}
+                readOnly
+                className="w-full border rounded px-3 py-2 bg-gray-100"
+              />
+            </div>
+            {/* Fecha de finalización */}
+            <div>
+              <label className="block font-semibold mb-1">Fecha de finalización</label>
+              <input
+                type="date"
+                value={endDate}
+                min={startDate}
+                onChange={e => setEndDate(e.target.value)}
+                className="w-full border rounded px-3 py-2"
+              />
+            </div>
+
           </form>
         </div>
-        
+
         {/* Botones fijos en la parte inferior */}
         <div className="border-t border-gray-200 p-6 bg-gray-50">
           <div className="flex justify-end gap-4">

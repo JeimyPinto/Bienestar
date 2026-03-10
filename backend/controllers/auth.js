@@ -67,6 +67,7 @@ class AuthController {
             programType: user.group.programType,
             fichaStatus: user.group.fichaStatus
           } : null,
+          mustChangePassword: user.mustChangePassword,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt
         }
@@ -95,6 +96,41 @@ class AuthController {
         });
       }
       return res.json({ success: true, message: "reCAPTCHA válido" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async changePassword(req, res, next) {
+    try {
+      const { newPassword } = req.body;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return res.status(401).json({ error: true, message: "Usuario no autenticado" });
+      }
+
+      if (!newPassword || newPassword.length < 6) {
+        return res.status(400).json({ error: true, message: "La nueva contraseña debe tener al menos 6 caracteres." });
+      }
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ error: true, message: "Usuario no encontrado" });
+      }
+
+      const { hashPassword } = require("../services/user");
+      const hashedPassword = await hashPassword(newPassword);
+
+      await user.update({
+        password: hashedPassword,
+        mustChangePassword: false
+      });
+
+      res.status(200).json({
+        message: "Contraseña actualizada correctamente.",
+        user: { ...user.toJSON(), mustChangePassword: false }
+      });
     } catch (error) {
       next(error);
     }

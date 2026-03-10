@@ -11,7 +11,8 @@ import {
   update,
   bulkUpload,
   downloadBulkTemplate,
-  searchUsers as searchUsersService
+  searchUsers as searchUsersService,
+  resetPassword as resetPasswordService
 } from "../services/user";
 interface UseUsersOptions {
   token: string | null;
@@ -36,6 +37,7 @@ interface UseUsersReturn<T> {
   // Métodos CRUD
   createUser: (user: User, file?: File) => Promise<{ error: boolean; message?: string }>;
   updateUser: (id: number, user: User, file?: File) => Promise<{ error: boolean; message?: string }>;
+  resetUserPassword: (id: number) => Promise<{ error: boolean; message?: string }>;
   // Métodos para carga masiva
   bulkUploadUsers: (file: File) => Promise<{ error: boolean; message?: string; report?: {
     summary: {
@@ -187,6 +189,24 @@ export const useUsers = ({
     }
   }, [token, fetchUsers]);
 
+  const resetUserPassword = useCallback(async (id: number): Promise<{ error: boolean; message?: string }> => {
+    if (!token) return { error: true, message: "Token requerido para reestablecer contraseña" };
+    
+    try {
+      const res = await resetPasswordService(id, token);
+      if (res.error) {
+        onErrorRef.current?.(res.message);
+        return { error: true, message: res.message };
+      } else {
+        return { error: false, message: res.message };
+      }
+    } catch {
+      const errorMsg = "Error al reestablecer contraseña";
+      onErrorRef.current?.(errorMsg);
+      return { error: true, message: errorMsg };
+    }
+  }, [token]);
+
   const updateUser = useCallback(async (id: number, user: User, file?: File): Promise<{ error: boolean; message?: string }> => {
     if (!token) return { error: true, message: "Token requerido para actualizar usuario" };
     
@@ -300,5 +320,8 @@ export const useUsers = ({
     
     // Búsqueda
     searchUsers,
+    
+    // Contraseña
+    resetUserPassword,
   };
 };
