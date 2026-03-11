@@ -107,8 +107,8 @@ export default function RequestsForm(props: RequestsFormProps) {
         if (user && user.role === ROLES.USER) {
             requestData.userId = Number(user.id);
         }
-        // Siempre asignar el creador de la solicitud
-        if (user && user.id) {
+        // Solo asignar el creador de la solicitud al ser creada inicialmente
+        if (mode === "create" && user && user.id) {
             requestData.createdBy = user.id;
         }
         // Si responseMessage es null o vacío y no es rechazada, eliminar el campo para evitar error de validación

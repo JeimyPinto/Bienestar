@@ -1,16 +1,16 @@
 "use client"
 
 import React from "react"
-import AuditLogTable from "../../components/audits/auditLogTable"
-import SuccessMessage from "../../ui/successMessage"
-import ErrorMessage from "../../ui/errorMessage"
-import SectionHeader from "../../ui/sectionHeader"
-import PageLayout from "../../components/layout/pageLayout";
-import { useAuthContext } from "../../contexts/authContext";
-import { useAudit } from "../../hooks/useAudit";
-import { useMessages } from "../../hooks/useMessages";
-import RoleGate from "../../components/auth/RoleGate";
-import { ROLES } from "../../constants/roles";
+import AuditLogTable from "../../../components/audits/auditLogTable"
+import SuccessMessage from "../../../ui/successMessage"
+import ErrorMessage from "../../../ui/errorMessage"
+import SectionHeader from "../../../ui/sectionHeader"
+import PageLayout from "../../../components/layout/pageLayout";
+import { useAuthContext } from "../../../contexts/authContext";
+import { useAudit } from "../../../hooks/useAudit";
+import { useMessages } from "../../../hooks/useMessages";
+import RoleGate from "../../../components/auth/RoleGate";
+import { ROLES } from "../../../constants/roles";
 
 export default function AuditPage() {
     const { token } = useAuthContext();
@@ -43,3 +43,4 @@ export default function AuditPage() {
         </PageLayout>
     );
 }
+

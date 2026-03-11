@@ -1,5 +1,6 @@
 import React from "react";
 import { ProgramType, FichaStatus } from "../../interface/group";
+import { Search, X, Layers, BookOpen, Briefcase, Bookmark, Palette, BookMarked, Wrench, GraduationCap } from "lucide-react";
 
 interface GroupTableFilterBarProps {
   limit: number;
@@ -33,15 +34,15 @@ const GroupTableFilterBar: React.FC<GroupTableFilterBarProps> = ({
           placeholder="Buscar por número de ficha o nombre del programa..."
           className="w-full pl-12 pr-4 py-4 bg-white border-2 border-azul-cielo/20 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 shadow-sm group-hover:border-azul-claro placeholder-azul-marino/30"
         />
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl opacity-50 group-focus-within:opacity-100 transition-opacity">
-          🔍
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity text-primary">
+          <Search size={22} />
         </span>
         {filter && (
           <button
             onClick={() => setFilter("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-neutral/10 rounded-full transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-neutral/10 rounded-full transition-colors text-azul-marino/40 hover:text-danger"
           >
-            ❌
+            <X size={18} />
           </button>
         )}
       </div>
@@ -51,16 +52,18 @@ const GroupTableFilterBar: React.FC<GroupTableFilterBarProps> = ({
         {/* Filtro de Tipo */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-azul-marino/60 uppercase tracking-wider ml-1">Tipo:</span>
-          <select
-            value={typeFilter}
-            onChange={e => setTypeFilter(e.target.value)}
-            className="px-4 py-3 bg-white border-2 border-azul-cielo/20 rounded-xl focus:outline-none focus:border-primary transition-all cursor-pointer text-sm font-semibold text-azul-oscuro"
-          >
-            <option value="all">💎 Todos los tipos</option>
-            <option value="tecnico">📘 Técnico</option>
-            <option value="tecnologia">📙 Tecnología</option>
-            <option value="complementaria">📗 Complementaria</option>
-          </select>
+          <div className="relative">
+            <select
+              value={typeFilter}
+              onChange={e => setTypeFilter(e.target.value)}
+              className="pl-4 pr-10 py-3 bg-white border-2 border-azul-cielo/20 rounded-xl focus:outline-none focus:border-primary transition-all cursor-pointer text-sm font-semibold text-azul-oscuro appearance-none"
+            >
+              <option value="all">Todos los tipos</option>
+              <option value="tecnico">Técnico</option>
+              <option value="tecnologia">Tecnología</option>
+              <option value="complementaria">Complementaria</option>
+            </select>
+          </div>
         </div>
 
         {/* Filtro de Estado */}
@@ -71,10 +74,10 @@ const GroupTableFilterBar: React.FC<GroupTableFilterBarProps> = ({
             onChange={e => setStatusFilter(e.target.value)}
             className="px-4 py-3 bg-white border-2 border-azul-cielo/20 rounded-xl focus:outline-none focus:border-primary transition-all cursor-pointer text-sm font-semibold text-azul-oscuro"
           >
-            <option value="all">🌈 Todos los estados</option>
-            <option value="etapa lectiva">📖 Etapa Lectiva</option>
-            <option value="etapa practica">🛠️ Etapa Práctica</option>
-            <option value="certificados">🎓 Certificados</option>
+            <option value="all">Todos los estados</option>
+            <option value="etapa lectiva">Etapa Lectiva</option>
+            <option value="etapa practica">Etapa Práctica</option>
+            <option value="certificados">Certificados</option>
           </select>
         </div>
 

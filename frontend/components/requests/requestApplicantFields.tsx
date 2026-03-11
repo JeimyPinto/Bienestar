@@ -50,7 +50,7 @@ export default function RequestApplicantFields({
     const delayDebounceFn = setTimeout(async () => {
       if (searchQuery.trim().length >= 2) {
         setIsSearching(true);
-        const res = await searchUsers(searchQuery);
+        const res = await searchUsers(searchQuery, ROLES.USER);
         if (!res.error && res.users) {
           setSearchResults(res.users);
           setShowResults(true);
@@ -219,20 +219,6 @@ export default function RequestApplicantFields({
           </select>
         )}
       </div>
-      {/* Creador de la solicitud (usuario logueado) - Solo visible para administradores */}
-      {user && user.role !== "user" && (
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-azul">
-            Creador de la Solicitud
-          </label>
-          <input
-            type="text"
-            value={`${user.firstName} ${user.lastName}`}
-            readOnly
-            className="mt-1 block w-full px-3 py-2 border border-gris rounded-md shadow-sm bg-gray-100"
-          />
-        </div>
-      )}
     </>
   );
 }

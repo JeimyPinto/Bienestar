@@ -195,7 +195,7 @@ async function getUsersByRole(role) {
   });
 }
 
-async function searchUsers(query) {
+async function searchUsers(query, role = null) {
   const { Op } = db.Sequelize;
   const terms = query.split(' ').filter(t => t.length > 0);
   
@@ -212,11 +212,18 @@ async function searchUsers(query) {
     ]
   }));
 
+  const where = {
+    [Op.and]: conditions,
+    status: "activo",
+  };
+
+  // Filtrar por rol si se proporciona
+  if (role) {
+    where.role = role;
+  }
+
   return await User.findAll({
-    where: {
-      [Op.and]: conditions,
-      status: "activo",
-    },
+    where,
     limit: 10,
     include: [
       { association: "group", required: false },

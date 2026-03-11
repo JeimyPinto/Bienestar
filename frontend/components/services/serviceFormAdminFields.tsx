@@ -1,6 +1,7 @@
 import React from "react";
-import { User} from "../../interface/user";
+import { User } from "../../interface/user";
 import { Service } from "../../interface/service";
+import { User as UserIcon, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
 
 interface Props {
   newService: Service;
@@ -12,7 +13,7 @@ const ServiceFormAdminFields: React.FC<Props> = ({ newService, user, handleInput
   <div className="space-y-4">
     <div>
       <label className="flex text-sm font-semibold text-blue-800 mb-2 items-center">
-        <span className="mr-2">👤</span>
+        <UserIcon size={16} className="mr-2" />
         Creador del Servicio
       </label>
       <input
@@ -25,10 +26,10 @@ const ServiceFormAdminFields: React.FC<Props> = ({ newService, user, handleInput
       />
       <input type="hidden" name="creatorId" value={user?.id ?? ""} />
     </div>
-    
+
     <div>
       <label className="flex text-sm font-semibold text-blue-800 mb-2 items-center">
-        <span className="mr-2">🔄</span>
+        <RefreshCw size={16} className="mr-2" />
         Estado del Servicio
       </label>
       <select
@@ -37,8 +38,8 @@ const ServiceFormAdminFields: React.FC<Props> = ({ newService, user, handleInput
         onChange={handleInputChange}
         className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-blue-400 bg-white text-blue-800 cursor-pointer"
       >
-        <option value="activo">✅ Activo</option>
-        <option value="inactivo">❌ Inactivo</option>
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
       </select>
     </div>
   </div>

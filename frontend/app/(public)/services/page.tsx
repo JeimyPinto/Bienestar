@@ -1,30 +1,31 @@
 "use client"
 
 import React from "react";
-import { Service } from "../../interface/service";
-import ErrorMessage from "../../ui/errorMessage";
-import SuccessMessage from "../../ui/successMessage";
-import ServicesGallery from "../../components/services/servicesGallery";
-import ServiceTable from "../../components/services/serviceTable";
-import SectionHeader from "../../ui/sectionHeader";
-import ServiceForm from "../../components/services/serviceForm";
-import Spinner from "../../ui/spinner";
-import PageLayout from "../../components/layout/pageLayout";
-import { useAuthContext } from "../../contexts/authContext";
-import { useServices } from "../../hooks/useServices";
-import { useMessages } from "../../hooks/useMessages";
-import { useModal } from "../../hooks/useModal";
-import { ROLES } from "../../constants/roles";
+import { Service } from "../../../interface/service";
+import ErrorMessage from "../../../ui/errorMessage";
+import SuccessMessage from "../../../ui/successMessage";
+import ServicesGallery from "../../../components/services/servicesGallery";
+import ServiceTable from "../../../components/services/serviceTable";
+import SectionHeader from "../../../ui/sectionHeader";
+import ServiceForm from "../../../components/services/serviceForm";
+import Spinner from "../../../ui/spinner";
+import PageLayout from "../../../components/layout/pageLayout";
+import { useAuthContext } from "../../../contexts/authContext";
+import { useServices } from "../../../hooks/useServices";
+import { useMessages } from "../../../hooks/useMessages";
+import { useModal } from "../../../hooks/useModal";
+import { ROLES } from "../../../constants/roles";
+import { Wrench } from "lucide-react";
 
 export default function ServicePage() {
     const { user, token } = useAuthContext();
     const { successMessage, errorMessage, setErrorMessage, setSuccessMessage } = useMessages();
-    
+
     // Determinar el modo según el rol del usuario
-    const servicesMode = (!user || user?.role === ROLES.USER || user?.role === ROLES.INSTRUCTOR) 
-        ? 'allActive' 
+    const servicesMode = (!user || user?.role === ROLES.USER || user?.role === ROLES.INSTRUCTOR)
+        ? 'allActive'
         : 'all';
-    
+
     const { services, loading, refreshServices } = useServices({
         token,
         mode: servicesMode,
@@ -32,14 +33,14 @@ export default function ServicePage() {
     });
 
     // Hook para manejo del modal
-    const { 
-        dialogRef, 
-        isFormOpen, 
-        mode, 
-        itemToEdit: serviceToEdit, 
-        openCreateDialog, 
-        openEditDialog, 
-        closeDialog 
+    const {
+        dialogRef,
+        isFormOpen,
+        mode,
+        itemToEdit: serviceToEdit,
+        openCreateDialog,
+        openEditDialog,
+        closeDialog
     } = useModal<Service>();
 
     // Función para limpiar mensajes
@@ -53,6 +54,12 @@ export default function ServicePage() {
         refreshServices();
         closeDialog();
     };
+
+    // Si el fetch falla, mejor no renderizar el componente para evitar mostrar errores al usuario
+    if (errorMessage && !loading) {
+        return null;
+    }
+
     return (
         <>
             {(!user || user?.role === ROLES.USER) ? (
@@ -60,9 +67,9 @@ export default function ServicePage() {
                     <div className="container mx-auto px-4 max-w-7xl">
                         {/* Header de la página para usuarios */}
                         <SectionHeader
-                            title="Servicios Disponibles"
+                            title={`Servicios Disponibles (${services.length})`}
                             description="Si no encuentras el servicio que buscas en este listado, puede ser porque actualmente no se está prestando. Algunos servicios solo están disponibles por convocatoria (Ejemplo: Monitorias, subsidio de alimentación, apoyo socioeconómico), mientras que otros están disponibles todo el tiempo."
-                            icon="🛠️"
+                            icon={<Wrench className="text-white" size={32} />}
                             showBackButton={false}
                             centerContent={true}
                             size="lg"
@@ -79,7 +86,7 @@ export default function ServicePage() {
                                 </div>
                             </div>
                         ) : (
-                            <ServicesGallery/>
+                            <ServicesGallery />
                         )}
                     </div>
                 </main>
@@ -88,12 +95,12 @@ export default function ServicePage() {
                     <SectionHeader
                         title="Listado de Servicios"
                         description="Gestiona todos los servicios del sistema de bienestar"
-                        icon="🛠️"
+                        icon={<Wrench size={24} />}
                         buttonText="Añadir Nuevo Servicio"
                         buttonShortText="Añadir"
                         onButtonClick={() => openCreateDialog(clearMessages)}
                     />
-                    
+
                     {/* Mensajes */}
                     {errorMessage && (
                         <div className="mb-6">
@@ -102,13 +109,13 @@ export default function ServicePage() {
                     )}
                     {successMessage && (
                         <div className="mb-6">
-                            <SuccessMessage 
-                                message={successMessage} 
-                                onClose={() => setSuccessMessage("")} 
+                            <SuccessMessage
+                                message={successMessage}
+                                onClose={() => setSuccessMessage("")}
                             />
                         </div>
                     )}
-                    
+
                     <ServiceTable
                         services={services}
                         loading={loading}
@@ -117,7 +124,7 @@ export default function ServicePage() {
                         onServiceUpdate={refreshServices}
                         onEditService={(service) => openEditDialog(service, clearMessages)}
                     />
-                    
+
                     {isFormOpen && (
                         <ServiceForm
                             dialogRef={dialogRef}
@@ -134,3 +141,4 @@ export default function ServicePage() {
         </>
     );
 }
+

@@ -402,9 +402,14 @@ export async function resetPassword(id: number, token?: string) {
     }
 }
 
-export async function searchUsers(query: string, token?: string) {
+export async function searchUsers(query: string, token?: string, role?: string) {
     try {
-        const res = await fetch(`${url}/search?q=${encodeURIComponent(query)}`, {
+        let apiUrl = `${url}/search?q=${encodeURIComponent(query)}`;
+        if (role) {
+            apiUrl += `&role=${encodeURIComponent(role)}`;
+        }
+
+        const res = await fetch(apiUrl, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

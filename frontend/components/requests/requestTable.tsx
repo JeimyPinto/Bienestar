@@ -19,6 +19,9 @@ export default function RequestTable({
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [filter, setFilter] = useState("");
+  const [responseStatusFilter, setResponseStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [areaFilter, setAreaFilter] = useState("all");
   const requestEditFormRef = useRef<HTMLDialogElement>(null);
 
   React.useEffect(() => {
@@ -32,38 +35,69 @@ export default function RequestTable({
     setIsFormOpen(true);
   }
 
-  const filteredRequests = filter.trim()
-    ? requests.filter(request =>
-      (request.applicant?.firstName?.toLowerCase().includes(filter.toLowerCase()) ||
-        request.applicant?.lastName?.toLowerCase().includes(filter.toLowerCase()) ||
-        request.service?.name?.toLowerCase().includes(filter.toLowerCase()) ||
-        request.description?.toLowerCase().includes(filter.toLowerCase()))
-    )
-    : requests;
+  const handleClearFilters = () => {
+    setFilter("");
+    setResponseStatusFilter("all");
+    setStatusFilter("all");
+    setAreaFilter("all");
+  };
+
+  const filteredRequests = React.useMemo(() => {
+    return requests.filter(request => {
+      // Filtro de búsqueda general
+      const searchTerm = filter.toLowerCase().trim();
+      const matchesSearch = !searchTerm || (
+        request.applicant?.firstName?.toLowerCase().includes(searchTerm) ||
+        request.applicant?.lastName?.toLowerCase().includes(searchTerm) ||
+        request.service?.name?.toLowerCase().includes(searchTerm) ||
+        request.description?.toLowerCase().includes(searchTerm)
+      );
+
+      // Filtro de estado de respuesta
+      const matchesResponseStatus = responseStatusFilter === "all" || request.responseStatus === responseStatusFilter;
+
+      // Filtro de estado de la solicitud (Activo/Inactivo)
+      const matchesStatus = statusFilter === "all" || (statusFilter === "activo" ? request.status === true : request.status === false);
+
+      // Filtro de área del servicio
+      const matchesArea = areaFilter === "all" || request.service?.area === areaFilter;
+
+      return matchesSearch && matchesResponseStatus && matchesStatus && matchesArea;
+    });
+  }, [requests, filter, responseStatusFilter, statusFilter, areaFilter]);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col gap-6">
-        <RequestTableFilterBar filter={filter} setFilter={setFilter} />
-        <div className="bg-white border border-cian shadow-lg rounded-xl overflow-hidden">
-          {/* Desktop view */}
-          <div className="hidden sm:block">
-            <RequestTableDesktop
-              requests={filteredRequests}
-              loading={loading}
-              handleRowClick={handleRowClick}
-            />
-          </div>
-          {/* Mobile view */}
-          <div className="block sm:hidden">
-            <RequestCardMobile
-              requests={filteredRequests}
-              loading={loading}
-              handleRowClick={handleRowClick}
-            />
-          </div>
+    <div className="flex flex-col gap-8 w-full max-w-7xl mx-auto py-2">
+      <RequestTableFilterBar
+        filter={filter}
+        setFilter={setFilter}
+        responseStatusFilter={responseStatusFilter}
+        setResponseStatusFilter={setResponseStatusFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        areaFilter={areaFilter}
+        setAreaFilter={setAreaFilter}
+        onClearFilters={handleClearFilters}
+      />
+
+      <div className="bg-white/70 backdrop-blur-md border border-azul-claro/20 shadow-premium rounded-[2.5rem] overflow-hidden transition-all duration-500">
+        {/* Desktop view */}
+        <div className="hidden lg:block">
+          <RequestTableDesktop
+            requests={filteredRequests}
+            loading={loading}
+            handleRowClick={handleRowClick}
+          />
+        </div>
+        {/* Mobile view */}
+        <div className="lg:hidden">
+          <RequestCardMobile
+            requests={filteredRequests}
+            loading={loading}
+            handleRowClick={handleRowClick}
+          />
         </div>
       </div>
-    </section>
+    </div>
   );
 }

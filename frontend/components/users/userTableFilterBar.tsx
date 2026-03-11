@@ -1,6 +1,6 @@
 import React from "react";
 import { FilterProps } from "../../interface/user";
-import { Search, Eraser, Filter, UserCheck, Users } from "lucide-react";
+import { Search, Eraser, Filter, UserCheck, Users, X, UserCog, Crown, ShieldCheck, CheckCircle2, XCircle } from "lucide-react";
 
 const UserTableFilterBar: React.FC<FilterProps> = ({
   limit,
@@ -48,7 +48,7 @@ const UserTableFilterBar: React.FC<FilterProps> = ({
                   onClick={() => setFilter("")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-azul-marino/20 hover:text-danger transition-colors p-1"
                 >
-                  ✕
+                  <X size={16} />
                 </button>
               )}
             </div>
@@ -69,14 +69,14 @@ const UserTableFilterBar: React.FC<FilterProps> = ({
                 w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 text-sm 
                 focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
                 bg-azul-cielo/5 text-azul-oscuro cursor-pointer
-                transition-all duration-300 hover:bg-white
+                transition-all duration-300 hover:bg-white appearance-none
               "
             >
               <option value="all">Todos los roles</option>
-              <option value="user">👥 Aprendiz</option>
-              <option value="instructor">👨‍🏫 Instructor</option>
-              <option value="admin">👑 Administrador</option>
-              <option value="superadmin">🛡️ Super Administrador</option>
+              <option value="user">Aprendiz</option>
+              <option value="instructor">Instructor</option>
+              <option value="admin">Administrador</option>
+              <option value="superadmin">Super Administrador</option>
             </select>
           </div>
 
@@ -95,12 +95,12 @@ const UserTableFilterBar: React.FC<FilterProps> = ({
                 w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 text-sm 
                 focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
                 bg-azul-cielo/5 text-azul-oscuro cursor-pointer
-                transition-all duration-300 hover:bg-white
+                transition-all duration-300 hover:bg-white appearance-none
               "
             >
               <option value="all">Todos los estados</option>
-              <option value="activo">✅ Activo</option>
-              <option value="inactivo">❌ Inactivo</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
             </select>
           </div>
         </div>

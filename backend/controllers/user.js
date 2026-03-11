@@ -193,10 +193,11 @@ class UsuarioController {
   async search(req, res, next) {
     try {
       const query = req.query.q || "";
+      const role = req.query.role || null;
       if (query.length < 2) {
         return res.status(200).json({ users: [] });
       }
-      const users = await userService.searchUsers(query);
+      const users = await userService.searchUsers(query, role);
       res.status(200).json({
         message: "Resultados de búsqueda",
         users,

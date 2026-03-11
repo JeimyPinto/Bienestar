@@ -1,20 +1,20 @@
 "use client"
 
 import React, { useState } from "react"
-import UserTable from "../../components/users/userTable"
-import UserForm from "../../components/users/userForm"
-import ErrorMessage from "../../ui/errorMessage";
-import SuccessMessage from "../../ui/successMessage";
-import SectionHeader from "../../ui/sectionHeader";
-import PageLayout from "../../components/layout/pageLayout";
-import { useModal } from "../../hooks/useModal";
-import { useMessages } from "../../hooks/useMessages";
-import { useUsers } from "../../hooks/useUsers";
-import { useAuthContext } from "../../contexts/authContext";
-import { User } from "../../interface/user";
-import BulkUploadSection from "../../components/users/bulkUploadSection"
-import BulkUploadInstructionsModal from "../../components/users/bulkUploadInstructionsModal"
-import BulkUploadReportCard from "../../components/users/bulkUploadReportCard"
+import UserTable from "../../../components/users/userTable"
+import UserForm from "../../../components/users/userForm"
+import ErrorMessage from "../../../ui/errorMessage";
+import SuccessMessage from "../../../ui/successMessage";
+import SectionHeader from "../../../ui/sectionHeader";
+import PageLayout from "../../../components/layout/pageLayout";
+import { useModal } from "../../../hooks/useModal";
+import { useMessages } from "../../../hooks/useMessages";
+import { useUsers } from "../../../hooks/useUsers";
+import { useAuthContext } from "../../../contexts/authContext";
+import { User } from "../../../interface/user";
+import BulkUploadSection from "../../../components/users/bulkUploadSection"
+import BulkUploadInstructionsModal from "../../../components/users/bulkUploadInstructionsModal"
+import BulkUploadReportCard from "../../../components/users/bulkUploadReportCard"
 
 // Tipo para el reporte de carga masiva
 type BulkUploadReport = {
@@ -254,3 +254,4 @@ export default function UsersPage() {
         </PageLayout>
     );
 }
+

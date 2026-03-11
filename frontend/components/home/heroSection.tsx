@@ -1,14 +1,10 @@
 import React from 'react';
+import { Wrench, Star } from "lucide-react";
+import { useServices } from "../../hooks/useServices";
 
 export interface HeroSectionProps {
   title?: string;
   subtitle?: React.ReactNode;
-  stats?: Array<{
-    icon: React.ReactNode;
-    value: string;
-    label: string;
-    valueClassName?: string;
-  }>;
 }
 
 export default function HeroSection({
@@ -22,21 +18,31 @@ export default function HeroSection({
       de la Regional Caldas.
     </>
   ),
-  stats = [
+}: HeroSectionProps) {
+  const { services, loading, errorMessage } = useServices({
+    mode: 'allActive'
+  });
+
+  // Si hay error al cargar los datos dinámicos, mejor no renderizar para evitar inconsistencias
+  if (errorMessage && !loading) {
+    return null;
+  }
+
+  const stats = [
     {
-      icon: <span role="img" aria-label="Servicios">🛠️</span>,
-      value: "15+",
+      icon: <Wrench size={32} className="text-white/80" />,
+      value: loading ? "..." : `${services.length}+`,
       label: "Servicios Disponibles",
       valueClassName: "text-azul-cielo"
     },
     {
-      icon: <span role="img" aria-label="Apoyo">⭐</span>,
+      icon: <Star size={32} className="text-white/80" />,
       value: "24/7",
       label: "Apoyo Continuo",
       valueClassName: "text-success"
     }
-  ]
-}: HeroSectionProps) {
+  ];
+
   return (
     <div className="relative bg-gradient-corporate text-white py-20 overflow-hidden">
       {/* Efectos de fondo animados */}
@@ -55,9 +61,9 @@ export default function HeroSection({
               {title}
             </span>
           </h1>
-          
+
           <div className="w-24 h-1 mx-auto bg-gradient-to-r from-warning to-amarillo rounded-full mb-8 animate-shimmer"></div>
-          
+
           <p className="text-lg md:text-xl lg:text-2xl text-white/95 max-w-4xl mx-auto font-medium leading-relaxed mb-8">
             {subtitle}
           </p>
@@ -69,8 +75,12 @@ export default function HeroSection({
                 key={idx}
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
               >
-                <div className="text-3xl mb-2">{stat.icon}</div>
-                <div className={`text-2xl font-bold ${stat.valueClassName ?? ''}`}>{stat.value}</div>
+                <div className="flex justify-center items-center mb-2">
+                  {stat.icon}
+                </div>
+                <div className={`text-2xl font-bold ${stat.valueClassName ?? ''}`}>
+                  {stat.value}
+                </div>
                 <div className="text-sm text-white/80">{stat.label}</div>
               </div>
             ))}

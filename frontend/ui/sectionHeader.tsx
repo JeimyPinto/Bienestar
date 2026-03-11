@@ -4,11 +4,11 @@ import IcoBack from "./icoBack";
 export interface SectionHeaderProps {
   title: string;
   description?: string;
-  icon?: string;
+  icon?: React.ReactNode;
   backHref?: string;
   buttonText?: string;
   buttonShortText?: string; // Texto corto para pantallas pequeñas
-  buttonIcon?: string; // Icono del botón personalizable
+  buttonIcon?: React.ReactNode; // Icono del botón personalizable
   onButtonClick?: () => void;
   className?: string;
   // Nuevas props para más flexibilidad
@@ -18,12 +18,12 @@ export interface SectionHeaderProps {
   centerContent?: boolean; // Para centrar todo el contenido como en servicios públicos
 }
 
-export default function SectionHeader({ 
-  title, 
-  description, 
+export default function SectionHeader({
+  title,
+  description,
   icon,
   backHref = "/dashboard",
-  buttonText, 
+  buttonText,
   buttonShortText,
   buttonIcon = "➕",
   onButtonClick,
@@ -33,11 +33,11 @@ export default function SectionHeader({
   size = 'md',
   centerContent = false
 }: SectionHeaderProps) {
-  
+
   // Estilos del botón según la variante
   const getButtonStyles = () => {
     const baseStyles = "px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2 border flex-shrink-0 text-sm sm:text-base w-full sm:w-auto";
-    
+
     switch (buttonVariant) {
       case 'primary':
         return `${baseStyles} bg-primary hover:bg-azul-cielo text-white border-primary/30`;
@@ -141,7 +141,7 @@ export default function SectionHeader({
               )}
             </div>
           </div>
-          
+
           {buttonText && onButtonClick && (
             <button
               onClick={onButtonClick}

@@ -2,6 +2,7 @@ import React from "react";
 import { ROLES } from "../../constants/roles"
 import { User } from "../../interface/user";
 import { Group } from "../../interface/group";
+import { Settings, User as UserIcon, Crown, UserCog, Users, RefreshCw, CheckCircle2, XCircle, Loader2, Minus, GraduationCap, Lock, Lightbulb } from "lucide-react";
 
 export interface UserFormAdminFieldsProps {
   newUser: User;
@@ -24,14 +25,13 @@ export default function UserFormAdminFields({
   return (
     <fieldset className="border-2 border-warning/30 rounded-xl p-4 sm:p-6 bg-gradient-to-br from-white to-warning/5">
       <legend className="px-3 text-azul-oscuro font-semibold flex items-center">
-        <span className="mr-2">⚙️</span>
+        <Settings className="mr-2 text-warning" size={18} />
         Datos Administrativos
       </legend>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-        {/* ... (roles, status, groups remain the same) ... */}
         <div>
           <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
-            <span className="mr-2">👤</span>
+            <UserIcon className="mr-2 text-primary" size={16} />
             Rol del Usuario
           </label>
           <select
@@ -42,13 +42,13 @@ export default function UserFormAdminFields({
               w-full px-4 py-3 border-2 border-azul-cielo/30 rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
               transition-all duration-300 hover:border-azul-cielo/50
-              bg-white text-azul-oscuro cursor-pointer
+              bg-white text-azul-oscuro cursor-pointer appearance-none
             "
             required
           >
             {Object.entries(ROLES).map(([key, value]) => (
               <option key={value} value={value}>
-                {key === 'ADMIN' ? '👑' : key === 'INSTRUCTOR' ? '👨‍🏫' : '👥'} {key.charAt(0) + key.slice(1).toLowerCase()}
+                {key.charAt(0) + key.slice(1).toLowerCase()}
               </option>
             ))}
           </select>
@@ -56,7 +56,7 @@ export default function UserFormAdminFields({
 
         <div>
           <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
-            <span className="mr-2">🔄</span>
+            <RefreshCw className="mr-2 text-primary" size={16} />
             Estado
           </label>
           <select
@@ -67,18 +67,18 @@ export default function UserFormAdminFields({
               w-full px-4 py-3 border-2 border-azul-cielo/30 rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
               transition-all duration-300 hover:border-azul-cielo/50
-              bg-white text-azul-oscuro cursor-pointer
+              bg-white text-azul-oscuro cursor-pointer appearance-none
             "
             required
           >
-            <option value="activo">✅ Activo</option>
-            <option value="inactivo">❌ Inactivo</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
           </select>
         </div>
 
         <div>
           <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
-            <span className="mr-2">👥</span>
+            <Users className="mr-2 text-primary" size={16} />
             Grupo/Ficha
           </label>
           <select
@@ -89,19 +89,19 @@ export default function UserFormAdminFields({
               w-full px-4 py-3 border-2 border-azul-cielo/30 rounded-lg 
               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
               transition-all duration-300 hover:border-azul-cielo/50
-              bg-white text-azul-oscuro cursor-pointer
+              bg-white text-azul-oscuro cursor-pointer appearance-none
             "
           >
             {groupsLoading ? (
-              <option value="">⏳ Cargando grupos...</option>
+              <option value="">Cargando grupos...</option>
             ) : groups.length === 0 ? (
-              <option value="">❌ Sin grupos disponibles</option>
+              <option value="">Sin grupos disponibles</option>
             ) : (
-              <option value="">➖ Sin grupo / No asignado</option>
+              <option value="">Sin grupo / No asignado</option>
             )}
             {groups.map((group) => (
               <option key={group.id} value={Number(group.id)}>
-                🎓 {group.fichaNumber} - {group.programName}
+                {group.fichaNumber} - {group.programName}
               </option>
             ))}
           </select>
@@ -109,7 +109,7 @@ export default function UserFormAdminFields({
 
         <div>
           <label className="text-sm font-semibold text-azul-oscuro mb-2 flex items-center">
-            <span className="mr-2">🔒</span>
+            <Lock className="mr-2 text-primary" size={16} />
             Contraseña
           </label>
           {mode === "create" ? (
@@ -127,8 +127,9 @@ export default function UserFormAdminFields({
                   bg-white text-azul-oscuro placeholder-azul-marino/50
                 "
               />
-              <p className="text-xs text-azul-marino/60 mt-1">
-                💡 Por defecto será el número de documento si se deja vacío.
+              <p className="text-xs text-azul-marino/60 mt-1 flex items-center gap-1">
+                <Lightbulb size={12} className="text-warning" />
+                Por defecto será el número de documento si se deja vacío.
               </p>
             </>
           ) : (
@@ -146,10 +147,11 @@ export default function UserFormAdminFields({
                 "
               >
                 {isResettingPassword ? (
-                  <span className="animate-spin">⏳</span>
+                  <Loader2 size={18} className="animate-spin" />
                 ) : (
-                  <span>🔄 Reestablecer Contraseña</span>
+                  <RefreshCw size={18} />
                 )}
+                <span>Reestablecer Contraseña</span>
               </button>
               <p className="text-xs text-azul-marino/60">
                 La nueva contraseña será el número de documento del usuario. Se le notificará por correo.

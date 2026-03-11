@@ -54,7 +54,7 @@ interface UseUsersReturn<T> {
     };
   } }>;
   downloadTemplate: () => Promise<{ error: boolean; message?: string }>;
-  searchUsers: (query: string) => Promise<{ error: boolean; message?: string; users?: User[] }>;
+  searchUsers: (query: string, searchRole?: string) => Promise<{ error: boolean; message?: string; users?: User[] }>;
 }
 export const useUsers = ({ 
   token, 
@@ -279,11 +279,11 @@ export const useUsers = ({
     }
   }, [token]);
 
-  const searchUsers = useCallback(async (query: string): Promise<{ error: boolean; message?: string; users?: User[] }> => {
+  const searchUsers = useCallback(async (query: string, searchRole?: string): Promise<{ error: boolean; message?: string; users?: User[] }> => {
     if (!token) return { error: true, message: "Token requerido para buscar usuarios" };
     
     try {
-      const res = await searchUsersService(query, token);
+      const res = await searchUsersService(query, token, searchRole);
       if (res.error) {
         return { error: true, message: res.message };
       } else {

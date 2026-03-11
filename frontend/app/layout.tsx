@@ -28,11 +28,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased bg-blanco">
         <AppProviders>
-          <ProtectedRoute>
-            <ClientHeader />
-            {children}
-            <Footer />
-          </ProtectedRoute>
+          {children}
         </AppProviders>
       </body>
     </html>

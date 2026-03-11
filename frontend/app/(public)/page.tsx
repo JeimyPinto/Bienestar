@@ -1,7 +1,7 @@
 "use client";
 
-import HeroSection from "../components/home/heroSection";
-import ContactSection from "../components/home/contactSection";
+import HeroSection from "../../components/home/heroSection";
+import ContactSection from "../../components/home/contactSection";
 
 import { Target, Users, Star, Zap } from "lucide-react";
 
@@ -72,3 +72,4 @@ export default function Page() {
     </div>
   );
 }
+

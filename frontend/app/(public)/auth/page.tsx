@@ -2,11 +2,11 @@
 
 import { useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { useAuth } from "../../hooks/useAuth";
-import { useRecaptcha } from "../../hooks/useRecaptcha";
-import LoginForm from "../../components/auth/loginForm";
-import LoginWelcome from "../../components/auth/loginWelcome";
-import ActiveSessionMessage from "../../components/auth/activeSessionMessage";
+import { useAuth } from "../../../hooks/useAuth";
+import { useRecaptcha } from "../../../hooks/useRecaptcha";
+import LoginForm from "../../../components/auth/loginForm";
+import LoginWelcome from "../../../components/auth/loginWelcome";
+import ActiveSessionMessage from "../../../components/auth/activeSessionMessage";
 
 export default function LoginPage() {
   const {
@@ -79,3 +79,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

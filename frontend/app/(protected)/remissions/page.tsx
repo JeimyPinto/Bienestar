@@ -1,17 +1,17 @@
 "use client"
 
 import React, { useState } from "react";
-import { Remission } from "../../interface/remission";
-import ErrorMessage from "../../ui/errorMessage";
-import SuccessMessage from "../../ui/successMessage";
-import RemissionTable from "../../components/remissions/remissionTable";
-import RemissionForm from "../../components/remissions/remissionForm";
-import SectionHeader from "../../ui/sectionHeader";
-import PageLayout from "../../components/layout/pageLayout";
-import { useAuthContext } from "../../contexts/authContext";
-import { useRemissions } from "../../hooks/useRemissions";
-import { useMessages } from "../../hooks/useMessages";
-import { useModal } from "../../hooks/useModal";
+import { Remission } from "../../../interface/remission";
+import ErrorMessage from "../../../ui/errorMessage";
+import SuccessMessage from "../../../ui/successMessage";
+import RemissionTable from "../../../components/remissions/remissionTable";
+import RemissionForm from "../../../components/remissions/remissionForm";
+import SectionHeader from "../../../ui/sectionHeader";
+import PageLayout from "../../../components/layout/pageLayout";
+import { useAuthContext } from "../../../contexts/authContext";
+import { useRemissions } from "../../../hooks/useRemissions";
+import { useMessages } from "../../../hooks/useMessages";
+import { useModal } from "../../../hooks/useModal";
 
 export default function RemissiontPage() {
     // Hook para manejo del modal de remisiones
@@ -85,3 +85,4 @@ export default function RemissiontPage() {
         </PageLayout>
     );
 }
+

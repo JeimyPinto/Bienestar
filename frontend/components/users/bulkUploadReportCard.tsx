@@ -1,5 +1,6 @@
-
+import React from "react";
 import type { BulkUploadReport } from "../../interface/bulkUpload";
+import { BarChart3, RefreshCcw, Sparkles, Users, XCircle, Target } from "lucide-react";
 
 interface BulkUploadReportCardProps {
   report: BulkUploadReport;
@@ -15,8 +16,8 @@ export default function BulkUploadReportCard({ report, onHide }: BulkUploadRepor
       <div className="p-8 md:p-10 relative z-10">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
           <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-success/10 rounded-2xl flex items-center justify-center text-2xl border border-success/20 shadow-inner">
-              📊
+            <div className="w-14 h-14 bg-success/10 rounded-2xl flex items-center justify-center border border-success/20 shadow-inner text-success">
+              <BarChart3 size={28} />
             </div>
             <div>
               <h3 className="font-display font-bold text-azul-marino text-2xl md:text-3xl tracking-tight leading-tight">
@@ -39,14 +40,14 @@ export default function BulkUploadReportCard({ report, onHide }: BulkUploadRepor
         {/* Summary Dashboard Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mb-12">
           {[
-            { label: "Procesados", value: report.summary.total, icon: "🔄", color: "azul-marino" },
-            { label: "Creados", value: report.summary.created, icon: "✨", color: "success" },
-            { label: "Duplicados", value: report.summary.duplicates, icon: "👯", color: "warning" },
-            { label: "Errores", value: report.summary.errors, icon: "❌", color: "danger" },
-            { label: "Éxito", value: report.summary.successRate, icon: "🎯", color: "success" }
+            { label: "Procesados", value: report.summary.total, icon: <RefreshCcw size={24} />, color: "azul-marino" },
+            { label: "Creados", value: report.summary.created, icon: <Sparkles size={24} />, color: "success" },
+            { label: "Duplicados", value: report.summary.duplicates, icon: <Users size={24} />, color: "warning" },
+            { label: "Errores", value: report.summary.errors, icon: <XCircle size={24} />, color: "danger" },
+            { label: "Éxito", value: report.summary.successRate, icon: <Target size={24} />, color: "success" }
           ].map((item, idx) => (
             <div key={idx} className={`flex flex-col items-center justify-center bg-white border border-${item.color}/10 rounded-3xl p-5 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300`}>
-              <span className="text-2xl mb-2">{item.icon}</span>
+              <span className={`text-${item.color} mb-2 opacity-80`}>{item.icon}</span>
               <span className="text-azul-marino/40 text-[10px] uppercase tracking-widest font-bold mb-1">{item.label}</span>
               <span className={`text-2xl font-display font-bold text-${item.color} leading-none`}>
                 {item.value}

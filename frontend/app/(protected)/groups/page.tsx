@@ -1,17 +1,17 @@
 "use client";
 
 import React from "react";
-import SectionHeader from "../../ui/sectionHeader";
-import ErrorMessage from "../../ui/errorMessage";
-import SuccessMessage from "../../ui/successMessage";
-import GroupTable from "../../components/group/groupTable";
-import { Group } from "../../interface/group";
-import GroupForm from "../../components/group/groupForm";
-import PageLayout from "../../components/layout/pageLayout";
-import { useAuthContext } from "../../contexts/authContext";
-import { useGroups } from "../../hooks/useGroups";
-import { useModal } from "../../hooks/useModal";
-import { useMessages } from "../../hooks/useMessages";
+import SectionHeader from "../../../ui/sectionHeader";
+import ErrorMessage from "../../../ui/errorMessage";
+import SuccessMessage from "../../../ui/successMessage";
+import GroupTable from "../../../components/group/groupTable";
+import { Group } from "../../../interface/group";
+import GroupForm from "../../../components/group/groupForm";
+import PageLayout from "../../../components/layout/pageLayout";
+import { useAuthContext } from "../../../contexts/authContext";
+import { useGroups } from "../../../hooks/useGroups";
+import { useModal } from "../../../hooks/useModal";
+import { useMessages } from "../../../hooks/useMessages";
 
 export default function GroupPage() {
     const { token } = useAuthContext();
@@ -68,3 +68,4 @@ export default function GroupPage() {
         </PageLayout>
     );
 }
+
