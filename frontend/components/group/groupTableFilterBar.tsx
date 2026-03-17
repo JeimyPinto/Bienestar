@@ -1,6 +1,6 @@
 import React from "react";
 import { ProgramType, FichaStatus } from "../../interface/group";
-import { Search, X, Layers, BookOpen, Briefcase, Bookmark, Palette, BookMarked, Wrench, GraduationCap } from "lucide-react";
+import { Search, X, Layers, BookOpen, Eraser } from "lucide-react";
 
 interface GroupTableFilterBarProps {
   limit: number;
@@ -22,41 +22,59 @@ const GroupTableFilterBar: React.FC<GroupTableFilterBarProps> = ({
   setStatusFilter,
   typeFilter,
   setTypeFilter,
-}) => (
-  <header className="flex flex-col gap-6 bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-premium border border-azul-cielo/20">
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-      {/* Buscador principal */}
-      <div className="flex-1 relative group">
-        <input
-          type="text"
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-          placeholder="Buscar por número de ficha o nombre del programa..."
-          className="w-full pl-12 pr-4 py-4 bg-white border-2 border-azul-cielo/20 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 shadow-sm group-hover:border-azul-claro placeholder-azul-marino/30"
-        />
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity text-primary">
-          <Search size={22} />
-        </span>
-        {filter && (
-          <button
-            onClick={() => setFilter("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-neutral/10 rounded-full transition-colors text-azul-marino/40 hover:text-danger"
-          >
-            <X size={18} />
-          </button>
-        )}
-      </div>
+}) => {
+  const isFiltering = filter !== "" || statusFilter !== "all" || typeFilter !== "all";
 
-      {/* Selectores de filtro */}
-      <div className="flex flex-wrap items-center gap-4">
-        {/* Filtro de Tipo */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-azul-marino/60 uppercase tracking-wider ml-1">Tipo:</span>
-          <div className="relative">
+  return (
+    <div className="bg-white rounded-[2rem] shadow-xl p-6 border border-azul-cielo/20 backdrop-blur-sm">
+      <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+          {/* Barra de búsqueda */}
+          <div className="lg:col-span-2">
+            <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1">
+              Búsqueda General
+            </label>
+            <div className="relative group">
+              <input
+                type="text"
+                value={filter}
+                onChange={e => setFilter(e.target.value)}
+                placeholder="Buscar por número de ficha o nombre del programa..."
+                className="
+                  w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 pl-12 text-sm 
+                  focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                  bg-azul-cielo/5 text-azul-oscuro placeholder-azul-marino/30
+                  transition-all duration-300 group-hover:bg-white pr-10
+                "
+              />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-azul-marino/30 transition-colors group-hover:text-primary">
+                <Search size={18} />
+              </div>
+              {filter && (
+                <button
+                  onClick={() => setFilter("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-azul-marino/20 hover:text-danger transition-colors p-1"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Filtro por Tipo */}
+          <div>
+            <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
+              <BookOpen size={12} /> Tipo
+            </label>
             <select
               value={typeFilter}
               onChange={e => setTypeFilter(e.target.value)}
-              className="pl-4 pr-10 py-3 bg-white border-2 border-azul-cielo/20 rounded-xl focus:outline-none focus:border-primary transition-all cursor-pointer text-sm font-semibold text-azul-oscuro appearance-none"
+              className="
+                w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 text-sm 
+                focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                bg-azul-cielo/5 text-azul-oscuro cursor-pointer
+                transition-all duration-300 hover:bg-white appearance-none
+              "
             >
               <option value="all">Todos los tipos</option>
               <option value="tecnico">Técnico</option>
@@ -64,39 +82,66 @@ const GroupTableFilterBar: React.FC<GroupTableFilterBarProps> = ({
               <option value="complementaria">Complementaria</option>
             </select>
           </div>
+
+          {/* Filtro por Estado */}
+          <div>
+            <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
+              <Layers size={12} /> Estado
+            </label>
+            <select
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+              className="
+                w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 text-sm 
+                focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                bg-azul-cielo/5 text-azul-oscuro cursor-pointer
+                transition-all duration-300 hover:bg-white appearance-none
+              "
+            >
+              <option value="all">Todos los estados</option>
+              <option value="etapa lectiva">Etapa Lectiva</option>
+              <option value="etapa practica">Etapa Práctica</option>
+              <option value="certificados">Certificados</option>
+            </select>
+          </div>
         </div>
 
-        {/* Filtro de Estado */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-azul-marino/60 uppercase tracking-wider">Estado:</span>
-          <select
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
-            className="px-4 py-3 bg-white border-2 border-azul-cielo/20 rounded-xl focus:outline-none focus:border-primary transition-all cursor-pointer text-sm font-semibold text-azul-oscuro"
-          >
-            <option value="all">Todos los estados</option>
-            <option value="etapa lectiva">Etapa Lectiva</option>
-            <option value="etapa practica">Etapa Práctica</option>
-            <option value="certificados">Certificados</option>
-          </select>
-        </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-azul-cielo/10 pt-4">
+          {/* Límite de página */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest">
+              Mostrar
+            </span>
+            <select
+              value={limit}
+              onChange={e => setLimit(Number(e.target.value))}
+              className="px-3 py-1.5 bg-white border border-azul-cielo/20 rounded-lg text-xs font-semibold text-azul-oscuro focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              {[10, 25, 50].map(opt => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+            <span className="text-xs text-azul-marino/60 lowercase">por página</span>
+          </div>
 
-        {/* Límite de página */}
-        <div className="flex items-center gap-2 border-l border-azul-cielo/30 pl-4 ml-2">
-          <span className="text-sm font-bold text-azul-marino/60">Ver:</span>
-          <select
-            value={limit}
-            onChange={e => setLimit(Number(e.target.value))}
-            className="px-3 py-2 bg-neutral/5 border border-azul-cielo/20 rounded-lg focus:outline-none text-sm font-bold text-azul-oscuro"
-          >
-            {[10, 25, 50].map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
-            ))}
-          </select>
+          {/* Botón de limpiar */}
+          {isFiltering && (
+            <button
+              onClick={() => {
+                setFilter("");
+                setStatusFilter("all");
+                setTypeFilter("all");
+              }}
+              className="flex items-center gap-2 text-xs font-bold text-primary hover:text-azul-oscuro transition-colors bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 hover:border-primary/30"
+            >
+              <Eraser size={14} />
+              Limpiar filtros
+            </button>
+          )}
         </div>
       </div>
     </div>
-  </header>
-);
+  );
+};
 
 export default GroupTableFilterBar;

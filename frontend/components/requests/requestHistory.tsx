@@ -164,11 +164,6 @@ export default function RequestHistory({
         </div>
       </div>
 
-      {errorMessage && (
-        <div className="mb-4">
-          <ErrorMessage message={errorMessage} />
-        </div>
-      )}
 
       {/* Barra de filtros */}
       {(requests.length > 0 || loading) && (

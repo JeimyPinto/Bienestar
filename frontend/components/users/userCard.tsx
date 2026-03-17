@@ -131,7 +131,7 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                                 user.role === "instructor" ? "bg-info/20 text-azul-oscuro" :
                                     "bg-primary/20 text-azul-oscuro"}
                         `}>
-                            {user.role}
+                            {user.role === "user" ? "aprendiz" : user.role}
                         </span>
                     </div>
 
@@ -144,6 +144,29 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                             <Phone size={14} className="mr-2 text-primary/60" />
                             {user.phone || "No especificado"}
                         </p>
+                        <p className="flex items-center justify-center sm:justify-start break-words">
+                            <CreditCard size={14} className="mr-2 text-primary/60" />
+                            {user.documentType && user.documentNumber
+                                ? `${user.documentType.toUpperCase()}: ${user.documentNumber}`
+                                : "No especificado"
+                            }
+                        </p>
+                        {user.role === "instructor" ? (
+                            <div className="flex items-center justify-center sm:justify-start break-words">
+                                <ClipboardList size={14} className="mr-2 text-primary/60" />
+                                {user.managedGroups && user.managedGroups.length > 0
+                                    ? `Fichas a cargo: ${user.managedGroups.map(g => g.fichaNumber).join(', ')}`
+                                    : "Sin fichas a cargo"
+                                }
+                            </div>
+                        ) : (
+                            user.group?.fichaNumber && (
+                                <p className="flex items-center justify-center sm:justify-start break-words">
+                                    <ClipboardList size={14} className="mr-2 text-primary/60" />
+                                    Ficha: {user.group.fichaNumber}
+                                </p>
+                            )
+                        )}
                     </div>
                 </div>
             </div>
@@ -187,10 +210,7 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                                         user.role === "instructor" ? "bg-info/20 text-azul-oscuro" :
                                             "bg-primary/20 text-azul-oscuro"}
                                 `}>
-                                    {user.role}
-                                </span>
-                                <span className="text-sm text-azul-marino/70">
-                                    ID: {user.id}
+                                    {user.role === "user" ? "aprendiz" : user.role}
                                 </span>
                             </div>
                         </div>
@@ -213,7 +233,7 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                             <p className="flex items-center text-sm text-azul-marino/70">
                                 <CreditCard size={14} className="mr-2 text-primary/60" />
                                 {user.documentType && user.documentNumber
-                                    ? `${user.documentType}: ${user.documentNumber}`
+                                    ? `${user.documentType.toUpperCase()}: ${user.documentNumber}`
                                     : "No especificado"
                                 }
                             </p>
@@ -223,15 +243,42 @@ export default function UserCard({ user: propUser, onClick }: UserCardProps) {
                             <h3 className="text-sm font-semibold text-azul-oscuro mb-2 border-b border-azul-cielo/30 pb-1">
                                 Información Académica
                             </h3>
-                            <p className="flex items-center text-sm text-azul-marino/70">
-                                <Users size={14} className="mr-2 text-primary/60" />
-                                {user.group?.programName || "Sin programa"}
-                            </p>
-                            {user.group?.fichaNumber && (
-                                <p className="flex items-center text-sm text-azul-marino/70">
-                                    <ClipboardList size={14} className="mr-2 text-primary/60" />
-                                    Ficha: {user.group.fichaNumber}
-                                </p>
+                            {user.role === "instructor" ? (
+                                <>
+                                    {user.managedGroups && user.managedGroups.length > 0 ? (
+                                        <div className="space-y-1">
+                                            <p className="flex items-center text-sm text-azul-marino/70">
+                                                <ClipboardList size={14} className="mr-2 text-primary/60 flex-shrink-0" />
+                                                Fichas a cargo:
+                                            </p>
+                                            <div className="pl-6 flex flex-wrap gap-1">
+                                                {user.managedGroups.map(g => (
+                                                    <span key={g.id} className="inline-block bg-info/10 text-azul-oscuro text-xs px-2 py-0.5 rounded-md border border-info/20">
+                                                        {g.fichaNumber}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="flex items-center text-sm text-azul-marino/70">
+                                            <ClipboardList size={14} className="mr-2 text-primary/60" />
+                                            Sin fichas a cargo
+                                        </p>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <p className="flex items-center text-sm text-azul-marino/70">
+                                        <Users size={14} className="mr-2 text-primary/60" />
+                                        {user.group?.programName || "Sin programa"}
+                                    </p>
+                                    {user.group?.fichaNumber && (
+                                        <p className="flex items-center text-sm text-azul-marino/70">
+                                            <ClipboardList size={14} className="mr-2 text-primary/60" />
+                                            Ficha: {user.group.fichaNumber}
+                                        </p>
+                                    )}
+                                </>
                             )}
                             <p className="flex items-center text-sm text-azul-marino/70">
                                 <BarChart size={14} className="mr-2 text-primary/60" />

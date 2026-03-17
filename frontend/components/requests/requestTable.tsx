@@ -3,6 +3,7 @@ import { Request } from "../../interface/request";
 import RequestTableDesktop from "./requestTableDesktop";
 import RequestCardMobile from "./requestCardMobile";
 import RequestTableFilterBar from "./requestTableFilterBar";
+import RequestForm from "./requestForm";
 
 interface RequestTableProps {
   requests: Request[];
@@ -15,6 +16,9 @@ interface RequestTableProps {
 export default function RequestTable({
   requests,
   loading = false,
+  setErrorMessage,
+  setSuccessMessage,
+  onRequestUpdate,
 }: RequestTableProps) {
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -22,18 +26,20 @@ export default function RequestTable({
   const [responseStatusFilter, setResponseStatusFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [areaFilter, setAreaFilter] = useState("all");
-  const requestEditFormRef = useRef<HTMLDialogElement>(null);
-
-  React.useEffect(() => {
-    if (isFormOpen && selectedRequest && requestEditFormRef.current) {
-      requestEditFormRef.current.showModal();
-    }
-  }, [isFormOpen, selectedRequest]);
 
   function handleRowClick(request: Request) {
     setSelectedRequest(request);
     setIsFormOpen(true);
   }
+  const handleCloseForm = (updatedRequest?: Request) => {
+    setIsFormOpen(false);
+
+    if (updatedRequest) {
+      setSuccessMessage("Solicitud actualizada correctamente");
+      if (onRequestUpdate) onRequestUpdate();
+    }
+    setSelectedRequest(null);
+  };
 
   const handleClearFilters = () => {
     setFilter("");
@@ -98,6 +104,15 @@ export default function RequestTable({
           />
         </div>
       </div>
+
+      {isFormOpen && selectedRequest && (
+        <RequestForm
+          dialogRef={{ current: null }}
+          mode="edit"
+          requestToEdit={selectedRequest}
+          onClose={handleCloseForm}
+        />
+      )}
     </div>
   );
 }

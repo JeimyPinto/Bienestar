@@ -115,8 +115,18 @@ export default function ServiceForm(props: ServiceFormProps) {
             if (mode === "create") {
                 const { file, ...serviceData } = newService;
                 serviceData.creatorId = user?.id ? Number(user.id) : 0;
+                
+                if (serviceData.creatorId === 0) {
+                    setFormError("Error: No se pudo identificar tu ID de usuario en la sesión para asignarte como creador.");
+                    setIsSubmitting(false);
+                    return;
+                }
+
                 // No enviar image si está vacío o null
                 if (!newService.image) delete (serviceData as Partial<typeof newService>).image;
+                
+                console.log("📤 Enviando datos del servicio al backend:", serviceData);
+                
                 result = await createService(
                     serviceData,
                     file ? file : undefined
@@ -234,6 +244,7 @@ export default function ServiceForm(props: ServiceFormProps) {
                             <ServiceFormAdminFields
                                 newService={newService}
                                 user={user}
+                                mode={mode}
                                 handleInputChange={handleInputChange}
                             />
                         </div>

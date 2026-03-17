@@ -9,6 +9,7 @@ import RequestForm from "../../../components/requests/requestForm"
 import RequestHistory from "../../../components/requests/requestHistory";
 import RequestTable from "../../../components/requests/requestTable";
 import SuccessMessage from "../../../ui/successMessage";
+import ErrorMessage from "../../../ui/errorMessage";
 import SectionHeader from "../../../ui/sectionHeader";
 import PageLayout from "../../../components/layout/pageLayout";
 import { ROLES } from "../../../constants/roles";
@@ -28,7 +29,6 @@ export default function RequestPage() {
         onError: (message) => setErrorMessage(message)
     });
 
-    const dialogRef = useRef<HTMLDialogElement | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [requestToEdit, setRequestToEdit] = useState<Request | undefined>(undefined);
@@ -37,12 +37,10 @@ export default function RequestPage() {
         setMode("create");
         setRequestToEdit(undefined);
         setIsFormOpen(true);
-        setTimeout(() => dialogRef.current?.showModal(), 0);
     };
 
     const closeDialog = (createdRequest?: unknown) => {
         setIsFormOpen(false);
-        dialogRef.current?.close();
 
         if (createdRequest) {
             refreshRequests();
@@ -65,14 +63,19 @@ export default function RequestPage() {
             />
 
             {/* Mensajes */}
-            {successMessage && (
-                <div className="mb-6">
+            <div className="space-y-4 mb-6">
+                {successMessage && (
                     <SuccessMessage
                         message={successMessage}
                         onClose={() => clearSuccess()}
                     />
-                </div>
-            )}
+                )}
+                {errorMessage && (
+                    <ErrorMessage
+                        message={errorMessage}
+                    />
+                )}
+            </div>
 
             {/* Componente de solicitudes - según rol del usuario */}
             {user?.role === ROLES.USER ? (
@@ -95,7 +98,7 @@ export default function RequestPage() {
             {/* Modal de formulario */}
             {isFormOpen && (
                 <RequestForm
-                    dialogRef={dialogRef}
+                    dialogRef={{ current: null }}
                     onClose={closeDialog}
                     mode={mode}
                     requestToEdit={requestToEdit}

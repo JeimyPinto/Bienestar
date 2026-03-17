@@ -1,4 +1,5 @@
 import React from "react";
+import { Search, X } from "lucide-react";
 
 interface ServiceTableFilterBarProps {
   filter: string;
@@ -10,29 +11,41 @@ const ServiceTableFilterBar: React.FC<ServiceTableFilterBarProps> = ({
   setFilter,
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-        <div className="flex-1">
-          <label htmlFor="service-filter" className="block text-sm font-medium text-gray-700 mb-2">
-            Buscar servicios
-          </label>
-          <input
-            id="service-filter"
-            type="text"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            placeholder="Buscar por nombre, descripción, área o creador..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-claro focus:border-azul-claro outline-none transition-colors"
-          />
+    <div className="bg-white rounded-[2rem] shadow-xl p-6 border border-azul-cielo/20 backdrop-blur-sm">
+      <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+          {/* Barra de búsqueda */}
+          <div className="lg:col-span-4">
+            <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1">
+              Búsqueda General
+            </label>
+            <div className="relative group">
+              <input
+                type="text"
+                value={filter}
+                onChange={e => setFilter(e.target.value)}
+                placeholder="Buscar por nombre, descripción, área o creador..."
+                className="
+                  w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 pl-12 text-sm 
+                  focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                  bg-azul-cielo/5 text-azul-oscuro placeholder-azul-marino/30
+                  transition-all duration-300 group-hover:bg-white pr-10
+                "
+              />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-azul-marino/30 transition-colors group-hover:text-primary">
+                <Search size={18} />
+              </div>
+              {filter && (
+                <button
+                  onClick={() => setFilter("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-azul-marino/20 hover:text-danger transition-colors p-1"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-        {filter && (
-          <button
-            onClick={() => setFilter("")}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            Limpiar
-          </button>
-        )}
       </div>
     </div>
   );

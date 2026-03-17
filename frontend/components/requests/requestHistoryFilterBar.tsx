@@ -46,13 +46,14 @@ export default function RequestHistoryFilterBar({
     const hasActiveFilters = filter !== "" || statusFilter !== "all" || responseFilter !== "all" || areaFilter !== "all";
 
     return (
-        <div className="bg-white/50 backdrop-blur-sm border border-azul-cielo/20 rounded-xl p-4 mb-6 shadow-sm">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+        <div className="bg-white rounded-[2rem] shadow-xl p-6 border border-azul-cielo/20 backdrop-blur-sm mb-6">
+            <div className="flex flex-col gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
 
                 {/* Buscador */}
-                <div className="lg:col-span-4 space-y-1.5">
-                    <label className="text-xs font-bold text-azul-marino/60 uppercase tracking-wider flex items-center gap-1.5 ml-1">
-                        <Search size={12} /> Buscar
+                <div className="lg:col-span-2">
+                    <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1">
+                        Búsqueda General
                     </label>
                     <div className="relative group">
                         <input
@@ -60,21 +61,33 @@ export default function RequestHistoryFilterBar({
                             value={filter}
                             onChange={(e) => setFilter(e.target.value)}
                             placeholder="Servicio, descripción..."
-                            className="w-full pl-10 pr-4 py-2.5 bg-white border border-azul-cielo/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm group-hover:border-primary/50"
+                            className="
+                              w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 pl-12 text-sm 
+                              focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                              bg-azul-cielo/5 text-azul-oscuro placeholder-azul-marino/30
+                              transition-all duration-300 group-hover:bg-white pr-10
+                            "
                         />
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-azul-marino/30 group-hover:text-primary/50 transition-colors" size={18} />
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-azul-marino/30 transition-colors group-hover:text-primary">
+                            <Search size={18} />
+                        </div>
                     </div>
                 </div>
 
                 {/* Filtro Área */}
-                <div className="lg:col-span-2 space-y-1.5">
-                    <label className="text-xs font-bold text-azul-marino/60 uppercase tracking-wider flex items-center gap-1.5 ml-1">
+                <div>
+                    <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
                         <Filter size={12} /> Área
                     </label>
                     <select
                         value={areaFilter}
                         onChange={(e) => setAreaFilter(e.target.value)}
-                        className="w-full px-3 py-2.5 bg-white border border-azul-cielo/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                        className="
+                          w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 text-sm 
+                          focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                          bg-azul-cielo/5 text-azul-oscuro cursor-pointer
+                          transition-all duration-300 hover:bg-white appearance-none
+                        "
                     >
                         <option value="all">Todas las áreas</option>
                         {areas.map(area => (
@@ -84,14 +97,19 @@ export default function RequestHistoryFilterBar({
                 </div>
 
                 {/* Filtro Respuesta */}
-                <div className="lg:col-span-2 space-y-1.5">
-                    <label className="text-xs font-bold text-azul-marino/60 uppercase tracking-wider flex items-center gap-1.5 ml-1">
+                <div>
+                    <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
                         <Filter size={12} /> Respuesta
                     </label>
                     <select
                         value={responseFilter}
                         onChange={(e) => setResponseFilter(e.target.value)}
-                        className="w-full px-3 py-2.5 bg-white border border-azul-cielo/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                        className="
+                          w-full border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 text-sm 
+                          focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                          bg-azul-cielo/5 text-azul-oscuro cursor-pointer
+                          transition-all duration-300 hover:bg-white appearance-none
+                        "
                     >
                         <option value="all">Todos los estados</option>
                         <option value="pendiente">Pendiente</option>
@@ -101,15 +119,20 @@ export default function RequestHistoryFilterBar({
                 </div>
 
                 {/* Ordenar */}
-                <div className="lg:col-span-2 space-y-1.5">
-                    <label className="text-xs font-bold text-azul-marino/60 uppercase tracking-wider flex items-center gap-1.5 ml-1">
+                <div>
+                    <label className="block text-xs font-bold text-azul-oscuro/40 uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
                         <ArrowUpDown size={12} /> Ordenar por
                     </label>
                     <div className="flex gap-2">
                         <select
                             value={sortConfig.key}
                             onChange={(e) => handleSortChange(e.target.value)}
-                            className="flex-1 px-3 py-2.5 bg-white border border-azul-cielo/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                            className="
+                              flex-1 border-2 border-azul-cielo/10 rounded-2xl px-4 py-3 text-sm 
+                              focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 
+                              bg-azul-cielo/5 text-azul-oscuro cursor-pointer
+                              transition-all duration-300 hover:bg-white appearance-none
+                            "
                         >
                             <option value="createdAt">Fecha</option>
                             <option value="service.name">Servicio</option>
@@ -118,31 +141,27 @@ export default function RequestHistoryFilterBar({
                         </select>
                         <button
                             onClick={() => handleSortChange(sortConfig.key)}
-                            className="p-2.5 bg-white border border-azul-cielo/30 rounded-xl hover:bg-azul-cielo/10 transition-colors shadow-sm text-azul-marino/60 hover:text-primary"
+                            className="p-3 bg-azul-cielo/5 border-2 border-azul-cielo/10 rounded-2xl hover:bg-white transition-colors text-azul-marino/60 hover:text-primary focus:outline-none focus:ring-4 focus:ring-primary/5"
                             title={sortConfig.direction === 'asc' ? "Ascendente" : "Descendente"}
                         >
                             <ArrowUpDown size={18} className={sortConfig.direction === 'desc' ? "rotate-180 transition-transform" : "transition-transform"} />
                         </button>
                     </div>
                 </div>
+            </div>
 
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-4 border-t border-azul-cielo/10 pt-4 mt-2">
                 {/* Botón de limpiar */}
-                <div className="lg:col-span-2">
+                {hasActiveFilters && (
                     <button
                         onClick={clearFilters}
-                        disabled={!hasActiveFilters}
-                        className={`
-              w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300
-              ${hasActiveFilters
-                                ? "bg-danger/10 text-danger hover:bg-danger hover:text-white border border-danger/20"
-                                : "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"}
-            `}
+                        className="flex items-center gap-2 text-xs font-bold text-primary hover:text-azul-oscuro transition-colors bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 hover:border-primary/30"
                     >
-                        <X size={16} />
-                        Limpiar
+                        <X size={14} />
+                        Limpiar filtros
                     </button>
-                </div>
-
+                )}
+            </div>
             </div>
         </div>
     );
