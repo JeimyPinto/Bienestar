@@ -4,13 +4,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.addColumn("Users", "groupId", {
       type: Sequelize.INTEGER,
-      allowNull: true,
-      references: {
-        model: "Groups",
-        key: "id"
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL"
+      allowNull: true
     });
   },
   async down(queryInterface) {

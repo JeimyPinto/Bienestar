@@ -1,30 +1,29 @@
 const { faker } = require("@faker-js/faker");
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    // Obtén los IDs de usuarios y servicios existentes
+  up: async (queryInterface) => {
     const users = await queryInterface.sequelize.query(
-      "SELECT id FROM Users;",
-      { type: Sequelize.QueryTypes.SELECT }
+      "SELECT id FROM Users WHERE role = 'user';",
+      { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
     const services = await queryInterface.sequelize.query(
       "SELECT id FROM Services;",
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
 
     if (!users.length || !services.length) {
-      throw new Error("No hay usuarios o servicios en la base de datos.");
+      throw new Error("No hay aprendices o servicios en la base de datos.");
     }
 
     const requests = [];
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 20; i++) {
       const user = faker.helpers.arrayElement(users);
       const service = faker.helpers.arrayElement(services);
 
       requests.push({
         userId: user.id,
         serviceId: service.id,
-        createdBy: 1,
+        createdBy: user.id,
         description: faker.lorem.sentence(),
         status: faker.helpers.arrayElement([true, false]),
         createdAt: new Date(),
@@ -33,11 +32,10 @@ module.exports = {
     }
 
     await queryInterface.bulkInsert("Requests", requests);
-    console.log("Requests creadas exitosamente.");
+    console.log("20 Peticiones aleatorias creadas.");
   },
 
   down: async (queryInterface) => {
     await queryInterface.bulkDelete("Requests", null, {});
-    console.log("Requests eliminadas exitosamente.");
   },
 };

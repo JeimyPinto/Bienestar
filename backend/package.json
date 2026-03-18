@@ -19,8 +19,8 @@
     "migrate:dev": "dotenv -e .env -- sequelize-cli db:migrate --config config/config.json --env development",
     "seed:dev": "dotenv -e .env -- sequelize-cli db:seed:all --config config/config.json --env development",
     "migrate-seed:dev": "npm run migrate:dev && npm run seed:dev",
-    "undo:all:dev": "dotenv -e .env -- sequelize-cli db:migrate:undo:all --config config/config.json --env development && dotenv -e .env -- sequelize-cli db:seed:undo:all --config config/config.json --env development && npm run clean:uploads:dev",
-    "clean:uploads:dev": "rimraf ./uploads/images/users/* ./uploads/images/services/*"
+    "undo:all:dev": "dotenv -e .env -- sequelize-cli db:seed:undo:all --config config/config.json --env development && dotenv -e .env -- sequelize-cli db:migrate:undo:all --config config/config.json --env development && npm run clean:uploads:dev",
+    "clean:uploads:dev": "node -e \"const fs=require('fs');const p=['./uploads/images/users','./uploads/images/services'];p.forEach(d=>{if(fs.existsSync(d))fs.readdirSync(d).forEach(f=>fs.rmSync(d+'/'+f,{recursive:true,force:true}))});\""
   },
   "keywords": [
     "bienestar",
