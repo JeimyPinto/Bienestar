@@ -14,6 +14,7 @@ interface RequestApplicantFieldsProps {
   setNewRequest: React.Dispatch<React.SetStateAction<Request>>;
   mode: "create" | "edit";
   editApplicant?: User | null;
+  preSelectedService?: Service | null;
 }
 
 export default function RequestApplicantFields({
@@ -23,6 +24,7 @@ export default function RequestApplicantFields({
   setNewRequest,
   mode,
   editApplicant,
+  preSelectedService,
 }: RequestApplicantFieldsProps) {
   // Usar hook para servicios activos
   const { services, loading: loadingServices } = useServices({
@@ -192,9 +194,16 @@ export default function RequestApplicantFields({
           />
         </div>
       ) : null}
+      {/* Indicador de servicio pre-seleccionado */}
+      {preSelectedService && newRequest.serviceId === Number(preSelectedService.id) && (
+        <div className="mb-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2">
+          <span className="text-emerald-500 text-xl">✅</span>
+          <span className="font-semibold text-emerald-800 text-sm">Servicio pre-seleccionado: {preSelectedService.name}</span>
+        </div>
+      )}
       {/* Servicio */}
       <div className="col-span-1">
-        <label className="block text-sm font-medium text-azul">Servicio</label>
+        <label className="block text-sm font-medium text-azul">Servicio {preSelectedService && '(puedes cambiarlo)'}</label>
         {loadingServices ? (
           <Spinner className="my-2" />
         ) : (

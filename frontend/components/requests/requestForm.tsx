@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { useAuthContext } from "../../contexts/authContext";
-import { useRequests } from "../../hooks/useRequests";
-import { Request } from "../../interface/request";
-import { ROLES } from "../../constants/roles";
+import { useAuthContext } from "@/contexts/authContext";
+import { useRequests } from "@/hooks/useRequests";
+import { Request } from "@/interface/request";
+import { ROLES } from "@/constants/roles";
 import RequestApplicantFields from "./requestApplicantFields";
 import RequestDescriptionFields from "./requestDescriptionFields";
 import RequestStatusFields from "./requestStatusFields";
-import FormModalHeader from "../../ui/FormModalHeader";
-import FormErrorDisplay from "../../ui/FormErrorDisplay";
-import Spinner from "../../ui/spinner";
+import FormModalHeader from "@/ui/FormModalHeader";
+import FormErrorDisplay from "@/ui/FormErrorDisplay";
+import Spinner from "@/ui/spinner";
 
 const emptyRequest: Request = {
     userId: 0,
@@ -51,7 +51,7 @@ export default function RequestsForm(props: RequestsFormProps) {
 
     // Inicializar el formulario según el modo
     useEffect(() => {
-        if (mode === "edit" && requestToEdit) {
+    if (mode === "edit" && requestToEdit) {
             setNewRequest(requestToEdit);
         } else if (mode === "create") {
             const initialRequest = { ...emptyRequest };
@@ -59,6 +59,10 @@ export default function RequestsForm(props: RequestsFormProps) {
             if (user && user.role === ROLES.USER) {
                 initialRequest.userId = user.id;
                 initialRequest.createdBy = user.id;
+            }
+            // Si se abre desde la página de detalle de un servicio, pre-seleccionar el servicio
+            if (requestToEdit?.serviceId) {
+                initialRequest.serviceId = requestToEdit.serviceId;
             }
             setNewRequest(initialRequest);
         }
@@ -167,6 +171,7 @@ export default function RequestsForm(props: RequestsFormProps) {
                                         setNewRequest={setNewRequest}
                                         mode={mode}
                                         editApplicant={mode === "edit" && requestToEdit?.applicant ? requestToEdit.applicant : undefined}
+                                        preSelectedService={requestToEdit?.service}
                                     />
                                 </div>
 

@@ -26,11 +26,11 @@ npm install
 
 ## 2. Configuración del Backend
 
-1. Crear archivo `.env` basado en `.env.example`:
+1. Crear archivo `.env` basado en `.env.template`:
 
 ```bash
 cd backend
-cp .env.example .env
+cp .env.template .env
 ```
 
 2. Configurar variables de entorno en `.env` según tu entorno:
@@ -60,6 +60,20 @@ FRONTEND_URL=https://tu-frontend.onrender.com
 ```
 
 3. Configurar base de datos en `config/config.json` si es necesario
+
+### 🔐 Contraseñas de usuarios semilla (Seed)
+
+Los usuarios estáticos del sistema (superadmin, admin, instructor de pruebas y aprendiz de pruebas) **NO tienen contraseñas hardcodeadas en el código**. Sus contraseñas se leen desde las siguientes variables del `.env`:
+
+```env
+# Contraseñas de usuarios core (Seed) - Define tus propias contraseñas
+SEED_SUPERADMIN_PASS=tu_contrasena_superadmin
+SEED_ADMIN_PASS=tu_contrasena_admin
+SEED_INSTRUCTOR_PASS=tu_contrasena_instructor_pruebas
+SEED_APRENDIZ_PASS=tu_contrasena_aprendiz_pruebas
+```
+
+> ⚠️ **Importante:** Si estas variables no están definidas en tu `.env`, el comando `npm run seed:dev` fallará con un error claro. Asegúrate de definirlas **antes** de ejecutar los seeders.
 
 ## 3. Configuración de Base de Datos
 

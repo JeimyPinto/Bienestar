@@ -45,26 +45,25 @@ class RequestService {
       changed_by: userId,
     });
 
-    // Enviar notificación por correo al creador del servicio
-    const { sendRequestNotification } = require("./mail");
-    // Obtener el servicio y su creador
+    // Retornar data para notification - Frontend renderiza template y POST /api/send-notification
     const service = await db.Service.findByPk(request.serviceId, {
       include: [{ model: db.User, as: "creator" }]
     });
-    if (service && service.creator && service.creator.email) {
-      // Obtener datos del solicitante
+    if (service && service.creator) {
       const applicant = await db.User.findByPk(request.userId, {
         attributes: ["firstName", "lastName", "email", "documentNumber"]
       });
-      if (applicant) {
-        await sendRequestNotification({
-          serviceCreator: service.creator,
-          applicant,
-          request,
-          service
-        });
-      }
+      return {
+        request,
+        notificationData: {
+          type: "requestNotification",
+          to: service.creator.email,
+          subjectTemplate: "Nueva solicitud de remisión para el servicio: {{service.name}}",
+          data: { serviceCreator: service.creator, applicant, request, service }
+        }
+      };
     }
+    return { request };
     return request;
   }
 

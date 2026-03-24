@@ -1,8 +1,19 @@
 const bcrypt = require("bcrypt");
 const { createUser } = require("./factories/user-factory");
 
+// Las contraseñas viven en .env para no exponerse en el código fuente
+const SUPERADMIN_PASS = process.env.SEED_SUPERADMIN_PASS;
+const ADMIN_PASS      = process.env.SEED_ADMIN_PASS;
+const INSTRUCTOR_PASS = process.env.SEED_INSTRUCTOR_PASS;
+const APRENDIZ_PASS   = process.env.SEED_APRENDIZ_PASS;
+
 module.exports = {
   up: async (queryInterface) => {
+    // Validar que las contraseñas estén definidas en el .env
+    if (!SUPERADMIN_PASS || !ADMIN_PASS) {
+      throw new Error("Faltan variables SEED_SUPERADMIN_PASS o SEED_ADMIN_PASS en el archivo .env");
+    }
+
     const users = [];
 
     // --- USUARIOS ESTÁTICOS ---
@@ -13,7 +24,7 @@ module.exports = {
       documentNumber: "1053872476",
       phone: "3058122481",
       email: "jeimytatianapinto@gmail.com",
-      password: bcrypt.hashSync("jeimytatianapinto@gmail.com", 10),
+      password: bcrypt.hashSync(SUPERADMIN_PASS, 10),
       role: "superadmin",
       status: "activo",
       createdAt: new Date(),
@@ -28,7 +39,7 @@ module.exports = {
       documentNumber: "0",
       phone: "3058122481",
       email: "bienestarregionalcaldascpic@gmail.com",
-      password: bcrypt.hashSync("bienestarregionalcaldascpic@gmail.com", 10),
+      password: bcrypt.hashSync(ADMIN_PASS, 10),
       role: "admin",
       status: "activo",
       createdAt: new Date(),
