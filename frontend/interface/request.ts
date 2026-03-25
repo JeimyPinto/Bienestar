@@ -4,7 +4,8 @@ import { Service } from "./service";
 // BASE: Campos básicos de una solicitud
 export interface Request {
     id?: number;
-    userId: number;
+    userId?: number;
+    groupId?: number;
     serviceId: number;
     description: string;
     status: boolean;

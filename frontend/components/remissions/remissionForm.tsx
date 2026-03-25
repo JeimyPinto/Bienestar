@@ -107,7 +107,7 @@ export default function RemissionForm({
       const remissionData: Remission = {
         id: remissionToEdit?.id,
         requestId: selectedRequestId!,
-        referredUserId: selectedRequest.userId,
+        referredUserId: selectedRequest.userId!,
         serviceId: selectedRequest.serviceId,
         assignedUserId: assignedUserId!,
         startDate: startDate,

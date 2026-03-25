@@ -30,6 +30,8 @@ interface RequestsFormProps {
     onClose?: (updatedRequest?: Request) => void;
     mode: "create" | "edit";
     requestToEdit?: Request;
+    setErrorMessage?: (message: string) => void;
+    errorMessage?: string;
 }
 
 export default function RequestsForm(props: RequestsFormProps) {
@@ -89,6 +91,12 @@ export default function RequestsForm(props: RequestsFormProps) {
         }
         if (requestData.responseMessage == null || requestData.responseMessage === "") {
             delete requestData.responseMessage;
+        }
+        if (requestData.userId === 0) {
+            delete requestData.userId;
+        }
+        if (requestData.groupId === 0) {
+            delete requestData.groupId;
         }
 
         try {

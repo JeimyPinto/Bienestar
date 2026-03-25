@@ -1,5 +1,6 @@
 const requestService = require("../services/request.js");
 const { requestSchema } = require("../schemas/request.js");
+const db = require("../models/index.js");
 
 class RequestController {
     async getAll(req, res, next) {
@@ -59,15 +60,47 @@ class RequestController {
     async create(req, res, next) {
         try {
             const requestData = requestSchema.parse(req.body);
-            const request = await requestService.createRequest(requestData, req.user?.id || null);
-            
-            // Guardar la request en res.locals para que el middleware pueda acceder a ella
-            res.locals.request = request;
-            
-            res.status(201).json({
-                message: "Solicitud creada con éxito",
-                request,
-            });
+
+            if (requestData.groupId) {
+                // Si se remite una ficha entera, buscar todos los aprendices
+                const users = await db.User.findAll({
+                    where: { groupId: requestData.groupId, role: "aprendiz" }
+                });
+
+                if (!users || users.length === 0) {
+                    const error = new Error("No se encontraron aprendices válidos en la ficha seleccionada");
+                    error.status = 404;
+                    throw error;
+                }
+
+                const createdRequests = [];
+                for (const user of users) {
+                    const singleData = { ...requestData, userId: user.id };
+                    delete singleData.groupId;
+                    
+                    const result = await requestService.createRequest(singleData, req.user?.id || null);
+                    if (result.request) {
+                        createdRequests.push(result.request);
+                    } else {
+                        createdRequests.push(result);
+                    }
+                }
+
+                res.status(201).json({
+                    message: "Solicitudes de remisión creadas para todos los aprendices de la ficha",
+                    requests: createdRequests,
+                });
+            } else {
+                const request = await requestService.createRequest(requestData, req.user?.id || null);
+                
+                // Guardar la request en res.locals para que el middleware pueda acceder a ella
+                res.locals.request = request;
+                
+                res.status(201).json({
+                    message: "Solicitud creada con éxito",
+                    request,
+                });
+            }
         } catch (error) {
             next(error);
         }

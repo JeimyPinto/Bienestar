@@ -74,7 +74,7 @@ router.use(
 );
 
 // Rutas de notificaciones - Frontend inyecta HTML template
-const notificationController = require("./notification.js");
+const notificationController = require("../controllers/notification.js");
 router.post("/send-notification", notificationController.sendNotification);
 
 module.exports = router;

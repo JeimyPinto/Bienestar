@@ -7,7 +7,10 @@ const requestSchema = z.object({
     id: z.number().int().optional(),
     userId: z.number().int().positive({
         message: "User ID must be a positive integer / El ID del usuario debe ser un número entero positivo",
-    }),
+    }).optional(),
+    groupId: z.number().int().positive({
+        message: "Group ID must be a positive integer / El ID del grupo debe ser un número entero positivo",
+    }).optional(),
     serviceId: z.number().int().positive({
         message: "Service ID must be a positive integer / El ID del servicio debe ser un número entero positivo",
     }),
@@ -22,6 +25,9 @@ const requestSchema = z.object({
     createdBy: z.number().int().positive({
         message: "El ID del creador debe ser un número entero positivo",
     }),
+}).refine(data => data.userId || data.groupId, {
+    message: "Debe proporcionar al menos un userId o groupId",
+    path: ["userId"],
 });
 
 module.exports = {

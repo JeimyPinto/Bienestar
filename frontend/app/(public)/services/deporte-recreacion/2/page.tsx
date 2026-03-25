@@ -12,7 +12,7 @@ export default function DeporteRecreacionDetallePage() {
       <div className="bg-white/90 backdrop-blur-xs shadow-sm border-b border-azul-cielo/20">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center space-x-2 text-sm">
-            <Link href="/ className="text-azul-marino hover:text-azul-cielo transition-colors">
+            <Link href="/" className="text-azul-marino hover:text-azul-cielo transition-colors">
               🏠 Inicio
             </Link>
             <span className="text-gray-400">/</span>

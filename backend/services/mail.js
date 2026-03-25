@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 
 class MailService {
   constructor() {
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST || "smtp.gmail.com",
       port: parseInt(process.env.MAIL_PORT) || 587,
       secure: (process.env.MAIL_SECURE === "true"),
@@ -101,6 +101,21 @@ class MailService {
       });
     } catch (error) {
       const err = new Error("Error sending remission notification: " + error.message);
+      err.status = 500;
+      throw err;
+    }
+  }
+
+  async sendGenericMail({ to, subject, html }) {
+    try {
+      await this.transporter.sendMail({
+        from: `"Bienestar" <${process.env.MAIL_USER || "no-reply@bienestar.com"}>`,
+        to,
+        subject,
+        html
+      });
+    } catch (error) {
+      const err = new Error("Error sending generic mail: " + error.message);
       err.status = 500;
       throw err;
     }
